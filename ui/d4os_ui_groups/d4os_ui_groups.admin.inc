@@ -12,13 +12,10 @@
 function d4os_ui_groups_admin() {
 	// check if og was configured
 	$types = og_get_types('group');
-	drupal_set_message('<pre>'.print_r($types, true).'</pre>', 'warning');
-	drupal_set_message('<pre>'.print_r(og_types_map(), true).'</pre>', 'warning');
 	$options = array();
 	foreach ($types as $type) {
 		$options[$type] = $type;
 	}
-	drupal_set_message('<pre>'.print_r($options, true).'</pre>', 'warning');
 	$is_configured = count($types);
 	if (!$is_configured) {
 		drupal_set_message(t('Please choose a content type to use as a group.'), 'error');
