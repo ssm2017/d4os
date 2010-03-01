@@ -49,6 +49,42 @@ function d4os_ui_users_perm() {
   );
 }
 
+function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
+  switch ($form_id) {
+    case 'user_login_block':
+    case 'user_login':
+      unset($form['name']);
+      $form['firstname'] = array(
+        '#type'         => 'textfield',
+        '#title'        => t('First Name'),
+        '#size'         => 15,
+        '#maxlength'    => 32,
+        '#required'     => TRUE,
+        '#weight'       => -2,
+      );
+      $form['lastname'] = array(
+        '#type'         => 'textfield',
+        '#title'        => t('Last Name'),
+        '#size'         => 15,
+        '#maxlength'    => 32,
+        '#required'     => TRUE,
+        '#weight'       => -1,
+      );
+      array_unshift($form['#validate'], 'd4os_ui_users_login_authenticate_validate');
+      break;
+  }
+}
+
+function d4os_ui_users_login_authenticate_validate($form, &$form_state) {
+  $admin = user_load(1);
+  if ($form_state['values']['firstname'] == $admin->name) {
+    $form_state['values']['name'] = $admin->name;
+  }
+  else {
+    $form_state['values']['name'] = $form_state['values']['firstname']. ' '. $form_state['values']['lastname'];
+  }
+}
+
 function d4os_ui_users_form_user_register_alter(&$form, $form_state) {
   $form['name'] = array(
     '#type'         => 'textfield',
