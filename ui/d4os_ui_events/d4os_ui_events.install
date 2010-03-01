@@ -1,0 +1,106 @@
+<?php
+/**
+* @package		d4os
+* @copyright	Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+* @license		GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+* D4os is free software. This version may have been modified pursuant
+* to the GNU General Public License, and as distributed it includes or
+* is derivative of works licensed under the GNU General Public License or
+* other free or open source software licenses.
+*/
+
+function d4os_ui_events_schema() {
+  $schema['d4os_ui_events'] = array(
+    'description' => t('The single table necessary for events storage.'),
+    'fields' => array(
+      'vid'      => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
+      'nid'      => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
+      'eventid' => array(
+        'description' => 'The eventid.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE
+      ),
+      'owneruuid' => array(
+        'description' => 'owneruuid.',
+        'type' => 'char',
+        'length' => 40,
+        'not null' => TRUE
+      ),
+      'creatoruuid' => array(
+        'description' => 'creatoruuid.',
+        'type' => 'char',
+        'length' => 40,
+        'not null' => TRUE
+      ),
+      'category' => array(
+        'description' => 'category.',
+        'type' => 'int',
+        'length' => 2,
+        'not null' => TRUE
+      ),
+      'dateUTC' => array(
+        'description' => 'dateUTC.',
+        'type' => 'int',
+        'length' => 10,
+        'not null' => TRUE
+      ),
+      'duration' => array(
+        'description' => 'duration.',
+        'type' => 'int',
+        'length' => 10,
+        'not null' => TRUE
+      ),
+      'covercharge' => array(
+        'description' => 'covercharge.',
+        'type' => 'int',
+        'length' => 10,
+        'not null' => TRUE
+      ),
+      'coveramount' => array(
+        'description' => 'coveramount.',
+        'type' => 'int',
+        'length' => 10,
+        'not null' => TRUE
+      ),
+      'simname' => array(
+        'description' => 'simname.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE
+      ),
+      'globalPos' => array(
+        'description' => 'globalPos.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE
+      ),
+      'eventflags' => array(
+        'description' => 'eventflags.',
+        'type' => 'int',
+        'length' => 10,
+        'not null' => TRUE
+      ),
+      'mature' => array(
+        'description' => 'mature.',
+        'type' => 'char',
+        'length' => 5,
+        'not null' => TRUE
+      ),
+    ),// TODO : check indexes
+    'primary key' => array('vid', 'nid'),
+  );
+  return $schema;
+}
+
+function d4os_ui_events_install() {
+  drupal_install_schema('d4os_ui_events');
+}
+
+function d4os_ui_events_uninstall() {
+  drupal_uninstall_schema('d4os_ui_events');
+  // Remove variables.
+  db_query("DELETE FROM {variable} WHERE name LIKE 'd4os_ui_events%%'");
+  db_query("DELETE FROM {system} WHERE type='module' AND name='d4os_ui_events'");
+}
+

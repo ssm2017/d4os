@@ -1,0 +1,5 @@
+; $Id$
+name = "d4os"
+description = "Provides tools to manage an opensim grid."
+package = d4os core
+core = 6.x

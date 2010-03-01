@@ -1,0 +1,91 @@
+<?php
+/**
+* @package		d4os
+* @copyright	Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+* @license		GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+* D4os is free software. This version may have been modified pursuant
+* to the GNU General Public License, and as distributed it includes or
+* is derivative of works licensed under the GNU General Public License or
+* other free or open source software licenses.
+*/
+
+//module_load_include('inc', 'd4os_io_db', 'd4os_io_db_asset');
+//module_load_include('inc', 'd4os_io_db', 'd4os_io_db_auth');
+module_load_include('inc', 'd4os_io_db', 'd4os_io_db_grid');
+//module_load_include('inc', 'd4os_io_db', 'd4os_io_db_inventory');
+//module_load_include('inc', 'd4os_io_db', 'd4os_io_db_messaging');
+//module_load_include('inc', 'd4os_io_db', 'd4os_io_db_account');
+module_load_include('inc', 'd4os_io_db', 'd4os_io_db_users');
+//module_load_include('inc', 'd4os_io_db', 'd4os_io_db_opensim');
+module_load_include('inc', 'd4os_io_db', 'd4os_io_db_search');
+module_load_include('inc', 'd4os_io_db', 'd4os_io_db_groups');
+
+
+function d4os_io_db_help($path, $arg) {
+  switch ($path) {
+    // Main module help for the block module
+    case 'admin/help#d4os_io_db':
+      return '<p>' . t('OpenSim grid management saving to the database') . '</p>';
+  }
+}
+
+function d4os_io_db_check_bases() {
+  // Check if the database array is set
+  global $db_url;
+  if (!is_array($db_url)) {
+    drupal_set_message(t('No extra database defined'), 'error');
+    return FALSE;
+  }
+  $output = TRUE;
+  // asset
+  if (!isset($db_url['os_asset'])) {
+    drupal_set_message(t('The "asset" database info is not defined'), 'error');
+    $output = FALSE;
+  }
+  // auth
+  if (!isset($db_url['os_auth'])) {
+    drupal_set_message(t('The "auth" database info is not defined'), 'error');
+    $output = FALSE;
+  }
+  // grid
+  if (!isset($db_url['os_grid'])) {
+    drupal_set_message(t('The "grid" database info is not defined'), 'error');
+    $output = FALSE;
+  }
+  // inventory
+  if (!isset($db_url['os_inventory'])) {
+    drupal_set_message(t('The "inventory" database info is not defined'), 'error');
+    $output = FALSE;
+  }
+  // messaging
+  if (!isset($db_url['os_messaging'])) {
+    drupal_set_message(t('The "messaging" database info is not defined'), 'error');
+    $output = FALSE;
+  }
+  // account
+  if (!isset($db_url['os_user_account'])) {
+    drupal_set_message(t('The "user_account" database info is not defined'), 'error');
+    $output = FALSE;
+  }
+  // users
+  if (!isset($db_url['os_users'])) {
+    drupal_set_message(t('The "users" database info is not defined'), 'error');
+    $output = FALSE;
+  }
+  // opensim
+  if (!isset($db_url['os_opensim'])) {
+    drupal_set_message(t('The "opensim" database info is not defined'), 'error');
+    $output = FALSE;
+  }
+  // search
+  if (!isset($db_url['os_search'])) {
+    drupal_set_message(t('The "search" database info is not defined'), 'error');
+    $output = FALSE;
+  }
+  // groups
+  if (!isset($db_url['os_groups'])) {
+    drupal_set_message(t('The "groups" database info is not defined'), 'error');
+    $output = FALSE;
+  }
+  return $output;
+}

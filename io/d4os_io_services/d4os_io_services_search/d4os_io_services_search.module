@@ -1,0 +1,273 @@
+<?php
+/**
+* @package		d4os
+* @copyright	Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+* @license		GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+* D4os is free software. This version may have been modified pursuant
+* to the GNU General Public License, and as distributed it includes or
+* is derivative of works licensed under the GNU General Public License or
+* other free or open source software licenses.
+*/
+
+/*
+* Implementation of hook_disable()
+* Perform necessary actions before module is disabled. (like clear the services:methods cache)
+*/
+function d4os_io_services_search_disable() {
+  cache_clear_all('services:methods', 'cache');
+}
+/*
+* Implementation of hook_disable()
+* Perform necessary actions after module is enabled. (like clear the services:methods cache)
+*/
+function d4os_io_services_search_enable() {
+  cache_clear_all('services:methods', 'cache');
+}
+
+/**
+ * Implementation of hook_help().
+ */
+function d4os_io_services_search_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#services_user':
+      return '<p>'. t('Provides search methods to services applications. Requires services.module.') .'</p>';
+    case 'admin/modules#description':
+      return t('Provides search methods to services applications. Requires services.module.');
+  }
+}
+
+function d4os_io_services_search_menu() {
+  $items['admin/settings/d4os/io/services/search'] = array(
+    'title'             => t('search'),
+    'description'       => t('d4os io services search settings'),
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('d4os_io_services_search_admin'),
+    'access arguments'  => array('admin d4os io services search'),
+    'type'              => MENU_LOCAL_TASK,
+    'file'              => 'd4os_io_services_search.admin.inc'
+  );
+  $items['grid/search/registerhost'] = array(
+    'title'         => t('Register host'),
+    'description'   => t('Register host'),
+    'page callback' => 'd4os_io_services_search_registerhost',
+    'access callback'  => TRUE,
+    'type'          => MENU_CALLBACK,
+    'file'          => 'd4os_io_services_search.inworld.inc',
+  );
+  return $items;
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function d4os_io_services_search_perm() {
+  return array(
+    'admin d4os io services search',
+    'use d4os io services search'
+  );
+}
+
+function d4os_io_services_search_cron() {
+  module_load_include('inc', 'd4os_io_services_search', 'd4os_io_services_search_parser');
+  d4os_io_services_search_parser_run();
+}
+
+/**
+ * Implementation of hook_service().
+ */
+function d4os_io_services_search_service() {
+  return array(
+    // dir_places_query
+    array(
+      '#method'           => 'dir_places_query',
+      '#callback'         => 'd4os_io_services_search_dir_places_query',
+      '#access callback'  => 'd4os_io_services_search_dir_places_query_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_search'),
+      '#args'             => array(
+        array(
+          '#name'           => 'text',
+          '#type'           => 'string',
+          '#description'    => t('Text.'),
+          '#optional'       => TRUE,
+        ),
+        array(
+          '#name'           => 'category',
+          '#type'           => 'string',
+          '#description'    => t('Category.'),
+          '#optional'       => TRUE,
+        ),
+        // TODO : sim_name ?
+        array(
+          '#name'           => 'query_start',
+          '#type'           => 'int',
+          '#description'    => t('Query_start.'),
+          '#optional'       => TRUE,
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return places.')
+    ),
+
+    // dir_popular_query
+    array(
+      '#method'           => 'dir_popular_query',
+      '#callback'         => 'd4os_io_services_search_dir_popular_query',
+      '#access callback'  => 'd4os_io_services_search_dir_popular_query_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_search'),
+      '#args'             => array(
+        array(
+          '#name'           => 'flags',
+          '#type'           => 'int',
+          '#description'    => t('Flags.'),
+          '#optional'       => TRUE,
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return popular places.')
+    ),
+
+    // dir_land_query
+    array(
+      '#method'           => 'dir_land_query',
+      '#callback'         => 'd4os_io_services_search_dir_land_query',
+      '#access callback'  => 'd4os_io_services_search_dir_land_query_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_search'),
+      '#args'             => array(
+        array(
+          '#name'           => 'flags',
+          '#type'           => 'int',
+          '#description'    => t('Flags.'),
+          '#optional'       => TRUE,
+        ),
+        array(
+          '#name'           => 'type',
+          '#type'           => 'int',
+          '#description'    => t('Type.'),
+          '#optional'       => TRUE,
+        ),
+        array(
+          '#name'           => 'price',
+          '#type'           => 'int',
+          '#description'    => t('Price.'),
+          '#optional'       => TRUE,
+        ),
+        array(
+          '#name'           => 'area',
+          '#type'           => 'string',
+          '#description'    => t('Area.'),
+          '#optional'       => TRUE,
+        ),
+        array(
+          '#name'           => 'query_start',
+          '#type'           => 'int',
+          '#description'    => t('Query_start.'),
+          '#optional'       => TRUE,
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return lands infos.')
+    ),
+
+    // dir_events_query
+    array(
+      '#method'           => 'dir_events_query',
+      '#callback'         => 'd4os_io_services_search_dir_events_query',
+      '#access callback'  => 'd4os_io_services_search_dir_events_query_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_search'),
+      '#args'             => array(
+        array(
+          '#name'           => 'text',
+          '#type'           => 'string',
+          '#description'    => t('Text.'),
+          '#optional'       => TRUE,
+        ),
+        array(
+          '#name'           => 'flags',
+          '#type'           => 'int',
+          '#description'    => t('Flags.'),
+          '#optional'       => TRUE,
+        ),
+        array(
+          '#name'           => 'query_start',
+          '#type'           => 'int',
+          '#description'    => t('Query_start.'),
+          '#optional'       => TRUE,
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return events infos.')
+    ),
+
+    // dir_classified_query
+    array(
+      '#method'           => 'dir_classified_query',
+      '#callback'         => 'd4os_io_services_search_dir_classified_query',
+      '#access callback'  => 'd4os_io_services_search_dir_classified_query_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_search'),
+      '#args'             => array(
+        array(
+          '#name'           => 'text',
+          '#type'           => 'string',
+          '#description'    => t('Text.'),
+          '#optional'       => TRUE,
+        ),
+        array(
+          '#name'           => 'flags',
+          '#type'           => 'int',
+          '#description'    => t('Flags.'),
+          '#optional'       => TRUE,
+        ),
+        array(
+          '#name'           => 'category',
+          '#type'           => 'string',
+          '#description'    => t('Category.'),
+          '#optional'       => TRUE,
+        ),
+        array(
+          '#name'           => 'query_start',
+          '#type'           => 'int',
+          '#description'    => t('Query_start.'),
+          '#optional'       => TRUE,
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return events infos.')
+    ),
+
+    // event_info_query
+    array(
+      '#method'           => 'event_info_query',
+      '#callback'         => 'd4os_io_services_search_event_info_query',
+      '#access callback'  => 'd4os_io_services_search_event_info_query_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_search'),
+      '#args'             => array(
+        array(
+          '#name'           => 'eventID',
+          '#type'           => 'int',
+          '#description'    => t('EventID.'),
+          '#optional'       => TRUE,
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return event infos.')
+    ),
+
+    // classifieds_info_query
+    array(
+      '#method'           => 'classifieds_info_query',
+      '#callback'         => 'd4os_io_services_search_classifieds_info_query',
+      '#access callback'  => 'd4os_io_services_search_classifieds_info_query_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_search'),
+      '#args'             => array(
+        array(
+          '#name'           => 'classifiedID',
+          '#type'           => 'int',
+          '#description'    => t('ClassifiedID.'),
+          '#optional'       => TRUE,
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return classifieds infos.')
+    ),
+  );
+}

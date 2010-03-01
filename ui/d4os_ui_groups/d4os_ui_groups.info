@@ -1,0 +1,5 @@
+name = d4os ui groups
+description = Provides a link between inworld groups and og.
+package = d4os ui
+dependencies[] = og
+core = 6.x

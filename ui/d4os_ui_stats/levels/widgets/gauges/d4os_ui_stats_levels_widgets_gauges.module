@@ -1,0 +1,451 @@
+<?php
+/**
+* @package		d4os
+* @copyright	Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+* @license		GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+* D4os is free software. This version may have been modified pursuant
+* to the GNU General Public License, and as distributed it includes or
+* is derivative of works licensed under the GNU General Public License or
+* other free or open source software licenses.
+*/
+
+function d4os_ui_stats_levels_widgets_gauges_d4os_widget_add() {
+  $widget = array(
+    'name'  => 'gauges',
+    'title' => t('Gauges'),
+  );
+  return $widget;
+}
+
+function d4os_ui_stats_levels_widgets_gauges_params_get() {
+  $default_params = array(
+    'simfps' => array(
+      'name'        => t('Sim FPS'),
+      'width'       => 120,
+      'height'      => 120,
+      'min'         => 0,
+      'max'         => 100,
+      'minorticks'  => 5,
+      'greenfrom'   => 25,
+      'greento'     => 100,
+      'yellowfrom'  => 10,
+      'yellowto'    => 25,
+      'redfrom'     => 0,
+      'redto'       => 10
+    ),
+    'phyfps' => array(
+      'name'        => t('Phy FPS'),
+      'width'       => 120,
+      'height'      => 120,
+      'min'         => 0,
+      'max'         => 100,
+      'minorticks'  => 5,
+      'greenfrom'   => 25,
+      'greento'     => 100,
+      'yellowfrom'  => 10,
+      'yellowto'    => 25,
+      'redfrom'     => 0,
+      'redto'       => 10
+    ),
+    'memory' => array(
+      'name'        => t('Memory'),
+      'width'       => 120,
+      'height'      => 120,
+      'min'         => 0,
+      'max'         => 100,
+      'minorticks'  => 5,
+      'greenfrom'   => 0,
+      'greento'     => 70,
+      'yellowfrom'  => 70,
+      'yellowto'    => 90,
+      'redfrom'     => 90,
+      'redto'       => 100
+    ),
+  );
+  $params = variable_get('d4os_ui_stats_levels_widgets_gauges_params', $default_params);
+  return $params;
+}
+
+function d4os_ui_stats_levels_widgets_gauges_params_set($edit) {
+  $params = array(
+    'simfps' => array(
+      'name'        => t('Sim FPS'),
+      'width'       => $edit['d4os_ui_stats_levels_widgets_gauges_params_simfps_width'],
+      'height'      => $edit['d4os_ui_stats_levels_widgets_gauges_params_simfps_height'],
+      'min'         => $edit['d4os_ui_stats_levels_widgets_gauges_params_simfps_min'],
+      'max'         => $edit['d4os_ui_stats_levels_widgets_gauges_params_simfps_max'],
+      'minorticks'  => $edit['d4os_ui_stats_levels_widgets_gauges_params_simfps_minorticks'],
+      'greenfrom'   => $edit['d4os_ui_stats_levels_widgets_gauges_params_simfps_greenfrom'],
+      'greento'     => $edit['d4os_ui_stats_levels_widgets_gauges_params_simfps_greento'],
+      'yellowfrom'  => $edit['d4os_ui_stats_levels_widgets_gauges_params_simfps_yellowfrom'],
+      'yellowto'    => $edit['d4os_ui_stats_levels_widgets_gauges_params_simfps_yellowto'],
+      'redfrom'     => $edit['d4os_ui_stats_levels_widgets_gauges_params_simfps_redfrom'],
+      'redto'       => $edit['d4os_ui_stats_levels_widgets_gauges_params_simfps_redto'],
+    ),
+    'phyfps' => array(
+      'name'        => t('Phys FPS'),
+      'width'       => $edit['d4os_ui_stats_levels_widgets_gauges_params_phyfps_width'],
+      'height'      => $edit['d4os_ui_stats_levels_widgets_gauges_params_phyfps_height'],
+      'min'         => $edit['d4os_ui_stats_levels_widgets_gauges_params_phyfps_min'],
+      'max'         => $edit['d4os_ui_stats_levels_widgets_gauges_params_phyfps_max'],
+      'minorticks'  => $edit['d4os_ui_stats_levels_widgets_gauges_params_phyfps_minorticks'],
+      'greenfrom'   => $edit['d4os_ui_stats_levels_widgets_gauges_params_phyfps_greenfrom'],
+      'greento'     => $edit['d4os_ui_stats_levels_widgets_gauges_params_phyfps_greento'],
+      'yellowfrom'  => $edit['d4os_ui_stats_levels_widgets_gauges_params_phyfps_yellowfrom'],
+      'yellowto'    => $edit['d4os_ui_stats_levels_widgets_gauges_params_phyfps_yellowto'],
+      'redfrom'     => $edit['d4os_ui_stats_levels_widgets_gauges_params_phyfps_redfrom'],
+      'redto'       => $edit['d4os_ui_stats_levels_widgets_gauges_params_phyfps_redto'],
+    ),
+    'memory' => array(
+      'name'        => t('Memory'),
+      'width'       => $edit['d4os_ui_stats_levels_widgets_gauges_params_memory_width'],
+      'height'      => $edit['d4os_ui_stats_levels_widgets_gauges_params_memory_height'],
+      'min'         => $edit['d4os_ui_stats_levels_widgets_gauges_params_memory_min'],
+      'max'         => $edit['d4os_ui_stats_levels_widgets_gauges_params_memory_max'],
+      'minorticks'  => $edit['d4os_ui_stats_levels_widgets_gauges_params_memory_minorticks'],
+      'greenfrom'   => $edit['d4os_ui_stats_levels_widgets_gauges_params_memory_greenfrom'],
+      'greento'     => $edit['d4os_ui_stats_levels_widgets_gauges_params_memory_greento'],
+      'yellowfrom'  => $edit['d4os_ui_stats_levels_widgets_gauges_params_memory_yellowfrom'],
+      'yellowto'    => $edit['d4os_ui_stats_levels_widgets_gauges_params_memory_yellowto'],
+      'redfrom'     => $edit['d4os_ui_stats_levels_widgets_gauges_params_memory_redfrom'],
+      'redto'       => $edit['d4os_ui_stats_levels_widgets_gauges_params_memory_redto'],
+    ),
+  );
+  variable_set('d4os_ui_stats_levels_widgets_gauges_params', $params);
+}
+
+function d4os_ui_stats_levels_widgets_gauges_params_form() {
+  $params = d4os_ui_stats_levels_widgets_gauges_params_get();
+  $form = array();
+  $form['d4os_ui_stats_levels_display']['gauges_params'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Gauges parameters'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+  );
+  // sim fps
+  $form['d4os_ui_stats_levels_display']['gauges_params']['simfps'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Sim FPS'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['simfps']['d4os_ui_stats_levels_widgets_gauges_params_simfps_width'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Width'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['simfps']['width'],
+    '#description'    => t("Width."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['simfps']['d4os_ui_stats_levels_widgets_gauges_params_simfps_height'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Height'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['simfps']['height'],
+    '#description'    => t("Height."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['simfps']['d4os_ui_stats_levels_widgets_gauges_params_simfps_min'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Min'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['simfps']['min'],
+    '#description'    => t("Min."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['simfps']['d4os_ui_stats_levels_widgets_gauges_params_simfps_max'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Max'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['simfps']['max'],
+    '#description'    => t("Max."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['simfps']['d4os_ui_stats_levels_widgets_gauges_params_simfps_minorticks'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Minor ticks'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['simfps']['minorticks'],
+    '#description'    => t("Minor ticks."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['simfps']['colors'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Gauges limits colors'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['simfps']['colors']['d4os_ui_stats_levels_widgets_gauges_params_simfps_greenfrom'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Green from'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['simfps']['greenfrom'],
+    '#description'    => t("Green from."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['simfps']['colors']['d4os_ui_stats_levels_widgets_gauges_params_simfps_greento'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Green to'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['simfps']['greento'],
+    '#description'    => t("Red to."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['simfps']['colors']['d4os_ui_stats_levels_widgets_gauges_params_simfps_yellowfrom'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Yellow from'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['simfps']['yellowfrom'],
+    '#description'    => t("Yellow from."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['simfps']['colors']['d4os_ui_stats_levels_widgets_gauges_params_simfps_yellowto'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Yellow to'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['simfps']['yellowto'],
+    '#description'    => t("Yellow from."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['simfps']['colors']['d4os_ui_stats_levels_widgets_gauges_params_simfps_redfrom'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Red from'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['simfps']['redfrom'],
+    '#description'    => t("Red from."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['simfps']['colors']['d4os_ui_stats_levels_widgets_gauges_params_simfps_redto'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Red to'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['simfps']['redto'],
+    '#description'    => t("Red to."),
+  );
+  // phys fps
+  $form['d4os_ui_stats_levels_display']['gauges_params']['phyfps'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Phys FPS'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['phyfps']['d4os_ui_stats_levels_widgets_gauges_params_phyfps_width'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Width'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['phyfps']['width'],
+    '#description'    => t("Width."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['phyfps']['d4os_ui_stats_levels_widgets_gauges_params_phyfps_height'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Height'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['phyfps']['height'],
+    '#description'    => t("Height."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['phyfps']['d4os_ui_stats_levels_widgets_gauges_params_phyfps_min'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Min'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['phyfps']['min'],
+    '#description'    => t("Min."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['phyfps']['d4os_ui_stats_levels_widgets_gauges_params_phyfps_max'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Max'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['phyfps']['max'],
+    '#description'    => t("Max."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['phyfps']['d4os_ui_stats_levels_widgets_gauges_params_phyfps_minorticks'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Minor ticks'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['phyfps']['minorticks'],
+    '#description'    => t("Minor ticks."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['phyfps']['colors'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Gauges limits colors'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['phyfps']['colors']['d4os_ui_stats_levels_widgets_gauges_params_phyfps_greenfrom'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Green from'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['phyfps']['greenfrom'],
+    '#description'    => t("Green from."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['phyfps']['colors']['d4os_ui_stats_levels_widgets_gauges_params_phyfps_greento'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Green to'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['phyfps']['greento'],
+    '#description'    => t("Red to."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['phyfps']['colors']['d4os_ui_stats_levels_widgets_gauges_params_phyfps_yellowfrom'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Yellow from'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['phyfps']['yellowfrom'],
+    '#description'    => t("Yellow from."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['phyfps']['colors']['d4os_ui_stats_levels_widgets_gauges_params_phyfps_yellowto'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Yellow to'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['phyfps']['yellowto'],
+    '#description'    => t("Yellow from."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['phyfps']['colors']['d4os_ui_stats_levels_widgets_gauges_params_phyfps_redfrom'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Red from'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['phyfps']['redfrom'],
+    '#description'    => t("Red from."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['phyfps']['colors']['d4os_ui_stats_levels_widgets_gauges_params_phyfps_redto'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Red to'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['phyfps']['redto'],
+    '#description'    => t("Red to."),
+  );
+  // memory
+  $form['d4os_ui_stats_levels_display']['gauges_params']['memory'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Memory'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['memory']['d4os_ui_stats_levels_widgets_gauges_params_memory_width'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Width'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['memory']['width'],
+    '#description'    => t("Width."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['memory']['d4os_ui_stats_levels_widgets_gauges_params_memory_height'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Height'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['memory']['height'],
+    '#description'    => t("Height."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['memory']['d4os_ui_stats_levels_widgets_gauges_params_memory_min'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Min'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['memory']['min'],
+    '#description'    => t("Min."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['memory']['d4os_ui_stats_levels_widgets_gauges_params_memory_max'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Max'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['memory']['max'],
+    '#description'    => t("Max."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['memory']['d4os_ui_stats_levels_widgets_gauges_params_memory_minorticks'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Minor ticks'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['memory']['minorticks'],
+    '#description'    => t("Minor ticks."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['memory']['colors'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Gauges limits colors'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['memory']['colors']['d4os_ui_stats_levels_widgets_gauges_params_memory_greenfrom'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Green from'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['memory']['greenfrom'],
+    '#description'    => t("Green from."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['memory']['colors']['d4os_ui_stats_levels_widgets_gauges_params_memory_greento'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Green to'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['memory']['greento'],
+    '#description'    => t("Red to."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['memory']['colors']['d4os_ui_stats_levels_widgets_gauges_params_memory_yellowfrom'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Yellow from'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['memory']['yellowfrom'],
+    '#description'    => t("Yellow from."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['memory']['colors']['d4os_ui_stats_levels_widgets_gauges_params_memory_yellowto'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Yellow to'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['memory']['yellowto'],
+    '#description'    => t("Yellow from."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['memory']['colors']['d4os_ui_stats_levels_widgets_gauges_params_memory_redfrom'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Red from'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['memory']['redfrom'],
+    '#description'    => t("Red from."),
+  );
+  $form['d4os_ui_stats_levels_display']['gauges_params']['memory']['colors']['d4os_ui_stats_levels_widgets_gauges_params_memory_redto'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Red to'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => $params['memory']['redto'],
+    '#description'    => t("Red to."),
+  );
+  return $form;
+}
+
+function d4os_ui_stats_levels_widgets_gauges_params_save($edit) {
+  d4os_ui_stats_levels_widgets_gauges_params_set($edit);
+}
+
+function d4os_ui_stats_levels_widgets_gauges_display($data) {
+  $js_vars = array(
+    'params' => d4os_ui_stats_levels_widgets_gauges_params_get(),
+  );
+  drupal_add_js(array('d4os_ui_stats_levels_widgets_gauges' => $js_vars), 'setting');
+  $js = '
+  SimFPS = '. round($data->SimFPS).'
+  PhyFPS = '. round($data->PhyFPS).'
+  Memory = '. round($data->Memory);
+  drupal_add_js($js, 'inline', 'footer');
+  drupal_set_html_head('<script type="text/javascript" src="http://www.google.com/jsapi"></script>');
+  drupal_add_js(drupal_get_path('module', 'd4os_ui_stats_levels_widgets_gauges').'/js/d4os_ui_stats_levels_widgets_gauges.js', 'module', 'footer');
+  drupal_add_js(drupal_get_path('module', 'd4os_ui_stats_levels').'/js/d4os_ui_stats_levels_values.js', 'module', 'footer');
+  $output = theme('d4os_ui_stats_levels_widgets');
+  return $output;
+}

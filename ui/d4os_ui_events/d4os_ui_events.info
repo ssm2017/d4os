@@ -1,0 +1,4 @@
+name = d4os ui events
+description = Links the event module with opensimulator.
+package = d4os ui
+core = 6.x

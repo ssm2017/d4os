@@ -1,0 +1,489 @@
+<?php
+/**
+* @package		d4os
+* @copyright	Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+* @license		GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+* D4os is free software. This version may have been modified pursuant
+* to the GNU General Public License, and as distributed it includes or
+* is derivative of works licensed under the GNU General Public License or
+* other free or open source software licenses.
+*/
+
+/*
+* Implementation of hook_disable()
+* Perform necessary actions before module is disabled. (like clear the services:methods cache)
+*/
+function d4os_io_services_groups_disable() {
+  cache_clear_all('services:methods', 'cache');
+}
+/*
+* Implementation of hook_disable()
+* Perform necessary actions after module is enabled. (like clear the services:methods cache)
+*/
+function d4os_io_services_groups_enable() {
+  cache_clear_all('services:methods', 'cache');
+}
+
+function d4os_io_services_groups_menu() {
+  $items['admin/settings/d4os/io/services/groups'] = array(
+    'title'             => t('groups'),
+    'description'       => t('d4os io services groups settings'),
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('d4os_io_services_groups_admin'),
+    'access arguments'  => array('admin d4os io services groups'),
+    'type'              => MENU_LOCAL_TASK,
+    'file'              => 'd4os_io_services_groups.admin.inc'
+  );
+  return $items;
+}
+
+function d4os_io_services_groups_perm() {
+  return array(
+    'admin d4os io services groups',
+  );
+}
+
+/**
+ * Implementation of hook_service().
+ */
+function d4os_io_services_groups_service() {
+  return array(
+    // createGroup
+    array(
+      '#method'           => 'groups.createGroup',
+      '#callback'         => 'd4os_io_services_groups_createGroup',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_createGroup_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // updateGroup
+    array(
+      '#method'           => 'groups.updateGroup',
+      '#callback'         => 'd4os_io_services_groups_updateGroup',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_updateGroup_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // getGroup
+    array(
+      '#method'           => 'groups.getGroup',
+      '#callback'         => 'd4os_io_services_groups_getGroup',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_getGroup_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // findGroups
+    array(
+      '#method'           => 'groups.findGroups',
+      '#callback'         => 'd4os_io_services_groups_findGroups',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_findGroups_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // getGroupRoles
+    array(
+      '#method'           => 'groups.getGroupRoles',
+      '#callback'         => 'd4os_io_services_groups_getGroupRoles',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_getGroupRoles_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // addRoleToGroup
+    array(
+      '#method'           => 'groups.addRoleToGroup',
+      '#callback'         => 'd4os_io_services_groups_addRoleToGroup',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_addRoleToGroup_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // removeRoleFromGroup
+    array(
+      '#method'           => 'groups.removeRoleFromGroup',
+      '#callback'         => 'd4os_io_services_groups_removeRoleFromGroup',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_removeRoleFromGroup_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // updateGroupRole
+    array(
+      '#method'           => 'groups.updateGroupRole',
+      '#callback'         => 'd4os_io_services_groups_updateGroupRole',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_updateGroupRole_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // getGroupRoleMembers
+    array(
+      '#method'           => 'groups.getGroupRoleMembers',
+      '#callback'         => 'd4os_io_services_groups_getGroupRoleMembers',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_getGroupRoleMembers_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // setAgentGroupSelectedRole
+    array(
+      '#method'           => 'groups.setAgentGroupSelectedRole',
+      '#callback'         => 'd4os_io_services_groups_setAgentGroupSelectedRole',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_setAgentGroupSelectedRole_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // addAgentToGroupRole
+    array(
+      '#method'           => 'groups.addAgentToGroupRole',
+      '#callback'         => 'd4os_io_services_groups_addAgentToGroupRole',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_addAgentToGroupRole_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // removeAgentFromGroupRole
+    array(
+      '#method'           => 'groups.removeAgentFromGroupRole',
+      '#callback'         => 'd4os_io_services_groups_removeAgentFromGroupRole',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_removeAgentFromGroupRole_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // getGroupMembers
+    array(
+      '#method'           => 'groups.getGroupMembers',
+      '#callback'         => 'd4os_io_services_groups_getGroupMembers',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_getGroupMembers_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // addAgentToGroup
+    array(
+      '#method'           => 'groups.addAgentToGroup',
+      '#callback'         => 'd4os_io_services_groups_addAgentToGroup',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_addAgentToGroup_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // removeAgentFromGroup
+    array(
+      '#method'           => 'groups.removeAgentFromGroup',
+      '#callback'         => 'd4os_io_services_groups_removeAgentFromGroup',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_removeAgentFromGroup_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // setAgentGroupInfo
+    array(
+      '#method'           => 'groups.setAgentGroupInfo',
+      '#callback'         => 'd4os_io_services_groups_setAgentGroupInfo',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_setAgentGroupInfo_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // addAgentToGroupInvite
+    array(
+      '#method'           => 'groups.addAgentToGroupInvite',
+      '#callback'         => 'd4os_io_services_groups_addAgentToGroupInvite',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_addAgentToGroupInvite_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // getAgentToGroupInvite
+    array(
+      '#method'           => 'groups.getAgentToGroupInvite',
+      '#callback'         => 'd4os_io_services_groups_getAgentToGroupInvite',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_getAgentToGroupInvite_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // removeAgentToGroupInvite
+    array(
+      '#method'           => 'groups.removeAgentToGroupInvite',
+      '#callback'         => 'd4os_io_services_groups_removeAgentToGroupInvite',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_removeAgentToGroupInvite_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // setAgentActiveGroup
+    array(
+      '#method'           => 'groups.setAgentActiveGroup',
+      '#callback'         => 'd4os_io_services_groups_setAgentActiveGroup',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_setAgentActiveGroup_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // getAgentGroupMembership
+    array(
+      '#method'           => 'groups.getAgentGroupMembership',
+      '#callback'         => 'd4os_io_services_groups_getAgentGroupMembership',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_getAgentGroupMembership_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // getAgentGroupMemberships
+    array(
+      '#method'           => 'groups.getAgentGroupMemberships',
+      '#callback'         => 'd4os_io_services_groups_getAgentGroupMemberships',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_getAgentGroupMemberships_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // getAgentActiveMembership
+    array(
+      '#method'           => 'groups.getAgentActiveMembership',
+      '#callback'         => 'd4os_io_services_groups_getAgentActiveMembership',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_getAgentActiveMembership_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // getAgentRoles
+    array(
+      '#method'           => 'groups.getAgentRoles',
+      '#callback'         => 'd4os_io_services_groups_getAgentRoles',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_getAgentRoles_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // getGroupNotices
+    array(
+      '#method'           => 'groups.getGroupNotices',
+      '#callback'         => 'd4os_io_services_groups_getGroupNotices',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_getGroupNotices_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // getGroupNotice
+    array(
+      '#method'           => 'groups.getGroupNotice',
+      '#callback'         => 'd4os_io_services_groups_getGroupNotice',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_getGroupNotice_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+    // addGroupNotice
+    array(
+      '#method'           => 'groups.addGroupNotice',
+      '#callback'         => 'd4os_io_services_groups_addGroupNotice',
+      '#access callback' => 'd4os_io_services_groups_allow_access',//'d4os_io_services_groups_addGroupNotice_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_groups'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return group.')
+    ),
+
+
+  );
+}
+function d4os_io_services_groups_allow_access() {
+  return TRUE;
+}

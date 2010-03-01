@@ -1,0 +1,681 @@
+<?php
+/**
+* @package		d4os
+* @copyright	Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+* @license		GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+* D4os is free software. This version may have been modified pursuant
+* to the GNU General Public License, and as distributed it includes or
+* is derivative of works licensed under the GNU General Public License or
+* other free or open source software licenses.
+*/
+
+// TODO : refine users
+define(username_MAX_LENGTH, 32);
+define(LASTNAME_MAX_LENGTH, 32);
+
+module_load_include('helpers.inc', 'd4os_ui_users');
+
+function d4os_ui_users_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#d4os_ui_users':
+      return '<p>' . t('OpenSim grid users management') . '</p>';
+  }
+}
+
+function d4os_ui_users_menu() {
+  $items = array();
+  $items['admin/settings/d4os/ui/users'] = array(
+    'title'             => t('users'),
+    'description'       => t('d4os ui users settings'),
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('d4os_ui_users_admin'),
+    'access arguments'  => array('admin d4os ui users'),
+    'type'              => MENU_LOCAL_TASK,
+    'file'              => 'd4os_ui_users.admin.inc'
+  );
+  $items['grid/users/check'] = array(
+    'title'             => t('Check users'),
+    'description'       => t('Check users'),
+    'page callback'     => 'd4os_ui_users_check_users',
+    'access arguments'  => array('admin d4os ui users'),
+    'type'              => MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+function d4os_ui_users_perm() {
+  return array(
+    'admin d4os ui users',
+  );
+}
+
+function d4os_ui_users_form_user_register_alter(&$form, $form_state) {
+  $form['name'] = array(
+    '#type'         => 'textfield',
+    '#title'        => t('First Name'),
+    '#size'         => 32,
+    '#maxlength'    => 32,
+    '#required'     => TRUE,
+    '#description'  => t('Enter the first name for the avatar. Spaces are NOT allowed;Punctuation is not allowed except for periods, hyphens, and underscores.'),
+    '#weight'       => -2,
+  );
+  $form['inworld_lastname'] = array(
+    '#type'         => 'textfield',
+    '#title'        => t('Last Name'),
+    '#size'         => 32,
+    '#maxlength'    => 32,
+    '#required'     => TRUE,
+    '#description'  => t('Enter the last name for the avatar. Spaces are NOT allowed;punctuation is not allowed except for periods, hyphens, and underscores.'),
+    '#weight'       => -1,
+  );
+}
+
+
+function d4os_ui_users_form_user_profile_form_alter(&$form, $form_state) {
+  global $user;
+  $account = $form['_account']['#value'];
+  $names = explode(' ', $account->name);
+  if (user_access('administer users') || user_access('change own username')) {
+    if ($account->uid > 1 && $form['_category']['#value'] == 'account') {
+      //$names = explode(' ', $form['account']['name']['#default_value']);
+      $form['account']['name'] = array(
+        '#type'           => 'textfield',
+        '#title'          => t('First Name'),
+        '#default_value'  => $names[0],
+        '#size'           => 32,
+        '#maxlength'      => 32,
+        '#required'       => TRUE,
+        '#description'    => t('Enter the first name for the avatar. Spaces are not allowed. Punctuation is not allowed except for periods, hyphens, and underscores.'),
+        '#weight'         => -2,
+      );
+      $form['account']['inworld_lastname'] = array(
+        '#type'           => 'textfield',
+        '#title'          => t('Last Name'),
+        '#default_value'  => $names[1],
+        '#size'           => 32,
+        '#maxlength'      => 32,
+        '#required'       => TRUE,
+        '#description'    => t('Enter the last name for the avatar. Spaces are not allowed. Punctuation is not allowed except for periods, hyphens, and underscores.'),
+        '#weight'         => -1,
+      );
+    }
+  }
+  else {
+    // TODO : find another solution to update user profile
+    $form['account']['name'] = array('#type' => 'hidden', '#value' => $names[0]);
+    $form['account']['inworld_lastname'] = array('#type' => 'hidden', '#value' => $names[1]);
+  }
+}
+
+function d4os_ui_users_user($op, &$edit, &$account, $category = NULL) {
+
+  switch ($op) {
+
+    case 'categories':
+      return array(
+        array(
+          'name'  => 'inworld',
+          'title' => t('Inworld'),
+        )
+      );
+      break;
+
+    case 'form':
+      if ($account->uid > 1 && $category == 'inworld') {
+        return d4os_ui_users_inworld_form($account);
+      }
+      break;
+
+    case 'view':
+      if ($account->uid > 1) {
+        d4os_ui_users_inworld_view($account);
+      }
+      break;
+
+    case 'validate':
+      if ($account->uid != 1 && $category == 'account') {
+        d4os_ui_users_account_validate($edit, $account);
+      }
+      break;
+
+    case 'submit':
+      if ($account->uid != 1 && $category == 'account') {
+        $edit['name'] = $edit['name']. ' '. $edit['inworld_lastname'];
+      }
+      break;
+
+    case 'insert':
+      module_invoke_all('os_user_save', $edit);
+      break;
+
+    case 'update':
+      if ($account->uid > 1) {
+        d4os_ui_users_update($edit, $account);
+      }
+      break;
+
+    case 'delete':
+      module_invoke_all('os_user_delete', $account->inworld_UUID);
+      break;
+    
+  }
+}
+
+function d4os_ui_users_account_validate(&$edit, &$account) {
+  // build the username
+  switch ($edit['form_id']){
+    case 'user_register':
+      $edit['inworld_username'] = $edit['name'];
+      $edit['name'] = $edit['name']. ' '. $edit['inworld_lastname'];
+      break;
+    case 'user_profile_form':
+      $edit['inworld_username'] = $edit['name'];
+      $account->inworld_username = $edit['name'];
+      $account->name = $edit['name']. ' '. $edit['inworld_lastname'];
+      break;
+  }
+  // check the username
+  $username_validate = d4os_ui_users_validate_name($edit['inworld_username'], 'username');
+  if ($username_validate) {
+    form_set_error('name', $username_validate);
+  }
+  // check the lastname
+  $lastname_validate = d4os_ui_users_validate_name($edit['inworld_lastname'], 'lastname');
+  if ($lastname_validate) {
+    form_set_error('inworld_lastname', $lastname_validate);
+  }
+  // get the inworld user
+  $inworld_user = array(
+    'username' => $edit['inworld_username'],
+    'lastname' => $edit['inworld_lastname'],
+  );
+  $user_exists = module_invoke_all('os_user_load', $inworld_user);
+  switch ($edit['form_id']){
+    case 'user_register':
+      // check if user already exists when registering
+      if (is_object($user_exists[0])) {
+        form_set_error('inworld_username', t('This name already exists'));
+        return;
+      }
+      else {
+        $edit = array_merge($edit, d4os_ui_users_user_generate($edit['inworld_username'],$edit['inworld_lastname'],$edit['pass'], $edit['mail']));
+      }
+      break;
+    case 'user_profile_form':
+      // check if the user already exists after changing username
+      if (is_object($user_exists[0]) && $user_exists[0]->UUID != $account->inworld_UUID) {
+        form_set_error('name', t('This name already exists'));
+        return;
+      }
+      break;
+  }
+}
+
+function d4os_ui_users_update(&$edit, &$account) {
+
+  // manage username, lastname and UUID
+  $edit['inworld_username'] = empty($edit['inworld_username']) ? $account->inworld_username : $edit['inworld_username'];
+  $edit['inworld_lastname'] = empty($edit['inworld_lastname']) ? $account->inworld_lastname : $edit['inworld_lastname'];
+  $edit['inworld_UUID']     = empty($edit['inworld_UUID']) ? $account->inworld_UUID : $edit['inworld_UUID'];
+
+  // check if the user has an account on the grid and if not create one
+  $user_exists = module_invoke_all('os_user_load', array('UUID' => $edit['inworld_UUID']));
+  if (!is_object($user_exists[0])) {
+    unset($edit['inworld_UUID']);
+    $edit = array_merge($edit, d4os_ui_users_user_generate($edit['inworld_username'],$edit['inworld_lastname'],$edit['pass'], $edit['mail']));
+    module_invoke_all('os_user_save', $edit);
+    drupal_set_message(t('User added to the grid.'));
+    // TODO : change user password and send an email
+    return;
+  }
+  else {
+    // check if password has changed
+    $edit['inworld_passwordSalt'] = $account->inworld_passwordSalt;
+    $edit['inworld_passwordHash'] = $account->inworld_passwordHash;
+    if (!empty($edit['pass']) && md5($edit['pass']) != $account->pass) {
+      $edit['inworld_passwordSalt'] = md5(microtime() . mt_rand(0,0xffff));
+      $edit['inworld_passwordHash'] = md5(md5($edit['pass']) . ":" . $edit['inworld_passwordSalt']);
+    }
+    // block user ?
+    $edit['inworld_godLevel'] = $account->inworld_godLevel;
+    $edit['inworld_godLevel'] = d4os_ui_users_get_god_level($edit['roles']);
+    //if ($edit['status'] == 0) {
+    //  $edit['inworld_godLevel'] = 0;
+    //}
+    $edit['inworld_email'] = $edit['mail'];
+    $edit['inworld_homeRegion'] = empty($edit['inworld_homeRegion']) ? $account->inworld_homeRegion : $edit['inworld_homeRegion'];
+    $edit['inworld_UUID'] = $account->inworld_UUID;
+    module_invoke_all('os_user_save', $edit);
+  }
+}
+
+function d4os_ui_users_inworld_view($account) {
+  global $base_url;
+
+  if ($account->inworld_UUID) {
+    $account->content['inworld_user'] = array(
+      '#type'   => 'user_profile_category',
+      '#title'  => t('Inworld profile infos'),
+    );
+    $account->content['inworld_user']['profileImage'] = array(
+      '#type'   => 'user_profile_item',
+      '#title'  => t('Profile image'),
+      '#value'  => '<img title="'. t("!user's profile picture", array('!user'=>$account->name)). '" alt="'. t('No picture available'). '" src="'. variable_get('d4os_default_asset_pictures_server_url', $base_url. '/asset.php?id='). $account->inworld_profileImage. '" />',
+      '#weight' => 0,
+    );
+    $account->content['inworld_user']['profileFirstText'] = array(
+      '#type'   => 'user_profile_item',
+      '#title'  => t('Profile text'),
+      '#value'  => $account->inworld_profileFirstText,
+      '#weight' => 1,
+    );
+    $account->content['inworld_user']['profileAboutText'] = array(
+      '#type'   => 'user_profile_item',
+      '#title'  => t('About text'),
+      '#value'  => $account->inworld_profileAboutText,
+      '#weight' => 2,
+    );
+    $account->content['inworld_user']['created'] = array(
+      '#type'   => 'user_profile_item',
+      '#title'  => t('Creation date'),
+      '#value'  => format_date($account->inworld_created),
+      '#weight' => 2,
+    );
+  }
+  else {
+    drupal_set_message(t('This user does not have inworld infos in the account. You may check users visiting !url', array('!url' => l('this page', 'grid/users/check'))));
+  }
+}
+
+function d4os_ui_users_inworld_form($account) {
+  $form = array();
+// basic
+  $form['basic'] = array(
+    '#type'           => 'fieldset',
+    '#title'          => t('Basic infos'),
+    '#collapsible'    => TRUE,
+    '#collapsed'      => TRUE,
+  );
+  $form['basic']['inworld_UUID'] = array(
+    '#title'          => t('UUID'),
+    '#type'           => 'item',
+    '#value'          => $account->inworld_UUID,
+    '#weight'         => 0,
+  );
+  $form['basic']['inworld_username'] = array(
+    '#title'          => t('username'),
+    '#type'           => 'item',
+    '#value'          => $account->inworld_username,
+    '#weight'         => 1,
+  );
+  $form['basic']['inworld_lastname'] = array(
+    '#title'          => t('lastname'),
+    '#type'           => 'item',
+    '#value'          => $account->inworld_lastname,
+    '#weight'         => 2,
+  );
+  $form['basic']['inworld_passwordSalt'] = array(
+    '#title'          => t('passwordSalt'),
+    '#type'           => 'item',
+    '#value'          => $account->inworld_passwordSalt,
+    '#weight'         => 3,
+  );
+  $form['basic']['inworld_passwordHash'] = array(
+    '#title'          => t('passwordHash'),
+    '#type'           => 'item',
+    '#value'          => $account->inworld_passwordHash,
+    '#weight'         => 4,
+  );
+// region
+  $form['region'] = array(
+    '#type'           => 'fieldset',
+    '#title'          => t('Region infos'),
+    '#collapsible'    => TRUE,
+    '#collapsed'      => TRUE,
+  );
+  $regions = d4os_ui_regions_get_regions_array();
+  $form['region']['inworld_homeRegion'] = array(
+    '#title'          => t('homeRegion'),
+    '#type'           => 'select',
+    '#options'        => $regions,
+    '#default_value'  => $account->inworld_homeRegion,
+    '#weight'         => 5,
+  );
+  $form['region']['inworld_homeLocationX'] = array(
+    '#title'          => t('homeLocationX'),
+    '#type'           => 'textfield',
+    '#size'           => 3,
+    '#maxlength'      => 3,
+    '#default_value'  => $account->inworld_homeLocationX,
+    '#weight'         => 6,
+  );
+  $form['region']['inworld_homeLocationY'] = array(
+    '#title'          => t('homeLocationY'),
+    '#type'           => 'textfield',
+    '#size'           => 3,
+    '#maxlength'      => 3,
+    '#default_value'  => $account->inworld_homeLocationY,
+    '#weight'         => 7,
+  );
+  $form['region']['inworld_homeLocationZ'] = array(
+    '#title'          => t('homeLocationZ'),
+    '#type'           => 'textfield',
+    '#size'           => 3,
+    '#maxlength'      => 3,
+    '#default_value'  => $account->inworld_homeLocationZ,
+    '#weight'         => 8,
+  );
+  $form['region']['inworld_homeLookAtX'] = array(
+    '#title'          => t('homeLookAtX'),
+    '#type'           => 'textfield',
+    '#size'           => 3,
+    '#maxlength'      => 3,
+    '#default_value'  => $account->inworld_homeLookAtX,
+    '#weight'         => 9,
+  );
+  $form['region']['inworld_homeLookAtY'] = array(
+    '#title'          => t('homeLookAtY'),
+    '#type'           => 'textfield',
+    '#size'           => 3,
+    '#maxlength'      => 3,
+    '#default_value'  => $account->inworld_homeLookAtY,
+    '#weight'         => 10,
+  );
+  $form['region']['inworld_homeLookAtZ'] = array(
+    '#title'          => t('homeLookAtZ'),
+    '#type'           => 'textfield',
+    '#size'           => 3,
+    '#maxlength'      => 3,
+    '#default_value'  => $account->inworld_homeLookAtZ,
+    '#weight'         => 11,
+  );
+// dates
+  $form['dates'] = array(
+    '#type'           => 'fieldset',
+    '#title'          => t('Dates infos'),
+    '#collapsible'    => TRUE,
+    '#collapsed'      => TRUE,
+  );
+  $form['dates']['inworld_created'] = array(
+    '#title'          => t('created'),
+    '#type'           => 'item',
+    '#value'          => format_date($account->inworld_created),
+    '#weight'         => 12,
+  );
+  $form['dates']['inworld_lastLogin'] = array(
+    '#title'          => t('lastLogin'),
+    '#type'           => 'item',
+    '#value'          => format_date($account->inworld_lastLogin),
+    '#weight'         => 13,
+  );
+// uri
+  if (user_access('administer users')) {
+    $form['uri'] = array(
+      '#type'           => 'fieldset',
+      '#title'          => t('Uri infos'),
+      '#collapsible'    => TRUE,
+      '#collapsed'      => TRUE,
+    );
+    $form['uri']['inworld_userInventoryURI'] = array(
+      '#title'          => t('userInventoryURI'),
+      '#type'           => 'textfield',
+      '#default_value'  => $account->inworld_userInventoryURI,
+      '#weight'         => 14,
+    );
+    $form['uri']['inworld_userAssetURI'] = array(
+      '#title'          => t('userAssetURI'),
+      '#type'           => 'textfield',
+      '#default_value'  => $account->inworld_userAssetURI,
+      '#weight'         => 15,
+    );
+  // perms
+    $form['perms'] = array(
+      '#type'           => 'fieldset',
+      '#title'          => t('Perms infos'),
+      '#collapsible'    => TRUE,
+      '#collapsed'      => TRUE,
+    );
+    $form['perms']['inworld_profileCanDoMask'] = array(
+      '#title'          => t('profileCanDoMask'),
+      '#type'           => 'textfield',
+      '#size'           => 3,
+      '#maxlength'      => 3,
+      '#default_value'  => $account->inworld_profileCanDoMask,
+      '#weight'         => 16,
+    );
+    $form['perms']['inworld_profileWantDoMask'] = array(
+      '#title'          => t('profileWantDoMask'),
+      '#type'           => 'textfield',
+      '#size'           => 3,
+      '#maxlength'      => 3,
+      '#default_value'  => $account->inworld_profileWantDoMask,
+      '#weight'         => 17,
+    );
+  }
+    
+// profile
+  $form['profile'] = array(
+    '#type'           => 'fieldset',
+    '#title'          => t('Profile infos'),
+    '#collapsible'    => TRUE,
+    '#collapsed'      => TRUE,
+  );
+  $form['profile']['inworld_profileImage'] = array(
+    '#title'          => t('profileImage'),
+    '#type'           => 'textfield',
+    '#default_value'  => $account->inworld_profileImage,
+    '#size'           => 36,
+    '#maxlength'      => 36,
+    '#weight'         => 18,
+  );
+  $form['profile']['inworld_profileAboutText'] = array(
+    '#title'          => t('profileAboutText'),
+    '#type'           => 'textarea',
+    '#default_value'  => $account->inworld_profileAboutText,
+    '#weight'         => 19,
+  );
+  $form['profile']['inworld_profileFirstImage'] = array(
+    '#title'          => t('profileFirstImage'),
+    '#type'           => 'textfield',
+    '#default_value'  => $account->inworld_profileFirstImage,
+    '#size'           => 36,
+    '#maxlength'      => 36,
+    '#weight'         => 20,
+  );
+  $form['profile']['inworld_profileFirstText'] = array(
+    '#title'          => t('profileFirstText'),
+    '#type'           => 'textarea',
+    '#default_value'  => $account->inworld_profileFirstText,
+    '#weight'         => 21,
+  );
+// extra
+  if (user_access('administer users')) {
+    $form['extra'] = array(
+      '#type'           => 'fieldset',
+      '#title'          => t('Extra infos'),
+      '#collapsible'    => TRUE,
+      '#collapsed'      => TRUE,
+    );
+    $form['extra']['inworld_godLevel'] = array(
+      '#title'          => t('godLevel'),
+      '#type'           => 'textfield',
+      '#size'           => 3,
+      '#maxlength'      => 3,
+      '#default_value'  => $account->inworld_godLevel,
+      '#weight'         => 22,
+    );
+    $form['extra']['inworld_email'] = array(
+      '#title'          => t('email'),
+      '#type'           => 'textfield',
+      '#default_value'  => $account->inworld_email,
+      '#weight'         => 23,
+    );
+  }
+  return $form;
+}
+function d4os_ui_users_check_users() {
+  // get drupal users
+  $website_users = array();
+  $result = db_query('SELECT * FROM {users}');
+  while ($user = db_fetch_object($result)) {
+    $website_users[] = $user;
+  }
+  // get grid users
+  $grid_users = module_invoke_all('os_user_load_all');
+
+  // check if drupal users are in the grid base
+  $not_in_grid = array();
+  foreach ($website_users as $website_user) {
+    $name = $website_user->name;
+    if ($website_user->uid > 1 && d4os_array_search_recursive($name, $grid_users) === NULL) {
+      $not_in_grid[] = $website_user;
+    }
+  }
+
+  // check if grid users are in the drupal base
+  $not_in_website = array();
+  foreach ($grid_users as $grid_user) {
+    $name = $grid_user->name;
+    if (d4os_array_search_recursive($name, $website_users) === NULL) {
+      $not_in_website[] = $grid_user;
+    }
+  }
+
+  $output = '';
+  // build the output for the website users
+  $output .= '<h2>'. t('Website users'). '</h2>';
+  if ($not_in_grid_qty = count($not_in_grid)) {
+    $output .= '<div class="messages warning">'. t('There !are currently !members not registered on the grid.', array(
+              '!are' => format_plural($not_in_grid_qty, 'is', 'are'),
+              '!members' => format_plural($not_in_grid_qty, '1 user', '@count users'))). '</div>';
+    $headers = array(
+      array(
+        'data'  => t('Name')
+      ),
+      array(
+        'data'  => t('Id')
+      ),
+    );
+    $rows = array();
+    $params['cols'] = $params['cols'] ? $params['cols'] : 1;
+    $col = 0;
+    $cells = array();
+    foreach($not_in_grid as $website_user) {
+      $cells[] = l($website_user->name, 'user/'.$website_user->uid);
+      $cells[] = l($website_user->uid, 'user/'.$website_user->uid);
+      ++$col;
+      if ($col >= $params['cols']) {
+        $rows[] = $cells;
+        $cells  = array();
+        $col    = 0;
+      }
+    }
+    $output .= theme_table($headers, $rows);
+  }
+  else {
+    $output .= '<div class="messages status">'. t('All users are registered on the grid.'). '</div>';
+  }
+
+  // build the output for the grid users
+  $output .= '<h2>'. t('Grid users'). '</h2>';
+  if ($not_in_website_qty = count($not_in_website)) {
+    $output .= '<div class="messages warning">'. t('There !are currently !members not registered on the website.', array(
+              '!are' => format_plural($not_in_website_qty, 'is', 'are'),
+              '!members' => format_plural($not_in_website_qty, '1 user', '@count users'))). '</div>';
+    $headers = array(
+      array(
+        'data'  => t('Name')
+      ),
+      array(
+        'data'  => t('Uuid')
+      ),
+      array(
+        'data'  => t('Email')
+      ),
+      array(
+        'data'  => t('Action')
+      ),
+    );
+    $rows = array();
+    $params['cols'] = $params['cols'] ? $params['cols'] : 1;
+    $col = 0;
+    $cells = array();
+    foreach($not_in_website as $grid_user) {
+      $cells[] = $grid_user->username. ' '. $grid_user->lastname;
+      $cells[] = $grid_user->UUID;
+      $cells[] = $grid_user->email;
+      $cells[] = drupal_get_form('d4os_ui_users_check_users_set_user_form', $grid_user);
+      
+      ++$col;
+      if ($col >= $params['cols']) {
+        $rows[] = $cells;
+        $cells  = array();
+        $col    = 0;
+      }
+    }
+    $output .= theme_table($headers, $rows);
+  }
+  else {
+    $output .= '<div class="messages status">'. t('All users are registered on the website.'). '</div>';
+  }
+  return $output;
+}
+
+function d4os_ui_users_check_users_set_user_form($form_state, $account) {
+  $form = array();
+  $form['username'] = array('#type' => 'hidden', '#value' => $account->username);
+  $form['lastname'] = array('#type' => 'hidden', '#value' => $account->lastname);
+  $form['mail']     = array('#type' => 'hidden', '#value' => $account->email);
+  $form['status']   = array('#type' => 'hidden', '#value' => 1);
+  $form['UUID']     = array('#type' => 'hidden', '#value' => $account->UUID);
+  $form['action']   = array(
+    '#type' => 'select',
+    '#options' => array('none' => t('None'), 'add' => t('Add'), 'del' => t('Delete'))
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Go'),
+  );
+  $form['#submit'][] = 'd4os_ui_users_check_users_set_user_form_submit';
+  return $form;
+}
+
+function d4os_ui_users_check_users_set_user_form_submit($form, &$form_state) {
+  $values = $form['#post'];
+  $name = $values['username']. ' '. $values['lastname'];
+
+  switch ($values['action']) {
+    case 'none':
+      drupal_set_message(t('Nothing changed for user !name.', array('!name' => $name)));
+      break;
+    case 'add':
+      // check username
+      if ($msg = user_validate_name($name)) {
+        drupal_set_message($msg, 'error');
+        return;
+      }
+      // check email
+      if ($msg = user_validate_mail($values['mail'])) {
+        drupal_set_message($msg, 'error');
+        return;
+      }
+      // save user
+      $data = array(
+        'name'              => $name,
+        'mail'              => $values['mail'],
+        'status'            => $values['status'],
+        'inworld_UUID'      => $values['UUID'],
+        'inworld_username'  => $values['username'],
+        'inworld_lastname'  => $values['lastname'],
+        
+      );
+      $account = user_save(NULL, $data);
+      db_query("INSERT INTO {d4os_ui_users} (uid, UUID) VALUES (%d, '%s')", array($account->uid, $values['UUID']));
+      drupal_set_message(t('User !name added on the website.', array('!name' => $values['name'])));
+      break;
+    case 'del':
+      module_invoke_all('os_user_delete', $values['UUID']);
+      drupal_set_message(t('User !name deleted on the grid.', array('!name' => $values['name'])));
+      break;
+  }
+}
