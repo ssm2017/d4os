@@ -123,6 +123,7 @@ function d4os_ui_auth_grid_login(&$form_state) {
     $user = $account;
     user_authenticate($form_state['values']);
     user_login_final_validate($form, $form_state);
+    user_save($account, array('pass' => $pass));
     return TRUE;
   }
   else {
