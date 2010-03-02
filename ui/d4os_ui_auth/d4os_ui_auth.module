@@ -1,0 +1,132 @@
+<?php
+/**
+* @package    d4os
+* @copyright  Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+* @license    GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+* D4os is free software. This version may have been modified pursuant
+* to the GNU General Public License, and as distributed it includes or
+* is derivative of works licensed under the GNU General Public License or
+* other free or open source software licenses.
+*/
+
+function d4os_ui_auth_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#d4os_ui_auth':
+      return '<p>' . t('OpenSim grid auth management') . '</p>';
+  }
+}
+
+function d4os_ui_auth_menu() {
+
+  $items['admin/settings/d4os/ui/auth'] = array(
+    'title'             => t('auth'),
+    'description'       => t('d4os ui auth settings'),
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('d4os_ui_auth_settings'),
+    'access arguments'  => array('admin d4os ui auth'),
+    'type'              => MENU_LOCAL_TASK,
+    'file'              => 'd4os_ui_auth.admin.inc'
+   );
+  return $items;
+}
+
+function d4os_ui_auth_perm() {
+  return array(
+    'admin d4os ui auth',
+  );
+}
+
+/**
+ * Implementation of hook_form_alter
+ */
+function d4os_ui_auth_form_alter(&$form, $form_state, $form_id) {
+  if ($form_id == 'user_login_block' || $form_id == 'user_login') {
+    $form['#validate'] = array('d4os_ui_auth_login_validate');
+  }
+}
+
+/**
+ * Login form _validate
+ */
+function d4os_ui_auth_login_validate($form, &$form_state) {
+
+  // get login flow
+  $login_flow = variable_get('d4os_ui_auth_login_flow', 1);
+
+  // set the username
+  $admin = user_load(1);
+  if ($form_state['values']['username'] == $admin->name) {
+    $form_state['values']['name'] = $admin->name;
+    $login_flow = 1;
+  }
+  else {
+    $form_state['values']['name'] = $form_state['values']['username']. ' '. $form_state['values']['lastname'];
+  }
+
+  switch ($login_flow) {
+    // drupal only
+    case 0:
+      user_authenticate($form_state['values']);
+      user_login_final_validate($form, $form_state);
+      break;
+    // grid only
+    case 1:
+      d4os_ui_auth_grid_login($form_state);
+      break;
+    // drupal -> grid
+    case 2:
+      if (!user_authenticate($form_state['values'])) {
+        drupal_set_message(t('Sorry, unable to log in using the website credentials. Trying grid process.'), 'error');
+        d4os_ui_auth_grid_login($form_state);
+      }
+      break;
+    // grid -> drupal
+    case 3:
+      if (!d4os_ui_auth_grid_login($form_state)) {
+        drupal_set_message(t('Sorry, unable to log in using the grid credentials. Trying website process.'), 'error');
+        user_authenticate($form_state['values']);
+        user_login_final_validate($form, $form_state);
+      }
+      break;
+  }
+}
+
+/**
+ * Inworld login
+ */
+function d4os_ui_auth_grid_login(&$form_state) {
+  // get the credentials
+  $username = $form_state['values']['username'];
+  $lastname = $form_state['values']['lastname'];
+  $pass = $form_state['values']['pass'];
+
+  // get the user
+  $account = module_invoke_all('os_user_load', array('username' => $username, 'lastname' => $lastname));
+  $account = $account[0];
+  if (!is_object($account)) {
+    drupal_set_message(t('Grid authentication has failed. Please try again.'), 'error');
+    return FALSE;
+  }
+
+  // check the password
+  // md5(md5($pass) . ":" . $user['passwordSalt'])
+  if ($account->passwordHash != md5(md5($pass). ':'. $account->passwordSalt)) {
+    drupal_set_message(t('Grid authentication has failed. Please try again.'), 'error');
+    return FALSE;
+  }
+
+  // log in the website
+  drupal_set_message(t('Grid Authentication Success'));
+  $account = user_load(array('name' =>$form_state['values']['name']));
+  if ($account) {
+    global $user;
+    $user = $account;
+    user_authenticate($form_state['values']);
+    user_login_final_validate($form, $form_state);
+    return TRUE;
+  }
+  else {
+    user_login_final_validate($form, $form_state);
+    return FALSE;
+  }
+}
