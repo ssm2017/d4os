@@ -1,6 +1,8 @@
 D4os is a set of modules to manage an OpenSim grid using drupal.
 more infos : http://groups.drupal.org/d4os
 
+***** ⚠ Actually d4os is using the OpenSim 0.6.8 database schema ⚠ *****
+
 ****************
 Installation :
 ****************
