@@ -9,6 +9,11 @@
 * other free or open source software licenses.
 */
 
+/*
+ * The code in this script was inspired and mostly copied from ossearch
+ * http://forge.opensimulator.org/gf/project/ossearch
+ */
+
 function d4os_io_services_search_dir_places_query($text, $category, $query_start=0) {
   $pieces = split(" ", $text);
   $text = join("%", $pieces);

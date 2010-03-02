@@ -152,6 +152,24 @@ function d4os_io_db_os_user_save($account) {
 }
 
 function d4os_io_db_os_user_load($array = array()) {
+  if (is_numeric($array)) {
+    // get the user by uid
+    $UUID = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid = %d", array($array));
+    if (!$UUID) {
+      return FALSE;
+    }
+    db_set_active('os_users');
+    $result = db_query("SELECT * FROM {users} WHERE UUID = '%s'", array($UUID));
+    if ($user = db_fetch_object($result)) {
+      db_set_active('default');
+      return $user;
+    }
+    else {
+      db_set_active('default');
+      return FALSE;
+    }
+  }
+
   // get only inworld fields
   $user_fields = d4os_ui_users_get_inworld_fields();
 
@@ -159,10 +177,7 @@ function d4os_io_db_os_user_load($array = array()) {
   $query = array();
   $params = array();
 
-  if (!is_array($array)) {
-    return FALSE;
-  }
-
+  // get the user by keys
   foreach ($array as $key => $value) {
     if (in_array($key, $user_fields)) {
       switch ($key) {
@@ -206,6 +221,8 @@ function d4os_io_db_os_user_load($array = array()) {
   $result = db_query('SELECT * FROM {users} WHERE '. implode(' AND ', $query), $params);
   if ($user = db_fetch_object($result)) {
     db_set_active('default');
+    $uid = db_query("SELECT uid FROM {d4os_ui_users} WHERE UUID = '%s'", array($user->UUID));
+    $user->uid = $uid;
     return $user;
   }
   else {

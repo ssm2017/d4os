@@ -46,7 +46,7 @@ function d4os_ui_users_user_generate($username, $lastname, $password, $mail, $ho
 }
 
 function d4os_ui_users_validate_name($name, $type) {
-  if (!strlen($name)) return t('You must enter a lastname.');
+  if (!strlen($name)) return t('You must enter a !name.', array('!name'=>t($type)));
   if (substr($name, 0, 1) == ' ') return t('The !name cannot begin with a space.', array('!name'=>t($type)));
   if (substr($name, -1) == ' ') return t('The !name cannot end with a space.', array('!name'=>t($type)));
   if (strpos($name, '  ') !== FALSE) return t('The !name cannot contain multiple spaces in a row.', array('!name'=>t($type)));

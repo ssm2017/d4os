@@ -51,12 +51,13 @@ function d4os_ui_users_perm() {
 
 function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
   switch ($form_id) {
+
     case 'user_login_block':
     case 'user_login':
       unset($form['name']);
-      $form['firstname'] = array(
+      $form['username'] = array(
         '#type'         => 'textfield',
-        '#title'        => t('First Name'),
+        '#title'        => t('User Name'),
         '#size'         => 15,
         '#maxlength'    => 32,
         '#required'     => TRUE,
@@ -72,74 +73,117 @@ function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
       );
       array_unshift($form['#validate'], 'd4os_ui_users_login_authenticate_validate');
       break;
+
+    case 'user_register':
+      unset($form['name']);
+      $form['username'] = array(
+        '#type'         => 'textfield',
+        '#title'        => t('User Name'),
+        '#size'         => 32,
+        '#maxlength'    => 32,
+        '#required'     => TRUE,
+        '#description'  => t('Enter the first name for the avatar. Spaces are NOT allowed;Punctuation is not allowed except for periods, hyphens, and underscores.'),
+        '#weight'       => -2,
+      );
+      $form['lastname'] = array(
+        '#type'         => 'textfield',
+        '#title'        => t('Last Name'),
+        '#size'         => 32,
+        '#maxlength'    => 32,
+        '#required'     => TRUE,
+        '#description'  => t('Enter the last name for the avatar. Spaces are NOT allowed;punctuation is not allowed except for periods, hyphens, and underscores.'),
+        '#weight'       => -1,
+      );
+      array_unshift($form['#validate'], 'd4os_ui_users_account_validate');
+      break;
+
+    case 'user_profile_form':
+      global $user;
+      $account = $form['_account']['#value'];
+      $names = explode(' ', $account->name);
+      if (user_access('administer users') || user_access('change own username')) {
+        if ($account->uid > 1 && $form['_category']['#value'] == 'account') {
+          //$names = explode(' ', $form['account']['name']['#default_value']);
+          unset($form['account']['name']);
+          $form['account']['username'] = array(
+            '#type'           => 'textfield',
+            '#title'          => t('User Name'),
+            '#default_value'  => $names[0],
+            '#size'           => 32,
+            '#maxlength'      => 32,
+            '#required'       => TRUE,
+            '#description'    => t('Enter the first name for the avatar. Spaces are not allowed. Punctuation is not allowed except for periods, hyphens, and underscores.'),
+            '#weight'         => -2,
+          );
+          $form['account']['lastname'] = array(
+            '#type'           => 'textfield',
+            '#title'          => t('Last Name'),
+            '#default_value'  => $names[1],
+            '#size'           => 32,
+            '#maxlength'      => 32,
+            '#required'       => TRUE,
+            '#description'    => t('Enter the last name for the avatar. Spaces are not allowed. Punctuation is not allowed except for periods, hyphens, and underscores.'),
+            '#weight'         => -1,
+          );
+          array_unshift($form['#validate'], 'd4os_ui_users_account_validate');
+        }
+      }
+      break;
   }
 }
 
 function d4os_ui_users_login_authenticate_validate($form, &$form_state) {
   $admin = user_load(1);
-  if ($form_state['values']['firstname'] == $admin->name) {
+  if ($form_state['values']['username'] == $admin->name) {
     $form_state['values']['name'] = $admin->name;
   }
   else {
-    $form_state['values']['name'] = $form_state['values']['firstname']. ' '. $form_state['values']['lastname'];
+    $form_state['values']['name'] = $form_state['values']['username']. ' '. $form_state['values']['lastname'];
   }
 }
 
-function d4os_ui_users_form_user_register_alter(&$form, $form_state) {
-  $form['name'] = array(
-    '#type'         => 'textfield',
-    '#title'        => t('First Name'),
-    '#size'         => 32,
-    '#maxlength'    => 32,
-    '#required'     => TRUE,
-    '#description'  => t('Enter the first name for the avatar. Spaces are NOT allowed;Punctuation is not allowed except for periods, hyphens, and underscores.'),
-    '#weight'       => -2,
-  );
-  $form['inworld_lastname'] = array(
-    '#type'         => 'textfield',
-    '#title'        => t('Last Name'),
-    '#size'         => 32,
-    '#maxlength'    => 32,
-    '#required'     => TRUE,
-    '#description'  => t('Enter the last name for the avatar. Spaces are NOT allowed;punctuation is not allowed except for periods, hyphens, and underscores.'),
-    '#weight'       => -1,
-  );
-}
+function d4os_ui_users_account_validate($form, &$form_state) {
+  // get username and lastname
+  $username = $form_state['values']['username'];
+  $lastname = $form_state['values']['lastname'];
+  $name     = $form_state['values']['username']. ' '. $form_state['values']['lastname'];
 
+  // rebuild the "name" for drupal account
+  $form_state['values']['name'] = $name;
 
-function d4os_ui_users_form_user_profile_form_alter(&$form, $form_state) {
-  global $user;
-  $account = $form['_account']['#value'];
-  $names = explode(' ', $account->name);
-  if (user_access('administer users') || user_access('change own username')) {
-    if ($account->uid > 1 && $form['_category']['#value'] == 'account') {
-      //$names = explode(' ', $form['account']['name']['#default_value']);
-      $form['account']['name'] = array(
-        '#type'           => 'textfield',
-        '#title'          => t('First Name'),
-        '#default_value'  => $names[0],
-        '#size'           => 32,
-        '#maxlength'      => 32,
-        '#required'       => TRUE,
-        '#description'    => t('Enter the first name for the avatar. Spaces are not allowed. Punctuation is not allowed except for periods, hyphens, and underscores.'),
-        '#weight'         => -2,
-      );
-      $form['account']['inworld_lastname'] = array(
-        '#type'           => 'textfield',
-        '#title'          => t('Last Name'),
-        '#default_value'  => $names[1],
-        '#size'           => 32,
-        '#maxlength'      => 32,
-        '#required'       => TRUE,
-        '#description'    => t('Enter the last name for the avatar. Spaces are not allowed. Punctuation is not allowed except for periods, hyphens, and underscores.'),
-        '#weight'         => -1,
-      );
-    }
+  // check the username
+  $username_validate = d4os_ui_users_validate_name($username, 'username');
+  if ($username_validate) {
+    form_set_error('username', $username_validate);
   }
-  else {
-    // TODO : find another solution to update user profile
-    $form['account']['name'] = array('#type' => 'hidden', '#value' => $names[0]);
-    $form['account']['inworld_lastname'] = array('#type' => 'hidden', '#value' => $names[1]);
+  // check the lastname
+  $lastname_validate = d4os_ui_users_validate_name($lastname, 'lastname');
+  if ($lastname_validate) {
+    form_set_error('lastname', $lastname_validate);
+  }
+
+  // get the inworld user
+  $inworld_user = module_invoke_all('os_user_load', array('username' => $username, 'lastname' => $lastname));
+  $inworld_user = $inworld_user[0];
+
+  switch ($form_state['values']['form_id']){
+    case 'user_register':
+      // check if user already exists when registering
+      if (is_object($inworld_user)) {
+        form_set_error('username', t('This name already exists'));
+        return;
+      }
+      else {
+        $form_state['values'] = array_merge($form_state['values'], d4os_ui_users_user_generate($username,$lastname,$form_state['values']['pass'], $form_state['values']['mail']));
+      }
+      break;
+    case 'user_profile_form':
+      // check if the user already exists after changing username
+      if (is_object($user_exists) && $inworld_user->UUID != $form_state['values']['_account']->inworld_UUID) {
+        form_set_error('name', t('This name already exists'));
+        return;
+      }
+      break;
   }
 }
 
@@ -168,18 +212,6 @@ function d4os_ui_users_user($op, &$edit, &$account, $category = NULL) {
       }
       break;
 
-    case 'validate':
-      if ($account->uid != 1 && $category == 'account') {
-        d4os_ui_users_account_validate($edit, $account);
-      }
-      break;
-
-    case 'submit':
-      if ($account->uid != 1 && $category == 'account') {
-        $edit['name'] = $edit['name']. ' '. $edit['inworld_lastname'];
-      }
-      break;
-
     case 'insert':
       module_invoke_all('os_user_save', $edit);
       break;
@@ -194,56 +226,6 @@ function d4os_ui_users_user($op, &$edit, &$account, $category = NULL) {
       module_invoke_all('os_user_delete', $account->inworld_UUID);
       break;
     
-  }
-}
-
-function d4os_ui_users_account_validate(&$edit, &$account) {
-  // build the username
-  switch ($edit['form_id']){
-    case 'user_register':
-      $edit['inworld_username'] = $edit['name'];
-      $edit['name'] = $edit['name']. ' '. $edit['inworld_lastname'];
-      break;
-    case 'user_profile_form':
-      $edit['inworld_username'] = $edit['name'];
-      $account->inworld_username = $edit['name'];
-      $account->name = $edit['name']. ' '. $edit['inworld_lastname'];
-      break;
-  }
-  // check the username
-  $username_validate = d4os_ui_users_validate_name($edit['inworld_username'], 'username');
-  if ($username_validate) {
-    form_set_error('name', $username_validate);
-  }
-  // check the lastname
-  $lastname_validate = d4os_ui_users_validate_name($edit['inworld_lastname'], 'lastname');
-  if ($lastname_validate) {
-    form_set_error('inworld_lastname', $lastname_validate);
-  }
-  // get the inworld user
-  $inworld_user = array(
-    'username' => $edit['inworld_username'],
-    'lastname' => $edit['inworld_lastname'],
-  );
-  $user_exists = module_invoke_all('os_user_load', $inworld_user);
-  switch ($edit['form_id']){
-    case 'user_register':
-      // check if user already exists when registering
-      if (is_object($user_exists[0])) {
-        form_set_error('inworld_username', t('This name already exists'));
-        return;
-      }
-      else {
-        $edit = array_merge($edit, d4os_ui_users_user_generate($edit['inworld_username'],$edit['inworld_lastname'],$edit['pass'], $edit['mail']));
-      }
-      break;
-    case 'user_profile_form':
-      // check if the user already exists after changing username
-      if (is_object($user_exists[0]) && $user_exists[0]->UUID != $account->inworld_UUID) {
-        form_set_error('name', t('This name already exists'));
-        return;
-      }
-      break;
   }
 }
 

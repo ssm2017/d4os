@@ -9,6 +9,11 @@
 * other free or open source software licenses.
 */
 
+/*
+ * The code in this script was inspired and mostly copied from flotsam xmlrpc groups implementation
+ * http://code.google.com/p/flotsam/wiki/XmlRpcGroups
+ */
+
 global $groupEnforceGroupPerms, $logLevel;
 $groupEnforceGroupPerms = variable_get('d4os_io_services_groups_groupEnforceGroupPerms', 0);
 $logLevel = variable_get('d4os_io_services_groups_log_level', 0);
