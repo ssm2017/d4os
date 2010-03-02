@@ -10,37 +10,73 @@
 */
 
 function d4os_ui_users_admin() {
+
+  // get roles
+  $roles = array(
+    '0' => t('None'),
+  );
+  $roles += user_roles(TRUE);
+
   $form = array();
 
-  $form['d4os_ui_users_profile_texts'] = array(
+  $form['profile_texts'] = array(
     '#type'         => 'fieldset',
     '#title'        => t('Profile texts'),
     '#collapsible'  => TRUE,
     '#collapsed'    => TRUE,
   );
-
-  $form['d4os_ui_users_profile_texts']['d4os_ui_users_default_profile_about_text'] = array(
+  $form['profile_texts']['d4os_ui_users_default_profile_about_text'] = array(
     '#type'           => 'textarea',
     '#title'          => t('Profile about text'),
     '#default_value'  => variable_get('d4os_ui_users_default_profile_about_text', 'I am a new user'),
     '#required'       => TRUE
   );
-
-  $form['d4os_ui_users_profile_texts']['d4os_ui_users_default_profile_first_text'] = array(
+  $form['profile_texts']['d4os_ui_users_default_profile_first_text'] = array(
     '#type'           => 'textarea',
     '#title'          => t('Profile first text'),
-    '#default_value'  => variable_get('d4os_ui_users_default_profile_first_text', 'Stuf.'),
+    '#default_value'  => variable_get('d4os_ui_users_default_profile_first_text', 'I am as real as you are'),
     '#required'       => TRUE
   );
 
-  $form['d4os_ui_users_god_level'] = array(
+  $form['users_synchro'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Users synchronization'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+  );
+  // email generated
+  $description = '<p>'. t('This email address is used when a user from the grid is created on the website and the user doesnt have an email address.'). '</p>'
+                .'<p>'. t(' <p>You can use tokens from this list :'). '</p>'
+                .'<ul>'
+                .'<li>[uuid] '. t('The uuid of the inworld user'). '</li>'
+                .'<li>[livesite] '. t('The url of the website'). '</li>'
+                .'</ul>';
+  $form['users_synchro']['d4os_ui_users_default_missing_email'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Default email'),
+    '#default_value'  => variable_get('d4os_ui_users_default_missing_email', '[uuid]@[livesite]'),
+    '#description'    => $description,
+    '#required'       => TRUE
+  );
+  // default role assigned to non email users
+  $form['users_synchro']['d4os_ui_users_default_missing_email_role'] = array(
+    '#type'           => 'select',
+    '#title'          => t('Assigned role'),
+    '#default_value'  => variable_get('d4os_ui_users_default_missing_email_role',0),
+    '#options'        => $roles,
+    '#description'    => t('This role is assigned to synchronized users without an email address.'),
+  );
+  
+
+  $form['god_level'] = array(
     '#type'         => 'fieldset',
     '#title'        => t('God level'),
+    '#description'  => '<div class="message error">'. t('that usage is NOT supported by OpenSim devs. Use at your own risk. Side effects unknown'). '</div>',
     '#collapsible'  => TRUE,
     '#collapsed'    => TRUE,
   );
 // TODO : show a message to the users if they are not allowed to log in the grid
-  $form['d4os_ui_users_god_level']['d4os_ui_users_default_god_level'] = array(
+  $form['god_level']['d4os_ui_users_default_god_level'] = array(
     '#type'           => 'textfield',
     '#title'          => t('Default god level'),
     '#default_value'  => variable_get('d4os_ui_users_default_god_level', 10),
@@ -50,89 +86,84 @@ function d4os_ui_users_admin() {
     '#required'       => TRUE,
   );
 
-  // get roles
-  $roles = array(
-    '0' => t('None'),
-  );
-  $roles = array_merge($roles, user_roles(TRUE));
-  $form['d4os_ui_users_god_level']['d4os_ui_users_god_level_roles_0'] = array(
+  $form['god_level']['d4os_ui_users_god_level_roles_0'] = array(
     '#type'           => 'select',
     '#title'          => t('Blocked'),
     '#default_value'  => variable_get('d4os_ui_users_god_level_roles_0',0),
     '#options'        => $roles,
     '#description'    => t('0 : Resident:Login blocked'),
   );
-  $form['d4os_ui_users_god_level']['d4os_ui_users_god_level_roles_10'] = array(
+  $form['god_level']['d4os_ui_users_god_level_roles_10'] = array(
     '#type'           => 'select',
     '#title'          => '10',
     '#default_value'  => variable_get('d4os_ui_users_god_level_roles_10',2),
     '#options'        => $roles,
     '#description'    => t('10 : Resident:Normal user'),
   );
-  $form['d4os_ui_users_god_level']['d4os_ui_users_god_level_roles_20'] = array(
+  $form['god_level']['d4os_ui_users_god_level_roles_20'] = array(
     '#type'           => 'select',
     '#title'          => '20',
     '#default_value'  => variable_get('d4os_ui_users_god_level_roles_20',0),
     '#options'        => $roles,
     //'#description'    => t('20 : Resident:Payment info on account'),
   );
-  $form['d4os_ui_users_god_level']['d4os_ui_users_god_level_roles_30'] = array(
+  $form['god_level']['d4os_ui_users_god_level_roles_30'] = array(
     '#type'           => 'select',
     '#title'          => '30',
     '#default_value'  => variable_get('d4os_ui_users_god_level_roles_30',0),
     '#options'        => $roles,
     //'#description'    => t('30 : Testing:Payment info on account'),
   );
-  $form['d4os_ui_users_god_level']['d4os_ui_users_god_level_roles_40'] = array(
+  $form['god_level']['d4os_ui_users_god_level_roles_40'] = array(
     '#type'           => 'select',
     '#title'          => '40',
     '#default_value'  => variable_get('d4os_ui_users_god_level_roles_40',0),
     '#options'        => $roles,
     //'#description'    => t('40 : Testing:No payment info on account'),
   );
-  $form['d4os_ui_users_god_level']['d4os_ui_users_god_level_roles_50'] = array(
+  $form['god_level']['d4os_ui_users_god_level_roles_50'] = array(
     '#type'           => 'select',
     '#title'          => '50',
     '#default_value'  => variable_get('d4os_ui_users_god_level_roles_50',0),
     '#options'        => $roles,
     //'#description'    => t('50 : Testing:No payment info on account'),
   );
-  $form['d4os_ui_users_god_level']['d4os_ui_users_god_level_roles_60'] = array(
+  $form['god_level']['d4os_ui_users_god_level_roles_60'] = array(
     '#type'           => 'select',
     '#title'          => '60',
     '#default_value'  => variable_get('d4os_ui_users_god_level_roles_60',0),
     '#options'        => $roles,
     //'#description'    => t('60 : Member Estatute:Payment info on account'),
   );
-  $form['d4os_ui_users_god_level']['d4os_ui_users_god_level_roles_70'] = array(
+  $form['god_level']['d4os_ui_users_god_level_roles_70'] = array(
     '#type'           => 'select',
     '#title'          => '70',
     '#default_value'  => variable_get('d4os_ui_users_god_level_roles_70',0),
     '#options'        => $roles,
     //'#description'    => t('70 : Member Estatute:Payment info on account'),
   );
-  $form['d4os_ui_users_god_level']['d4os_ui_users_god_level_roles_80'] = array(
+  $form['god_level']['d4os_ui_users_god_level_roles_80'] = array(
     '#type'           => 'select',
     '#title'          => '80',
     '#default_value'  => variable_get('d4os_ui_users_god_level_roles_80',0),
     '#options'        => $roles,
     //'#description'    => t('80 : Linden Contracted'),
   );
-  $form['d4os_ui_users_god_level']['d4os_ui_users_god_level_roles_90'] = array(
+  $form['god_level']['d4os_ui_users_god_level_roles_90'] = array(
     '#type'           => 'select',
     '#title'          => '90',
     '#default_value'  => variable_get('d4os_ui_users_god_level_roles_90',0),
     '#options'        => $roles,
     //'#description'    => t('90 : Linden Contracted'),
   );
-  $form['d4os_ui_users_god_level']['d4os_ui_users_god_level_roles_100'] = array(
+  $form['god_level']['d4os_ui_users_god_level_roles_100'] = array(
     '#type'           => 'select',
     '#title'          => '100',
     '#default_value'  => variable_get('d4os_ui_users_god_level_roles_100',0),
     '#options'        => $roles,
     //'#description'    => t('100 : Linden Contracted'),
   );
-  $form['d4os_ui_users_god_level']['d4os_ui_users_god_level_roles_200'] = array(
+  $form['god_level']['d4os_ui_users_god_level_roles_200'] = array(
     '#type'           => 'select',
     '#title'          => '200',
     '#default_value'  => variable_get('d4os_ui_users_god_level_roles_200',0),

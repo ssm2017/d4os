@@ -225,6 +225,14 @@ function d4os_ui_users_user($op, &$edit, &$account, $category = NULL) {
     case 'delete':
       module_invoke_all('os_user_delete', $account->inworld_UUID);
       break;
+
+    case 'login':
+      // build the email address
+      $email = d4os_ui_users_generate_mail($account->inworld_UUID);
+      if ($email == $account->mail) {
+        drupal_set_message(l(t('Please update your email address.'), 'user/'. $account->uid. '/edit'), 'error');
+      }
+      break;
     
   }
 }
@@ -660,40 +668,50 @@ function d4os_ui_users_check_users_set_user_form($form_state, $account) {
 
 function d4os_ui_users_check_users_set_user_form_submit($form, &$form_state) {
   $values = $form['#post'];
-  $name = $values['username']. ' '. $values['lastname'];
+  $values['name'] = $values['username']. ' '. $values['lastname'];
 
   switch ($values['action']) {
     case 'none':
-      drupal_set_message(t('Nothing changed for user !name.', array('!name' => $name)));
+      drupal_set_message(t('Nothing changed for user !name.', array('!name' => $values['name'])));
       break;
     case 'add':
-      // check username
-      if ($msg = user_validate_name($name)) {
-        drupal_set_message($msg, 'error');
-        return;
-      }
-      // check email
-      if ($msg = user_validate_mail($values['mail'])) {
-        drupal_set_message($msg, 'error');
-        return;
-      }
-      // save user
-      $data = array(
-        'name'              => $name,
-        'mail'              => $values['mail'],
-        'status'            => $values['status'],
-        'inworld_UUID'      => $values['UUID'],
-        'inworld_username'  => $values['username'],
-        'inworld_lastname'  => $values['lastname'],
-        
-      );
-      $account = user_save(NULL, $data);
-      db_query("INSERT INTO {d4os_ui_users} (uid, UUID) VALUES (%d, '%s')", array($account->uid, $values['UUID']));
-      drupal_set_message(t('User !name added on the website.', array('!name' => $values['name'])));
+      d4os_ui_users_check_users_add_user($values);
       break;
     case 'del':
       module_invoke_all('os_user_delete', $values['UUID']);
       drupal_set_message(t('User !name deleted on the grid.', array('!name' => $values['name'])));
       break;
   }
+}
+
+function d4os_ui_users_check_users_add_user($values) {
+  $data = array();
+  // check username
+  if ($msg = user_validate_name($values['name'])) {
+    drupal_set_message($msg, 'error');
+    return;
+  }
+  // check email
+  if ($msg = user_validate_mail($values['mail'])) {
+    drupal_set_message($msg, 'error');
+    drupal_set_message(t('A new email address was generated. The user will need to update it.'), 'error');
+    $values['mail'] = d4os_ui_users_generate_mail($values['UUID']);
+    drupal_set_message($values['mail'], 'error');
+    $assigned_role = variable_get('d4os_ui_users_default_missing_email_role',0);
+    if ($assigned_role != 0) {
+      $data['roles'] = array($assigned_role => 'role');
+    }
+  }
+  // save user
+  $data['name']              = $values['name'];
+  $data['mail']              = $values['mail'];
+  $data['status']            = $values['status'];
+  $data['inworld_UUID']      = $values['UUID'];
+  $data['inworld_username']  = $values['username'];
+  $data['inworld_lastname']  = $values['lastname'];
+  $data['pass']              = user_password();
+
+  $account = user_save(NULL, $data);
+  db_query("INSERT INTO {d4os_ui_users} (uid, UUID) VALUES (%d, '%s')", array($account->uid, $values['UUID']));
+  drupal_set_message(t('User !name added on the website.', array('!name' => $values['name'])));
 }

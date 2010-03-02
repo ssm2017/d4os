@@ -147,3 +147,24 @@ function d4os_ui_users_account_to_inworld_array($account) {
   }
   return $inworld_user;
 }
+
+function d4os_ui_users_generate_mail($uuid) {
+  global $base_url;
+  $domain = $base_url;
+  $replacers = array(
+    'http://'   => '',
+    'https://'  => '',
+  );
+  foreach ($replacers as $key=>$value) {
+    $domain = str_replace($key, $value, $domain);
+  }
+  $string = variable_get('d4os_ui_users_default_missing_email', '[uuid]@[livesite]');
+  $replacers = array(
+    '[uuid]'      =>$uuid,
+    '[livesite]'  =>$domain,
+  );
+  foreach ($replacers as $key=>$value) {
+    $string = str_replace($key, $value, $string);
+  }
+  return $string;
+}

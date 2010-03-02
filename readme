@@ -22,7 +22,7 @@ dependencies :
 drupal settings.php
 *********************
   * to use the OpenSim databases, drupal needs to know where they are
-  * you need to fill you drupal settings.php file with these infos
+  * you need to fill your drupal settings.php file with these infos
   * $db_url['default'] is the drupal website database url
 
 ---------------------------------------
