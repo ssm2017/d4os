@@ -57,7 +57,7 @@ function d4os_ui_auth_login_validate($form, &$form_state) {
   $admin = user_load(1);
   if ($form_state['values']['username'] == $admin->name) {
     $form_state['values']['name'] = $admin->name;
-    $login_flow = 1;
+    $login_flow = 0;
   }
   else {
     $form_state['values']['name'] = $form_state['values']['username']. ' '. $form_state['values']['lastname'];
@@ -101,16 +101,16 @@ function d4os_ui_auth_grid_login(&$form_state) {
   $pass = $form_state['values']['pass'];
 
   // get the user
-  $account = module_invoke_all('os_user_load', array('username' => $username, 'lastname' => $lastname));
-  $account = $account[0];
-  if (!is_object($account)) {
+  $grid_account = module_invoke_all('os_user_load', array('username' => $username, 'lastname' => $lastname));
+  $grid_account = $grid_account[0];
+  if (!is_object($grid_account)) {
     drupal_set_message(t('Grid authentication has failed. Please try again.'), 'error');
     return FALSE;
   }
 
   // check the password
   // md5(md5($pass) . ":" . $user['passwordSalt'])
-  if ($account->passwordHash != md5(md5($pass). ':'. $account->passwordSalt)) {
+  if ($grid_account->passwordHash != md5(md5($pass). ':'. $grid_account->passwordSalt)) {
     drupal_set_message(t('Grid authentication has failed. Please try again.'), 'error');
     return FALSE;
   }
@@ -121,13 +121,56 @@ function d4os_ui_auth_grid_login(&$form_state) {
   if ($account) {
     global $user;
     $user = $account;
+    // update the password of the user
+    user_save($account, array('pass' => $pass));
+    // authenticate the user
     user_authenticate($form_state['values']);
     user_login_final_validate($form, $form_state);
-    user_save($account, array('pass' => $pass));
     return TRUE;
   }
   else {
-    user_login_final_validate($form, $form_state);
-    return FALSE;
+    // user exists in the grid but not in the website so create one
+    $data = array();
+    // check username
+    $name = $username. ' '. $lastname;
+    if ($msg = user_validate_name($name)) {
+      drupal_set_message($msg, 'error');
+      return FALSE;
+    }
+    // check email
+    $data['mail'] = $grid_account->email;
+    if ($msg = user_validate_mail($grid_account->email)) {
+      drupal_set_message($msg, 'error');
+      drupal_set_message(t('A new email address was generated. The user will need to update it.'), 'error');
+      $data['mail'] = d4os_ui_users_generate_mail($grid_account->UUID);
+      drupal_set_message($values['mail'], 'error');
+      $assigned_role = variable_get('d4os_ui_users_default_missing_email_role',0);
+      if ($assigned_role != 0) {
+        $data['roles'] = array($assigned_role => 'role');
+      }
+    }
+    // save user
+    $data['name']              = $name;
+    $data['status']            = 1;
+    $data['inworld_UUID']      = $grid_account->UUID;
+    $data['inworld_username']  = $grid_account->username;
+    $data['inworld_lastname']  = $grid_account->lastname;
+    $data['pass']              = $pass;
+  
+    $account = user_save(NULL, $data);
+    db_query("INSERT INTO {d4os_ui_users} (uid, UUID) VALUES (%d, '%s')", array($account->uid, $grid_account->UUID));
+    drupal_set_message(t('User !name added on the website.', array('!name' => $name)));
+    // login the user
+    if ($account) {
+      global $user;
+      $user = $account;
+      user_authenticate($form_state['values']);
+      user_login_final_validate($form, $form_state);
+      return TRUE;
+    }
+    else {
+      user_login_final_validate($form, $form_state);
+      return FALSE;
+    }
   }
 }

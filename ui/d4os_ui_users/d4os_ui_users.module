@@ -68,7 +68,7 @@ function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
         '#title'        => t('Last Name'),
         '#size'         => 15,
         '#maxlength'    => 32,
-        '#required'     => TRUE,
+        //'#required'     => TRUE,
         '#weight'       => -1,
       );
       array_unshift($form['#validate'], 'd4os_ui_users_login_authenticate_validate');
@@ -90,7 +90,7 @@ function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
         '#title'        => t('Last Name'),
         '#size'         => 32,
         '#maxlength'    => 32,
-        '#required'     => TRUE,
+        //'#required'     => TRUE,
         '#description'  => t('Enter the last name for the avatar. Spaces are NOT allowed;punctuation is not allowed except for periods, hyphens, and underscores.'),
         '#weight'       => -1,
       );
