@@ -152,7 +152,7 @@ function d4os_io_db_os_user_save($account) {
 function d4os_io_db_os_user_load($array = array()) {
   if (is_numeric($array)) {
     // get the user by uid
-    $UUID = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid = %d", array($array));
+    $UUID = db_result(db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid = %d", array($array)));
     if (!$UUID) {
       return FALSE;
     }
@@ -219,7 +219,7 @@ function d4os_io_db_os_user_load($array = array()) {
   $result = db_query('SELECT * FROM {users} WHERE '. implode(' AND ', $query), $params);
   if ($user = db_fetch_object($result)) {
     db_set_active('default');
-    $uid = db_query("SELECT uid FROM {d4os_ui_users} WHERE UUID = '%s'", array($user->UUID));
+    $uid = db_result(db_query("SELECT uid FROM {d4os_ui_users} WHERE UUID = '%s'", array($user->UUID)));
     $user->uid = $uid;
     return $user;
   }

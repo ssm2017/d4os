@@ -238,7 +238,6 @@ function d4os_ui_users_user($op, &$edit, &$account, $category = NULL) {
 }
 
 function d4os_ui_users_update(&$edit, &$account) {
-
   // manage username, lastname and UUID
   $edit['grid_username'] = empty($edit['grid_username']) ? $account->grid_username : $edit['grid_username'];
   $edit['grid_lastname'] = empty($edit['grid_lastname']) ? $account->grid_lastname : $edit['grid_lastname'];
@@ -268,7 +267,7 @@ function d4os_ui_users_update(&$edit, &$account) {
     //if ($edit['status'] == 0) {
     //  $edit['grid_godLevel'] = 0;
     //}
-    $edit['grid_email'] = $edit['mail'];
+    $edit['grid_email'] = empty($edit['mail']) ? $account->grid_email : $edit['mail'];
     $edit['grid_homeRegion'] = empty($edit['grid_homeRegion']) ? $account->grid_homeRegion : $edit['grid_homeRegion'];
     $edit['grid_UUID'] = $account->grid_UUID;
     module_invoke_all('os_user_save', $edit);

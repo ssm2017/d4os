@@ -35,36 +35,68 @@ function d4os_ui_groups_perm() {
   );
 }
 
+function d4os_ui_groups_menu_alter(&$items) {
+  $items['og/subscribe/%node']['page callback'] = 'd4os_ui_groups_confirm_subscribe_validate';
+}
+
 function d4os_ui_groups_form_alter(&$form, $form_state, $form_id) {
   // TODO : manage memberships moderated requests
   // TODO : manage managers changes
-  // TODO : mange ogur
+  // TODO : manage ogur
   switch ($form_id) {
     // add the user to the group if requested
     case 'og_confirm_subscribe':
       array_unshift($form['#submit'], 'd4os_ui_groups_confirm_subscribe_submit');
       break;
     case 'og_confirm_unsubscribe':
-      array_unshift($form['#submit'], 'd4os_ui_groups_confirm_subscribe_submit');
+      array_unshift($form['#submit'], 'd4os_ui_groups_confirm_unsubscribe_submit');
       break;
   }
 }
 
+function d4os_ui_groups_confirm_subscribe_validate($node, $uid = NULL) {
+  global $user;
+  $dest = drupal_get_destination();
+
+  // check if the user is registered in the grid
+  if (is_null($uid)) {
+    if ($user->uid) {
+      $account = $user;
+    }
+    else {
+      return og_subscribe($node, $uid);
+    }
+  }
+  $account = user_load(array('uid' => $uid));
+  $AgentID = isset($account->grid_UUID) ? $account->grid_UUID : FALSE;
+  if (!$AgentID) {
+    drupal_set_message(t('You need to be registerd in the grid to join a group.'), 'error');
+    drupal_goto($dest);
+  }
+  
+  // check if the group is registered in the grid
+  $grid_group = module_invoke_all('os_group_load', array('nid' => $form_state['values']['gid']));
+  $GroupID = isset($grid_group['GroupID']) ? $grid_group['GroupID'] : FALSE;
+  if (!$GroupID) {
+    drupal_set_message(t('This group is not registered in the grid.'), 'error');
+    drupal_goto($dest);
+  }
+  return og_subscribe($node, $uid);
+}
+
 function d4os_ui_groups_confirm_subscribe_submit($form, &$form_state) {
-  //drupal_set_message('<pre>'.print_r($form_state, true).'</pre>', 'warning');
-  // GroupID / AgentID
   // check if the user is registered inworld
   $account = $form_state['values']['account'];
   $AgentID = isset($account->grid_UUID) ? $account->grid_UUID : FALSE;
   if (!$AgentID) {
-    drupal_set_message(t('This user is not registered on the grid.'), 'error');
+    drupal_set_message(t('You need to be registerd in the grid to join a group.'), 'error');
     return;
   }
   // get the GroupID
   $grid_group = module_invoke_all('os_group_load', array('nid' => $form_state['values']['gid']));
   $GroupID = isset($grid_group['GroupID']) ? $grid_group['GroupID'] : FALSE;
   if (!$GroupID) {
-    drupal_set_message(t('This group is not registered on the grid.'), 'error');
+    drupal_set_message(t('This group is not registered in the grid.'), 'error');
     return;
   }
   $subscribed = module_invoke_all('os_group_subscribe', array('GroupID' => $GroupID, 'AgentID' => $AgentID));
