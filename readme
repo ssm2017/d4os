@@ -62,3 +62,11 @@ $db_url['os_opensim']       = 'mysqli://username:password@localhost/opensim';
 $db_url['os_search']        = 'mysqli://username:password@localhost/search';
 $db_url['os_user_account']  = 'mysqli://username:password@localhost/user_account';
 $db_url['os_users']         = 'mysqli://username:password@localhost/users';
+
+As in version 0.0.10, only the bases :
+  * default
+  * grid
+  * groups
+  * search
+  * users
+are needed so you can forget the other ones for the moment.
