@@ -14,7 +14,7 @@ function d4os_io_db_os_event_save($event) {
   // convert array to object
   $event = is_array($event) ? (object)$event : $event;
   // get inworld fields
-  $inworld_fields = d4os_ui_events_get_inworld_fields();
+  $grid_fields = d4os_ui_events_get_grid_fields();
 //drupal_set_message('<pre>'.print_r($event, true).'</pre>', 'warning');return;
   if (is_object($event) && $event->eventid) {
     $grid_query = '';
@@ -22,7 +22,7 @@ function d4os_io_db_os_event_save($event) {
     $grid_v = array();
     $node_v = array();
     foreach ($event as $key => $value) {
-      if (in_array($key, $inworld_fields)) {
+      if (in_array($key, $grid_fields)) {
         switch ($key) {
           case 'owneruuid':
           case 'creatoruuid':
@@ -82,7 +82,7 @@ function d4os_io_db_os_event_save($event) {
     $node_s = array();
     // create the new user
     foreach ($event as $key => $value) {
-      if (in_array($key, $inworld_fields)) {
+      if (in_array($key, $grid_fields)) {
         switch ($key) {
           case 'owneruuid':
           case 'creatoruuid':
@@ -155,7 +155,7 @@ function d4os_io_db_os_event_save($event) {
 
 function d4os_io_db_os_event_load($array = array()) {
   // get inworld fields
-  $fields = d4os_ui_events_get_inworld_fields();
+  $fields = d4os_ui_events_get_grid_fields();
 
   // Dynamically compose a SQL query:
   $query = array();

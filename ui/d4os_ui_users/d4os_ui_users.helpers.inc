@@ -12,35 +12,35 @@
 function d4os_ui_users_user_generate($username, $lastname, $password, $mail, $home=0) {
   global $base_url;
   $user = array();
-  $user['inworld_UUID']               = d4os_build_uuid();
-  $user['inworld_username']           = $username;
-  $user['inworld_lastname']           = $lastname;
+  $user['grid_UUID']               = d4os_build_uuid();
+  $user['grid_username']           = $username;
+  $user['grid_lastname']           = $lastname;
   
-  $user['inworld_passwordSalt']       = md5(microtime() . mt_rand(0,0xffff));
-  $user['inworld_passwordHash']       = md5(md5($password) . ":" . $user['inworld_passwordSalt']);
+  $user['grid_passwordSalt']       = md5(microtime() . mt_rand(0,0xffff));
+  $user['grid_passwordHash']       = md5(md5($password) . ":" . $user['grid_passwordSalt']);
   
-  $user['inworld_homeRegion']         = $home;
-  $user['inworld_homeLocationX']      = 128;
-  $user['inworld_homeLocationY']      = 128;
-  $user['inworld_homeLocationZ']      = 128;
-  $user['inworld_homeLookAtX']        = 100;
-  $user['inworld_homeLookAtY']        = 100;
-  $user['inworld_homeLookAtZ']        = 100;
+  $user['grid_homeRegion']         = $home;
+  $user['grid_homeLocationX']      = 128;
+  $user['grid_homeLocationY']      = 128;
+  $user['grid_homeLocationZ']      = 128;
+  $user['grid_homeLookAtX']        = 100;
+  $user['grid_homeLookAtY']        = 100;
+  $user['grid_homeLookAtZ']        = 100;
   
-  $user['inworld_created']            = time();
-  $user['inworld_lastLogin']          = 0;
+  $user['grid_created']            = time();
+  $user['grid_lastLogin']          = 0;
   
-  $user['inworld_userInventoryURI']   = variable_get('d4os_default_inventory_server_uri', $base_url);
-  $user['inworld_userAssetURI']       = variable_get('d4os_default_asset_server_uri', $base_url);
+  $user['grid_userInventoryURI']   = variable_get('d4os_default_inventory_server_uri', $base_url);
+  $user['grid_userAssetURI']       = variable_get('d4os_default_asset_server_uri', $base_url);
   
-  $user['inworld_profileCanDoMask']   = 0;
-  $user['inworld_profileWantDoMask']  = 0;
-  $user['inworld_profileAboutText']   = variable_get('d4os_ui_users_default_profile_about_text', 'I am a new user');
-  $user['inworld_profileFirstText']   = variable_get('d4os_ui_users_default_profile_first_text', 'Stuf.');
-  $user['inworld_profileImage']       = sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x', 0, 0, 0, 0, 0, 0, 0, 0 );
-  $user['inworld_profileFirstImage']  = sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x', 0, 0, 0, 0, 0, 0, 0, 0 );
-  $user['inworld_godLevel']           = variable_get('d4os_ui_users_default_god_level', 10);
-  $user['inworld_email']              = $mail;
+  $user['grid_profileCanDoMask']   = 0;
+  $user['grid_profileWantDoMask']  = 0;
+  $user['grid_profileAboutText']   = variable_get('d4os_ui_users_default_profile_about_text', 'I am a new user');
+  $user['grid_profileFirstText']   = variable_get('d4os_ui_users_default_profile_first_text', 'Stuf.');
+  $user['grid_profileImage']       = sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x', 0, 0, 0, 0, 0, 0, 0, 0 );
+  $user['grid_profileFirstImage']  = sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x', 0, 0, 0, 0, 0, 0, 0, 0 );
+  $user['grid_godLevel']           = variable_get('d4os_ui_users_default_god_level', 10);
+  $user['grid_email']              = $mail;
   
   return $user;
 }
@@ -108,7 +108,7 @@ function d4os_ui_users_get_god_level($roles) {
   return isset($levels[0]) ? $levels[0] : FALSE;
 }
 
-function d4os_ui_users_get_inworld_fields() {
+function d4os_ui_users_get_grid_fields() {
   return array(
     'UUID',
     'username',
@@ -137,15 +137,24 @@ function d4os_ui_users_get_inworld_fields() {
   );
 }
 
-function d4os_ui_users_account_to_inworld_array($account) {
-  $inworld_user = array();
+function d4os_ui_users_account_to_grid_array($account) {
+  $grid_user = array();
   foreach ($account as $key => $value) {
-    if ((substr($key, 0, 8) == 'inworld_')) {
-      $new_key = substr($key, 8);
-      $inworld_user[$new_key] = $value;
+    if ((substr($key, 0, 5) == 'grid_')) {
+      $new_key = substr($key, 5);
+      $grid_user[$new_key] = $value;
     }
   }
-  return $inworld_user;
+  return $grid_user;
+}
+
+function d4os_ui_users_grid_to_account_array($grid_account) {
+  $account = array();
+  foreach ($grid_account as $key => $value) {
+    $new_key = 'grid_'. $key;
+    $account[$new_key] = $value;
+  }
+  return $account;
 }
 
 function d4os_ui_users_generate_mail($uuid) {

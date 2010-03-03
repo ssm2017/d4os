@@ -118,11 +118,13 @@ function d4os_ui_auth_grid_login(&$form_state) {
   // log in the website
   drupal_set_message(t('Grid Authentication Success'));
   $account = user_load(array('name' =>$form_state['values']['name']));
-  if ($account) {
+  if ($account->uid) {
     global $user;
     $user = $account;
-    // update the password of the user
-    user_save($account, array('pass' => $pass));
+    // update the account of the user
+    $data = d4os_ui_users_grid_to_account_array($grid_account);
+    $data['pass'] = $pass;
+    user_save($account, $data);
     // authenticate the user
     user_authenticate($form_state['values']);
     user_login_final_validate($form, $form_state);
@@ -130,7 +132,7 @@ function d4os_ui_auth_grid_login(&$form_state) {
   }
   else {
     // user exists in the grid but not in the website so create one
-    $data = array();
+    $data = d4os_ui_users_grid_to_account_array($grid_account);
     // check username
     $name = $username. ' '. $lastname;
     if ($msg = user_validate_name($name)) {
@@ -143,32 +145,29 @@ function d4os_ui_auth_grid_login(&$form_state) {
       drupal_set_message($msg, 'error');
       drupal_set_message(t('A new email address was generated. The user will need to update it.'), 'error');
       $data['mail'] = d4os_ui_users_generate_mail($grid_account->UUID);
-      drupal_set_message($values['mail'], 'error');
+      drupal_set_message($data['mail'], 'error');
       $assigned_role = variable_get('d4os_ui_users_default_missing_email_role',0);
       if ($assigned_role != 0) {
         $data['roles'] = array($assigned_role => 'role');
       }
     }
     // save user
-    $data['name']              = $name;
-    $data['status']            = 1;
-    $data['inworld_UUID']      = $grid_account->UUID;
-    $data['inworld_username']  = $grid_account->username;
-    $data['inworld_lastname']  = $grid_account->lastname;
-    $data['pass']              = $pass;
-  
+    $data['name']   = $name;
+    $data['pass']   = $pass;
+    $data['status'] = 1;
     $account = user_save(NULL, $data);
     db_query("INSERT INTO {d4os_ui_users} (uid, UUID) VALUES (%d, '%s')", array($account->uid, $grid_account->UUID));
-    drupal_set_message(t('User !name added on the website.', array('!name' => $name)));
     // login the user
-    if ($account) {
+    if ($account->uid) {
       global $user;
       $user = $account;
       user_authenticate($form_state['values']);
       user_login_final_validate($form, $form_state);
+      drupal_set_message(t('User !name added on the website.', array('!name' => $name)));
       return TRUE;
     }
     else {
+      drupal_set_message(t('Error adding user !name on the website.', array('!name' => $name)));
       user_login_final_validate($form, $form_state);
       return FALSE;
     }

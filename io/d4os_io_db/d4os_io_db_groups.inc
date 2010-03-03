@@ -30,13 +30,13 @@ function d4os_io_db_os_group_save($params) {
   else {
     // get the user
     $account = user_load($params['uid']);
-    if (!isset($account->inworld_UUID) || empty($account->inworld_UUID)) {
+    if (!isset($account->grid_UUID) || empty($account->grid_UUID)) {
       drupal_set_message(t('This user is not registered in the grid. Inworld group was not created for this user.'), 'error');
       return FALSE;
     }
     $params['GroupID']        = d4os_build_uuid();
     $params['InsigniaID']     = UUID_ZERO;
-    $params['FounderID']      = $account->inworld_UUID;
+    $params['FounderID']      = $account->grid_UUID;
     $params['OwnerRoleID']    = d4os_build_uuid();
     $params['EveryonePowers'] = 62672565501952;
     $params['OwnersPowers']   = 349644697632766;
@@ -73,10 +73,10 @@ function d4os_io_db_os_group_load($params) {
     // include the groups file
     module_load_include('services.inc', 'd4os_io_services_groups');
     // get the inworld group
-    $inworld_group = d4os_io_services_groups_getGroup($group, FALSE);
-    if (!isset($inworld_group['succeed']) || $inworld_group['succeed'] != 'false') {
-      $inworld_group['nid'] = $group['nid'];
-      return $inworld_group;
+    $grid_group = d4os_io_services_groups_getGroup($group, FALSE);
+    if (!isset($grid_group['succeed']) || $grid_group['succeed'] != 'false') {
+      $grid_group['nid'] = $group['nid'];
+      return $grid_group;
     }
     else {
       return FALSE;
@@ -125,7 +125,7 @@ function d4os_io_db_os_group_unsubscribe($params) {
   return d4os_io_services_groups_removeAgentFromGroup($params, FALSE);
 }
 
-function d4os_io_db_os_group_inworld_create($params) {
+function d4os_io_db_os_group_grid_create($params) {
   // get the content type to build nodes
   $node_type = variable_get('d4os_ui_groups_type', NULL);
   // get the user
@@ -154,7 +154,7 @@ function d4os_io_db_os_group_inworld_create($params) {
     $log[] = array(
       'name' => 'function call',
       'type' => 'string',
-      'data' => 'os_group_inworld_create',
+      'data' => 'os_group_grid_create',
     );
     $log[] = array(
       'name' => 'input values',
@@ -175,7 +175,7 @@ function d4os_io_db_os_group_inworld_create($params) {
   }
 }
 
-function d4os_io_db_os_group_inworld_update($params) {
+function d4os_io_db_os_group_grid_update($params) {
   // get the node
   $nid = db_result(db_query("SELECT nid FROM {d4os_ui_groups} WHERE GroupID = '%s'", array($params['GroupID'])));
   $node = node_load($nid);
@@ -193,7 +193,7 @@ function d4os_io_db_os_group_inworld_update($params) {
     $log[] = array(
       'name' => 'function call',
       'type' => 'string',
-      'data' => 'os_group_inworld_update',
+      'data' => 'os_group_grid_update',
     );
     $log[] = array(
       'name' => 'input values',

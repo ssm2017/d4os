@@ -11,7 +11,7 @@
 
 function d4os_ui_events_node_info() {
   return array(
-    'inworld_event' => array(
+    'grid_event' => array(
       'name' => t('Event'),
       'module' => 'd4os_ui_events',
       'description' => t("This is a node to manage inworld events."),
@@ -168,7 +168,7 @@ function d4os_ui_events_form(&$node) {
 }
 
 function d4os_ui_events_nodeapi(&$node, $op, $teaser, $page) {
-  if ($node->type == 'inworld_event') {
+  if ($node->type == 'grid_event') {
     switch ($op) {
   
       case 'validate':
@@ -187,11 +187,11 @@ function d4os_ui_events_nodeapi(&$node, $op, $teaser, $page) {
         break;
   
       case 'prepare':
-        if ($node->type == 'inworld_event') {
+        if ($node->type == 'grid_event') {
           // get the user
           $account = user_load($node->uid);
           // check if the user's got some parcels
-          $parcels = module_invoke_all('os_events_get_parcels_by_owner', $account->inworld_UUID);
+          $parcels = module_invoke_all('os_events_get_parcels_by_owner', $account->grid_UUID);
           if ($parcels[0] === FALSE) {
             drupal_set_message(t('You need to be a parcel owner to create an event'), 'error');
             drupal_goto('node/add');
@@ -326,9 +326,9 @@ function d4os_ui_events_build_output($node) {
   return array(
     'nid'           => $node->nid,
     'vid'           => $node->vid,
-    'owneruuid'     => $account->inworld_UUID,
+    'owneruuid'     => $account->grid_UUID,
     'name'          => $node->title,
-    'creatoruuid'   => $account->inworld_UUID,
+    'creatoruuid'   => $account->grid_UUID,
     'category'      => $node->category,
     'description'   => $node->body,
     'dateUTC'       => $start_stamp,
@@ -413,7 +413,7 @@ function d4os_ui_events_build_parcels_list($uid) {
   // get the user
   $account = user_load($uid);
   // get the parcels
-  $parcels = module_invoke_all('os_events_get_parcels_by_owner', $account->inworld_UUID);
+  $parcels = module_invoke_all('os_events_get_parcels_by_owner', $account->grid_UUID);
   $options = array();
   //$options['none'] = t('Nowhere'));
   if (count($parcels)) {
@@ -438,7 +438,7 @@ function d4os_ui_events_get_selected_parcel($region_name, $global_pos) {
   return $pos_x. '/'. $pos_y. '/'. $pos_z. '|'. $region->uuid;
 }
 
-function d4os_ui_events_get_inworld_fields() {
+function d4os_ui_events_get_grid_fields() {
   return array(
     'owneruuid', //s
     'name',//s

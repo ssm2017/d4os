@@ -55,14 +55,14 @@ function d4os_ui_groups_confirm_subscribe_submit($form, &$form_state) {
   // GroupID / AgentID
   // check if the user is registered inworld
   $account = $form_state['values']['account'];
-  $AgentID = isset($account->inworld_UUID) ? $account->inworld_UUID : FALSE;
+  $AgentID = isset($account->grid_UUID) ? $account->grid_UUID : FALSE;
   if (!$AgentID) {
     drupal_set_message(t('This user is not registered on the grid.'), 'error');
     return;
   }
   // get the GroupID
-  $inworld_group = module_invoke_all('os_group_load', array('nid' => $form_state['values']['gid']));
-  $GroupID = isset($inworld_group['GroupID']) ? $inworld_group['GroupID'] : FALSE;
+  $grid_group = module_invoke_all('os_group_load', array('nid' => $form_state['values']['gid']));
+  $GroupID = isset($grid_group['GroupID']) ? $grid_group['GroupID'] : FALSE;
   if (!$GroupID) {
     drupal_set_message(t('This group is not registered on the grid.'), 'error');
     return;
@@ -75,14 +75,14 @@ function d4os_ui_groups_confirm_unsubscribe_submit($form, &$form_state) {
   $account = $form_state['values']['account'];
   $nid = $group_node->nid;
   // check if the user is registered inworld
-  $AgentID = isset($account->inworld_UUID) ? $account->inworld_UUID : FALSE;
+  $AgentID = isset($account->grid_UUID) ? $account->grid_UUID : FALSE;
   if (!$AgentID) {
     drupal_set_message(t('This user is not registered on the grid.'), 'error');
     return;
   }
   // get the GroupID
-  $inworld_group = module_invoke_all('os_group_load', array('nid' => $nid));
-  $GroupID = isset($inworld_group['GroupID']) ? $inworld_group['GroupID'] : FALSE;
+  $grid_group = module_invoke_all('os_group_load', array('nid' => $nid));
+  $GroupID = isset($grid_group['GroupID']) ? $grid_group['GroupID'] : FALSE;
   if (!$GroupID) {
     drupal_set_message(t('This group is not registered on the grid.'), 'error');
     return;
@@ -299,14 +299,14 @@ function d4os_ui_groups_check_groups_set_group_form_submit($form, &$form_state) 
       $group = array(
         'GroupID' => $GroupID,
       );
-      $inworld_group = d4os_io_services_groups_getGroup($group, FALSE);
+      $grid_group = d4os_io_services_groups_getGroup($group, FALSE);
       // get the user
-      $user_uuid = db_query("SELECT uid FROM {d4os_ui_users} WHERE UUID='%s'", array($inworld_group['FounderID']));
+      $user_uuid = db_query("SELECT uid FROM {d4os_ui_users} WHERE UUID='%s'", array($grid_group['FounderID']));
       if (!$user_uuid) {
         drupal_set_message(t('Group founder is not registered on the site. The group can not be added.'), 'error');
         return;
       }
-      d4os_io_db_os_group_inworld_create($inworld_group);
+      d4os_io_db_os_group_grid_create($grid_group);
       break;
     case 'del':
       module_invoke_all('os_group_delete', $values['GroupID']);

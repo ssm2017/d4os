@@ -163,13 +163,13 @@ function d4os_ui_users_account_validate($form, &$form_state) {
   }
 
   // get the inworld user
-  $inworld_user = module_invoke_all('os_user_load', array('username' => $username, 'lastname' => $lastname));
-  $inworld_user = $inworld_user[0];
+  $grid_user = module_invoke_all('os_user_load', array('username' => $username, 'lastname' => $lastname));
+  $grid_user = $grid_user[0];
 
   switch ($form_state['values']['form_id']){
     case 'user_register':
       // check if user already exists when registering
-      if (is_object($inworld_user)) {
+      if (is_object($grid_user)) {
         form_set_error('username', t('This name already exists'));
         return;
       }
@@ -179,7 +179,7 @@ function d4os_ui_users_account_validate($form, &$form_state) {
       break;
     case 'user_profile_form':
       // check if the user already exists after changing username
-      if (is_object($user_exists) && $inworld_user->UUID != $form_state['values']['_account']->inworld_UUID) {
+      if (is_object($user_exists) && $grid_user->UUID != $form_state['values']['_account']->grid_UUID) {
         form_set_error('name', t('This name already exists'));
         return;
       }
@@ -202,13 +202,13 @@ function d4os_ui_users_user($op, &$edit, &$account, $category = NULL) {
 
     case 'form':
       if ($account->uid > 1 && $category == 'inworld') {
-        return d4os_ui_users_inworld_form($account);
+        return d4os_ui_users_grid_form($account);
       }
       break;
 
     case 'view':
       if ($account->uid > 1) {
-        d4os_ui_users_inworld_view($account);
+        d4os_ui_users_grid_view($account);
       }
       break;
 
@@ -223,12 +223,12 @@ function d4os_ui_users_user($op, &$edit, &$account, $category = NULL) {
       break;
 
     case 'delete':
-      module_invoke_all('os_user_delete', $account->inworld_UUID);
+      module_invoke_all('os_user_delete', $account->grid_UUID);
       break;
 
     case 'login':
       // build the email address
-      $email = d4os_ui_users_generate_mail($account->inworld_UUID);
+      $email = d4os_ui_users_generate_mail($account->grid_UUID);
       if ($email == $account->mail) {
         drupal_set_message(l(t('Please update your email address.'), 'user/'. $account->uid. '/edit'), 'error');
       }
@@ -240,15 +240,15 @@ function d4os_ui_users_user($op, &$edit, &$account, $category = NULL) {
 function d4os_ui_users_update(&$edit, &$account) {
 
   // manage username, lastname and UUID
-  $edit['inworld_username'] = empty($edit['inworld_username']) ? $account->inworld_username : $edit['inworld_username'];
-  $edit['inworld_lastname'] = empty($edit['inworld_lastname']) ? $account->inworld_lastname : $edit['inworld_lastname'];
-  $edit['inworld_UUID']     = empty($edit['inworld_UUID']) ? $account->inworld_UUID : $edit['inworld_UUID'];
+  $edit['grid_username'] = empty($edit['grid_username']) ? $account->grid_username : $edit['grid_username'];
+  $edit['grid_lastname'] = empty($edit['grid_lastname']) ? $account->grid_lastname : $edit['grid_lastname'];
+  $edit['grid_UUID']     = empty($edit['grid_UUID']) ? $account->grid_UUID : $edit['grid_UUID'];
 
   // check if the user has an account on the grid and if not create one
-  $user_exists = module_invoke_all('os_user_load', array('UUID' => $edit['inworld_UUID']));
+  $user_exists = module_invoke_all('os_user_load', array('UUID' => $edit['grid_UUID']));
   if (!is_object($user_exists[0])) {
-    unset($edit['inworld_UUID']);
-    $edit = array_merge($edit, d4os_ui_users_user_generate($edit['inworld_username'],$edit['inworld_lastname'],$edit['pass'], $edit['mail']));
+    unset($edit['grid_UUID']);
+    $edit = array_merge($edit, d4os_ui_users_user_generate($edit['grid_username'],$edit['grid_lastname'],$edit['pass'], $edit['mail']));
     module_invoke_all('os_user_save', $edit);
     drupal_set_message(t('User added to the grid.'));
     // TODO : change user password and send an email
@@ -256,55 +256,55 @@ function d4os_ui_users_update(&$edit, &$account) {
   }
   else {
     // check if password has changed
-    $edit['inworld_passwordSalt'] = $account->inworld_passwordSalt;
-    $edit['inworld_passwordHash'] = $account->inworld_passwordHash;
+    $edit['grid_passwordSalt'] = $account->grid_passwordSalt;
+    $edit['grid_passwordHash'] = $account->grid_passwordHash;
     if (!empty($edit['pass']) && md5($edit['pass']) != $account->pass) {
-      $edit['inworld_passwordSalt'] = md5(microtime() . mt_rand(0,0xffff));
-      $edit['inworld_passwordHash'] = md5(md5($edit['pass']) . ":" . $edit['inworld_passwordSalt']);
+      $edit['grid_passwordSalt'] = md5(microtime() . mt_rand(0,0xffff));
+      $edit['grid_passwordHash'] = md5(md5($edit['pass']) . ":" . $edit['grid_passwordSalt']);
     }
     // block user ?
-    $edit['inworld_godLevel'] = $account->inworld_godLevel;
-    $edit['inworld_godLevel'] = d4os_ui_users_get_god_level($edit['roles']);
+    $edit['grid_godLevel'] = $account->grid_godLevel;
+    $edit['grid_godLevel'] = d4os_ui_users_get_god_level($edit['roles']);
     //if ($edit['status'] == 0) {
-    //  $edit['inworld_godLevel'] = 0;
+    //  $edit['grid_godLevel'] = 0;
     //}
-    $edit['inworld_email'] = $edit['mail'];
-    $edit['inworld_homeRegion'] = empty($edit['inworld_homeRegion']) ? $account->inworld_homeRegion : $edit['inworld_homeRegion'];
-    $edit['inworld_UUID'] = $account->inworld_UUID;
+    $edit['grid_email'] = $edit['mail'];
+    $edit['grid_homeRegion'] = empty($edit['grid_homeRegion']) ? $account->grid_homeRegion : $edit['grid_homeRegion'];
+    $edit['grid_UUID'] = $account->grid_UUID;
     module_invoke_all('os_user_save', $edit);
   }
 }
 
-function d4os_ui_users_inworld_view($account) {
+function d4os_ui_users_grid_view($account) {
   global $base_url;
 
-  if ($account->inworld_UUID) {
-    $account->content['inworld_user'] = array(
+  if ($account->grid_UUID) {
+    $account->content['grid_user'] = array(
       '#type'   => 'user_profile_category',
       '#title'  => t('Inworld profile infos'),
     );
-    $account->content['inworld_user']['profileImage'] = array(
+    $account->content['grid_user']['profileImage'] = array(
       '#type'   => 'user_profile_item',
       '#title'  => t('Profile image'),
-      '#value'  => '<img title="'. t("!user's profile picture", array('!user'=>$account->name)). '" alt="'. t('No picture available'). '" src="'. variable_get('d4os_default_asset_pictures_server_url', $base_url. '/asset.php?id='). $account->inworld_profileImage. '" />',
+      '#value'  => '<img title="'. t("!user's profile picture", array('!user'=>$account->name)). '" alt="'. t('No picture available'). '" src="'. variable_get('d4os_default_asset_pictures_server_url', $base_url. '/asset.php?id='). $account->grid_profileImage. '" />',
       '#weight' => 0,
     );
-    $account->content['inworld_user']['profileFirstText'] = array(
+    $account->content['grid_user']['profileFirstText'] = array(
       '#type'   => 'user_profile_item',
       '#title'  => t('Profile text'),
-      '#value'  => $account->inworld_profileFirstText,
+      '#value'  => $account->grid_profileFirstText,
       '#weight' => 1,
     );
-    $account->content['inworld_user']['profileAboutText'] = array(
+    $account->content['grid_user']['profileAboutText'] = array(
       '#type'   => 'user_profile_item',
       '#title'  => t('About text'),
-      '#value'  => $account->inworld_profileAboutText,
+      '#value'  => $account->grid_profileAboutText,
       '#weight' => 2,
     );
-    $account->content['inworld_user']['created'] = array(
+    $account->content['grid_user']['created'] = array(
       '#type'   => 'user_profile_item',
       '#title'  => t('Creation date'),
-      '#value'  => format_date($account->inworld_created),
+      '#value'  => format_date($account->grid_created),
       '#weight' => 2,
     );
   }
@@ -313,7 +313,7 @@ function d4os_ui_users_inworld_view($account) {
   }
 }
 
-function d4os_ui_users_inworld_form($account) {
+function d4os_ui_users_grid_form($account) {
   $form = array();
 // basic
   $form['basic'] = array(
@@ -322,34 +322,34 @@ function d4os_ui_users_inworld_form($account) {
     '#collapsible'    => TRUE,
     '#collapsed'      => TRUE,
   );
-  $form['basic']['inworld_UUID'] = array(
+  $form['basic']['grid_UUID'] = array(
     '#title'          => t('UUID'),
     '#type'           => 'item',
-    '#value'          => $account->inworld_UUID,
+    '#value'          => $account->grid_UUID,
     '#weight'         => 0,
   );
-  $form['basic']['inworld_username'] = array(
+  $form['basic']['grid_username'] = array(
     '#title'          => t('username'),
     '#type'           => 'item',
-    '#value'          => $account->inworld_username,
+    '#value'          => $account->grid_username,
     '#weight'         => 1,
   );
-  $form['basic']['inworld_lastname'] = array(
+  $form['basic']['grid_lastname'] = array(
     '#title'          => t('lastname'),
     '#type'           => 'item',
-    '#value'          => $account->inworld_lastname,
+    '#value'          => $account->grid_lastname,
     '#weight'         => 2,
   );
-  $form['basic']['inworld_passwordSalt'] = array(
+  $form['basic']['grid_passwordSalt'] = array(
     '#title'          => t('passwordSalt'),
     '#type'           => 'item',
-    '#value'          => $account->inworld_passwordSalt,
+    '#value'          => $account->grid_passwordSalt,
     '#weight'         => 3,
   );
-  $form['basic']['inworld_passwordHash'] = array(
+  $form['basic']['grid_passwordHash'] = array(
     '#title'          => t('passwordHash'),
     '#type'           => 'item',
-    '#value'          => $account->inworld_passwordHash,
+    '#value'          => $account->grid_passwordHash,
     '#weight'         => 4,
   );
 // region
@@ -360,59 +360,59 @@ function d4os_ui_users_inworld_form($account) {
     '#collapsed'      => TRUE,
   );
   $regions = d4os_ui_regions_get_regions_array();
-  $form['region']['inworld_homeRegion'] = array(
+  $form['region']['grid_homeRegion'] = array(
     '#title'          => t('homeRegion'),
     '#type'           => 'select',
     '#options'        => $regions,
-    '#default_value'  => $account->inworld_homeRegion,
+    '#default_value'  => $account->grid_homeRegion,
     '#weight'         => 5,
   );
-  $form['region']['inworld_homeLocationX'] = array(
+  $form['region']['grid_homeLocationX'] = array(
     '#title'          => t('homeLocationX'),
     '#type'           => 'textfield',
     '#size'           => 3,
     '#maxlength'      => 3,
-    '#default_value'  => $account->inworld_homeLocationX,
+    '#default_value'  => $account->grid_homeLocationX,
     '#weight'         => 6,
   );
-  $form['region']['inworld_homeLocationY'] = array(
+  $form['region']['grid_homeLocationY'] = array(
     '#title'          => t('homeLocationY'),
     '#type'           => 'textfield',
     '#size'           => 3,
     '#maxlength'      => 3,
-    '#default_value'  => $account->inworld_homeLocationY,
+    '#default_value'  => $account->grid_homeLocationY,
     '#weight'         => 7,
   );
-  $form['region']['inworld_homeLocationZ'] = array(
+  $form['region']['grid_homeLocationZ'] = array(
     '#title'          => t('homeLocationZ'),
     '#type'           => 'textfield',
     '#size'           => 3,
     '#maxlength'      => 3,
-    '#default_value'  => $account->inworld_homeLocationZ,
+    '#default_value'  => $account->grid_homeLocationZ,
     '#weight'         => 8,
   );
-  $form['region']['inworld_homeLookAtX'] = array(
+  $form['region']['grid_homeLookAtX'] = array(
     '#title'          => t('homeLookAtX'),
     '#type'           => 'textfield',
     '#size'           => 3,
     '#maxlength'      => 3,
-    '#default_value'  => $account->inworld_homeLookAtX,
+    '#default_value'  => $account->grid_homeLookAtX,
     '#weight'         => 9,
   );
-  $form['region']['inworld_homeLookAtY'] = array(
+  $form['region']['grid_homeLookAtY'] = array(
     '#title'          => t('homeLookAtY'),
     '#type'           => 'textfield',
     '#size'           => 3,
     '#maxlength'      => 3,
-    '#default_value'  => $account->inworld_homeLookAtY,
+    '#default_value'  => $account->grid_homeLookAtY,
     '#weight'         => 10,
   );
-  $form['region']['inworld_homeLookAtZ'] = array(
+  $form['region']['grid_homeLookAtZ'] = array(
     '#title'          => t('homeLookAtZ'),
     '#type'           => 'textfield',
     '#size'           => 3,
     '#maxlength'      => 3,
-    '#default_value'  => $account->inworld_homeLookAtZ,
+    '#default_value'  => $account->grid_homeLookAtZ,
     '#weight'         => 11,
   );
 // dates
@@ -422,16 +422,16 @@ function d4os_ui_users_inworld_form($account) {
     '#collapsible'    => TRUE,
     '#collapsed'      => TRUE,
   );
-  $form['dates']['inworld_created'] = array(
+  $form['dates']['grid_created'] = array(
     '#title'          => t('created'),
     '#type'           => 'item',
-    '#value'          => format_date($account->inworld_created),
+    '#value'          => format_date($account->grid_created),
     '#weight'         => 12,
   );
-  $form['dates']['inworld_lastLogin'] = array(
+  $form['dates']['grid_lastLogin'] = array(
     '#title'          => t('lastLogin'),
     '#type'           => 'item',
-    '#value'          => format_date($account->inworld_lastLogin),
+    '#value'          => format_date($account->grid_lastLogin),
     '#weight'         => 13,
   );
 // uri
@@ -442,16 +442,16 @@ function d4os_ui_users_inworld_form($account) {
       '#collapsible'    => TRUE,
       '#collapsed'      => TRUE,
     );
-    $form['uri']['inworld_userInventoryURI'] = array(
+    $form['uri']['grid_userInventoryURI'] = array(
       '#title'          => t('userInventoryURI'),
       '#type'           => 'textfield',
-      '#default_value'  => $account->inworld_userInventoryURI,
+      '#default_value'  => $account->grid_userInventoryURI,
       '#weight'         => 14,
     );
-    $form['uri']['inworld_userAssetURI'] = array(
+    $form['uri']['grid_userAssetURI'] = array(
       '#title'          => t('userAssetURI'),
       '#type'           => 'textfield',
-      '#default_value'  => $account->inworld_userAssetURI,
+      '#default_value'  => $account->grid_userAssetURI,
       '#weight'         => 15,
     );
   // perms
@@ -461,20 +461,20 @@ function d4os_ui_users_inworld_form($account) {
       '#collapsible'    => TRUE,
       '#collapsed'      => TRUE,
     );
-    $form['perms']['inworld_profileCanDoMask'] = array(
+    $form['perms']['grid_profileCanDoMask'] = array(
       '#title'          => t('profileCanDoMask'),
       '#type'           => 'textfield',
       '#size'           => 3,
       '#maxlength'      => 3,
-      '#default_value'  => $account->inworld_profileCanDoMask,
+      '#default_value'  => $account->grid_profileCanDoMask,
       '#weight'         => 16,
     );
-    $form['perms']['inworld_profileWantDoMask'] = array(
+    $form['perms']['grid_profileWantDoMask'] = array(
       '#title'          => t('profileWantDoMask'),
       '#type'           => 'textfield',
       '#size'           => 3,
       '#maxlength'      => 3,
-      '#default_value'  => $account->inworld_profileWantDoMask,
+      '#default_value'  => $account->grid_profileWantDoMask,
       '#weight'         => 17,
     );
   }
@@ -486,32 +486,32 @@ function d4os_ui_users_inworld_form($account) {
     '#collapsible'    => TRUE,
     '#collapsed'      => TRUE,
   );
-  $form['profile']['inworld_profileImage'] = array(
+  $form['profile']['grid_profileImage'] = array(
     '#title'          => t('profileImage'),
     '#type'           => 'textfield',
-    '#default_value'  => $account->inworld_profileImage,
+    '#default_value'  => $account->grid_profileImage,
     '#size'           => 36,
     '#maxlength'      => 36,
     '#weight'         => 18,
   );
-  $form['profile']['inworld_profileAboutText'] = array(
+  $form['profile']['grid_profileAboutText'] = array(
     '#title'          => t('profileAboutText'),
     '#type'           => 'textarea',
-    '#default_value'  => $account->inworld_profileAboutText,
+    '#default_value'  => $account->grid_profileAboutText,
     '#weight'         => 19,
   );
-  $form['profile']['inworld_profileFirstImage'] = array(
+  $form['profile']['grid_profileFirstImage'] = array(
     '#title'          => t('profileFirstImage'),
     '#type'           => 'textfield',
-    '#default_value'  => $account->inworld_profileFirstImage,
+    '#default_value'  => $account->grid_profileFirstImage,
     '#size'           => 36,
     '#maxlength'      => 36,
     '#weight'         => 20,
   );
-  $form['profile']['inworld_profileFirstText'] = array(
+  $form['profile']['grid_profileFirstText'] = array(
     '#title'          => t('profileFirstText'),
     '#type'           => 'textarea',
-    '#default_value'  => $account->inworld_profileFirstText,
+    '#default_value'  => $account->grid_profileFirstText,
     '#weight'         => 21,
   );
 // extra
@@ -522,18 +522,18 @@ function d4os_ui_users_inworld_form($account) {
       '#collapsible'    => TRUE,
       '#collapsed'      => TRUE,
     );
-    $form['extra']['inworld_godLevel'] = array(
+    $form['extra']['grid_godLevel'] = array(
       '#title'          => t('godLevel'),
       '#type'           => 'textfield',
       '#size'           => 3,
       '#maxlength'      => 3,
-      '#default_value'  => $account->inworld_godLevel,
+      '#default_value'  => $account->grid_godLevel,
       '#weight'         => 22,
     );
-    $form['extra']['inworld_email'] = array(
+    $form['extra']['grid_email'] = array(
       '#title'          => t('email'),
       '#type'           => 'textfield',
-      '#default_value'  => $account->inworld_email,
+      '#default_value'  => $account->grid_email,
       '#weight'         => 23,
     );
   }
@@ -706,9 +706,9 @@ function d4os_ui_users_check_users_add_user($values) {
   $data['name']              = $values['name'];
   $data['mail']              = $values['mail'];
   $data['status']            = $values['status'];
-  $data['inworld_UUID']      = $values['UUID'];
-  $data['inworld_username']  = $values['username'];
-  $data['inworld_lastname']  = $values['lastname'];
+  $data['grid_UUID']      = $values['UUID'];
+  $data['grid_username']  = $values['username'];
+  $data['grid_lastname']  = $values['lastname'];
   $data['pass']              = user_password();
 
   $account = user_save(NULL, $data);

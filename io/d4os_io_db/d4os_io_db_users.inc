@@ -10,27 +10,25 @@
 */
 
 function d4os_io_db_os_user_save($account) {
-
   // convert array to object
   $account = is_array($account) ? (object)$account : $account;
 
   // get user fields
-  $user_fields = d4os_ui_users_get_inworld_fields();
+  $user_fields = d4os_ui_users_get_grid_fields();
 
-  // get all the inworld keys
-  $inworld_user = d4os_ui_users_account_to_inworld_array($account);
-  if (!isset($inworld_user['username']) && !isset($inworld_user['lastname'])) {
+  // get all the grid keys
+  $grid_user = d4os_ui_users_account_to_grid_array($account);
+  if (!isset($grid_user['username']) && !isset($grid_user['lastname'])) {
     $names = explode(' ', $account->name);
-    $inworld_user['username'] = $names[0];
-    $inworld_user['lastname'] = $names[1];
+    $grid_user['username'] = $names[0];
+    $grid_user['lastname'] = $names[1];
   }
 
-  // check if the user already exist
-  $user_exists = d4os_io_db_os_user_load(array('UUID' => $inworld_user['UUID']));
-
+  // check if the user already exists
+  $user_exists = d4os_io_db_os_user_load(array('UUID' => $grid_user['UUID']));
   if (is_object($user_exists)) {
     $query = '';
-    foreach ($inworld_user as $key => $value) {
+    foreach ($grid_user as $key => $value) {
       if (in_array($key, $user_fields)) {
         switch ($key) {
           //case 'UUID':
@@ -74,7 +72,7 @@ function d4os_io_db_os_user_save($account) {
     $query = substr($query, 0, -2);
     // make the query
     db_set_active('os_users');
-    $success = db_query("UPDATE {users} SET $query WHERE `UUID` = '%s'", array_merge($v, array($inworld_user['UUID'])));
+    $success = db_query("UPDATE {users} SET $query WHERE `UUID` = '%s'", array_merge($v, array($grid_user['UUID'])));
     db_set_active('default');
     if (!$success) {
       // The query failed - better to abort the save than risk further data loss.
@@ -89,7 +87,7 @@ function d4os_io_db_os_user_save($account) {
   }
   else {
     // create the new user
-    foreach ($inworld_user as $key => $value) {
+    foreach ($grid_user as $key => $value) {
       if (in_array($key, $user_fields)) {
         switch ($key) {
           case 'UUID':
@@ -141,12 +139,12 @@ function d4os_io_db_os_user_save($account) {
       return FALSE;
     }
     else {
-      db_query("INSERT INTO {d4os_ui_users} (uid, UUID) VALUES (%d, '%s')", array($account->uid, $inworld_user['UUID']));
+      db_query("INSERT INTO {d4os_ui_users} (uid, UUID) VALUES (%d, '%s')", array($account->uid, $grid_user['UUID']));
     }
   }
 
   // Refresh user object.
-  $user = d4os_io_db_os_user_load($inworld_user);
+  $user = d4os_io_db_os_user_load($grid_user);
 
   return $user;
 }
@@ -171,7 +169,7 @@ function d4os_io_db_os_user_load($array = array()) {
   }
 
   // get only inworld fields
-  $user_fields = d4os_ui_users_get_inworld_fields();
+  $user_fields = d4os_ui_users_get_grid_fields();
 
   // Dynamically compose a SQL query:
   $query = array();

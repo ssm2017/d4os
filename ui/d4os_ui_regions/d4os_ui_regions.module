@@ -195,7 +195,7 @@ function theme_d4os_ui_regions_list_table($regions, $title = NULL, $params) {
       $cells[] = $region->sizeY;
     }
     if ($user->uid > 1) {
-      if ($user->inworld_user['homeRegion'] == $region->regionHandle) {
+      if ($user->grid_user['homeRegion'] == $region->regionHandle) {
         $cells[] = t('My home');
       }
       else {
@@ -229,9 +229,9 @@ function d4os_ui_regions_set_home_submit($form, &$form_state) {
   // get the user uuid
   global $user;
   $values = $form['#post'];
-  $user_uuid = $user->inworld_user['UUID'];
-  $user->inworld_user['homeRegion'] = $values['homeRegion'];
-  user_save($user, array('inworld_user' => $user->inworld_user));
+  $user_uuid = $user->grid_user['UUID'];
+  $user->grid_user['homeRegion'] = $values['homeRegion'];
+  user_save($user, array('grid_user' => $user->grid_user));
   // set home
   drupal_set_message(t('Home region set to !region', array('!region' => $values['regionName'])));
 }

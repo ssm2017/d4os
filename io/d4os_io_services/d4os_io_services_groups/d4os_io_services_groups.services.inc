@@ -221,7 +221,7 @@ function d4os_io_services_groups_createGroup($params, $inworld = TRUE) {
     d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
   }
   if ($inworld) {
-    module_invoke_all('os_group_inworld_create', $return);
+    module_invoke_all('os_group_grid_create', $return);
   }
   return $return;
 }
@@ -633,7 +633,7 @@ function d4os_io_services_groups_updateGroup($params, $inworld = TRUE) {
   db_set_active('default');
 
   if ($inworld) {
-    module_invoke_all('os_group_inworld_update', $params);
+    module_invoke_all('os_group_grid_update', $params);
   }
 
   $return = array('success' => 'true');
