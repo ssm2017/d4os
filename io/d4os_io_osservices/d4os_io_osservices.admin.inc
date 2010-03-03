@@ -40,7 +40,7 @@ function d4os_io_osservices_admin() {
     '#type'           => 'textfield',
     '#title'          => t('Default oss URI'),
     '#default_value'  => variable_get('d4os_io_osservices_default_uri', '127.0.0.1'),
-    '#description'    => t("Default oss URI."),
+    '#description'    => t("Default oss URI"),
     '#required'       => TRUE,
   );
 
@@ -50,7 +50,7 @@ function d4os_io_osservices_admin() {
     '#size'           => 5,
     '#maxlength'      => 5,
     '#default_value'  => variable_get('d4os_io_osservices_default_port', '7999'),
-    '#description'    => t("Default oss port."),
+    '#description'    => t("Default oss port"),
     '#required'       => TRUE,
   );
 // credentials

@@ -19,8 +19,8 @@ function d4os_ui_auth_help($path, $arg) {
 function d4os_ui_auth_menu() {
 
   $items['admin/settings/d4os/ui/auth'] = array(
-    'title'             => t('auth'),
-    'description'       => t('d4os ui auth settings'),
+    'title'             => 'auth',
+    'description'       => 'd4os ui auth settings',
     'page callback'     => 'drupal_get_form',
     'page arguments'    => array('d4os_ui_auth_settings'),
     'access arguments'  => array('admin d4os ui auth'),

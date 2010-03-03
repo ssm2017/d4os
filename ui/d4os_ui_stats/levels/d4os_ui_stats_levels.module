@@ -65,8 +65,8 @@ function d4os_ui_stats_levels_init() {
 function d4os_ui_stats_levels_menu() {
   $items = array();
   $items['grid/stats/levels'] = array(
-    'title'             => t('Levels'),
-    'description'       => t('Get the grid levels in json format.'),
+    'title'             => 'Levels',
+    'description'       => 'Get the grid levels in json format.',
     'page callback'     => 'd4os_ui_stats_levels_js',
     'access callback'   => TRUE,
     'type'              => MENU_CALLBACK,

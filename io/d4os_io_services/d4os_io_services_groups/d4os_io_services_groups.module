@@ -26,8 +26,8 @@ function d4os_io_services_groups_enable() {
 
 function d4os_io_services_groups_menu() {
   $items['admin/settings/d4os/io/services/groups'] = array(
-    'title'             => t('groups'),
-    'description'       => t('d4os io services groups settings'),
+    'title'             => 'groups',
+    'description'       => 'd4os io services groups settings',
     'page callback'     => 'drupal_get_form',
     'page arguments'    => array('d4os_io_services_groups_admin'),
     'access arguments'  => array('admin d4os io services groups'),

@@ -30,7 +30,7 @@ function d4os_admin() {
     '#type'           => 'textfield',
     '#title'          => t('Default grid URI'),
     '#default_value'  => variable_get('d4os_default_grid_uri', $base_url),
-    '#description'    => t("Default grid URI."),
+    '#description'    => t("Default grid URI"),
     '#required'       => TRUE,
   );
   $form['d4os_uri']['grid']['d4os_default_grid_port'] = array(
@@ -39,7 +39,7 @@ function d4os_admin() {
     '#size'           => 5,
     '#maxlength'      => 5,
     '#default_value'  => variable_get('d4os_default_grid_port', '9000'),
-    '#description'    => t("Default grid port."),
+    '#description'    => t("Default grid port"),
     '#required'       => TRUE,
   );
   $form['d4os_uri']['grid']['loginuri'] = array(
@@ -52,7 +52,7 @@ function d4os_admin() {
     '#type'           => 'textfield',
     '#title'          => t('Default login URI'),
     '#default_value'  => variable_get('d4os_default_login_uri', $base_url),
-    '#description'    => t("Default login URI."),
+    '#description'    => t("Default login URI"),
     '#required'       => TRUE,
   );
   $form['d4os_uri']['grid']['loginuri']['d4os_default_login_port'] = array(
@@ -61,7 +61,7 @@ function d4os_admin() {
     '#size'           => 5,
     '#maxlength'      => 5,
     '#default_value'  => variable_get('d4os_default_login_port', '8002'),
-    '#description'    => t("Default login port."),
+    '#description'    => t("Default login port"),
     '#required'       => TRUE,
   );
   
@@ -76,7 +76,7 @@ function d4os_admin() {
     '#type'           => 'textfield',
     '#title'          => t('Default inventory URI'),
     '#default_value'  => variable_get('d4os_default_inventory_server_uri', $base_url),
-    '#description'    => t("Default user inventory URI."),
+    '#description'    => t("Default inventory URI"),
     '#required'       => TRUE,
   );
   $form['d4os_uri']['inventory']['d4os_default_inventory_server_port'] = array(
@@ -85,7 +85,7 @@ function d4os_admin() {
     '#size'           => 5,
     '#maxlength'      => 5,
     '#default_value'  => variable_get('d4os_default_inventory_server_port', '8004'),
-    '#description'    => t("Default user inventory port."),
+    '#description'    => t("Default inventory port"),
     '#required'       => TRUE,
   );
   // asset
@@ -99,7 +99,7 @@ function d4os_admin() {
     '#type'           => 'textfield',
     '#title'          => t('Default asset URI'),
     '#default_value'  => variable_get('d4os_default_asset_server_uri', $base_url),
-    '#description'    => t("Default user asset URI."),
+    '#description'    => t("Default asset URI"),
     '#required'       => TRUE,
   );
   $form['d4os_uri']['asset']['d4os_default_asset_server_port'] = array(
@@ -108,7 +108,7 @@ function d4os_admin() {
     '#size'           => 5,
     '#maxlength'      => 5,
     '#default_value'  => variable_get('d4os_default_asset_server_port', '8003'),
-    '#description'    => t("Default user asset port."),
+    '#description'    => t("Default asset port"),
     '#required'       => TRUE,
   );
   // asset pictures
@@ -122,7 +122,7 @@ function d4os_admin() {
     '#type'           => 'textfield',
     '#title'          => t('Default asset server URL'),
     '#default_value'  => variable_get('d4os_default_asset_pictures_server_url', $base_url. '/asset.php?id='),
-    '#description'    => t("Default user asset server URL."),
+    '#description'    => t("Default asset server URL"),
     '#required'       => TRUE,
   );
   return system_settings_form($form);

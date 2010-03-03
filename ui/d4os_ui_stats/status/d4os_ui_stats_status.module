@@ -12,8 +12,8 @@
 function d4os_ui_stats_status_menu() {
   $items = array();
   $items['grid/stats/status'] = array(
-    'title'             => t('Status'),
-    'description'       => t('Check if the grid is online.'),
+    'title'             => 'Status',
+    'description'       => 'Check if the grid is online.',
     'page callback'     => 'd4os_ui_stats_status_js',
     'access callback'   => TRUE,
     'type'              => MENU_CALLBACK,

@@ -19,8 +19,8 @@ function d4os_io_osservices_help($path, $arg) {
 function d4os_io_osservices_menu() {
   $items = array();
   $items['admin/settings/d4os/io/osservices'] = array(
-    'title'             => t('osservices'),
-    'description'       => t('d4os io osservices settings'),
+    'title'             => 'osservices',
+    'description'       => 'd4os io osservices settings',
     'page callback'     => 'drupal_get_form',
     'page arguments'    => array('d4os_io_osservices_admin'),
     'access arguments'  => array('admin d4os osservices'),
@@ -28,8 +28,8 @@ function d4os_io_osservices_menu() {
     'file'              => 'd4os_io_osservices.admin.inc'
   );
   $items['grid/osservices'] = array(
-    'title'             => t('osservices'),
-    'description'       => t('d4os osservices'),
+    'title'             => 'osservices',
+    'description'       => 'd4os osservices',
     'page callback'     => 'drupal_get_form',
     'page arguments'    => array('d4os_io_osservices_form'),
     'access arguments'  => array('access d4os osservices'),

@@ -18,16 +18,16 @@ function d4os_ui_regions_help($path, $arg) {
 
 function d4os_ui_regions_menu() {
   $items['grid/regions/list'] = array(
-    'title'             => t('Regions'),
-    'description'       => t('Regions available.'),
+    'title'             => 'Regions',
+    'description'       => 'Regions available.',
     'page callback'     => 'd4os_ui_regions_display_regions_list',
     'type'              => MENU_NORMAL_ITEM,
     'access callback'   => TRUE,
   );
   
   $items['admin/settings/d4os/ui/regions'] = array(
-    'title'             => t('regions'),
-    'description'       => t('d4os ui regions settings'),
+    'title'             => 'regions',
+    'description'       => 'd4os ui regions settings',
     'page callback'     => 'drupal_get_form',
     'page arguments'    => array('d4os_ui_regions_admin'),
     'access arguments'  => array('admin d4os ui regions'),

@@ -28,8 +28,8 @@ function d4os_help($path, $arg) {
 function d4os_menu() {
   $items = array();
   $items['admin/settings/d4os'] = array(
-    'title'             => t('d4os settings'),
-    'description'       => t('d4os settings'),
+    'title'             => 'd4os settings',
+    'description'       => 'd4os settings',
     'page callback'     => 'drupal_get_form',
     'page arguments'    => array('d4os_admin'),
     'access arguments'  => array('admin d4os'),
@@ -37,24 +37,24 @@ function d4os_menu() {
     'file'              => 'd4os.admin.inc'
   );
   $items['admin/settings/d4os/io'] = array(
-    'title'             => t('IO'),
-    'description'       => t('IO settings'),
+    'title'             => 'IO',
+    'description'       => 'IO settings',
     'page callback'     => 'd4os_admin_io',
     'access arguments'  => array('admin d4os'),
     'type'              => MENU_NORMAL_ITEM,
     'file'              => 'd4os.admin.inc'
   );
   $items['admin/settings/d4os/io/services'] = array(
-    'title'             => t('services'),
-    'description'       => t('services settings'),
+    'title'             => 'services',
+    'description'       => 'services settings',
     'page callback'     => 'd4os_admin_services',
     'access arguments'  => array('admin d4os'),
     'type'              => MENU_NORMAL_ITEM,
     'file'              => 'd4os.admin.inc'
   );
   $items['admin/settings/d4os/ui'] = array(
-    'title'             => t('UI'),
-    'description'       => t('UI settings'),
+    'title'             => 'UI',
+    'description'       => 'UI settings',
     'page callback'     => 'd4os_admin_ui',
     'access arguments'  => array('admin d4os'),
     'type'              => MENU_NORMAL_ITEM,

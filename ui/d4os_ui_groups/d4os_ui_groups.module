@@ -11,8 +11,8 @@
 
 function d4os_ui_groups_menu() {
   $items['admin/settings/d4os/ui/groups'] = array(
-    'title'             => t('groups'),
-    'description'       => t('d4os ui groups settings'),
+    'title'             => 'groups',
+    'description'       => 'd4os ui groups settings',
     'page callback'     => 'drupal_get_form',
     'page arguments'    => array('d4os_ui_groups_admin'),
     'access arguments'  => array('admin d4os ui groups'),
@@ -20,8 +20,8 @@ function d4os_ui_groups_menu() {
     'file'              => 'd4os_ui_groups.admin.inc'
   );
   $items['grid/groups/check'] = array(
-    'title'             => t('Check groups'),
-    'description'       => t('Check groups'),
+    'title'             => 'Check groups',
+    'description'       => 'Check groups',
     'page callback'     => 'd4os_ui_groups_check_groups',
     'access arguments'  => array('admin d4os ui groups'),
     'type'              => MENU_NORMAL_ITEM,

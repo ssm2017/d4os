@@ -19,8 +19,8 @@ function d4os_io_radmin_help($path, $arg) {
 function d4os_io_radmin_menu() {
   $items = array();
   $items['admin/settings/d4os/io/radmin'] = array(
-    'title'             => t('radmin'),
-    'description'       => t('d4os io radmin settings'),
+    'title'             => 'radmin',
+    'description'       => 'd4os io radmin settings',
     'page callback'     => 'drupal_get_form',
     'page arguments'    => array('d4os_io_radmin_admin'),
     'access arguments'  => array('admin radmin radmin'),
@@ -28,8 +28,8 @@ function d4os_io_radmin_menu() {
     'file'              => 'd4os_io_radmin.admin.inc'
    );
   $items['grid/radmin'] = array(
-    'title'             => t('Radmin'),
-    'description'       => t('d4os radmin'),
+    'title'             => 'Radmin',
+    'description'       => 'd4os radmin',
     'page callback'     => 'drupal_get_form',
     'page arguments'    => array('d4os_io_radmin_form'),
     'access arguments'  => array('access d4os radmin'),

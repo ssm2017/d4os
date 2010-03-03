@@ -25,8 +25,8 @@ function d4os_ui_users_help($path, $arg) {
 function d4os_ui_users_menu() {
   $items = array();
   $items['admin/settings/d4os/ui/users'] = array(
-    'title'             => t('users'),
-    'description'       => t('d4os ui users settings'),
+    'title'             => 'users',
+    'description'       => 'd4os ui users settings',
     'page callback'     => 'drupal_get_form',
     'page arguments'    => array('d4os_ui_users_admin'),
     'access arguments'  => array('admin d4os ui users'),
@@ -34,8 +34,8 @@ function d4os_ui_users_menu() {
     'file'              => 'd4os_ui_users.admin.inc'
   );
   $items['grid/users/check'] = array(
-    'title'             => t('Check users'),
-    'description'       => t('Check users'),
+    'title'             => 'Check users',
+    'description'       => 'Check users',
     'page callback'     => 'd4os_ui_users_check_users',
     'access arguments'  => array('admin d4os ui users'),
     'type'              => MENU_NORMAL_ITEM,
@@ -152,12 +152,12 @@ function d4os_ui_users_account_validate($form, &$form_state) {
   $form_state['values']['name'] = $name;
 
   // check the username
-  $username_validate = d4os_ui_users_validate_name($username, 'username');
+  $username_validate = d4os_ui_users_validate_name($username, 'username', t('username'));
   if ($username_validate) {
     form_set_error('username', $username_validate);
   }
   // check the lastname
-  $lastname_validate = d4os_ui_users_validate_name($lastname, 'lastname');
+  $lastname_validate = d4os_ui_users_validate_name($lastname, 'lastname', t('lastname'));
   if ($lastname_validate) {
     form_set_error('lastname', $lastname_validate);
   }

@@ -38,8 +38,8 @@ function d4os_io_services_search_help($path, $arg) {
 
 function d4os_io_services_search_menu() {
   $items['admin/settings/d4os/io/services/search'] = array(
-    'title'             => t('search'),
-    'description'       => t('d4os io services search settings'),
+    'title'             => 'search',
+    'description'       => 'd4os io services search settings',
     'page callback'     => 'drupal_get_form',
     'page arguments'    => array('d4os_io_services_search_admin'),
     'access arguments'  => array('admin d4os io services search'),
@@ -47,8 +47,8 @@ function d4os_io_services_search_menu() {
     'file'              => 'd4os_io_services_search.admin.inc'
   );
   $items['grid/search/registerhost'] = array(
-    'title'         => t('Register host'),
-    'description'   => t('Register host'),
+    'title'         => 'Register host',
+    'description'   => 'Register host',
     'page callback' => 'd4os_io_services_search_registerhost',
     'access callback'  => TRUE,
     'type'          => MENU_CALLBACK,
