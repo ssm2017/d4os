@@ -58,7 +58,7 @@ function d4os_ui_groups_confirm_subscribe_validate($node, $uid = NULL) {
   global $user;
   $dest = drupal_get_destination();
 
-  // check if the user is registered in the grid
+  // check if user is logged in
   if (is_null($uid)) {
     if ($user->uid) {
       $account = $user;
@@ -67,7 +67,7 @@ function d4os_ui_groups_confirm_subscribe_validate($node, $uid = NULL) {
       return og_subscribe($node, $uid);
     }
   }
-  $account = user_load(array('uid' => $uid));
+  // check if the user is registered in the grid
   $AgentID = isset($account->grid_UUID) ? $account->grid_UUID : FALSE;
   if (!$AgentID) {
     drupal_set_message(t('You need to be registerd in the grid to join a group.'), 'error');
