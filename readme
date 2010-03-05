@@ -8,10 +8,11 @@ Installation :
 ****************
   * install OpenSim in grid mode using mysql as datastore
   * if you want to use search and groups, use the link http://d4os.yourdomain.com/services/xmlrpc in your OpenSim.ini [search] and [groups] section
-  * edit your drupal settings.php file to fit your databases (see below for details)
+  * if your database is not the same as the website one, you need to modify the file "sites/default/settings.php" (see below)
   * extract the archive in your drupal modules folder (sites/all/modules)
   * go to you modules admin page and enable the modules (admin/build/modules)
   * go to the d4os admin pages and set the values to fit your OpenSim installation (admin/settings/d4os)
+  * if using the database module, you need to configure the databases urls (admin/settings/d4os/io/db)
 
 ****************
 dependencies :
@@ -30,43 +31,11 @@ drupal settings.php
 ---------------------------------------
 same database for website and drupal :
 ---------------------------------------
-you can configure the file like this :
-
-$mybase = 'mysqli://username:password@localhost/mybase';
-$db_url['default']          = $mybase;
-$db_url['os_asset']         = $mybase;
-$db_url['os_auth']          = $mybase;
-$db_url['os_estate']        = $mybase;
-$db_url['os_grid']          = $mybase;
-$db_url['os_groups']        = $mybase;
-$db_url['os_inventory']     = $mybase;
-$db_url['os_messaging']     = $mybase;
-$db_url['os_opensim']       = $mybase;
-$db_url['os_search']        = $mybase;
-$db_url['os_user_account']  = $mybase;
-$db_url['os_users']         = $mybase;
+$db_url = 'mysqli://username:password@localhost/mybase';
+$db_prefix = '';
 
 ---------------------------------------
 different databases :
 ---------------------------------------
-$mybase = 'mysqli://username:password@localhost/mybase';
-$db_url['default']          = 'mysqli://username:password@localhost/drupal';
-$db_url['os_asset']         = 'mysqli://username:password@localhost/asset';
-$db_url['os_auth']          = 'mysqli://username:password@localhost/auth';
-$db_url['os_estate']        = 'mysqli://username:password@localhost/estate';
-$db_url['os_grid']          = 'mysqli://username:password@localhost/grid';
-$db_url['os_groups']        = 'mysqli://username:password@localhost/groups';
-$db_url['os_inventory']     = 'mysqli://username:password@localhost/inventory';
-$db_url['os_messaging']     = 'mysqli://username:password@localhost/messaging';
-$db_url['os_opensim']       = 'mysqli://username:password@localhost/opensim';
-$db_url['os_search']        = 'mysqli://username:password@localhost/search';
-$db_url['os_user_account']  = 'mysqli://username:password@localhost/user_account';
-$db_url['os_users']         = 'mysqli://username:password@localhost/users';
-
-As in version 0.0.10, only the bases :
-  * default
-  * grid
-  * groups
-  * search
-  * users
-are needed so you can forget the other ones for the moment.
+$db_url['default'] = 'mysqli://username:password@localhost/mybase';
+$db_prefix['default'] = '';

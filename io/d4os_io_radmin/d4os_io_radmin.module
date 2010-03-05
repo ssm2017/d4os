@@ -23,7 +23,7 @@ function d4os_io_radmin_menu() {
     'description'       => 'd4os io radmin settings',
     'page callback'     => 'drupal_get_form',
     'page arguments'    => array('d4os_io_radmin_admin'),
-    'access arguments'  => array('admin radmin radmin'),
+    'access arguments'  => array('admin d4os radmin'),
     'type'              => MENU_LOCAL_TASK,
     'file'              => 'd4os_io_radmin.admin.inc'
    );

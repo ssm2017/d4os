@@ -58,9 +58,9 @@ function d4os_io_db_os_event_save($event) {
     $grid_query = substr($grid_query, 0, -2);
     $node_query = substr($node_query, 0, -2);
     // make the query
-    db_set_active('os_search');
+    d4os_io_db_set_active('os_search');
     $success = db_query("UPDATE {events} SET $grid_query WHERE `eventid` = '%d'", array_merge($grid_v, array($event->eventid)));
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     if (!$success) {
       // The query failed - better to abort the save than risk further data loss.
       drupal_set_message(t('Error saving the event to the grid database'), 'error');
@@ -119,10 +119,10 @@ function d4os_io_db_os_event_save($event) {
       }
     }
 
-    db_set_active('os_search');
+    d4os_io_db_set_active('os_search');
     $success = db_query('INSERT INTO {events} ('. implode(', ', $grid_fields) .') VALUES ('. implode(', ', $grid_s) .')', $grid_values);
     $eventid = db_last_insert_id('events', 'eventid');
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     if (!$success) {
       // The query failed - better to abort the save than risk further data loss.
       drupal_set_message(t('Error saving the event to the grid database'), 'error');
@@ -194,37 +194,37 @@ function d4os_io_db_os_event_load($array = array()) {
       $params[] = $value;
     }
   }
-  //db_set_active('os_events');
+  //d4os_io_db_set_active('os_events');
   //$result = db_query('SELECT * FROM {events} WHERE '. implode(' AND ', $query), $params);
   $result = db_query('SELECT * FROM {d4os_ui_events} WHERE '. implode(' AND ', $query), $params);
   if ($event = db_fetch_object($result)) {
-    //db_set_active('default');
+    //d4os_io_db_set_active('default');
     return $event;
   }
   else {
-    //db_set_active('default');
+    //d4os_io_db_set_active('default');
     return FALSE;
   }
 }
 
 function d4os_io_db_os_event_load_all() {
   $users = array();
-  //db_set_active('os_search');
+  //d4os_io_db_set_active('os_search');
   //$result = db_query('SELECT * FROM {events}');
   $result = db_query('SELECT * FROM {d4os_ui_events}');
   while ($event = db_fetch_object($result)) {
     $events[] = $event;
   }
-  //db_set_active('default');
+  //d4os_io_db_set_active('default');
   return $event;
 }
 
 function d4os_io_db_os_event_delete($node) {
   // load the local event
   $eventid = db_result(db_query('SELECT eventid FROM {d4os_ui_events} WHERE nid=%d', $node->nid));
-  db_set_active('os_search');
+  d4os_io_db_set_active('os_search');
   db_query("DELETE FROM {events} WHERE eventid='%d'", $eventid);
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   db_query("DELETE FROM {d4os_ui_events} WHERE eventid='%d'", $eventid);
 }
 
@@ -233,13 +233,13 @@ function d4os_io_db_os_event_delete_revision($vid) {
 }
 
 function d4os_io_db_os_events_get_parcels_by_owner($ownerid) {
-  db_set_active('os_search');
+  d4os_io_db_set_active('os_search');
   $result = db_query("SELECT regionUUID, parcelname, landingpoint FROM {allparcels} WHERE ownerUUID = '%s'", $ownerid);
   $parcels = array();
   while($parcel = db_fetch_array($result)) {
     $parcels[] = $parcel;
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   if (count($parcels)) {
     return $parcels;
   }
@@ -255,7 +255,7 @@ function d4os_io_db_os_search_services_dir_places_query($params) {
   $text     = $params['search'];
   $start    = $params['start'];
   
-  db_set_active('os_search');
+  d4os_io_db_set_active('os_search');
   if ($category != -1) {
     $data = array($category, $text, $text);
     $result = db_query_range("SELECT * FROM {parcels} WHERE ".
@@ -283,7 +283,7 @@ function d4os_io_db_os_search_services_dir_places_query($params) {
       "dwell"     => $row["dwell"]
     );
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
 
   return array(
     'success'      => True,
@@ -310,7 +310,7 @@ function d4os_io_db_os_search_services_dir_popular_query($params) {
     $where = " WHERE " . join(" AND ", $terms);
   }
   
-  db_set_active('os_search');
+  d4os_io_db_set_active('os_search');
   $result = mysql_query("SELECT * FROM {popularplaces}" . $where);
   
   $data = array();
@@ -321,7 +321,7 @@ function d4os_io_db_os_search_services_dir_popular_query($params) {
       "dwell"     => $row["dwell"]
     );
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   
   return array(
     'success'      => True,
@@ -392,7 +392,7 @@ function d4os_io_db_os_search_services_dir_land_query($params) {
     $where = " WHERE " . join(" AND ", $terms);
   }
 
-  db_set_active('os_search');
+  d4os_io_db_set_active('os_search');
   $sql = "SELECT *, saleprice/area AS lsq FROM {parcelsales}" . $where . " ORDER BY " . $order;
   $result = db_query_range($sql, $query_start, 101);
   
@@ -409,7 +409,7 @@ function d4os_io_db_os_search_services_dir_land_query($params) {
       "area"          => $row["area"]
     );
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
 
   return array(
     'success'      => True,
@@ -445,7 +445,7 @@ function d4os_io_db_os_search_services_dir_events_query($params) {
     $where = " WHERE " . join(" AND ", $terms);
   }
 
-  db_set_active('os_search');
+  d4os_io_db_set_active('os_search');
   $result = db_query_range("SELECT * FROM {events}". $where, $query_start, 101);
 
   $data = array();
@@ -461,7 +461,7 @@ function d4os_io_db_os_search_services_dir_events_query($params) {
       "event_flags" => $row["eventflags"]
     );
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   return array(
     'success'      => True,
     'errorMessage' => "",
@@ -483,7 +483,7 @@ function d4os_io_db_os_search_services_dir_classified_query($params) {
     $where = " where " . join(" and ", $terms);
   }
 
-  db_set_active('os_search');
+  d4os_io_db_set_active('os_search');
   $result = db_query_range("SELECT * FROM {classifieds}". $where, $query_start, 101);
 
   $data = array();
@@ -497,7 +497,7 @@ function d4os_io_db_os_search_services_dir_classified_query($params) {
       "priceforlisting" => $row["priceforlisting"]
     );
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
 
   return array(
     'success'      => True,
@@ -509,7 +509,7 @@ function d4os_io_db_os_search_services_dir_classified_query($params) {
 function d4os_io_db_os_search_services_event_info_query($params) {
   $eventID = $params['eventID'];
 
-  db_set_active('os_search');
+  d4os_io_db_set_active('os_search');
   $result = db_query("SELECT * FROM {events} WHERE eventID = %d", $eventID);
 
   $data = array();
@@ -544,7 +544,7 @@ function d4os_io_db_os_search_services_event_info_query($params) {
       "eventflags"      => $row["eventflags"]
     );
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
 
   return array(
     'success'      => True,
@@ -556,7 +556,7 @@ function d4os_io_db_os_search_services_event_info_query($params) {
 function d4os_io_db_os_search_services_classifieds_info_query($params) {
   $classifiedID = $params['classifiedID'];
 
-  db_set_active('os_search');
+  d4os_io_db_set_active('os_search');
   $result = db_query("SELECT * FROM {classifieds} WHERE classifieduuid = '%s'", $classifiedID);
 
   $data = array();
@@ -579,7 +579,7 @@ function d4os_io_db_os_search_services_classifieds_info_query($params) {
       "priceforlisting" => $row["priceforlisting"]
     );
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
 
   return array(
     'success'      => True,
@@ -595,7 +595,7 @@ function d4os_io_db_os_search_services_registerhost($params) {
   $hostname = $params['host'];
   $port     = $params['port'];
   $service  = $params['service'];
-  db_set_active('os_search');
+  d4os_io_db_set_active('os_search');
   if ($hostname != "" && $port != "" && $service == "online") {
     // Check if there is already a database row for this host
     $checkhost = db_result(db_query("SELECT COUNT(register) FROM {hostsregister} WHERE host = '%s' AND port = '%s'", array($hostname, $port)));
@@ -614,5 +614,5 @@ function d4os_io_db_os_search_services_registerhost($params) {
   elseif ($hostname != "" && $port != "" && $service = "offline") {
     db_query("DELETE FROM {hostsregister} WHERE host = '%s' AND port = '%s'", array($hostname, $port));
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
 }

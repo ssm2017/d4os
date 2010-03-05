@@ -15,13 +15,13 @@ function d4os_io_db_os_search_services_parser_run() {
   // get time
   $now = time();
   // get the hosts infos
-  db_set_active('os_search');
+  d4os_io_db_set_active('os_search');
   $jobsearch = db_query("SELECT host, port FROM {hostsregister} WHERE lastcheck < %d LIMIT 0,1", $now);
   $hosts = array();
   while ($host = db_fetch_object($jobsearch)) {
     $hosts[] = $host;
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   if (count($hosts) > 0) {
     foreach($hosts as $host) {
       d4os_io_db_os_search_services_parser_checkhost($host->host, $host->port);
@@ -38,7 +38,7 @@ function d4os_io_db_os_search_services_parser_checkhost($hostname, $port) {
   $response = drupal_http_request('http://'. $hostname. ':'. $port);
   if ($response->code != 404) {
     watchdog('d4os_io_services_search_parser', t('Host !host was unreachable.'), array('!host' => $hostname), WATCHDOG_ERROR);
-    db_set_active('os_search');
+    d4os_io_db_set_active('os_search');
     $check = db_query("UPDATE {hostsregister} SET failcounter = failcounter + 1 WHERE host = '%s' AND port = '%s'", array($hostname, $port));
 
     //Setting a "fake" update time so this host will have time
@@ -46,12 +46,12 @@ function d4os_io_db_os_search_services_parser_checkhost($hostname, $port) {
     //$next = time() + 600; // 10 mins, so we don't get stuck
     //
     $updater = db_query("UPDATE {hostsregister} SET lastcheck = %d WHERE host = '%s' AND port = '%s'", array($next, $hostname, $port));
-    db_set_active('default');
+    d4os_io_db_set_active('default');
   }
   else {
-    db_set_active('os_search');
+    d4os_io_db_set_active('os_search');
     $sql = db_query("UPDATE {hostsregister} set failcounter = 0 WHERE host = '%s' AND port = '%s'", array($hostname, $port));
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     d4os_io_db_os_search_services_parser_parse($hostname, $port);
   }
 }
@@ -60,9 +60,9 @@ function d4os_io_db_os_search_services_parser_parse($hostname, $port) {
   global $now;
   if ($hostname != "" && $port != "") {
     $next = time() + (variable_get('d4os_io_db_os_search_services_parser_timer', 15) * 60);
-    db_set_active('os_search');
+    d4os_io_db_set_active('os_search');
     $updater = db_query("UPDATE hostsregister set lastcheck = %d WHERE host = '%s' AND port = '%s'", array($next, $hostname, $port));
-    db_set_active('default');
+    d4os_io_db_set_active('default');
 
     // Load XML doc from URL
     $objDOM = new DOMDocument();
@@ -78,9 +78,9 @@ function d4os_io_db_os_search_services_parser_parse($hostname, $port) {
       // Calculate new expire
       $next = time() + $expire;
 
-      db_set_active('os_search');
+      d4os_io_db_set_active('os_search');
       $updater = db_query("UPDATE {hostsregister} SET lastcheck = %d WHERE host = '%s' AND port = '%s'", array($next, $hostname, $port));
-      db_set_active('default');
+      d4os_io_db_set_active('default');
     
       $regionlist = $regiondata->getElementsByTagName("region");
     
@@ -94,7 +94,7 @@ function d4os_io_db_os_search_services_parser_parse($hostname, $port) {
         $url          = $info->getElementsByTagName("url")->item(0)->nodeValue;
 
         // First, check if we already have a region that is the same
-        db_set_active('os_search');
+        d4os_io_db_set_active('os_search');
         $check = db_query("SELECT count(*) FROM {regions} WHERE regionuuid = '%s'", $regionuuid);
 
         if (db_result($check) > 0) {
@@ -104,7 +104,7 @@ function d4os_io_db_os_search_services_parser_parse($hostname, $port) {
           db_query("DELETE FROM {allparcels} WHERE regionUUID = '%s'", $regionuuid);
           db_query("DELETE FROM {parcelsales} WHERE regionUUID = '%s'", $regionuuid);
         }
-        db_set_active('default');
+        d4os_io_db_set_active('default');
 
         $data     = $region->getElementsByTagName("data")->item(0);
         $estate   = $data->getElementsByTagName("estate")->item(0);
@@ -112,9 +112,9 @@ function d4os_io_db_os_search_services_parser_parse($hostname, $port) {
         $useruuid = $estate->getElementsByTagName("uuid")->item(0)->nodeValue;
 
         // Second, add the new info to the database
-        db_set_active('os_search');
+        d4os_io_db_set_active('os_search');
         db_query("INSERT INTO {regions} VALUES('%s','%s','%s','%s','%s','%s')", array($regionname, $regionuuid, $regionhandle, $url, $username, $useruuid));
-        db_set_active('default');
+        d4os_io_db_set_active('default');
 
         // Start reading the parcel info
         $parcel = $data->getElementsByTagName("parcel");
@@ -160,9 +160,9 @@ function d4os_io_db_os_search_services_parser_parse($hostname, $port) {
             $infouuid,
             $parcelarea
           );
-          db_set_active('os_search');
+          d4os_io_db_set_active('os_search');
           db_query("INSERT INTO {allparcels} VALUES('%s','%s','%s','%s','%s','%s','%s','%s' )", $values);
-          db_set_active('default');
+          d4os_io_db_set_active('default');
       
           if ($parceldirectory == "true") {
             $values = array(
@@ -178,9 +178,9 @@ function d4os_io_db_os_search_services_parser_parse($hostname, $port) {
               $dwell,
               $infouuid
             );
-            db_set_active('os_search');
+            d4os_io_db_set_active('os_search');
             db_query("INSERT INTO {parcels} VALUES('%s','%s','%s','%s','%s','%s','%s','%s','%s','%s','%s' )", $values);
-            db_set_active('default');
+            d4os_io_db_set_active('default');
           }
       
           if ($parcelforsale == "true") {
@@ -196,9 +196,9 @@ function d4os_io_db_os_search_services_parser_parse($hostname, $port) {
               "1",
               "false"
             );
-            db_set_active('os_search');
+            d4os_io_db_set_active('os_search');
             db_query("INSERT INTO {parcelsales} VALUES('%s','%s','%s','%s','%s','%s','%s', '%s', '%s', '%s')", $values);
-            db_set_active('default');
+            d4os_io_db_set_active('default');
           }
         }
     
@@ -220,9 +220,9 @@ function d4os_io_db_os_search_services_parser_parse($hostname, $port) {
             $description,
             $regionuuid
           );
-          db_set_active('os_search');
+          d4os_io_db_set_active('os_search');
           db_query("INSERT INTO {objects} VALUES('%s','%s','','%s','%s','%s')", $values);
-          db_set_active('default');
+          d4os_io_db_set_active('default');
         }
       }
     }

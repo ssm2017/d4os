@@ -9,6 +9,8 @@
 * other free or open source software licenses.
 */
 
+module_load_include('settings.inc', 'd4os_io_db');
+
 //module_load_include('inc', 'd4os_io_db', 'd4os_io_db_asset');
 //module_load_include('inc', 'd4os_io_db', 'd4os_io_db_auth');
 module_load_include('inc', 'd4os_io_db', 'd4os_io_db_grid');
@@ -28,6 +30,26 @@ function d4os_io_db_help($path, $arg) {
     case 'admin/help#d4os_io_db':
       return '<p>' . t('OpenSim grid management saving to the database') . '</p>';
   }
+}
+
+function d4os_io_db_menu() {
+  $items = array();
+  $items['admin/settings/d4os/io/db'] = array(
+    'title'             => 'db',
+    'description'       => 'd4os io db settings',
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('d4os_io_db_admin'),
+    'access arguments'  => array('admin d4os db'),
+    'type'              => MENU_LOCAL_TASK,
+    'file'              => 'd4os_io_db.admin.inc'
+   );
+  return $items;
+}
+
+function d4os_io_db_perm() {
+  return array(
+    'admin d4os db'
+  );
 }
 
 function d4os_io_db_check_bases() {
@@ -89,4 +111,22 @@ function d4os_io_db_check_bases() {
     $output = FALSE;
   }
   return $output;
+}
+
+function d4os_io_db_set_active($name = 'default') {
+  if ($name == 'default') {
+    db_set_active('default');
+  }
+  $d4os_db_type = variable_get('d4os_io_db_type', 0);
+  switch ($d4os_db_type) {
+    case 0:
+      db_set_active('os_single');
+      break;
+    case 1:
+      db_set_active($name);
+      break;
+    case 2:
+      return;
+      break;
+  }
 }

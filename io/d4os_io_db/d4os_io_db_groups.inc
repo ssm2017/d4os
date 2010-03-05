@@ -89,12 +89,12 @@ function d4os_io_db_os_group_load($params) {
 
 function d4os_io_db_os_group_load_all() {
   $groups = array();
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $result = db_query('SELECT *, Name AS title FROM {osgroup}');
   while ($group = db_fetch_array($result)) {
     $groups[] = $group;
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   return $groups;
 }
 
@@ -102,7 +102,7 @@ function d4os_io_db_os_group_delete($params) {
   // get the group
   $group = d4os_io_db_os_group_load($params);
   db_query("DELETE FROM {d4os_ui_groups} WHERE nid = %d". $group['nid']);
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   db_query("DELETE FROM {osagent} WHERE ActiveGroupID = '%s'", array($group['GroupID']));
   db_query("DELETE FROM {osgroupinvite} WHERE GroupID = '%s'", array($group['GroupID']));
   db_query("DELETE FROM {osgroupmembership} WHERE GroupID = '%s'", array($group['GroupID']));
@@ -110,7 +110,7 @@ function d4os_io_db_os_group_delete($params) {
   db_query("DELETE FROM {osgrouprolemembership} WHERE GroupID = '%s'", array($group['GroupID']));
   db_query("DELETE FROM {osrole} WHERE GroupID = '%s'", array($group['GroupID']));
   db_query("DELETE FROM {osgroup} WHERE GroupID = '%s'", array($group['GroupID']));
-  db_set_active('default');
+  d4os_io_db_set_active('default');
 }
 
 function d4os_io_db_os_group_subscribe($params) {
@@ -234,15 +234,15 @@ function d4os_io_db_os_groups_services_createGroup($params) {
   ('%s', '%s', '%s', '%s', '%s', %d, %d, %d, %d, %d, '%s')";
   $values = array($groupID, $name, $charter, $insigniaID, $founderID, $membershipFee, $openEnrollment, $showInList, $allowPublish, $maturePublish, $ownerRoleID);
 
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   if (!db_query($sql, $values)) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
     );
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   return array('success' => 'true');
 }
 
@@ -263,16 +263,16 @@ function d4os_io_db_os_groups_services_addRoleToGroup($params) {
     ." ('%s', '%s', '%s', '%s', '%s', %d)";
   $data = array($groupID, $roleID, $name, $desc, $title, $powers);
 
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   if (!db_query($sql, $data)) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error'   => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'method'  => 'd4os_io_services_groups_addRoleToGroup',
       'params'  => var_export($params, TRUE)
     );
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
 
   return array("success" => "true");
 }
@@ -316,15 +316,15 @@ function d4os_io_db_os_groups_services_updateGroupRole($params) {
   $values[] = $groupID;
   $values[] = $roleID;
 
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   if (!db_query($sql, $values)) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
     );
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
 
   return array("success" => "true");
 }
@@ -338,9 +338,9 @@ function d4os_io_db_os_groups_services_removeRoleFromGroup($params) {
 
   $sql = "DELETE FROM {osgrouprolemembership} WHERE GroupID = '%s' AND RoleID = '%s'";
   $values = array($groupID, $roleID);
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   if (!db_query($sql, $values)) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
@@ -350,25 +350,25 @@ function d4os_io_db_os_groups_services_removeRoleFromGroup($params) {
   $sql = "UPDATE {osgroupmembership} SET SelectedRoleID = '%s' WHERE GroupID = '%s' AND SelectedRoleID = '%s'";
   $values = array(UUID_ZERO, $groupID, $roleID);
   if (!db_query($sql, $values)) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
     );
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
 
   $sql = "DELETE FROM {osrole} WHERE GroupID = '$groupID' AND RoleID = '$roleID'";
   $values = array($groupID, $roleID);
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   if (!db_query($sql, $values)) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
     );
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   return array("success" => "true");
 }
 
@@ -394,9 +394,9 @@ function d4os_io_db_os_groups_services_getGroup($params) {
 
   $sql .= " GROUP BY osgroup.GroupID, osgroup.name, charter, insigniaID, founderID, membershipFee, openEnrollment, showInList, allowPublish, maturePublish, ownerRoleID";
 
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $result = db_query($sql, $values);
-  db_set_active('default');
+  d4os_io_db_set_active('default');
 
   if (!$result) {
     return array(
@@ -405,9 +405,9 @@ function d4os_io_db_os_groups_services_getGroup($params) {
     );
   }
 
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $group = db_fetch_array($result);
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   if (!$group) {
     return array(
       'succeed' => 'false',
@@ -444,15 +444,15 @@ function d4os_io_db_os_groups_services_updateGroup($params) {
   GroupID = '%s'";
   $values = array($name, $charter, $insigniaID, $membershipFee, $openEnrollment, $showInList, $allowPublish, $maturePublish, $groupID);
 
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   if (!db_query($sql, $values)) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
     );
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
 
   if ($inworld) {
     module_invoke_all('os_group_grid_update', $params);
@@ -474,11 +474,11 @@ function d4os_io_db_os_groups_services_findGroups($params) {
   ." GROUP BY osgroup.GroupID, osgroup.Name";
   $values = array($search, $search, $search);
 
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $result = db_query($sql, $values);
 
   if (!$result) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
@@ -492,7 +492,7 @@ function d4os_io_db_os_groups_services_findGroups($params) {
     $results[$groupID] = $row;
     $num_rows = TRUE;
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
 
   if(!$num_rows) {
     return array(
@@ -514,9 +514,9 @@ function d4os_io_db_os_groups_services_setAgentActiveGroup($params) {
   ." SET ActiveGroupID = '%s'"
   ." WHERE AgentID = '%s'";
   $values = array($groupID, $agentID);
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   if (!db_query($sql, $values)) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
@@ -527,14 +527,14 @@ function d4os_io_db_os_groups_services_setAgentActiveGroup($params) {
     $sql = " INSERT INTO {osagent} (ActiveGroupID, AgentID) VALUES ('%s', '%s')";
   
     if (!db_query($sql, $values)) {
-      db_set_active('default');
+      d4os_io_db_set_active('default');
       return array(
         'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
         'params' => var_export($params, TRUE)
       );
     }
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
 
   return array("success" => "true");
 }
@@ -547,10 +547,10 @@ function d4os_io_db_os_groups_services_addAgentToGroup($params) {
   ." WHERE osgroupinvite.AgentID = '%s' AND osgroupinvite.GroupID = '%s'";
   $values = array($agentID, $groupID);
 
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $results = db_query($sql, $values);
   if (!$results) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
@@ -558,7 +558,7 @@ function d4os_io_db_os_groups_services_addAgentToGroup($params) {
   }
 
   $inviteInfo = db_fetch_array($results);
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   if (!is_array($inviteInfo)) {
     return array(
       'error' => t("Could not add agent to group "),
@@ -579,10 +579,10 @@ function d4os_io_db_os_groups_services_addAgentToGroup_2($params) {
   // Check if agent already a member
   $sql = " SELECT count(AgentID) as isMember FROM {osgroupmembership} WHERE AgentID = '%s' AND GroupID = '%s'";
   $values = array($agentID, $groupID);
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $result = db_query($sql, $values);
   if (!$result) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
@@ -596,14 +596,14 @@ function d4os_io_db_os_groups_services_addAgentToGroup_2($params) {
     $values = array($groupID, $agentID, $roleID);
 
     if (!db_query($sql, $values)) {
-      db_set_active('default');
+      d4os_io_db_set_active('default');
       return array(
         'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
         'params' => var_export($params, TRUE)
       );
     }
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   return array('success' => 'true');
 }
 
@@ -619,9 +619,9 @@ function d4os_io_db_os_groups_services_removeAgentFromGroup($params) {
   ." SET ActiveGroupID = 'UUID_ZERO'"
   ." WHERE AgentID = '%s' AND ActiveGroupID = '%s'";
   $values = array($agentID, $groupID);
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   if (!db_query($sql, $values)) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
@@ -631,7 +631,7 @@ function d4os_io_db_os_groups_services_removeAgentFromGroup($params) {
   $sql = " DELETE FROM {osgroupmembership} "
   ." WHERE AgentID = '%s' AND GroupID = '%s'";
   if (!db_query($sql, $values)) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
@@ -641,13 +641,13 @@ function d4os_io_db_os_groups_services_removeAgentFromGroup($params) {
   $sql = " DELETE FROM {osgrouprolemembership} "
   ." WHERE AgentID = '%s' AND GroupID = '%s'";
   if (!db_query($sql, $values)) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
     );
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   return array("success" => "true");
 }
 
@@ -659,10 +659,10 @@ function d4os_io_db_os_groups_services_addAgentToGroupRole($params) {
   // Check if agent already a member
   $sql = " SELECT count(AgentID) as isMember FROM {osgrouprolemembership} WHERE AgentID = '%s' AND RoleID = '%s' AND GroupID = '%s'";
   $values = array($agentID, $roleID, $groupID);
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $result = db_query($sql, $values);
   if (!$result) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
@@ -673,14 +673,14 @@ function d4os_io_db_os_groups_services_addAgentToGroupRole($params) {
     $sql = " INSERT INTO {osgrouprolemembership} (AgentID, RoleID, GroupID) VALUES ('%s', '%s', '%s')";
     
     if (!db_query($sql, $values)) {
-      db_set_active('default');
+      d4os_io_db_set_active('default');
       return array(
         'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
         'params' => var_export($params, TRUE)
       );
     }
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
 
   return array("success" => "true");
 }
@@ -695,17 +695,17 @@ function d4os_io_db_os_groups_services_addAgentToGroupRole_2($params) {
   ." FROM {osgroup} LEFT JOIN {osgrouprolemembership} ON (osgroup.GroupID = osgrouprolemembership.GroupID AND osgroup.OwnerRoleID = osgrouprolemembership.RoleID) "
   ." WHERE osgrouprolemembership.AgentID = '%s' AND osgroup.GroupID = '%s'";
   $values = array($requestingAgent, $groupID);
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $results = db_query($sql, $values);
   if (!$results) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
     );
   }
   $ownerRoleInfo = db_fetch_array($results);
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   if (!is_array($ownerRoleInfo)) {
     return array(
       'error' => t("Could not add afent to group role"),
@@ -722,10 +722,10 @@ function d4os_io_db_os_groups_services_removeAgentFromGroupRole($params) {
   // If agent has this role selected, change their selection to everyone (uuidZero) role
   $sql = " UPDATE {osgroupmembership} SET SelectedRoleID = '%s' WHERE AgentID = '%s' AND GroupID = '%s' AND SelectedRoleID = '%s'";
   $values = array(UUID_ZERO, $agentID, $groupID, $roleID);
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $result = db_query($sql, $values);
   if (!$result) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
@@ -735,13 +735,13 @@ function d4os_io_db_os_groups_services_removeAgentFromGroupRole($params) {
   $sql = " DELETE FROM {osgrouprolemembership} WHERE AgentID = '%s' AND GroupID = '%s' AND RoleID = '%s'";
   $values = array($agentID, $groupID, $roleID);
   if (!db_query($sql, $values)) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
     );
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
 
   return array("success" => "true");
 }
@@ -753,16 +753,16 @@ function d4os_io_db_os_groups_services_setAgentGroupSelectedRole($params) {
 
   $sql = " UPDATE {osgroupmembership} SET SelectedRoleID = '%s' WHERE AgentID = '%s' AND GroupID = '%s'";
   $values = array($roleID, $agentID, $groupID);
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $result = db_query($sql, $values);
   if (!$result) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
     );
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
 
   return array('success' => 'true');
 }
@@ -780,10 +780,10 @@ function d4os_io_db_os_groups_services_getAgentGroupMembership($params) {
   ."              JOIN {osagent} ON (osagent.AgentID = osgroupmembership.AgentID)"
   ." WHERE osgroup.GroupID = '%sa' AND osgroupmembership.AgentID = '%s'";
   $values = array($groupID, $agentID);
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $groupmembershipResult = db_query($sql, $values);
   if (!$groupmembershipResult) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
@@ -793,7 +793,7 @@ function d4os_io_db_os_groups_services_getAgentGroupMembership($params) {
   $groupMembershipInfo = db_fetch_array($groupmembershipResult);
 
   if (!is_array($groupMembershipInfo)) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'succeed' => 'false',
       'error'   => 'None Found',
@@ -808,14 +808,14 @@ function d4os_io_db_os_groups_services_getAgentGroupMembership($params) {
   
   $groupPowersResult = db_query($sql, $values);
   if (!$groupPowersResult) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
     );
   }
   $groupPowersInfo = db_fetch_array($groupPowersResult);
-  db_set_active('default');
+  d4os_io_db_set_active('default');
 
   return array_merge($groupMembershipInfo, $groupPowersInfo);
 }
@@ -833,10 +833,10 @@ function d4os_io_db_os_groups_services_getAgentGroupMemberships($params) {
   ." WHERE osgroupmembership.AgentID = '%s'";
   $values = array(UUID_ZERO, $agentID);
 
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $groupmembershipResults = db_query($sql, $values);
   if (!$groupmembershipResults) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
@@ -852,10 +852,10 @@ function d4os_io_db_os_groups_services_getAgentGroupMemberships($params) {
     ." FROM {osgrouprolemembership} JOIN osrole ON (osgrouprolemembership.GroupID = osrole.GroupID AND osgrouprolemembership.RoleID = osrole.RoleID)"
     ." WHERE osgrouprolemembership.GroupID = '%s' AND osgrouprolemembership.AgentID = '%s'";
     $values = array($groupID, $agentID);
-    db_set_active('os_groups');
+    d4os_io_db_set_active('os_groups');
     $groupPowersResult = db_query($sql, $values);
     if (!$groupPowersResult) {
-      db_set_active('default');
+      d4os_io_db_set_active('default');
       return array(
         'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
         'params' => var_export($params, TRUE)
@@ -864,7 +864,7 @@ function d4os_io_db_os_groups_services_getAgentGroupMemberships($params) {
     $groupPowersInfo = db_fetch_array($groupPowersResult);
     $groupResults[$groupID] = array_merge($groupMembershipInfo, $groupPowersInfo);
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
 
   if ($num_rows == 0) {
     return array(
@@ -887,16 +887,16 @@ function d4os_io_db_os_groups_services_canAgentViewRoleMembers($params) {
   $sql .= " WHERE osgroup.GroupID = '%s' GROUP BY osgroup.GroupID";	
   $values = array($agentID, $agentID, $groupID);
 
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $viewMemberResults = db_query($sql, $values);
   if (!$viewMemberResults) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
     );
   }
   $viewMemberInfo = db_fetch_array($viewMemberResults);
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   if (!is_array($viewMemberInfo)) {
     return array(
       'error' => t("Could not define if agent can view role members"),
@@ -920,10 +920,10 @@ function d4os_io_db_os_groups_services_getGroupMembers($params) {
                                   AND (osgroupmembership.AgentID = OwnerRoleMembership.AgentID))"
   ." WHERE osgroup.GroupID = '%s'";
   $values = array($groupID);
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $groupmemberResults = db_query($sql, $values);
   if (!$groupmemberResults) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
@@ -941,10 +941,10 @@ function d4os_io_db_os_groups_services_getGroupMembers($params) {
     ." FROM {osgrouprolemembership} JOIN {osrole} ON (osgrouprolemembership.GroupID = osrole.GroupID AND osgrouprolemembership.RoleID = osrole.RoleID)"
     ." WHERE osgrouprolemembership.GroupID = '%s' AND osgrouprolemembership.AgentID = '%s'";
     $values = array($roleMembersVisibleBit, $groupID, $agentID);
-    db_set_active('os_groups');
+    d4os_io_db_set_active('os_groups');
     $memberPowersResult = db_query($sql, $values);
     if (!$memberPowersResult) {
-      db_set_active('default');
+      d4os_io_db_set_active('default');
       return array(
         'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
         'params' => var_export($params, TRUE)
@@ -952,7 +952,7 @@ function d4os_io_db_os_groups_services_getGroupMembers($params) {
     }
 
     $memberPowersInfo = db_fetch_array($memberPowersResult);
-    db_set_active('default');
+    d4os_io_db_set_active('default');
 
     if (!is_array($memberPowersInfo)) {
       if( $canViewAllGroupRoleMembers || ($memberResults[$agentID] == $requestingAgent)) {
@@ -988,10 +988,10 @@ function d4os_io_db_os_groups_services_getAgentActiveMembership($params) {
   ."              JOIN {osrole} ON (osgroupmembership.SelectedRoleID = osrole.RoleID AND osgroupmembership.GroupID = osrole.GroupID)"
   ." WHERE osagent.AgentID = '%s'";
   $values = array($agentID);
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $groupmembershipResult = db_query($sql, $values);
   if (!$groupmembershipResult) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
@@ -1001,7 +1001,7 @@ function d4os_io_db_os_groups_services_getAgentActiveMembership($params) {
   $groupMembershipInfo = db_fetch_array($groupmembershipResult);
 
   if (!is_array($groupMembershipInfo)) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'succeed' => 'false',
       'error' => 'No Active Group Specified',
@@ -1018,14 +1018,14 @@ function d4os_io_db_os_groups_services_getAgentActiveMembership($params) {
 
   $groupPowersResult = db_query($sql, $values);
   if (!$groupPowersResult) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
     );
   }
   $groupPowersInfo = db_fetch_array($groupPowersResult);
-  db_set_active('default');
+  d4os_io_db_set_active('default');
 
   return array_merge($groupMembershipInfo, $groupPowersInfo);
 }
@@ -1048,10 +1048,10 @@ function d4os_io_db_os_groups_services_getAgentRoles($params) {
     $values[] = $groupID;
   }
 
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $roleResults = db_query($sql, $values);
   if (!$roleResults) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
@@ -1063,7 +1063,7 @@ function d4os_io_db_os_groups_services_getAgentRoles($params) {
     $ID = $role['GroupID'].$role['RoleID'];
     $roles[$ID] = $role;
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   if (!is_array($roles)) {
     return array(
       'error' => t("Could not get agent roles"),
@@ -1083,10 +1083,10 @@ function d4os_io_db_os_groups_services_getGroupRoles($params) {
   ." GROUP BY osrole.RoleID, osrole.Name, osrole.Title, osrole.Description, osrole.Powers";
   $values = array($groupID);
 
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $roleResults = db_query($sql, $values);
   if (!$roleResults) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
@@ -1098,7 +1098,7 @@ function d4os_io_db_os_groups_services_getGroupRoles($params) {
     $RoleID = $role['RoleID'];
     $roles[$RoleID] = $role;
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   if (!is_array($roles)) {
     return array(
       'error' => t("Could not get group roles"),
@@ -1121,10 +1121,10 @@ function d4os_io_db_os_groups_services_getGroupRoleMembers($params) {
   ." WHERE osrole.GroupID = '%s'";
   $values = array($roleMembersVisibleBit, $groupID);
 
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $memberResults = db_query($sql, $values);
   if (!$memberResults) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
@@ -1140,7 +1140,7 @@ function d4os_io_db_os_groups_services_getGroupRoleMembers($params) {
       $members[$Key ] = $member;
     }
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   if (!is_array($members)) {
     return array(
       'error' => t("Could not get group role members"),
@@ -1212,9 +1212,9 @@ function d4os_io_db_os_groups_services_setAgentGroupInfo($params) {
   $values[] = $groupID;
   $values[] = $agentID;
 
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $memberResults = db_query($sql, $values);
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   if (!$memberResults) {
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
@@ -1234,10 +1234,10 @@ function d4os_io_db_os_groups_services_getGroupNotices($params) {
   ." WHERE osgroupnotice.GroupID = '$groupID'";
   $values = array($groupID);
 
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $results = db_query($sql, $values);
   if (!$results) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
@@ -1249,7 +1249,7 @@ function d4os_io_db_os_groups_services_getGroupNotices($params) {
     $NoticeID = $notice['NoticeID'];
     $notices[$NoticeID] = $notice;
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   if (!is_array($notices)) {
     return array(
       'error' => t("Could not get group notices"),
@@ -1268,10 +1268,10 @@ function d4os_io_db_os_groups_services_getGroupNotice($params) {
   ." WHERE osgroupnotice.NoticeID = '%s'";
   $values = array($noticeID);
 
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $results = db_query($sql, $values);
   if (!$results) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
@@ -1279,7 +1279,7 @@ function d4os_io_db_os_groups_services_getGroupNotice($params) {
   }
 
   $notice = db_fetch_array($results);
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   if (!is_array($notice)) {
     return array(
       'error' => t("Could not get group notice"),
@@ -1303,9 +1303,9 @@ function d4os_io_db_os_groups_services_addGroupNotice($params) {
   ." ('%s', '%s', %d, '%s', '%s', '%s', '%s')";
   $values = array($groupID, $noticeID, $timeStamp, $fromName, $subject, $message, $binaryBucket);
 
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $results = db_query($sql, $values);
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   if (!$results) {
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
@@ -1326,10 +1326,10 @@ function d4os_io_db_os_groups_services_addAgentToGroupInvite($params) {
   ." WHERE osgroupinvite.AgentID = '%s' AND osgroupinvite.GroupID = '%s'";
   $values = array($agentID, $groupID);
 
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $results = db_query($sql, $values);
   if (!$results) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
@@ -1343,13 +1343,13 @@ function d4os_io_db_os_groups_services_addAgentToGroupInvite($params) {
   
   $results = db_query($sql, $values);
   if (!$results) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
     );
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   
   return array('success' => 'true');
 }
@@ -1361,10 +1361,10 @@ function d4os_io_db_os_groups_services_getAgentToGroupInvite($params) {
   ." WHERE osgroupinvite.InviteID = '%s'";
   $values = array($inviteID);
 
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $results = db_query($sql, $values);
   if (!$results) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
       'params' => var_export($params, TRUE)
@@ -1372,7 +1372,7 @@ function d4os_io_db_os_groups_services_getAgentToGroupInvite($params) {
   }
 
   $inviteInfo = db_fetch_array($results);
-  db_set_active('default');
+  d4os_io_db_set_active('default');
 
   $return = array();
   if (!is_array($inviteInfo)) {
@@ -1404,9 +1404,9 @@ function d4os_io_db_os_groups_services_removeAgentToGroupInvite($params) {
   ." WHERE osgroupinvite.InviteID = '%s'";
   $values = array($inviteID);
 
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $results = db_query($sql, $values);
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   if (!$results) {
     return array(
       'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
@@ -1420,15 +1420,15 @@ function d4os_io_db_os_groups_services_removeAgentToGroupInvite($params) {
 function d4os_io_db_os_groups_services_checkGroupPermission($PermMask, $PermValue) {
   $sql = " SELECT %d & %d AS Allowed";
   $values = array($PermMask, $PermValue);
-  db_set_active('os_groups');
+  d4os_io_db_set_active('os_groups');
   $results = db_query($sql, $values);
   if (!$results) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     echo print_r( array(
       'error' => "Could not successfully run query ($sql) from DB: " . mysql_error())
     );
   }
   $PermMasked = db_result($results, 0);
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   return $PermMasked;
 }

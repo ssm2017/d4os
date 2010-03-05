@@ -71,9 +71,9 @@ function d4os_io_db_os_user_save($account) {
     // remove the last ", "
     $query = substr($query, 0, -2);
     // make the query
-    db_set_active('os_users');
+    d4os_io_db_set_active('os_users');
     $success = db_query("UPDATE {users} SET $query WHERE `UUID` = '%s'", array_merge($v, array($grid_user['UUID'])));
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     if (!$success) {
       // The query failed - better to abort the save than risk further data loss.
       return FALSE;
@@ -130,9 +130,9 @@ function d4os_io_db_os_user_save($account) {
       }
     }
 
-    db_set_active('os_users');
+    d4os_io_db_set_active('os_users');
     $success = db_query('INSERT INTO {users} ('. implode(', ', $fields) .') VALUES ('. implode(', ', $s) .')', $values);
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     if (!$success) {
       // On a failed INSERT some other existing user's uid may be returned.
       // We must abort to avoid overwriting their account.
@@ -156,14 +156,14 @@ function d4os_io_db_os_user_load($array = array()) {
     if (!$UUID) {
       return FALSE;
     }
-    db_set_active('os_users');
+    d4os_io_db_set_active('os_users');
     $result = db_query("SELECT * FROM {users} WHERE UUID = '%s'", array($UUID));
     if ($user = db_fetch_object($result)) {
-      db_set_active('default');
+      d4os_io_db_set_active('default');
       return $user;
     }
     else {
-      db_set_active('default');
+      d4os_io_db_set_active('default');
       return FALSE;
     }
   }
@@ -215,28 +215,28 @@ function d4os_io_db_os_user_load($array = array()) {
       }
     }
   }
-  db_set_active('os_users');
+  d4os_io_db_set_active('os_users');
   $result = db_query('SELECT * FROM {users} WHERE '. implode(' AND ', $query), $params);
   if ($user = db_fetch_object($result)) {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     $uid = db_result(db_query("SELECT uid FROM {d4os_ui_users} WHERE UUID = '%s'", array($user->UUID)));
     $user->uid = $uid;
     return $user;
   }
   else {
-    db_set_active('default');
+    d4os_io_db_set_active('default');
     return FALSE;
   }
 }
 
 function d4os_io_db_os_user_load_all() {
   $users = array();
-  db_set_active('os_users');
+  d4os_io_db_set_active('os_users');
   $result = db_query('SELECT *, CONCAT_WS(\' \', username, lastname) AS name FROM {users}');
   while ($user = db_fetch_object($result)) {
     $users[] = $user;
   }
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   return $users;
 }
 
@@ -245,8 +245,8 @@ function d4os_io_db_os_user_delete($data) {
   // TODO : delete all sessions
   // TODO : delete inventory
   // TODO : delete friends
-  db_set_active('os_users');
+  d4os_io_db_set_active('os_users');
   $user = db_query("DELETE FROM {users} WHERE UUID='%s'", $data);
-  db_set_active('default');
+  d4os_io_db_set_active('default');
   db_query("DELETE FROM {d4os_ui_users} WHERE UUID='%s'", $data);
 }
