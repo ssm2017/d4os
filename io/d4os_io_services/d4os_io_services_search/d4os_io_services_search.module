@@ -52,7 +52,6 @@ function d4os_io_services_search_menu() {
     'page callback' => 'd4os_io_services_search_registerhost',
     'access callback'  => TRUE,
     'type'          => MENU_CALLBACK,
-    'file'          => 'd4os_io_services_search.inworld.inc',
   );
   return $items;
 }
@@ -68,8 +67,13 @@ function d4os_io_services_search_perm() {
 }
 
 function d4os_io_services_search_cron() {
-  module_load_include('inc', 'd4os_io_services_search', 'd4os_io_services_search_parser');
-  d4os_io_services_search_parser_run();
+  // do the job
+  module_invoke_all('os_search_services_parser_run');
+}
+
+function d4os_io_services_search_registerhost() {
+  // do the job
+  return module_invoke_all('os_search_services_registerhost', $_GET);
 }
 
 /**

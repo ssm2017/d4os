@@ -18,6 +18,7 @@ module_load_include('inc', 'd4os_io_db', 'd4os_io_db_grid');
 module_load_include('inc', 'd4os_io_db', 'd4os_io_db_users');
 //module_load_include('inc', 'd4os_io_db', 'd4os_io_db_opensim');
 module_load_include('inc', 'd4os_io_db', 'd4os_io_db_search');
+module_load_include('inc', 'd4os_io_db', 'd4os_io_db_search_parser');
 module_load_include('inc', 'd4os_io_db', 'd4os_io_db_groups');
 
 

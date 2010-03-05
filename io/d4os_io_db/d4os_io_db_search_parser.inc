@@ -9,7 +9,7 @@
 * other free or open source software licenses.
 */
 
-function d4os_io_services_search_parser_run() {
+function d4os_io_db_os_search_services_parser_run() {
   watchdog('d4os_io_services_search_parser', t('Starting parsing host values.'), array(), WATCHDOG_INFO);
   global $now;
   // get time
@@ -24,7 +24,7 @@ function d4os_io_services_search_parser_run() {
   db_set_active('default');
   if (count($hosts) > 0) {
     foreach($hosts as $host) {
-      d4os_io_services_search_parser_checkhost($host->host, $host->port);
+      d4os_io_db_os_search_services_parser_checkhost($host->host, $host->port);
       watchdog('d4os_io_services_search_parser', t('Host !host was parsed.'), array('!host' => $host->host), WATCHDOG_INFO);
     }
   }
@@ -33,7 +33,7 @@ function d4os_io_services_search_parser_run() {
   }
 }
 
-function d4os_io_services_search_parser_checkhost($hostname, $port) {
+function d4os_io_db_os_search_services_parser_checkhost($hostname, $port) {
   // call the host
   $response = drupal_http_request('http://'. $hostname. ':'. $port);
   if ($response->code != 404) {
@@ -52,14 +52,14 @@ function d4os_io_services_search_parser_checkhost($hostname, $port) {
     db_set_active('os_search');
     $sql = db_query("UPDATE {hostsregister} set failcounter = 0 WHERE host = '%s' AND port = '%s'", array($hostname, $port));
     db_set_active('default');
-    d4os_io_services_search_parser_parse($hostname, $port);
+    d4os_io_db_os_search_services_parser_parse($hostname, $port);
   }
 }
 
-function d4os_io_services_search_parser_parse($hostname, $port) {
+function d4os_io_db_os_search_services_parser_parse($hostname, $port) {
   global $now;
   if ($hostname != "" && $port != "") {
-    $next = time() + (variable_get('d4os_io_services_search_parser_timer', 15) * 60);
+    $next = time() + (variable_get('d4os_io_db_os_search_services_parser_timer', 15) * 60);
     db_set_active('os_search');
     $updater = db_query("UPDATE hostsregister set lastcheck = %d WHERE host = '%s' AND port = '%s'", array($next, $hostname, $port));
     db_set_active('default');
