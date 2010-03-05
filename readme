@@ -8,7 +8,6 @@ Installation :
 ****************
   * install OpenSim in grid mode using mysql as datastore
   * if you want to use search and groups, use the link http://d4os.yourdomain.com/services/xmlrpc in your OpenSim.ini [search] and [groups] section
-  * if your database is not the same as the website one, you need to modify the file "sites/default/settings.php" (see below)
   * extract the archive in your drupal modules folder (sites/all/modules)
   * go to you modules admin page and enable the modules (admin/build/modules)
   * go to the d4os admin pages and set the values to fit your OpenSim installation (admin/settings/d4os)
@@ -20,22 +19,3 @@ dependencies :
   * you can use the search and groups services independantly
   * but if you want to use the groups in the website, you need to install the module called "og" (http://drupal.org/project/og)
   * if you want to use the events in the website, you need to install the module called "date-api" (http://drupal.org/project/date)
-
-*********************
-drupal settings.php
-*********************
-  * to use the OpenSim databases, drupal needs to know where they are
-  * you need to fill your drupal settings.php file with these infos
-  * $db_url['default'] is the drupal website database url
-
----------------------------------------
-same database for website and drupal :
----------------------------------------
-$db_url = 'mysqli://username:password@localhost/mybase';
-$db_prefix = '';
-
----------------------------------------
-different databases :
----------------------------------------
-$db_url['default'] = 'mysqli://username:password@localhost/mybase';
-$db_prefix['default'] = '';

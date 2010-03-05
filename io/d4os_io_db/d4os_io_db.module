@@ -9,6 +9,18 @@
 * other free or open source software licenses.
 */
 
+global $db_url, $db_prefix;
+if (!is_array($db_url)) {
+  $db_url = array(
+    'default' => $db_url
+  );
+}
+if (!is_array($db_prefix)) {
+  $db_prefix = array(
+    'default' => $db_prefix
+  );
+}
+
 module_load_include('settings.inc', 'd4os_io_db');
 
 //module_load_include('inc', 'd4os_io_db', 'd4os_io_db_asset');
