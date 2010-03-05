@@ -10,12 +10,28 @@
 */
 
 function d4os_io_db_admin() {
+  $bases = array(
+    'none'            => t('None'),
+    'default'         => t('Website'),
+    //'os_asset '       => t('Asset'),
+    //'os_auth'         => t('Auth'),
+    //'os_estate'       => t('Estate'),
+    'os_grid'         => t('Grid'),
+    'os_groups'       => t('Groups'),
+    //'os_inventory'    => t('Inventory'),
+    //'os_messaging'    => t('Messaging'),
+    //'os_opensim'      => t('Opensim'),
+    'os_search'       => t('Search'),
+    //'os_user_account' => t('User account'),
+    'os_users'        => t('Users'),
+  );
+
   $form = array();
 
   $form['d4os_io_db_type'] = array(
     '#type'           => 'radios',
     '#title'          => t('Database system'),
-    '#options'        => array(t('Single'), t('Multiple'), t('Same as website')),
+    '#options'        => array(t('Same as website'), t('Single'), t('Multiple')),
     '#default_value'  => variable_get('d4os_io_db_type', 0),
     '#description'    => t('Select if you are using only one database for all the OpenSim grid or if you are using separated bases.'),
   );
@@ -74,6 +90,15 @@ function d4os_io_db_admin() {
   //  '#collapsible'    => TRUE,
   //  '#collapsed'      => TRUE,
   //);
+  //$options = $bases;
+  //unset($options['os_asset']);
+  //$form['multiple_base']['asset']['d4os_io_db_multiple_asset_same'] = array(
+  //  '#type'           => 'select',
+  //  '#title'          => t('Same as'),
+  //  '#default_value'  => variable_get('d4os_io_db_multiple_asset_same', 'none'),
+  //  '#options'        => $options,
+  //  '#description'    => t('Select if this database is the same as another one.'),
+  //);
   //$form['multiple_base']['asset']['d4os_io_db_multiple_asset_host'] = array(
   //  '#type'           => 'textfield',
   //  '#title'          => t('Host'),
@@ -110,6 +135,15 @@ function d4os_io_db_admin() {
   //  '#title'          => t('Auth'),
   //  '#collapsible'    => TRUE,
   //  '#collapsed'      => TRUE,
+  //);
+  //$options = $bases;
+  //unset($options['os_auth']);
+  //$form['multiple_base']['auth']['d4os_io_db_multiple_auth_same'] = array(
+  //  '#type'           => 'select',
+  //  '#title'          => t('Same as'),
+  //  '#default_value'  => variable_get('d4os_io_db_multiple_auth_same', 'none'),
+  //  '#options'        => $options,
+  //  '#description'    => t('Select if this database is the same as another one.'),
   //);
   //$form['multiple_base']['auth']['d4os_io_db_multiple_auth_host'] = array(
   //  '#type'           => 'textfield',
@@ -148,6 +182,15 @@ function d4os_io_db_admin() {
   //  '#collapsible'    => TRUE,
   //  '#collapsed'      => TRUE,
   //);
+  //$options = $bases;
+  //unset($options['os_estate']);
+  //$form['multiple_base']['estate']['d4os_io_db_multiple_estate_same'] = array(
+  //  '#type'           => 'select',
+  //  '#title'          => t('Same as'),
+  //  '#default_value'  => variable_get('d4os_io_db_multiple_estate_same', 'none'),
+  //  '#options'        => $options,
+  //  '#description'    => t('Select if this database is the same as another one.'),
+  //);
   //$form['multiple_base']['estate']['d4os_io_db_multiple_estate_host'] = array(
   //  '#type'           => 'textfield',
   //  '#title'          => t('Host'),
@@ -185,6 +228,15 @@ function d4os_io_db_admin() {
       '#title'          => t('Grid'),
       '#collapsible'    => TRUE,
       '#collapsed'      => TRUE,
+    );
+    $options = $bases;
+    unset($options['os_grid']);
+    $form['multiple_base']['grid']['d4os_io_db_multiple_grid_same'] = array(
+      '#type'           => 'select',
+      '#title'          => t('Same as'),
+      '#default_value'  => variable_get('d4os_io_db_multiple_grid_same', 'none'),
+      '#options'        => $options,
+      '#description'    => t('Select if this database is the same as another one.'),
     );
     $form['multiple_base']['grid']['d4os_io_db_multiple_grid_host'] = array(
       '#type'           => 'textfield',
@@ -225,6 +277,15 @@ function d4os_io_db_admin() {
       '#collapsible'    => TRUE,
       '#collapsed'      => TRUE,
     );
+    $options = $bases;
+    unset($options['os_groups']);
+    $form['multiple_base']['groups']['d4os_io_db_multiple_groups_same'] = array(
+      '#type'           => 'select',
+      '#title'          => t('Same as'),
+      '#default_value'  => variable_get('d4os_io_db_multiple_groups_same', 'none'),
+      '#options'        => $options,
+      '#description'    => t('Select if this database is the same as another one.'),
+    );
     $form['multiple_base']['groups']['d4os_io_db_multiple_groups_host'] = array(
       '#type'           => 'textfield',
       '#title'          => t('Host'),
@@ -263,6 +324,15 @@ function d4os_io_db_admin() {
   //  '#collapsible'    => TRUE,
   //  '#collapsed'      => TRUE,
   //);
+  //$options = $bases;
+  //unset($options['os_inventory']);
+  //$form['multiple_base']['inventory']['d4os_io_db_multiple_inventory_same'] = array(
+  //  '#type'           => 'select',
+  //  '#title'          => t('Same as'),
+  //  '#default_value'  => variable_get('d4os_io_db_multiple_inventory_same', 'none'),
+  //  '#options'        => $options,
+  //  '#description'    => t('Select if this database is the same as another one.'),
+  //);
   //$form['multiple_base']['inventory']['d4os_io_db_multiple_inventory_host'] = array(
   //  '#type'           => 'textfield',
   //  '#title'          => t('Host'),
@@ -300,6 +370,15 @@ function d4os_io_db_admin() {
   //  '#collapsible'    => TRUE,
   //  '#collapsed'      => TRUE,
   //);
+  //$options = $bases;
+  //unset($options['os_messaging']);
+  //$form['multiple_base']['messaging']['d4os_io_db_multiple_messaging_same'] = array(
+  //  '#type'           => 'select',
+  //  '#title'          => t('Same as'),
+  //  '#default_value'  => variable_get('d4os_io_db_multiple_messaging_same', 'none'),
+  //  '#options'        => $options,
+  //  '#description'    => t('Select if this database is the same as another one.'),
+  //);
   //$form['multiple_base']['messaging']['d4os_io_db_multiple_messaging_host'] = array(
   //  '#type'           => 'textfield',
   //  '#title'          => t('Host'),
@@ -336,6 +415,15 @@ function d4os_io_db_admin() {
   //  '#title'          => t('Opensim'),
   //  '#collapsible'    => TRUE,
   //  '#collapsed'      => TRUE,
+  //);
+  //$options = $bases;
+  //unset($options['os_opensim']);
+  //$form['multiple_base']['opensim']['d4os_io_db_multiple_opensim_same'] = array(
+  //  '#type'           => 'select',
+  //  '#title'          => t('Same as'),
+  //  '#default_value'  => variable_get('d4os_io_db_multiple_opensim_same', 'none'),
+  //  '#options'        => $options,
+  //  '#description'    => t('Select if this database is the same as another one.'),
   //);
   //$form['multiple_base']['opensim']['d4os_io_db_multiple_opensim_host'] = array(
   //  '#type'           => 'textfield',
@@ -375,6 +463,15 @@ function d4os_io_db_admin() {
       '#collapsible'    => TRUE,
       '#collapsed'      => TRUE,
     );
+    $options = $bases;
+    unset($options['os_search']);
+    $form['multiple_base']['search']['d4os_io_db_multiple_search_same'] = array(
+      '#type'           => 'select',
+      '#title'          => t('Same as'),
+      '#default_value'  => variable_get('d4os_io_db_multiple_search_same', 'none'),
+      '#options'        => $options,
+      '#description'    => t('Select if this database is the same as another one.'),
+    );
     $form['multiple_base']['search']['d4os_io_db_multiple_search_host'] = array(
       '#type'           => 'textfield',
       '#title'          => t('Host'),
@@ -406,12 +503,21 @@ function d4os_io_db_admin() {
       '#description'    => t('Password'),
     );
   }
-// user_accounts
+// user_account
   //$form['multiple_base']['user_account'] = array(
   //  '#type'           => 'fieldset',
   //  '#title'          => t('User account'),
   //  '#collapsible'    => TRUE,
   //  '#collapsed'      => TRUE,
+  //);
+  //$options = $bases;
+  //unset($options['os_user_account']);
+  //$form['multiple_base']['user_account']['d4os_io_db_multiple_user_account_same'] = array(
+  //  '#type'           => 'select',
+  //  '#title'          => t('Same as'),
+  //  '#default_value'  => variable_get('d4os_io_db_multiple_user_account_same', 'none'),
+  //  '#options'        => $options,
+  //  '#description'    => t('Select if this database is the same as another one.'),
   //);
   //$form['multiple_base']['user_account']['d4os_io_db_multiple_user_account_host'] = array(
   //  '#type'           => 'textfield',
@@ -450,6 +556,15 @@ function d4os_io_db_admin() {
       '#title'          => t('Users'),
       '#collapsible'    => TRUE,
       '#collapsed'      => TRUE,
+    );
+    $options = $bases;
+    unset($options['os_users']);
+    $form['multiple_base']['users']['d4os_io_db_multiple_users_same'] = array(
+      '#type'           => 'select',
+      '#title'          => t('Same as'),
+      '#default_value'  => variable_get('d4os_io_db_multiple_users_same', 'none'),
+      '#options'        => $options,
+      '#description'    => t('Select if this database is the same as another one.'),
     );
     $form['multiple_base']['users']['d4os_io_db_multiple_users_host'] = array(
       '#type'           => 'textfield',

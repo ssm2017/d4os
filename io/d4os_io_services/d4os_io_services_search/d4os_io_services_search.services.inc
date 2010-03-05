@@ -12,6 +12,7 @@
 /*
  * The code in this script was inspired and mostly copied from ossearch
  * http://forge.opensimulator.org/gf/project/ossearch
+ * Copyright (c)Melanie Thielker (http://opensimulator.org/)
  */
 
 function d4os_io_services_search_dir_places_query($text, $category, $query_start=0) {

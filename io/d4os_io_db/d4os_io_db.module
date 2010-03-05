@@ -126,19 +126,23 @@ function d4os_io_db_check_bases() {
 }
 
 function d4os_io_db_set_active($name = 'default') {
+  global $d4os_same_db;
   if ($name == 'default') {
     db_set_active('default');
   }
   $d4os_db_type = variable_get('d4os_io_db_type', 0);
   switch ($d4os_db_type) {
+    // same as website
     case 0:
+      return;
+      break;
+    // single
+    case 1:
       db_set_active('os_single');
       break;
-    case 1:
-      db_set_active($name);
-      break;
+    // multiple
     case 2:
-      return;
+      db_set_active($d4os_same_db[$name] != 'none' ? $d4os_same_db[$name] : $name);
       break;
   }
 }

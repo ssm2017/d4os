@@ -9,7 +9,8 @@
 * other free or open source software licenses.
 */
 
-global $db_url;
+global $db_url, $d4os_same_db;
+$d4os_same_db = array('none'=>'none');
 // single
 $db_url['os_single'] = 'mysqli://'
 . variable_get('d4os_io_db_single_username', 'root')
@@ -31,6 +32,7 @@ $db_prefix['os_single'] = variable_get('d4os_io_db_single_prefix', '');
 //. '/'
 //. variable_get('d4os_io_db_multiple_asset_db', 'asset');
 //$db_prefix['os_asset'] = variable_get('d4os_io_db_multiple_asset_prefix', '');
+//$d4os_same_db['os_asset'] = variable_get('d4os_io_db_multiple_asset_same', 'none');
 
 // auth
 //$db_url['os_auth'] = 'mysqli://'
@@ -42,6 +44,7 @@ $db_prefix['os_single'] = variable_get('d4os_io_db_single_prefix', '');
 //. '/'
 //. variable_get('d4os_io_db_multiple_auth_db', 'auth');
 //$db_prefix['os_auth'] = variable_get('d4os_io_db_multiple_auth_prefix', '');
+//$d4os_same_db['os_auth'] = variable_get('d4os_io_db_multiple_auth_same', 'none');
 
 // estate
 //$db_url['os_estate'] = 'mysqli://'
@@ -53,6 +56,7 @@ $db_prefix['os_single'] = variable_get('d4os_io_db_single_prefix', '');
 //. '/'
 //. variable_get('d4os_io_db_multiple_estate_db', 'estate');
 //$db_prefix['os_estate'] = variable_get('d4os_io_db_multiple_estate_prefix', '');
+//$d4os_same_db['os_estate'] = variable_get('d4os_io_db_multiple_estate_same', 'none');
 
 // grid
 $db_url['os_grid'] = 'mysqli://'
@@ -64,6 +68,7 @@ $db_url['os_grid'] = 'mysqli://'
 . '/'
 . variable_get('d4os_io_db_multiple_grid_db', 'grid');
 $db_prefix['os_grid'] = variable_get('d4os_io_db_multiple_grid_prefix', '');
+$d4os_same_db['os_grid'] = variable_get('d4os_io_db_multiple_grid_same', 'none');
 
 // groups
 $db_url['os_groups'] = 'mysqli://'
@@ -75,6 +80,7 @@ $db_url['os_groups'] = 'mysqli://'
 . '/'
 . variable_get('d4os_io_db_multiple_groups_db', 'groups');
 $db_prefix['os_groups'] = variable_get('d4os_io_db_multiple_groups_prefix', '');
+$d4os_same_db['os_groups'] = variable_get('d4os_io_db_multiple_groups_same', 'none');
 
 // inventory
 //$db_url['os_inventory'] = 'mysqli://'
@@ -86,6 +92,7 @@ $db_prefix['os_groups'] = variable_get('d4os_io_db_multiple_groups_prefix', '');
 //. '/'
 //. variable_get('d4os_io_db_multiple_inventory_db', 'inventory');
 //$db_prefix['os_inventory'] = variable_get('d4os_io_db_multiple_inventory_prefix', '');
+//$d4os_same_db['os_inventory'] = variable_get('d4os_io_db_multiple_inventory_same', 'none');
 
 // messaging
 //$db_url['os_messaging'] = 'mysqli://'
@@ -97,6 +104,7 @@ $db_prefix['os_groups'] = variable_get('d4os_io_db_multiple_groups_prefix', '');
 //. '/'
 //. variable_get('d4os_io_db_multiple_messaging_db', 'messaging');
 //$db_prefix['os_messaging'] = variable_get('d4os_io_db_multiple_messaging_prefix', '');
+//$d4os_same_db['os_messaging'] = variable_get('d4os_io_db_multiple_messaging_same', 'none');
 
 // opensim
 //$db_url['os_opensim'] = 'mysqli://'
@@ -108,6 +116,7 @@ $db_prefix['os_groups'] = variable_get('d4os_io_db_multiple_groups_prefix', '');
 //. '/'
 //. variable_get('d4os_io_db_multiple_opensim_db', 'opensim');
 //$db_prefix['os_opensim'] = variable_get('d4os_io_db_multiple_opensim_prefix', '');
+//$d4os_same_db['os_opensim'] = variable_get('d4os_io_db_multiple_opensim_same', 'none');
 
 // search
 $db_url['os_search'] = 'mysqli://'
@@ -119,6 +128,7 @@ $db_url['os_search'] = 'mysqli://'
 . '/'
 . variable_get('d4os_io_db_multiple_search_db', 'search');
 $db_prefix['os_search'] = variable_get('d4os_io_db_multiple_search_prefix', '');
+$d4os_same_db['os_search'] = variable_get('d4os_io_db_multiple_search_same', 'none');
 
 // user_accounts
 //$db_url['os_user_accounts'] = 'mysqli://'
@@ -130,6 +140,7 @@ $db_prefix['os_search'] = variable_get('d4os_io_db_multiple_search_prefix', '');
 //. '/'
 //. variable_get('d4os_io_db_multiple_user_accounts_db', 'user_accounts');
 //$db_prefix['os_user_account'] = variable_get('d4os_io_db_multiple_user_account_prefix', '');
+//$d4os_same_db['os_account'] = variable_get('d4os_io_db_multiple_account_same', 'none');
 
 // users
 $db_url['os_users'] = 'mysqli://'
@@ -141,3 +152,4 @@ $db_url['os_users'] = 'mysqli://'
 . '/'
 . variable_get('d4os_io_db_multiple_users_db', 'users');
 $db_prefix['os_users'] = variable_get('d4os_io_db_multiple_users_prefix', '');
+$d4os_same_db['os_users'] = variable_get('d4os_io_db_multiple_users_same', 'none');
