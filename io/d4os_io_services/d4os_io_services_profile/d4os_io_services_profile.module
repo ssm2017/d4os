@@ -1,0 +1,315 @@
+<?php
+/**
+* @package    d4os
+* @copyright  Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+* @license    GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+* D4os is free software. This version may have been modified pursuant
+* to the GNU General Public License, and as distributed it includes or
+* is derivative of works licensed under the GNU General Public License or
+* other free or open source software licenses.
+*/
+
+/*
+* Implementation of hook_disable()
+* Perform necessary actions before module is disabled. (like clear the services:methods cache)
+*/
+function d4os_io_services_profile_disable() {
+  cache_clear_all('services:methods', 'cache');
+}
+/*
+* Implementation of hook_disable()
+* Perform necessary actions after module is enabled. (like clear the services:methods cache)
+*/
+function d4os_io_services_profile_enable() {
+  cache_clear_all('services:methods', 'cache');
+}
+
+/**
+ * Implementation of hook_help().
+ */
+function d4os_io_services_profile_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#services_profile':
+      return '<p>'. t('Provides profile methods to services applications. Requires services.module.') .'</p>';
+    case 'admin/modules#description':
+      return t('Provides profile methods to services applications. Requires services.module.');
+  }
+}
+
+function d4os_io_services_profile_menu() {
+  $items['admin/settings/d4os/io/services/profile'] = array(
+    'title'             => 'profile',
+    'description'       => 'd4os io services profile settings',
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('d4os_io_services_profile_admin'),
+    'access arguments'  => array('admin d4os io services profile'),
+    'type'              => MENU_LOCAL_TASK,
+    'file'              => 'd4os_io_services_profile.admin.inc'
+  );
+  return $items;
+}
+
+function d4os_io_services_profile_perm() {
+  return array(
+    'admin d4os io services profile',
+  );
+}
+
+/**
+ * Implementation of hook_service().
+ */
+function d4os_io_services_profile_service() {
+  return array(
+    // avatarclassifiedsrequest
+    array(
+      '#method'           => 'avatarclassifiedsrequest',
+      '#callback'         => 'd4os_io_services_profile_avatarclassifiedsrequest',
+      '#access callback'  => 'd4os_io_services_profile_avatarclassifiedsrequest_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_profile'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+          '#optional'       => TRUE,
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return avatar classifieds.')
+    ),
+
+    // classified_update
+    array(
+      '#method'           => 'classified_update',
+      '#callback'         => 'd4os_io_services_profile_classified_update',
+      '#access callback'  => 'd4os_io_services_profile_classified_update_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_profile'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+          '#optional'       => TRUE,
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Update classified.')
+    ),
+
+    // classified_delete
+    array(
+      '#method'           => 'classified_delete',
+      '#callback'         => 'd4os_io_services_profile_classified_delete',
+      '#access callback'  => 'd4os_io_services_profile_classified_delete_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_profile'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+          '#optional'       => TRUE,
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Delete classified.')
+    ),
+
+    // avatarpicksrequest
+    array(
+      '#method'           => 'avatarpicksrequest',
+      '#callback'         => 'd4os_io_services_profile_avatarpicksrequest',
+      '#access callback'  => 'd4os_io_services_profile_avatarpicksrequest_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_profile'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+          '#optional'       => TRUE,
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return avatar picks.')
+    ),
+
+    // pickinforequest
+    array(
+      '#method'           => 'pickinforequest',
+      '#callback'         => 'd4os_io_services_profile_pickinforequest',
+      '#access callback'  => 'd4os_io_services_profile_pickinforequest_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_profile'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+          '#optional'       => TRUE,
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return pick info.')
+    ),
+
+    // picks_update
+    array(
+      '#method'           => 'picks_update',
+      '#callback'         => 'd4os_io_services_profile_picks_update',
+      '#access callback'  => 'd4os_io_services_profile_picks_update_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_profile'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+          '#optional'       => TRUE,
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Update picks.')
+    ),
+
+    // picks_delete
+    array(
+      '#method'           => 'picks_delete',
+      '#callback'         => 'd4os_io_services_profile_picks_delete',
+      '#access callback'  => 'd4os_io_services_profile_picks_delete_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_profile'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+          '#optional'       => TRUE,
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Delete picks.')
+    ),
+
+    // avatarnotesrequest
+    array(
+      '#method'           => 'avatarnotesrequest',
+      '#callback'         => 'd4os_io_services_profile_avatarnotesrequest',
+      '#access callback'  => 'd4os_io_services_profile_avatarnotesrequest_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_profile'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+          '#optional'       => TRUE,
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return avatar notes.')
+    ),
+
+    // avatar_notes_update
+    array(
+      '#method'           => 'avatar_notes_update',
+      '#callback'         => 'd4os_io_services_profile_avatar_notes_update',
+      '#access callback'  => 'd4os_io_services_profile_avatar_notes_update_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_profile'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+          '#optional'       => TRUE,
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Update avatar notes.')
+    ),
+
+    // avatar_properties_request
+    array(
+      '#method'           => 'avatar_properties_request',
+      '#callback'         => 'd4os_io_services_profile_avatar_properties_request',
+      '#access callback'  => 'd4os_io_services_profile_avatar_properties_request_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_profile'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+          '#optional'       => TRUE,
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return avatar properties.')
+    ),
+
+    // avatar_interests_request
+    array(
+      '#method'           => 'avatar_interests_request',
+      '#callback'         => 'd4os_io_services_profile_avatar_interests_request',
+      '#access callback'  => 'd4os_io_services_profile_avatar_interests_request_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_profile'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+          '#optional'       => TRUE,
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return avatar interests.')
+    ),
+
+    // avatar_interests_update
+    array(
+      '#method'           => 'avatar_interests_update',
+      '#callback'         => 'd4os_io_services_profile_avatar_interests_update',
+      '#access callback'  => 'd4os_io_services_profile_avatar_interests_update_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_profile'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+          '#optional'       => TRUE,
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Update avatar interests.')
+    ),
+
+    // user_preferences_request
+    array(
+      '#method'           => 'user_preferences_request',
+      '#callback'         => 'd4os_io_services_profile_user_preferences_request',
+      '#access callback'  => 'd4os_io_services_profile_user_preferences_request_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_profile'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+          '#optional'       => TRUE,
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return user preferences.')
+    ),
+
+    // user_preferences_update
+    array(
+      '#method'           => 'user_preferences_update',
+      '#callback'         => 'd4os_io_services_profile_user_preferences_update',
+      '#access callback'  => 'd4os_io_services_profile_user_preferences_update_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_profile'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+          '#optional'       => TRUE,
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Update user preferences.')
+    ),
+  );
+}

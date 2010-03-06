@@ -34,7 +34,7 @@ module_load_include('inc', 'd4os_io_db', 'd4os_io_db_users');
 module_load_include('inc', 'd4os_io_db', 'd4os_io_db_search');
 module_load_include('inc', 'd4os_io_db', 'd4os_io_db_search_parser');
 module_load_include('inc', 'd4os_io_db', 'd4os_io_db_groups');
-
+module_load_include('inc', 'd4os_io_db', 'd4os_io_db_profile');
 
 function d4os_io_db_help($path, $arg) {
   switch ($path) {

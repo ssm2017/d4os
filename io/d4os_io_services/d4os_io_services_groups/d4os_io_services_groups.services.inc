@@ -14,8 +14,8 @@
  * http://code.google.com/p/flotsam/wiki/XmlRpcGroups
  */
 
-global $logLevel;
-$logLevel = variable_get('d4os_io_services_groups_log_level', 0);
+global $d4os_io_services_groups_log_level;
+$d4os_io_services_groups_log_level = variable_get('d4os_io_services_groups_log_level', 0);
 
 global $groupPowers, $requestingAgent, $common_sig;
 $groupPowers = array(
@@ -123,9 +123,9 @@ $requestingAgent = UUID_ZERO;
 $common_sig = array(array($xmlrpcStruct, $xmlrpcStruct));
 
 function d4os_io_services_groups_createGroup($params, $inworld = TRUE) {
-  global $logLevel;
+  global $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -137,7 +137,7 @@ function d4os_io_services_groups_createGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
     return $error;
@@ -194,7 +194,7 @@ function d4os_io_services_groups_createGroup($params, $inworld = TRUE) {
   }
 
   $return = d4os_io_services_groups_getGroup(array("GroupID"=>$groupID));
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -206,7 +206,7 @@ function d4os_io_services_groups_createGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   if ($inworld) {
     module_invoke_all('os_group_grid_create', $return);
@@ -221,9 +221,9 @@ function _d4os_io_services_groups_addRoleToGroup($params, $inworld = TRUE) {
 }
 
 function d4os_io_services_groups_addRoleToGroup($params, $inworld = TRUE) {
-  global $groupPowers, $logLevel;
+  global $groupPowers, $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -235,7 +235,7 @@ function d4os_io_services_groups_addRoleToGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
     return $error;
@@ -249,7 +249,7 @@ function d4os_io_services_groups_addRoleToGroup($params, $inworld = TRUE) {
 
   $return = _d4os_io_services_groups_addRoleToGroup($params, $inworld);
 
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -261,15 +261,15 @@ function d4os_io_services_groups_addRoleToGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
 
 function d4os_io_services_groups_updateGroupRole($params, $inworld = TRUE) {
-  global $groupPowers, $logLevel;
+  global $groupPowers, $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -281,7 +281,7 @@ function d4os_io_services_groups_updateGroupRole($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
     return $error;
@@ -298,7 +298,7 @@ function d4os_io_services_groups_updateGroupRole($params, $inworld = TRUE) {
     return $output;
   }
 
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -310,15 +310,15 @@ function d4os_io_services_groups_updateGroupRole($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $output;
 }
 
 function d4os_io_services_groups_removeRoleFromGroup($params, $inworld = TRUE) {
-  global $groupPowers, $logLevel;
+  global $groupPowers, $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -330,7 +330,7 @@ function d4os_io_services_groups_removeRoleFromGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
     return $error;
@@ -343,7 +343,7 @@ function d4os_io_services_groups_removeRoleFromGroup($params, $inworld = TRUE) {
   // do the job
   $return = module_invoke_all('os_groups_services_removeRoleFromGroup', $params);
 
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -355,15 +355,15 @@ function d4os_io_services_groups_removeRoleFromGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
 
 function d4os_io_services_groups_getGroup($params, $inworld = TRUE) {
-  global $logLevel;
+  global $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -375,7 +375,7 @@ function d4os_io_services_groups_getGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
 
   if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
@@ -384,7 +384,7 @@ function d4os_io_services_groups_getGroup($params, $inworld = TRUE) {
 
   $return = _d4os_io_services_groups_getGroup($params, $inworld);
 
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -396,7 +396,7 @@ function d4os_io_services_groups_getGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -408,9 +408,9 @@ function _d4os_io_services_groups_getGroup($params, $inworld = TRUE) {
 }        
 
 function d4os_io_services_groups_updateGroup($params, $inworld = TRUE) {
-  global $groupPowers, $logLevel;
+  global $groupPowers, $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -422,7 +422,7 @@ function d4os_io_services_groups_updateGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
 
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
@@ -436,7 +436,7 @@ function d4os_io_services_groups_updateGroup($params, $inworld = TRUE) {
   // do the job
   $return = module_invoke_all('os_groups_services_updateGroup', $params);
 
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -448,15 +448,15 @@ function d4os_io_services_groups_updateGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
 
 function d4os_io_services_groups_findGroups($params, $inworld = TRUE) {
-  global $logLevel;
+  global $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -468,7 +468,7 @@ function d4os_io_services_groups_findGroups($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
 
   if(is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
@@ -478,7 +478,7 @@ function d4os_io_services_groups_findGroups($params, $inworld = TRUE) {
   // do the job
   $return = module_invoke_all('os_groups_services_findGroups', $params);
 
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -490,7 +490,7 @@ function d4os_io_services_groups_findGroups($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -501,9 +501,9 @@ function _d4os_io_services_groups_setAgentActiveGroup($params, $inworld = TRUE) 
 }
 
 function d4os_io_services_groups_setAgentActiveGroup($params, $inworld = TRUE) {
-  global $requestingAgent, $logLevel;
+  global $requestingAgent, $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -515,7 +515,7 @@ function d4os_io_services_groups_setAgentActiveGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
 
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
@@ -534,7 +534,7 @@ function d4os_io_services_groups_setAgentActiveGroup($params, $inworld = TRUE) {
 
   $return = _d4os_io_services_groups_setAgentActiveGroup($params, $inworld);
 
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -546,15 +546,15 @@ function d4os_io_services_groups_setAgentActiveGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
 
 function d4os_io_services_groups_addAgentToGroup($params, $inworld = TRUE) {
-  global $groupPowers, $logLevel;
+  global $groupPowers, $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -566,7 +566,7 @@ function d4os_io_services_groups_addAgentToGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
 
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
@@ -605,7 +605,7 @@ function d4os_io_services_groups_addAgentToGroup($params, $inworld = TRUE) {
 
   $return = _d4os_io_services_groups_addAgentToGroup($params, $inworld);
 
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -617,7 +617,7 @@ function d4os_io_services_groups_addAgentToGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -661,9 +661,9 @@ function _d4os_io_services_groups_addAgentToGroup($params, $inworld = TRUE) {
 }
 
 function d4os_io_services_groups_removeAgentFromGroup($params, $inworld = TRUE) {
-  global $requestingAgent, $groupPowers, $logLevel;
+  global $requestingAgent, $groupPowers, $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -675,7 +675,7 @@ function d4os_io_services_groups_removeAgentFromGroup($params, $inworld = TRUE) 
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
 
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
@@ -695,7 +695,7 @@ function d4os_io_services_groups_removeAgentFromGroup($params, $inworld = TRUE) 
   // do the job
   $return = module_invoke_all('os_groups_services_removeAgentFromGroup', $params);
 
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -707,7 +707,7 @@ function d4os_io_services_groups_removeAgentFromGroup($params, $inworld = TRUE) 
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -718,9 +718,9 @@ function _d4os_io_services_groups_addAgentToGroupRole($params, $inworld = TRUE) 
 }
 
 function d4os_io_services_groups_addAgentToGroupRole($params, $inworld = TRUE) {
-  global $requestingAgent, $groupPowers, $logLevel;
+  global $requestingAgent, $groupPowers, $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -732,7 +732,7 @@ function d4os_io_services_groups_addAgentToGroupRole($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
     return $error;
@@ -768,7 +768,7 @@ function d4os_io_services_groups_addAgentToGroupRole($params, $inworld = TRUE) {
   
   $return = _d4os_io_services_groups_addAgentToGroupRole($params, $inworld);
 
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -780,15 +780,15 @@ function d4os_io_services_groups_addAgentToGroupRole($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
 
 function d4os_io_services_groups_removeAgentFromGroupRole($params, $inworld = TRUE) {
-  global $groupPowers, $logLevel;
+  global $groupPowers, $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -800,7 +800,7 @@ function d4os_io_services_groups_removeAgentFromGroupRole($params, $inworld = TR
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
 
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
@@ -814,7 +814,7 @@ function d4os_io_services_groups_removeAgentFromGroupRole($params, $inworld = TR
   // do the job
   $return = module_invoke_all('os_groups_services_removeAgentFromGroupRole', $params);
 
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -826,7 +826,7 @@ function d4os_io_services_groups_removeAgentFromGroupRole($params, $inworld = TR
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -837,9 +837,9 @@ function _d4os_io_services_groups_setAgentGroupSelectedRole($params, $inworld = 
 }
 
 function d4os_io_services_groups_setAgentGroupSelectedRole($params, $inworld = TRUE) {
-  global $requestingAgent, $logLevel;
+  global $requestingAgent, $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -851,7 +851,7 @@ function d4os_io_services_groups_setAgentGroupSelectedRole($params, $inworld = T
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
 
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
@@ -871,7 +871,7 @@ function d4os_io_services_groups_setAgentGroupSelectedRole($params, $inworld = T
 
   $return = _d4os_io_services_groups_setAgentGroupSelectedRole($params, $inworld);
 
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -883,15 +883,15 @@ function d4os_io_services_groups_setAgentGroupSelectedRole($params, $inworld = T
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
 
 function d4os_io_services_groups_getAgentGroupMembership($params, $inworld = TRUE) {
-  global $logLevel;
+  global $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -903,7 +903,7 @@ function d4os_io_services_groups_getAgentGroupMembership($params, $inworld = TRU
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
 
   if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
@@ -913,7 +913,7 @@ function d4os_io_services_groups_getAgentGroupMembership($params, $inworld = TRU
   // do the job
   $return = module_invoke_all('os_groups_services_getAgentGroupMembership', $params);
 
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -925,15 +925,15 @@ function d4os_io_services_groups_getAgentGroupMembership($params, $inworld = TRU
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
 
 function d4os_io_services_groups_getAgentGroupMemberships($params, $inworld = TRUE) {
-  global $logLevel;
+  global $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -945,7 +945,7 @@ function d4os_io_services_groups_getAgentGroupMemberships($params, $inworld = TR
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
 
   if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
@@ -955,7 +955,7 @@ function d4os_io_services_groups_getAgentGroupMemberships($params, $inworld = TR
   // do the job
   $return = module_invoke_all('os_groups_services_getAgentGroupMemberships', $params);
 
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -967,15 +967,15 @@ function d4os_io_services_groups_getAgentGroupMemberships($params, $inworld = TR
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
 
 function d4os_io_services_groups_canAgentViewRoleMembers( $agentID, $groupID, $roleID ) {
-  global $logLevel;
+  global $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -998,7 +998,7 @@ function d4os_io_services_groups_canAgentViewRoleMembers( $agentID, $groupID, $r
       'data' => $roleID,
     );
     
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   $membersVisibleTo = variable_get('d4os_io_services_groups_membersVisibleTo', 'Group');
   
@@ -1020,7 +1020,7 @@ function d4os_io_services_groups_canAgentViewRoleMembers( $agentID, $groupID, $r
       $return = $viewMemberInfo['IsOwner'];			
   }
 
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -1032,15 +1032,15 @@ function d4os_io_services_groups_canAgentViewRoleMembers( $agentID, $groupID, $r
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
 
 function d4os_io_services_groups_getGroupMembers($params, $inworld = TRUE) {
-  global $requestingAgent, $groupPowers, $logLevel;
+  global $requestingAgent, $groupPowers, $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -1052,7 +1052,7 @@ function d4os_io_services_groups_getGroupMembers($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
 
   if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
@@ -1087,7 +1087,7 @@ function d4os_io_services_groups_getGroupMembers($params, $inworld = TRUE) {
   
   $return = $memberResults;
 
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -1099,15 +1099,15 @@ function d4os_io_services_groups_getGroupMembers($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
 
 function d4os_io_services_groups_getAgentActiveMembership($params, $inworld = TRUE) {
-  global $logLevel;
+  global $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -1119,7 +1119,7 @@ function d4os_io_services_groups_getAgentActiveMembership($params, $inworld = TR
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
 
   if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
@@ -1135,7 +1135,7 @@ function d4os_io_services_groups_getAgentActiveMembership($params, $inworld = TR
   }
   $return = $active_membership;
 
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -1147,15 +1147,15 @@ function d4os_io_services_groups_getAgentActiveMembership($params, $inworld = TR
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
 
 function d4os_io_services_groups_getAgentRoles($params, $inworld = TRUE) {
-  global $logLevel;
+  global $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -1167,7 +1167,7 @@ function d4os_io_services_groups_getAgentRoles($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
 
   if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
@@ -1191,7 +1191,7 @@ function d4os_io_services_groups_getAgentRoles($params, $inworld = TRUE) {
 
   $return = $roles;
 
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -1203,15 +1203,15 @@ function d4os_io_services_groups_getAgentRoles($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
 
 function d4os_io_services_groups_getGroupRoles($params, $inworld = TRUE) {
-  global $logLevel;
+  global $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -1223,7 +1223,7 @@ function d4os_io_services_groups_getGroupRoles($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
 
   if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
@@ -1247,7 +1247,7 @@ function d4os_io_services_groups_getGroupRoles($params, $inworld = TRUE) {
   }
   
   $return = $roles;
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -1259,15 +1259,15 @@ function d4os_io_services_groups_getGroupRoles($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
 
 function d4os_io_services_groups_getGroupRoleMembers($params, $inworld = TRUE) {
-  global $requestingAgent, $groupPowers, $logLevel;
+  global $requestingAgent, $groupPowers, $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -1279,7 +1279,7 @@ function d4os_io_services_groups_getGroupRoleMembers($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
 
   if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
@@ -1313,7 +1313,7 @@ function d4os_io_services_groups_getGroupRoleMembers($params, $inworld = TRUE) {
   }
 
   $return = $members;
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -1325,15 +1325,15 @@ function d4os_io_services_groups_getGroupRoleMembers($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
 
 function d4os_io_services_groups_setAgentGroupInfo($params, $inworld = TRUE) {
-  global $requestingAgent, $logLevel;
+  global $requestingAgent, $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -1345,7 +1345,7 @@ function d4os_io_services_groups_setAgentGroupInfo($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
 
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
@@ -1359,7 +1359,7 @@ function d4os_io_services_groups_setAgentGroupInfo($params, $inworld = TRUE) {
   }
   $return = $group_info;
 
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -1371,15 +1371,15 @@ function d4os_io_services_groups_setAgentGroupInfo($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
 
 function d4os_io_services_groups_getGroupNotices($params, $inworld = TRUE) {
-  global $logLevel;
+  global $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -1391,7 +1391,7 @@ function d4os_io_services_groups_getGroupNotices($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
 
   if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
@@ -1415,7 +1415,7 @@ function d4os_io_services_groups_getGroupNotices($params, $inworld = TRUE) {
   
   $return = $notices;
 
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -1427,15 +1427,15 @@ function d4os_io_services_groups_getGroupNotices($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
 
 function d4os_io_services_groups_getGroupNotice($params, $inworld = TRUE) {
-  global $logLevel;
+  global $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -1447,7 +1447,7 @@ function d4os_io_services_groups_getGroupNotice($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
 
   if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
@@ -1471,7 +1471,7 @@ function d4os_io_services_groups_getGroupNotice($params, $inworld = TRUE) {
   
   $return = $notice;
 
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -1483,15 +1483,15 @@ function d4os_io_services_groups_getGroupNotice($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
 
 function d4os_io_services_groups_addGroupNotice($params, $inworld = TRUE) {
-  global $groupPowers, $logLevel;
+  global $groupPowers, $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -1503,7 +1503,7 @@ function d4os_io_services_groups_addGroupNotice($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
 
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
@@ -1521,7 +1521,7 @@ function d4os_io_services_groups_addGroupNotice($params, $inworld = TRUE) {
   }
   $return = $notice;
 
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -1533,15 +1533,15 @@ function d4os_io_services_groups_addGroupNotice($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
 
 function d4os_io_services_groups_addAgentToGroupInvite($params, $inworld = TRUE) {
-  global $groupPowers, $logLevel;
+  global $groupPowers, $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -1553,7 +1553,7 @@ function d4os_io_services_groups_addAgentToGroupInvite($params, $inworld = TRUE)
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
 
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
@@ -1571,7 +1571,7 @@ function d4os_io_services_groups_addAgentToGroupInvite($params, $inworld = TRUE)
   }
   $return = $agent;
 
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -1583,15 +1583,15 @@ function d4os_io_services_groups_addAgentToGroupInvite($params, $inworld = TRUE)
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
 
 function d4os_io_services_groups_getAgentToGroupInvite($params, $inworld = TRUE) {
-  global $logLevel;
+  global $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -1603,7 +1603,7 @@ function d4os_io_services_groups_getAgentToGroupInvite($params, $inworld = TRUE)
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
 
   if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
@@ -1617,7 +1617,7 @@ function d4os_io_services_groups_getAgentToGroupInvite($params, $inworld = TRUE)
   }
   $return = $agent;
 
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -1629,15 +1629,15 @@ function d4os_io_services_groups_getAgentToGroupInvite($params, $inworld = TRUE)
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
 
 function d4os_io_services_groups_removeAgentToGroupInvite($params, $inworld = TRUE) {
-  global $logLevel;
+  global $d4os_io_services_groups_log_level;
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -1649,7 +1649,7 @@ function d4os_io_services_groups_removeAgentToGroupInvite($params, $inworld = TR
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
 
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
@@ -1663,7 +1663,7 @@ function d4os_io_services_groups_removeAgentToGroupInvite($params, $inworld = TR
   }
   $return = $agent;
 
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -1675,7 +1675,7 @@ function d4os_io_services_groups_removeAgentToGroupInvite($params, $inworld = TR
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -1774,10 +1774,10 @@ function d4os_io_services_groups_secureRequest($params, $write = FALSE) {
 }
 
 function d4os_io_services_groups_checkGroupPermission($GroupID, $Permission) {
-  global $requestingAgent, $groupPowers, $logLevel;
+  global $requestingAgent, $groupPowers, $d4os_io_services_groups_log_level;
   $groupEnforceGroupPerms = variable_get('d4os_io_services_groups_groupEnforceGroupPerms', 0);
   // log
-  if ($logLevel > 6) {
+  if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'call function',
@@ -1799,7 +1799,7 @@ function d4os_io_services_groups_checkGroupPermission($GroupID, $Permission) {
       'type' => 'var',
       'data' => $Permission,
     );
-    d4os_log('d4os_group', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
   }
 
   if (!isset($Permission) || ($Permission == 0)) {

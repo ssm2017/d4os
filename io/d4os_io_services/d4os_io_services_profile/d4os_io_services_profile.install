@@ -12,8 +12,8 @@
 /**
 * Implementation of hook_uninstall().
 */
-function d4os_io_services_groups_uninstall() {
+function d4os_io_profile_uninstall() {
   // Remove variables.
-  db_query("DELETE FROM {variable} WHERE name LIKE 'd4os_io_services_groups%%'");
-  db_query("DELETE FROM {system} WHERE type='module' AND name='d4os_io_services_groups'");
+  db_query("DELETE FROM {variable} WHERE name LIKE 'd4os_io_services_profile%%'");
+  db_query("DELETE FROM {system} WHERE type='module' AND name='d4os_io_services_profile'");
 }

@@ -24,6 +24,18 @@ function d4os_io_services_groups_enable() {
   cache_clear_all('services:methods', 'cache');
 }
 
+/**
+ * Implementation of hook_help().
+ */
+function d4os_io_services_groups_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#services_groups':
+      return '<p>'. t('Provides groups methods to services applications. Requires services.module.') .'</p>';
+    case 'admin/modules#description':
+      return t('Provides groups methods to services applications. Requires services.module.');
+  }
+}
+
 function d4os_io_services_groups_menu() {
   $items['admin/settings/d4os/io/services/groups'] = array(
     'title'             => 'groups',

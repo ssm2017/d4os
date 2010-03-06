@@ -118,6 +118,18 @@ $d4os_same_db['os_groups'] = variable_get('d4os_io_db_multiple_groups_same', 'no
 //$db_prefix['os_opensim'] = variable_get('d4os_io_db_multiple_opensim_prefix', '');
 //$d4os_same_db['os_opensim'] = variable_get('d4os_io_db_multiple_opensim_same', 'none');
 
+// profile
+$db_url['os_profile'] = 'mysqli://'
+. variable_get('d4os_io_db_multiple_profile_username', 'root')
+.':'
+. variable_get('d4os_io_db_multiple_profile_password', 'root')
+. '@'
+. variable_get('d4os_io_db_multiple_profile_host', 'localhost')
+. '/'
+. variable_get('d4os_io_db_multiple_profile_db', 'profile');
+$db_prefix['os_profile'] = variable_get('d4os_io_db_multiple_profile_prefix', '');
+$d4os_same_db['os_profile'] = variable_get('d4os_io_db_multiple_profile_same', 'none');
+
 // search
 $db_url['os_search'] = 'mysqli://'
 . variable_get('d4os_io_db_multiple_search_username', 'root')

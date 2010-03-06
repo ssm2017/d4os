@@ -29,7 +29,7 @@ function d4os_io_services_search_enable() {
  */
 function d4os_io_services_search_help($path, $arg) {
   switch ($path) {
-    case 'admin/help#services_user':
+    case 'admin/help#services_search':
       return '<p>'. t('Provides search methods to services applications. Requires services.module.') .'</p>';
     case 'admin/modules#description':
       return t('Provides search methods to services applications. Requires services.module.');

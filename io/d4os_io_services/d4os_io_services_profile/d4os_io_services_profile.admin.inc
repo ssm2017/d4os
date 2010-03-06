@@ -9,17 +9,8 @@
 * other free or open source software licenses.
 */
 
-function d4os_io_services_search_admin() {
+function d4os_io_services_profile_admin() {
   $form = array();
-
-  $form['d4os_io_services_search_parser_timer'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Timer'),
-    '#size'           => 5,
-    '#maxlength'      => 5,
-    '#default_value'  => variable_get('d4os_io_services_search_parser_timer', 15),
-    '#description'    => t("Enter the value for the timer (in minutes) to refresh the data."),
-  );
 
   $options = array(
     0 => t('Emergency'),
@@ -31,13 +22,13 @@ function d4os_io_services_search_admin() {
     6 => t('Info'),
     7 => t('Debug'),
   );
-  $form['d4os_io_services_search_log_level'] = array(
+  $form['d4os_io_services_profile_log_level'] = array(
     '#type'           => 'select',
     '#title'          => t('Log level'),
     '#options'        => $options,
-    '#default_value'  => variable_get('d4os_io_services_search_log_level', 0),
+    '#default_value'  => variable_get('d4os_io_services_profile_log_level', 0),
     '#description'    => t('Define the log level'),
   );
-
+  
   return system_settings_form($form);
 }
