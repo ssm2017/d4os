@@ -148,6 +148,12 @@ function d4os_ui_users_account_validate($form, &$form_state) {
   $lastname = $form_state['values']['lastname'];
   $name     = $form_state['values']['username']. ' '. $form_state['values']['lastname'];
 
+  // check if the lastname is the same one as admin account
+  $admin = user_load(1);
+  if ($lastname == $admin->name) {
+    form_set_error('lastname', t('Please use another lastname.'));
+  }
+
   // rebuild the "name" for drupal account
   $form_state['values']['name'] = $name;
 
@@ -539,6 +545,9 @@ function d4os_ui_users_grid_form($account) {
   return $form;
 }
 function d4os_ui_users_check_users() {
+  // get the admin account
+  $admin = user_load(1);
+
   // get drupal users
   $website_users = array();
   $result = db_query('SELECT * FROM {users}');
@@ -552,6 +561,12 @@ function d4os_ui_users_check_users() {
   $not_in_grid = array();
   foreach ($website_users as $website_user) {
     $name = $website_user->name;
+    // check if the user has the same lastname as admin account
+    $names = explode(' ', $website_user->name);
+    if ($names[1] == $admin->name) {
+      drupal_set_message(t('The website user called !name has the same lastname as admin account.', array('!name' => $name)), 'error');
+    }
+    // check if the name exists in website
     if ($website_user->uid > 1 && d4os_array_search_recursive($name, $grid_users) === NULL) {
       $not_in_grid[] = $website_user;
     }
@@ -561,6 +576,11 @@ function d4os_ui_users_check_users() {
   $not_in_website = array();
   foreach ($grid_users as $grid_user) {
     $name = $grid_user->name;
+    // check if the user has the same lastname as admin account
+    if ($grid_user->lastname == $admin->name) {
+      drupal_set_message(t('The grid user called !name has the same lastname as admin account.', array('!name' => $grid_user->name)), 'error');
+    }
+    // check if the name exists in website
     if (d4os_array_search_recursive($name, $website_users) === NULL) {
       $not_in_website[] = $grid_user;
     }

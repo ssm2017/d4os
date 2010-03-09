@@ -4,3 +4,4 @@ description = "Provides tools to display stats for an opensim grid."
 package = d4os stats
 core = 6.x
 dependencies[] = d4os
+dependencies[] = libraries

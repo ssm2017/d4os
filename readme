@@ -1,13 +1,16 @@
 D4os is a set of modules to manage an OpenSim grid using drupal.
 more infos : http://groups.drupal.org/d4os
 
+***** THIS IS AN ALPHA STAGE USE IT AT YOUR OWN RISK AND NOT IN A PRODUCTION SITE *****
+
 ***** ⚠ Actually d4os is using the OpenSim 0.6.8 database schema ⚠ *****
 
 ****************
 Installation :
 ****************
   * install OpenSim in grid mode using mysql as datastore
-  * if you want to use search and groups, use the link http://d4os.yourdomain.com/services/xmlrpc in your OpenSim.ini [search] and [groups] section
+  * if you want to use search, profile and groups, you need to import the sql files from these modules in your database (d4os is not creating these tables. The sql files can be found in their own projects on the OpenSim forge)
+  * if you want to use search, profile and groups, use the link http://d4os.yourdomain.com/services/xmlrpc in your OpenSim.ini [search] [profile] and [groups] sections
   * extract the archive in your drupal modules folder (sites/all/modules)
   * go to you modules admin page and enable the modules (admin/build/modules)
   * go to the d4os admin pages and set the values to fit your OpenSim installation (admin/settings/d4os)
@@ -16,6 +19,7 @@ Installation :
 ****************
 dependencies :
 ****************
-  * you can use the search and groups services independantly
-  * but if you want to use the groups in the website, you need to install the module called "og" (http://drupal.org/project/og)
+  * you can use the search and groups services independantly (io), but to use them, you need to install the module called "services" and enable "xmlrpc server" (http://drupal.org/project/services)
+  * if you want to use the groups in the website (ui), you need to install the module called "og" (http://drupal.org/project/og)
   * if you want to use the events in the website, you need to install the module called "date-api" (http://drupal.org/project/date)
+  * if you want to use the stats levels, you need to install the module called "libraries" (http://drupal.org/project/libraries)
