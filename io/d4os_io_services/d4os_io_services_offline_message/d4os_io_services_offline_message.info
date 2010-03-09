@@ -1,0 +1,6 @@
+; $Id$
+name = "d4os io services offline message"
+description = "Provides tools to manage offline messages in an opensim grid."
+package = d4os io
+core = 6.x
+dependencies[] = services

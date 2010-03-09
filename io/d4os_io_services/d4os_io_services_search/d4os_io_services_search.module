@@ -73,7 +73,7 @@ function d4os_io_services_search_cron() {
 
 function d4os_io_services_search_registerhost() {
   // do the job
-  return module_invoke_all('os_search_services_registerhost', $_GET);
+  module_invoke_all('os_search_services_registerhost', $_GET);
 }
 
 /**

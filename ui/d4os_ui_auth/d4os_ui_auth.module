@@ -51,7 +51,7 @@ function d4os_ui_auth_form_alter(&$form, $form_state, $form_id) {
 function d4os_ui_auth_login_validate($form, &$form_state) {
 
   // get login flow
-  $login_flow = variable_get('d4os_ui_auth_login_flow', 1);
+  $login_flow = variable_get('d4os_ui_auth_login_flow', 0);
 
   // set the username
   $admin = user_load(1);

@@ -17,7 +17,8 @@ function d4os_io_db_uninstall() {
   db_query("DELETE FROM {variable} WHERE name LIKE 'd4os_io_db%%'");
   db_query("DELETE FROM {system} WHERE type='module' AND name='d4os_io_db'");
 }
-
+// TODO : check requirements
+/*
 function d4os_io_db_requirements($phase) {
   $requirements = array();
   // Check if the database array is set
@@ -112,4 +113,4 @@ function d4os_io_db_requirements($phase) {
     );
   }
   return $requirements;
-}
+}*/

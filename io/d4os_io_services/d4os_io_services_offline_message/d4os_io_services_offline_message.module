@@ -1,0 +1,184 @@
+<?php
+/**
+* @package    d4os
+* @copyright  Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+* @license    GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+* D4os is free software. This version may have been modified pursuant
+* to the GNU General Public License, and as distributed it includes or
+* is derivative of works licensed under the GNU General Public License or
+* other free or open source software licenses.
+*/
+
+/*
+* Implementation of hook_disable()
+* Perform necessary actions before module is disabled. (like clear the services:methods cache)
+*/
+function d4os_io_services_offline_message_disable() {
+  cache_clear_all('services:methods', 'cache');
+}
+/*
+* Implementation of hook_disable()
+* Perform necessary actions after module is enabled. (like clear the services:methods cache)
+*/
+function d4os_io_services_offline_message_enable() {
+  cache_clear_all('services:methods', 'cache');
+}
+
+/**
+ * Implementation of hook_help().
+ */
+function d4os_io_services_offline_message_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#services_offline_message':
+      return '<p>'. t('Provides offline_message methods to services applications. Requires services.module.') .'</p>';
+    case 'admin/modules#description':
+      return t('Provides offline_message methods to services applications. Requires services.module.');
+  }
+}
+
+function d4os_io_services_offline_message_menu() {
+  $items['admin/settings/d4os/io/services/offline_message'] = array(
+    'title'             => 'offline_message',
+    'description'       => 'd4os io services offline_message settings',
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('d4os_io_services_offline_message_admin'),
+    'access arguments'  => array('admin d4os io services offline_message'),
+    'type'              => MENU_LOCAL_TASK,
+    'file'              => 'd4os_io_services_offline_message.admin.inc'
+  );
+  return $items;
+}
+
+function d4os_io_services_offline_message_perm() {
+  return array(
+    'admin d4os io services offline_message',
+  );
+}
+
+/**
+ * Implementation of hook_service().
+ */
+function d4os_io_services_offline_message_service() {
+  return array(
+    // SaveMessage
+    array(
+      '#method'           => 'SaveMessage',
+      '#callback'         => 'd4os_io_services_offline_message_savemessage',
+      '#access callback'  => 'd4os_io_services_offline_message_savemessage_access',
+      '#args'             => array(
+        array(
+          '#name'         => 'params',
+          '#type'         => 'array',
+          '#description'  => t('Params.'),
+          '#optional'     => TRUE,
+        ),
+      ),
+      '#return'           => 'boolean',
+      '#help'             => t('Return true or false.')
+    ),
+
+    // RetrieveMessages
+    array(
+      '#method'           => 'RetrieveMessages',
+      '#callback'         => 'd4os_io_services_offline_message_retrievemessages',
+      '#access callback'  => 'd4os_io_services_offline_message_retrievemessages_access',
+      '#args'             => array(
+        array(
+          '#name'         => 'params',
+          '#type'         => 'array',
+          '#description'  => t('Params.'),
+          '#optional'     => TRUE,
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Return offline messages.')
+    ),
+  );
+}
+
+global $d4os_io_services_offline_message_log_level;
+$d4os_io_services_offline_message_log_level = variable_get('d4os_io_services_offline_message_log_level', 0);
+
+function d4os_io_services_offline_message_savemessage($params) {
+  global $d4os_io_services_offline_message_log_level;
+  // log
+  if ($d4os_io_services_offline_message_log_level > 6) {
+    $log = array();
+    $log[] = array(
+      'name' => 'function call',
+      'type' => 'string',
+      'data' => 'savemessage',
+    );
+    $log[] = array(
+      'name' => 'input params',
+      'type' => 'array',
+      'data' => $params,
+    );
+    d4os_log('d4os_io_services_offline_message', $log, WATCHDOG_DEBUG);
+  }
+
+  // do the job
+  //$return = module_invoke_all('os_profile_services_avatarclassifiedsrequest', $params);
+
+  if ($d4os_io_services_offline_message_log_level > 6) {
+    $log = array();
+    $log[] = array(
+      'name' => 'function output',
+      'type' => 'string',
+      'data' => 'savemessage',
+    );
+    $log[] = array(
+      'name' => 'output values',
+      'type' => 'array',
+      'data' => $return,
+    );
+    d4os_log('d4os_io_services_offline_message', $log, WATCHDOG_DEBUG);
+  }
+  return $return;
+}
+
+function d4os_io_services_offline_message_savemessage_access() {
+  return TRUE;
+}
+
+function d4os_io_services_offline_message_retrievemessages($params) {
+  global $d4os_io_services_offline_message_log_level;
+  // log
+  if ($d4os_io_services_offline_message_log_level > 6) {
+    $log = array();
+    $log[] = array(
+      'name' => 'function call',
+      'type' => 'string',
+      'data' => 'retrievemessages',
+    );
+    $log[] = array(
+      'name' => 'input params',
+      'type' => 'array',
+      'data' => $params,
+    );
+    d4os_log('d4os_io_services_offline_message', $log, WATCHDOG_DEBUG);
+  }
+
+  // do the job
+  //$return = module_invoke_all('os_profile_services_avatarclassifiedsrequest', $params);
+
+  if ($d4os_io_services_offline_message_log_level > 6) {
+    $log = array();
+    $log[] = array(
+      'name' => 'function output',
+      'type' => 'string',
+      'data' => 'retrievemessages',
+    );
+    $log[] = array(
+      'name' => 'output values',
+      'type' => 'array',
+      'data' => $return,
+    );
+    d4os_log('d4os_io_services_offline_message', $log, WATCHDOG_DEBUG);
+  }
+  return $return;
+}
+
+function d4os_io_services_offline_message_retrievemessages_access() {
+  return TRUE;
+}

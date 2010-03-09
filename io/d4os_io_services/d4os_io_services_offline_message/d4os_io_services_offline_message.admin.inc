@@ -9,26 +9,26 @@
 * other free or open source software licenses.
 */
 
-/**
-* Admin settings
-*/
-function d4os_ui_auth_settings() {
+function d4os_io_services_offline_message_admin() {
   $form = array();
 
-  // login flow
   $options = array(
-    0 => t('Drupal only'),
-    1 => t('Grid only'),
-    2 => t('Drupal -> Grid'),
-    3 => t('Grid -> Drupal')
+    0 => t('Emergency'),
+    1 => t('Alert'),
+    2 => t('Critical'),
+    3 => t('Error'),
+    4 => t('Warning'),
+    5 => t('Notice'),
+    6 => t('Info'),
+    7 => t('Debug'),
   );
-  $form['d4os_ui_auth_login_flow'] = array(
-    '#type'           => 'radios',
-    '#title'          => t('Login flow'),
-    '#default_value'  => variable_get('d4os_ui_auth_login_flow', 0),
+  $form['d4os_io_services_offline_message_log_level'] = array(
+    '#type'           => 'select',
+    '#title'          => t('Log level'),
     '#options'        => $options,
-    '#description'    => t('Define the login flow.'),
+    '#default_value'  => variable_get('d4os_io_services_offline_message_log_level', 0),
+    '#description'    => t('Define the log level'),
   );
-
+  
   return system_settings_form($form);
 }

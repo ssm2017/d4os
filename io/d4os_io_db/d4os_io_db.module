@@ -63,7 +63,7 @@ function d4os_io_db_perm() {
     'admin d4os db'
   );
 }
-
+/*
 function d4os_io_db_check_bases() {
   // Check if the database array is set
   global $db_url;
@@ -124,7 +124,7 @@ function d4os_io_db_check_bases() {
   }
   return $output;
 }
-
+*/
 function d4os_io_db_set_active($name = 'default') {
   global $d4os_same_db;
   if ($name == 'default') {
