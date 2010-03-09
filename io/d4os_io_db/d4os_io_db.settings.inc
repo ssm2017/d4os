@@ -9,7 +9,7 @@
 * other free or open source software licenses.
 */
 
-global $db_url, $d4os_same_db;
+global $db_url, $db_prefix, $d4os_same_db;
 $d4os_same_db = array('none'=>'none');
 // single
 $db_url['os_single'] = 'mysqli://'

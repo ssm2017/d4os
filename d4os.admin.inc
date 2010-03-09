@@ -25,7 +25,7 @@ function d4os_admin() {
     '#title'        => t('Grid'),
     '#collapsible'  => TRUE,
     '#collapsed'    => FALSE,
-  );
+  ); // TODO :maybe remove this default grid uri and port
   $form['d4os_uri']['grid']['d4os_default_grid_uri'] = array(
     '#type'           => 'textfield',
     '#title'          => t('Default grid URI'),
