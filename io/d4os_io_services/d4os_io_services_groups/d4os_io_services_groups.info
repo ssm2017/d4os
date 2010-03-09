@@ -2,4 +2,5 @@ name = d4os io services groups
 description = Provides a group service.
 package = d4os io
 dependencies[] = services
+dependencies[] = xmlrpc_server
 core = 6.x
