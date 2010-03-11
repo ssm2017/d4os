@@ -53,7 +53,7 @@ function d4os_ui_regions_display_regions_list() {
 function theme_d4os_ui_regions_list_table($regions, $title = NULL, $params) {
   global $user;
   // get the items list to show
-  $items =  variable_get('d4os_ui_regions_list_items', array('regionName'));
+  $items =  variable_get('d4os_ui_regions_list_items', array('regionName', 'locX', 'locY'));
   // build the headers
   $headers = array();
   if ($items['uuid']) {

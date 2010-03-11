@@ -150,6 +150,7 @@ function d4os_ui_auth_grid_login(&$form_state) {
         $data['roles'] = array($assigned_role => 'role');
       }
     }
+    // TODO : set userinventoryuri and userassetsuri
     // save user
     $data['name']   = $name;
     $data['pass']   = $pass;

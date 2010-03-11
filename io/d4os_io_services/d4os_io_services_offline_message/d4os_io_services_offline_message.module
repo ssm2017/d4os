@@ -9,20 +9,8 @@
 * other free or open source software licenses.
 */
 
-/*
-* Implementation of hook_disable()
-* Perform necessary actions before module is disabled. (like clear the services:methods cache)
-*/
-function d4os_io_services_offline_message_disable() {
-  cache_clear_all('services:methods', 'cache');
-}
-/*
-* Implementation of hook_disable()
-* Perform necessary actions after module is enabled. (like clear the services:methods cache)
-*/
-function d4os_io_services_offline_message_enable() {
-  cache_clear_all('services:methods', 'cache');
-}
+global $d4os_io_services_offline_message_log_level;
+$d4os_io_services_offline_message_log_level = variable_get('d4os_io_services_offline_message_log_level', 0);
 
 /**
  * Implementation of hook_help().
@@ -46,6 +34,14 @@ function d4os_io_services_offline_message_menu() {
     'type'              => MENU_LOCAL_TASK,
     'file'              => 'd4os_io_services_offline_message.admin.inc'
   );
+  $items['grid/offline-message/%'] = array(
+    'title'             => 'offline_message',
+    'description'       => 'd4os io services offline_message',
+    'page callback'     => 'd4os_io_services_offline_message_query',
+    'page arguments'    => array(2),
+    'access callback'   => TRUE,
+    'type'              => MENU_CALLBACK,
+  );
   return $items;
 }
 
@@ -55,52 +51,32 @@ function d4os_io_services_offline_message_perm() {
   );
 }
 
-/**
- * Implementation of hook_service().
- */
-function d4os_io_services_offline_message_service() {
-  return array(
-    // SaveMessage
-    array(
-      '#method'           => 'SaveMessage',
-      '#callback'         => 'd4os_io_services_offline_message_savemessage',
-      '#access callback'  => 'd4os_io_services_offline_message_savemessage_access',
-      '#args'             => array(
-        array(
-          '#name'         => 'params',
-          '#type'         => 'array',
-          '#description'  => t('Params.'),
-          '#optional'     => TRUE,
-        ),
-      ),
-      '#return'           => 'boolean',
-      '#help'             => t('Return true or false.')
-    ),
-
-    // RetrieveMessages
-    array(
-      '#method'           => 'RetrieveMessages',
-      '#callback'         => 'd4os_io_services_offline_message_retrievemessages',
-      '#access callback'  => 'd4os_io_services_offline_message_retrievemessages_access',
-      '#args'             => array(
-        array(
-          '#name'         => 'params',
-          '#type'         => 'array',
-          '#description'  => t('Params.'),
-          '#optional'     => TRUE,
-        ),
-      ),
-      '#return'           => 'struct',
-      '#help'             => t('Return offline messages.')
-    ),
+function d4os_io_services_offline_message_query($action) {
+  $raw_data = file_get_contents("php://input");
+  $xml = simplexml_load_string($raw_data);
+  if ($xml->dialog == 42) return;
+  $params = array(
+    'xml' => $xml,
+    'raw' => $raw_data,
   );
-}
 
-global $d4os_io_services_offline_message_log_level;
-$d4os_io_services_offline_message_log_level = variable_get('d4os_io_services_offline_message_log_level', 0);
+  switch($action) {
+    case 'SaveMessage':
+      d4os_io_services_offline_message_savemessage($params);
+      break;
+    case 'RetrieveMessages':
+      d4os_io_services_offline_message_retrievemessages($params);
+      break;
+  }
+}
 
 function d4os_io_services_offline_message_savemessage($params) {
   global $d4os_io_services_offline_message_log_level;
+
+  // manage params
+  $params['toAgentID'] = (string)$params['xml']->toAgentID;
+  $params['message'] = substr($params['raw'], (strpos($params['raw'], "?>") + 2));
+  
   // log
   if ($d4os_io_services_offline_message_log_level > 6) {
     $log = array();
@@ -114,11 +90,12 @@ function d4os_io_services_offline_message_savemessage($params) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_offline_message', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_omsg', $log, WATCHDOG_DEBUG);
   }
 
   // do the job
-  //$return = module_invoke_all('os_profile_services_avatarclassifiedsrequest', $params);
+  $output = module_invoke_all('os_services_offline_message_savemessage', $params);
+  $return = d4os_oi_services_offline_message_build_answer('savemessage', $output);
 
   if ($d4os_io_services_offline_message_log_level > 6) {
     $log = array();
@@ -128,21 +105,21 @@ function d4os_io_services_offline_message_savemessage($params) {
       'data' => 'savemessage',
     );
     $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
+      'name' => 'output xml',
+      'type' => 'string',
+      'data' => htmlentities($return),
     );
-    d4os_log('d4os_io_services_offline_message', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_omsg', $log, WATCHDOG_DEBUG);
   }
-  return $return;
-}
-
-function d4os_io_services_offline_message_savemessage_access() {
-  return TRUE;
+  print $return;
 }
 
 function d4os_io_services_offline_message_retrievemessages($params) {
   global $d4os_io_services_offline_message_log_level;
+
+  // manage params
+  $params['Guid'] = (string)$params['xml']->Guid;
+
   // log
   if ($d4os_io_services_offline_message_log_level > 6) {
     $log = array();
@@ -156,11 +133,12 @@ function d4os_io_services_offline_message_retrievemessages($params) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_offline_message', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_omsg', $log, WATCHDOG_DEBUG);
   }
 
   // do the job
-  //$return = module_invoke_all('os_profile_services_avatarclassifiedsrequest', $params);
+  $output = module_invoke_all('os_services_offline_message_retrievemessages', $params);
+  $return = d4os_oi_services_offline_message_build_answer('retrievemessages', $output);
 
   if ($d4os_io_services_offline_message_log_level > 6) {
     $log = array();
@@ -170,15 +148,28 @@ function d4os_io_services_offline_message_retrievemessages($params) {
       'data' => 'retrievemessages',
     );
     $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
+      'name' => 'output xml',
+      'type' => 'string',
+      'data' => htmlentities($return),
     );
-    d4os_log('d4os_io_services_offline_message', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_omsg', $log, WATCHDOG_DEBUG);
   }
-  return $return;
+  print $return;
 }
 
-function d4os_io_services_offline_message_retrievemessages_access() {
-  return TRUE;
+function d4os_oi_services_offline_message_build_answer($action, $params) {
+  $output = '<?xml version="1.0" encoding="utf-8"?>';
+  switch($action) {
+    case 'savemessage':
+      $output .= $params['success'] ? '<boolean>true</boolean>' : '<boolean>false</boolean>';
+      break;
+    case 'retrievemessages':
+      $output .= '<ArrayOfGridInstantMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">';
+      foreach ($params['data'] as $message) {
+        $output .= $message;
+      }
+      $output .= '</ArrayOfGridInstantMessage>';
+      break;
+  }
+  return $output;
 }

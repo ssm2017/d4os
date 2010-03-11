@@ -172,3 +172,15 @@ $db_url['os_users'] = 'mysqli://'
 . variable_get('d4os_io_db_multiple_users_db', 'users');
 $d4os_db_prefix['os_users'] = variable_get('d4os_io_db_multiple_users_prefix', '');
 $d4os_same_db['os_users'] = variable_get('d4os_io_db_multiple_users_same', 'none');
+
+// offline messages
+$db_url['os_offline_message'] = 'mysqli://'
+. variable_get('d4os_io_db_multiple_offline_message_username', 'root')
+.':'
+. variable_get('d4os_io_db_multiple_offline_message_password', 'root')
+. '@'
+. variable_get('d4os_io_db_multiple_offline_message_host', 'localhost')
+. '/'
+. variable_get('d4os_io_db_multiple_offline_message_db', 'offline_message');
+$d4os_db_prefix['os_offline_message'] = variable_get('d4os_io_db_multiple_offline_message_prefix', '');
+$d4os_same_db['os_offline_message'] = variable_get('d4os_io_db_multiple_offline_message_same', 'none');

@@ -137,7 +137,7 @@ function d4os_io_services_groups_createGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
     return $error;
@@ -206,7 +206,7 @@ function d4os_io_services_groups_createGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   if ($inworld) {
     module_invoke_all('os_group_grid_create', $return);
@@ -235,7 +235,7 @@ function d4os_io_services_groups_addRoleToGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
     return $error;
@@ -261,7 +261,7 @@ function d4os_io_services_groups_addRoleToGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -281,7 +281,7 @@ function d4os_io_services_groups_updateGroupRole($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
     return $error;
@@ -310,7 +310,7 @@ function d4os_io_services_groups_updateGroupRole($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $output;
 }
@@ -330,7 +330,7 @@ function d4os_io_services_groups_removeRoleFromGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
     return $error;
@@ -355,7 +355,7 @@ function d4os_io_services_groups_removeRoleFromGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -375,7 +375,7 @@ function d4os_io_services_groups_getGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
 
   if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
@@ -396,7 +396,7 @@ function d4os_io_services_groups_getGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -422,7 +422,7 @@ function d4os_io_services_groups_updateGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
 
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
@@ -448,7 +448,7 @@ function d4os_io_services_groups_updateGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -468,7 +468,7 @@ function d4os_io_services_groups_findGroups($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
 
   if(is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
@@ -490,7 +490,7 @@ function d4os_io_services_groups_findGroups($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -515,7 +515,7 @@ function d4os_io_services_groups_setAgentActiveGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
 
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
@@ -546,7 +546,7 @@ function d4os_io_services_groups_setAgentActiveGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -566,7 +566,7 @@ function d4os_io_services_groups_addAgentToGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
 
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
@@ -617,7 +617,7 @@ function d4os_io_services_groups_addAgentToGroup($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -675,7 +675,7 @@ function d4os_io_services_groups_removeAgentFromGroup($params, $inworld = TRUE) 
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
 
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
@@ -707,7 +707,7 @@ function d4os_io_services_groups_removeAgentFromGroup($params, $inworld = TRUE) 
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -732,7 +732,7 @@ function d4os_io_services_groups_addAgentToGroupRole($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
     return $error;
@@ -780,7 +780,7 @@ function d4os_io_services_groups_addAgentToGroupRole($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -800,7 +800,7 @@ function d4os_io_services_groups_removeAgentFromGroupRole($params, $inworld = TR
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
 
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
@@ -826,7 +826,7 @@ function d4os_io_services_groups_removeAgentFromGroupRole($params, $inworld = TR
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -851,7 +851,7 @@ function d4os_io_services_groups_setAgentGroupSelectedRole($params, $inworld = T
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
 
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
@@ -883,7 +883,7 @@ function d4os_io_services_groups_setAgentGroupSelectedRole($params, $inworld = T
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -903,7 +903,7 @@ function d4os_io_services_groups_getAgentGroupMembership($params, $inworld = TRU
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
 
   if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
@@ -925,7 +925,7 @@ function d4os_io_services_groups_getAgentGroupMembership($params, $inworld = TRU
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -945,7 +945,7 @@ function d4os_io_services_groups_getAgentGroupMemberships($params, $inworld = TR
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
 
   if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
@@ -967,12 +967,12 @@ function d4os_io_services_groups_getAgentGroupMemberships($params, $inworld = TR
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
 
-function d4os_io_services_groups_canAgentViewRoleMembers( $agentID, $groupID, $roleID ) {
+function d4os_io_services_groups_canAgentViewRoleMembers($agentID, $groupID, $roleID) {
   global $d4os_io_services_groups_log_level;
   // log
   if ($d4os_io_services_groups_log_level > 6) {
@@ -998,7 +998,7 @@ function d4os_io_services_groups_canAgentViewRoleMembers( $agentID, $groupID, $r
       'data' => $roleID,
     );
     
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   $membersVisibleTo = variable_get('d4os_io_services_groups_membersVisibleTo', 'Group');
   
@@ -1032,7 +1032,7 @@ function d4os_io_services_groups_canAgentViewRoleMembers( $agentID, $groupID, $r
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -1052,7 +1052,7 @@ function d4os_io_services_groups_getGroupMembers($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
 
   if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
@@ -1099,7 +1099,7 @@ function d4os_io_services_groups_getGroupMembers($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -1119,7 +1119,7 @@ function d4os_io_services_groups_getAgentActiveMembership($params, $inworld = TR
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
 
   if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
@@ -1147,7 +1147,7 @@ function d4os_io_services_groups_getAgentActiveMembership($params, $inworld = TR
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -1167,7 +1167,7 @@ function d4os_io_services_groups_getAgentRoles($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
 
   if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
@@ -1203,7 +1203,7 @@ function d4os_io_services_groups_getAgentRoles($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -1223,7 +1223,7 @@ function d4os_io_services_groups_getGroupRoles($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
 
   if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
@@ -1259,7 +1259,7 @@ function d4os_io_services_groups_getGroupRoles($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -1279,7 +1279,7 @@ function d4os_io_services_groups_getGroupRoleMembers($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
 
   if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
@@ -1325,7 +1325,7 @@ function d4os_io_services_groups_getGroupRoleMembers($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -1345,7 +1345,7 @@ function d4os_io_services_groups_setAgentGroupInfo($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
 
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
@@ -1371,7 +1371,7 @@ function d4os_io_services_groups_setAgentGroupInfo($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -1391,7 +1391,7 @@ function d4os_io_services_groups_getGroupNotices($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
 
   if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
@@ -1427,7 +1427,7 @@ function d4os_io_services_groups_getGroupNotices($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -1447,7 +1447,7 @@ function d4os_io_services_groups_getGroupNotice($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
 
   if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
@@ -1483,7 +1483,7 @@ function d4os_io_services_groups_getGroupNotice($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -1503,7 +1503,7 @@ function d4os_io_services_groups_addGroupNotice($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
 
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
@@ -1533,7 +1533,7 @@ function d4os_io_services_groups_addGroupNotice($params, $inworld = TRUE) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -1553,7 +1553,7 @@ function d4os_io_services_groups_addAgentToGroupInvite($params, $inworld = TRUE)
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
 
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
@@ -1583,7 +1583,7 @@ function d4os_io_services_groups_addAgentToGroupInvite($params, $inworld = TRUE)
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -1603,7 +1603,7 @@ function d4os_io_services_groups_getAgentToGroupInvite($params, $inworld = TRUE)
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
 
   if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
@@ -1629,7 +1629,7 @@ function d4os_io_services_groups_getAgentToGroupInvite($params, $inworld = TRUE)
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -1649,7 +1649,7 @@ function d4os_io_services_groups_removeAgentToGroupInvite($params, $inworld = TR
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
 
   if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
@@ -1675,7 +1675,7 @@ function d4os_io_services_groups_removeAgentToGroupInvite($params, $inworld = TR
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -1799,7 +1799,7 @@ function d4os_io_services_groups_checkGroupPermission($GroupID, $Permission) {
       'type' => 'var',
       'data' => $Permission,
     );
-    d4os_log('d4os_io_services_groups', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_srv_grps', $log, WATCHDOG_DEBUG);
   }
 
   if (!isset($Permission) || ($Permission == 0)) {

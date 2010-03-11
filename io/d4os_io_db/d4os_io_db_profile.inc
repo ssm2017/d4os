@@ -354,21 +354,21 @@ function d4os_io_db_os_profile_services_avatarnotesrequest($params) {
   $targetuuid = $params['avatar_id'];
   $data = array();
 
-  d4os_io_db_set_active('os_profile');
-  $result = db_query("SELECT * FROM {usernotes} WHERE useruuid = '%s' AND targetuuid = '%s'", array($uuid, $targetuuid));
-
-  while ($row = db_fetch_array($result)) {
-    $data[] = array(
-      "targetid"  => $row["targetuuid"],
-      "notes"     => $row["notes"]
-    );
-  }
-  d4os_io_db_set_active('default');
+  //d4os_io_db_set_active('os_profile');
+  //$result = db_query("SELECT * FROM {usernotes} WHERE useruuid = '%s' AND targetuuid = '%s'", array($uuid, $targetuuid));
+  //
+  //while ($row = db_fetch_array($result)) {
+  //  $data[] = array(
+  //    "targetid"  => $row["targetuuid"],
+  //    "notes"     => $row["notes"]
+  //  );
+  //}
+  //d4os_io_db_set_active('default');
 
   return array(
     'success'       => TRUE,
     'errorMessage'  => "",
-    'data'          => $data
+    'data'          => array('useruuid' => $uuid, 'targetuuid' => $targetuuid, 'notes' => "uuuuu")//$data
   );
 }
 

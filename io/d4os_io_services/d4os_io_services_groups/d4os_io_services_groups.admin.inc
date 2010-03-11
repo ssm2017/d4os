@@ -16,7 +16,7 @@ function d4os_io_services_groups_admin() {
     '#type'         => 'fieldset',
     '#title'        => t('Keys'),
     '#collapsible'  => TRUE,
-    '#collapsed'    => FALSE,
+    '#collapsed'    => TRUE,
     '#description'  => t("A xmlrpc client must have this key to commit changes to the Groups DB.Leave blank to allow all clients to make changes."),
   );
   $form['keys']['d4os_io_services_groups_writeKey'] = array(
@@ -52,7 +52,7 @@ function d4os_io_services_groups_admin() {
   $form['d4os_io_services_groups_membersVisibleTo'] = array(
     '#type'           => 'select',
     '#title'          => t('membersVisibleTo'),
-    '#options'        => array('ALL' => t('All'), 'Group' => t('Group'), 'Owners' => t('Owners'), 'Roles' => t('Roles')),
+    '#options'        => array('All' => t('All'), 'Group' => t('Group'), 'Owners' => t('Owners'), 'Roles' => t('Roles')),
     '#default_value'  => variable_get('d4os_io_services_groups_membersVisibleTo', 'Group'),
     '#description'    => t('Define who can see group members'),
   );

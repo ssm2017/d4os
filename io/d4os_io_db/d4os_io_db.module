@@ -13,18 +13,7 @@ function d4os_io_db_init() {
   module_load_include('settings.inc', 'd4os_io_db');
 }
 
-//module_load_include('inc', 'd4os_io_db', 'd4os_io_db_asset');
-//module_load_include('inc', 'd4os_io_db', 'd4os_io_db_auth');
-module_load_include('inc', 'd4os_io_db', 'd4os_io_db_grid');
-//module_load_include('inc', 'd4os_io_db', 'd4os_io_db_inventory');
-//module_load_include('inc', 'd4os_io_db', 'd4os_io_db_messaging');
-//module_load_include('inc', 'd4os_io_db', 'd4os_io_db_account');
-module_load_include('inc', 'd4os_io_db', 'd4os_io_db_users');
-//module_load_include('inc', 'd4os_io_db', 'd4os_io_db_opensim');
-module_load_include('inc', 'd4os_io_db', 'd4os_io_db_search');
-module_load_include('inc', 'd4os_io_db', 'd4os_io_db_search_parser');
-module_load_include('inc', 'd4os_io_db', 'd4os_io_db_groups');
-module_load_include('inc', 'd4os_io_db', 'd4os_io_db_profile');
+d4os_io_db_load_includes();
 
 function d4os_io_db_help($path, $arg) {
   switch ($path) {
@@ -42,7 +31,7 @@ function d4os_io_db_menu() {
     'page callback'     => 'drupal_get_form',
     'page arguments'    => array('d4os_io_db_admin'),
     'access arguments'  => array('admin d4os db'),
-    'type'              => MENU_LOCAL_TASK,
+    'type'              => MENU_NORMAL_ITEM,
     'file'              => 'd4os_io_db.admin.inc'
    );
   return $items;
@@ -147,4 +136,51 @@ function d4os_io_db_set_active($name = 'default') {
       db_set_active($name);
       break;
   }
+}
+
+function d4os_io_db_build_bases_list() {
+  $bases = array(
+    'none'            => t('None'),
+    'default'         => t('Website'),
+    'os_grid'         => t('Grid'),
+    //'os_asset '       => t('Asset'),
+    //'os_auth'         => t('Auth'),
+    //'os_estate'       => t('Estate'),
+    //'os_inventory'    => t('Inventory'),
+    //'os_messaging'    => t('Messaging'),
+    //'os_opensim'      => t('Opensim'),
+    //'os_user_account' => t('User account'),
+  );
+  if (module_exists('d4os_ui_groups') || module_exists('d4os_io_services_groups')) {
+    $bases['os_groups'] = t('Groups');
+  }
+  if (module_exists('d4os_io_services_profile')) {
+    $bases['os_profile'] = t('Profile');
+  }
+  if (module_exists('d4os_io_services_search')) {
+    $bases['os_search'] = t('Search');
+  }
+  if (module_exists('d4os_ui_users')) {
+    $bases['os_users'] = t('Users');
+  }
+  if (module_exists('d4os_io_services_offline_message')) {
+    $bases['os_offline_message'] = t('offline_message');
+  }
+  return $bases;
+}
+
+function d4os_io_db_load_includes() {
+  //module_load_include('inc', 'd4os_io_db', 'd4os_io_db_asset');
+  //module_load_include('inc', 'd4os_io_db', 'd4os_io_db_auth');
+  module_load_include('inc', 'd4os_io_db', 'd4os_io_db_grid');
+  //module_load_include('inc', 'd4os_io_db', 'd4os_io_db_inventory');
+  //module_load_include('inc', 'd4os_io_db', 'd4os_io_db_messaging');
+  //module_load_include('inc', 'd4os_io_db', 'd4os_io_db_account');
+  module_load_include('inc', 'd4os_io_db', 'd4os_io_db_users');
+  //module_load_include('inc', 'd4os_io_db', 'd4os_io_db_opensim');
+  module_load_include('inc', 'd4os_io_db', 'd4os_io_db_search');
+  module_load_include('inc', 'd4os_io_db', 'd4os_io_db_search_parser');
+  module_load_include('inc', 'd4os_io_db', 'd4os_io_db_groups');
+  module_load_include('inc', 'd4os_io_db', 'd4os_io_db_profile');
+  module_load_include('inc', 'd4os_io_db', 'd4os_io_db_messages');
 }

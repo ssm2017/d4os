@@ -775,10 +775,11 @@ function d4os_io_db_os_groups_services_getAgentGroupMembership($params) {
   ." , osgroupmembership.Contribution, osgroupmembership.ListInProfile, osgroupmembership.AcceptNotices"
   ." , osgroupmembership.SelectedRoleID, osrole.Title"
   ." , osagent.ActiveGroupID "
-  ." FROM {osgroup} JOIN {osgroupmembership} ON (osgroup.GroupID = osgroupmembership.GroupID)"
-  ."              JOIN {osrole} ON (osgroupmembership.SelectedRoleID = osrole.RoleID AND osgroupmembership.GroupID = osrole.GroupID)"
-  ."              JOIN {osagent} ON (osagent.AgentID = osgroupmembership.AgentID)"
-  ." WHERE osgroup.GroupID = '%sa' AND osgroupmembership.AgentID = '%s'";
+  ." FROM {osgroup} AS osgroup"
+  ." JOIN {osgroupmembership} AS osgroupmembership ON (osgroup.GroupID = osgroupmembership.GroupID)"
+  ." JOIN {osrole} AS osrole ON (osgroupmembership.SelectedRoleID = osrole.RoleID AND osgroupmembership.GroupID = osrole.GroupID)"
+  ." JOIN {osagent} AS osagent ON (osagent.AgentID = osgroupmembership.AgentID)"
+  ." WHERE osgroup.GroupID = '%s' AND osgroupmembership.AgentID = '%s'";
   $values = array($groupID, $agentID);
   d4os_io_db_set_active('os_groups');
   $groupmembershipResult = db_query($sql, $values);
@@ -789,23 +790,26 @@ function d4os_io_db_os_groups_services_getAgentGroupMembership($params) {
       'params' => var_export($params, TRUE)
     );
   }
+  $groupMembershipInfo = array();
+  while($temp = db_fetch_array($groupmembershipResult)) {
+    $groupMembershipInfo[] = $temp;
+  }
+  d4os_io_db_set_active('default');
 
-  $groupMembershipInfo = db_fetch_array($groupmembershipResult);
-
-  if (!is_array($groupMembershipInfo)) {
-    d4os_io_db_set_active('default');
+  if (!is_array($groupMembershipInfo[0])) {
     return array(
       'succeed' => 'false',
       'error'   => 'None Found',
-      'params'  => var_export($params, TRUE),
+      'params'  => var_export($groupMembershipInfo, TRUE),//var_export($params, TRUE),
       'sql'     => $sql
     );
   }
 
   $sql = " SELECT BIT_OR(osrole.Powers) AS GroupPowers"
-  ." FROM {osgrouprolemembership} JOIN {osrole} ON (osgrouprolemembership.GroupID = osrole.GroupID AND osgrouprolemembership.RoleID = osrole.RoleID)"
+  ." FROM {osgrouprolemembership}"
+  ." JOIN {osrole} ON (osgrouprolemembership.GroupID = osrole.GroupID AND osgrouprolemembership.RoleID = osrole.RoleID)"
   ." WHERE osgrouprolemembership.GroupID = '%s' AND osgrouprolemembership.AgentID = '%s'";
-  
+  d4os_io_db_set_active('os_groups');
   $groupPowersResult = db_query($sql, $values);
   if (!$groupPowersResult) {
     d4os_io_db_set_active('default');
@@ -814,10 +818,13 @@ function d4os_io_db_os_groups_services_getAgentGroupMembership($params) {
       'params' => var_export($params, TRUE)
     );
   }
-  $groupPowersInfo = db_fetch_array($groupPowersResult);
+  $groupPowersInfo = array();
+  while($temp = db_fetch_array($groupPowersResult)) {
+    $groupPowersInfo[] = $temp;
+  }
   d4os_io_db_set_active('default');
 
-  return array_merge($groupMembershipInfo, $groupPowersInfo);
+  return array_merge($groupMembershipInfo[0], $groupPowersInfo[0]);
 }
 
 function d4os_io_db_os_groups_services_getAgentGroupMemberships($params) {
@@ -907,6 +914,10 @@ function d4os_io_db_os_groups_services_canAgentViewRoleMembers($params) {
 
 function d4os_io_db_os_groups_services_getGroupMembers($params) {
   $groupID = $params['GroupID'];
+  $requestingAgent = $params['RequestingAgentID'];
+  $roleMembersVisibleBit = $groupPowers['RoleMembersVisible'];
+  $memberResults = array();
+  $members_infos = array();
   
   $sql = " SELECT osgroupmembership.AgentID"
   ." , osgroupmembership.Contribution, osgroupmembership.ListInProfile, osgroupmembership.AcceptNotices"
@@ -929,13 +940,17 @@ function d4os_io_db_os_groups_services_getGroupMembers($params) {
       'params' => var_export($params, TRUE)
     );
   }
-
-  $roleMembersVisibleBit = $groupPowers['RoleMembersVisible'];
-  $canViewAllGroupRoleMembers = d4os_io_services_groups_canAgentViewRoleMembers($requestingAgent, $groupID, '');
-  $members = 0;
-  $memberResults = array();
+  // get group members
   while ($memberInfo = db_fetch_array($groupmemberResults)) {
-    ++ $members;
+    $members_infos[] = $memberInfo;
+  }
+  d4os_io_db_set_active('default');
+  if (count($members_infos) == 0) {
+    return array('success' => 'true', 'members' => 0, 'member_result' => array());
+  }
+
+  // get members rights
+  foreach ($members_infos as $memberInfo) {
     $agentID = $memberInfo['AgentID'];
     $sql = " SELECT BIT_OR(osrole.Powers) AS AgentPowers, ( BIT_OR(osrole.Powers) & %d) as MemberVisible"
     ." FROM {osgrouprolemembership} JOIN {osrole} ON (osgrouprolemembership.GroupID = osrole.GroupID AND osgrouprolemembership.RoleID = osrole.RoleID)"
@@ -950,9 +965,10 @@ function d4os_io_db_os_groups_services_getGroupMembers($params) {
         'params' => var_export($params, TRUE)
       );
     }
-
     $memberPowersInfo = db_fetch_array($memberPowersResult);
     d4os_io_db_set_active('default');
+
+    $canViewAllGroupRoleMembers = d4os_io_services_groups_canAgentViewRoleMembers($requestingAgent, $groupID, '');
 
     if (!is_array($memberPowersInfo)) {
       if( $canViewAllGroupRoleMembers || ($memberResults[$agentID] == $requestingAgent)) {
@@ -1110,6 +1126,7 @@ function d4os_io_db_os_groups_services_getGroupRoles($params) {
 
 function d4os_io_db_os_groups_services_getGroupRoleMembers($params) {
   $groupID = $params['GroupID'];
+  $requestingAgent = $params['RequestingAgentID'];
 
   $roleMembersVisibleBit = $groupPowers['RoleMembersVisible'];
   $canViewAllGroupRoleMembers = d4os_io_services_groups_canAgentViewRoleMembers($requestingAgent, $groupID, '');
