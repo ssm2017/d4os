@@ -137,7 +137,9 @@ function d4os_ui_users_get_grid_fields() {
   );
 }
 
-function d4os_ui_users_account_to_grid_array($account) {
+function d4os_ui_users_account_to_grid($account) {
+  $is_object = is_object($account);
+  $account = $is_object ? (array)$account : $account;
   $grid_user = array();
   foreach ($account as $key => $value) {
     if ((substr($key, 0, 5) == 'grid_')) {
@@ -145,15 +147,19 @@ function d4os_ui_users_account_to_grid_array($account) {
       $grid_user[$new_key] = $value;
     }
   }
+  $grid_user = $is_object ? (object)$grid_user : $grid_user;
   return $grid_user;
 }
 
-function d4os_ui_users_grid_to_account_array($grid_account) {
+function d4os_ui_users_grid_to_account($grid_account) {
+  $is_object = is_object($grid_account);
+  $grid_account = $is_object ? (array)$grid_account : $grid_account;
   $account = array();
   foreach ($grid_account as $key => $value) {
     $new_key = 'grid_'. $key;
     $account[$new_key] = $value;
   }
+  $account = $is_object ? (object)$account : $account;
   return $account;
 }
 

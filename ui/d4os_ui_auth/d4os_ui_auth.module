@@ -107,7 +107,7 @@ function d4os_ui_auth_grid_login(&$form_state) {
     drupal_set_message(t('Grid authentication has failed. Please try again.'), 'error');
     return FALSE;
   }
-  $data = d4os_ui_users_grid_to_account_array($grid_account);
+  $data = (array)d4os_ui_users_grid_to_account($grid_account);
 
   // check the password
   // md5(md5($pass) . ":" . $user['passwordSalt'])
