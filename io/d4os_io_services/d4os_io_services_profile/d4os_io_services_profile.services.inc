@@ -33,7 +33,7 @@ function d4os_io_services_profile_avatarclassifiedsrequest($params) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
 
   // do the job
@@ -51,7 +51,7 @@ function d4os_io_services_profile_avatarclassifiedsrequest($params) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -75,7 +75,7 @@ function d4os_io_services_profile_classified_update($params) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
 
   // do the job
@@ -93,7 +93,7 @@ function d4os_io_services_profile_classified_update($params) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -117,7 +117,7 @@ function d4os_io_services_profile_classified_delete($params) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
 
   // do the job
@@ -135,7 +135,7 @@ function d4os_io_services_profile_classified_delete($params) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -159,7 +159,7 @@ function d4os_io_services_profile_avatarpicksrequest($params) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
 
   // do the job
@@ -177,7 +177,7 @@ function d4os_io_services_profile_avatarpicksrequest($params) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -201,7 +201,7 @@ function d4os_io_services_profile_pickinforequest($params) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
 
   // do the job
@@ -219,7 +219,7 @@ function d4os_io_services_profile_pickinforequest($params) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -243,7 +243,7 @@ function d4os_io_services_profile_picks_update($params) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
 
   // do the job
@@ -261,7 +261,7 @@ function d4os_io_services_profile_picks_update($params) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -285,7 +285,7 @@ function d4os_io_services_profile_picks_delete($params) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
 
   // do the job
@@ -303,7 +303,7 @@ function d4os_io_services_profile_picks_delete($params) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -327,7 +327,7 @@ function d4os_io_services_profile_avatarnotesrequest($params) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
 
   // do the job
@@ -345,7 +345,7 @@ function d4os_io_services_profile_avatarnotesrequest($params) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -369,7 +369,7 @@ function d4os_io_services_profile_avatar_notes_update($params) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
 
   // do the job
@@ -387,7 +387,7 @@ function d4os_io_services_profile_avatar_notes_update($params) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -411,7 +411,7 @@ function d4os_io_services_profile_avatar_properties_request($params) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
 
   // do the job
@@ -429,7 +429,7 @@ function d4os_io_services_profile_avatar_properties_request($params) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -453,7 +453,7 @@ function d4os_io_services_profile_avatar_interests_request($params) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
 
   // do the job
@@ -471,7 +471,7 @@ function d4os_io_services_profile_avatar_interests_request($params) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -495,7 +495,7 @@ function d4os_io_services_profile_avatar_interests_update($params) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
 
   // do the job
@@ -513,7 +513,7 @@ function d4os_io_services_profile_avatar_interests_update($params) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -537,7 +537,7 @@ function d4os_io_services_profile_user_preferences_request($params) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
 
   // do the job
@@ -555,7 +555,7 @@ function d4os_io_services_profile_user_preferences_request($params) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
@@ -579,7 +579,7 @@ function d4os_io_services_profile_user_preferences_update($params) {
       'type' => 'array',
       'data' => $params,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
 
   // do the job
@@ -597,7 +597,7 @@ function d4os_io_services_profile_user_preferences_update($params) {
       'type' => 'array',
       'data' => $return,
     );
-    d4os_log('d4os_io_services_profile', $log, WATCHDOG_DEBUG);
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
   }
   return $return;
 }
