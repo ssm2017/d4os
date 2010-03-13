@@ -10,6 +10,12 @@
 */
 
 /*
+ * The code in this script was inspired and mostly copied from osprofile
+ * http://forge.opensimulator.org/gf/project/osprofile
+ * Copyright (c)Melanie Thielker (http://opensimulator.org/)
+ */
+
+/*
  * Profile services
  */
 function d4os_io_db_os_profile_services_avatarclassifiedsrequest($params) {
@@ -325,8 +331,8 @@ function d4os_io_db_os_profile_services_picks_delete($params) {
 }
 
 function d4os_io_db_os_profile_services_avatarnotesrequest($params) {
-  $uuid       = $params['uuid'];
-  $targetuuid = $params['avatar_id'];
+  $uuid       = $params['avatar_id'];
+  $targetuuid = $params['uuid'];
   $data = array();
 
   d4os_io_db_set_active('os_profile');

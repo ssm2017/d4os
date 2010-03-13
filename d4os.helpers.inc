@@ -9,6 +9,13 @@
 * other free or open source software licenses.
 */
 
+define('UUID_ZERO', '00000000-0000-0000-0000-000000000000');
+global $grid_url;
+global $base_url;
+$grid_uri   = variable_get('d4os_default_grid_uri', $base_url);
+$grid_port  = variable_get('d4os_default_grid_port', '9000');
+$grid_url   = $grid_uri. ':'. $grid_port;
+
 function d4os_array_search_recursive($needle, $haystack) {
   foreach ($haystack as $k => $v) {
     foreach($v as $v2) {

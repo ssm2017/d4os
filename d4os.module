@@ -11,13 +11,6 @@
 
 module_load_include('helpers.inc', 'd4os');
 
-define('UUID_ZERO', '00000000-0000-0000-0000-000000000000');
-global $grid_url;
-global $base_url;
-$grid_uri   = variable_get('d4os_default_grid_uri', $base_url);
-$grid_port  = variable_get('d4os_default_grid_port', '9000');
-$grid_url   = $grid_uri. ':'. $grid_port;
-
 function d4os_help($path, $arg) {
   switch ($path) {
     case 'admin/help#d4os':

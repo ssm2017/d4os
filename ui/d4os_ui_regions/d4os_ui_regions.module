@@ -9,6 +9,8 @@
 * other free or open source software licenses.
 */
 
+// TODO : see what we can do with http://domain.com:9000/admin/regioninfo/
+
 function d4os_ui_regions_help($path, $arg) {
   switch ($path) {
     case 'admin/help#d4os_ui_regions':

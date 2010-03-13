@@ -450,7 +450,7 @@ function d4os_io_db_admin() {
       '#collapsed'      => TRUE,
     );
     $options = $bases;
-    unset($options['os_search']);
+    unset($options['os_profile']);
     $form['multiple_base']['profile']['d4os_io_db_multiple_profile_same'] = array(
       '#type'           => 'select',
       '#title'          => t('Same as'),
