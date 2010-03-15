@@ -240,13 +240,17 @@ function d4os_io_db_os_user_load_all() {
   return $users;
 }
 
-function d4os_io_db_os_user_delete($data) {
+function d4os_io_db_os_user_delete($uuid) {
   // TODO : delete all assets
   // TODO : delete all sessions
   // TODO : delete inventory
   // TODO : delete friends
+
+  // delete user entry in the grid
   d4os_io_db_set_active('os_users');
-  $user = db_query("DELETE FROM {users} WHERE UUID='%s'", $data);
+  $user = db_query("DELETE FROM {users} WHERE UUID='%s'", $uuid);
   d4os_io_db_set_active('default');
-  db_query("DELETE FROM {d4os_ui_users} WHERE UUID='%s'", $data);
+
+  // delete the user drupal link  
+  db_query("DELETE FROM {d4os_ui_users} WHERE UUID='%s'", $uuid);
 }

@@ -15,12 +15,11 @@ function d4os_io_db_os_event_save($event) {
   $event = is_array($event) ? (object)$event : $event;
   // get inworld fields
   $grid_fields = d4os_ui_events_get_grid_fields();
-//drupal_set_message('<pre>'.print_r($event, true).'</pre>', 'warning');return;
-  if (is_object($event) && $event->eventid) {
+  unset($grid_fields['eventid']);
+
+  if (is_object($event) && $event->eventid != NULL) {
     $grid_query = '';
-    $node_query = '';
     $grid_v = array();
-    $node_v = array();
     foreach ($event as $key => $value) {
       if (in_array($key, $grid_fields)) {
         switch ($key) {
@@ -31,8 +30,6 @@ function d4os_io_db_os_event_save($event) {
           case 'mature':
             $grid_query .= "$key = '%s', ";
             $grid_v[]    = $value;
-            $node_query .= "$key = '%s', ";
-            $node_v[]    = $value;
             break;
           case 'category':
           case 'dateUTC':
@@ -42,8 +39,6 @@ function d4os_io_db_os_event_save($event) {
           case 'eventflags':
             $grid_query .= "$key = %d, ";
             $grid_v[]    = $value;
-            $node_query .= "$key = %d, ";
-            $node_v[]    = $value;
             break;
           case 'name':
           case 'description':
@@ -56,7 +51,6 @@ function d4os_io_db_os_event_save($event) {
 
     // remove the last ", "
     $grid_query = substr($grid_query, 0, -2);
-    $node_query = substr($node_query, 0, -2);
     // make the query
     d4os_io_db_set_active('os_search');
     $success = db_query("UPDATE {events} SET $grid_query WHERE `eventid` = '%d'", array_merge($grid_v, array($event->eventid)));
@@ -66,21 +60,12 @@ function d4os_io_db_os_event_save($event) {
       drupal_set_message(t('Error saving the event to the grid database'), 'error');
       return FALSE;
     }
-    $success = db_query("UPDATE {d4os_ui_events} SET $node_query WHERE `eventid` = '%d'", array_merge($node_v, array($event->eventid)));
-    if (!$success) {
-      drupal_set_message(t('Error saving the event to the website database'), 'error');
-      // The query failed - better to abort the save than risk further data loss.
-      return FALSE;
-    }
   }
   else {
-    $grid_fields = array();
-    $grid_values = array();
-    $grid_s = array();
-    $node_fields = array();
-    $node_values = array();
-    $node_s = array();
-    // create the new user
+    $fields = array();
+    $values = array();
+    $s      = array();
+    // create the new event
     foreach ($event as $key => $value) {
       if (in_array($key, $grid_fields)) {
         switch ($key) {
@@ -89,12 +74,9 @@ function d4os_io_db_os_event_save($event) {
           case 'simname':
           case 'globalPos':
           case 'mature':
-            $grid_fields[] = $key;
-            $grid_values[] = $value;
-            $grid_s[] = "'%s'";
-            $node_fields[] = $key;
-            $node_values[] = $value;
-            $node_s[] = "'%s'";
+            $fields[] = $key;
+            $values[] = $value;
+            $s[] = "'%s'";
             break;
           case 'category':
           case 'dateUTC':
@@ -102,25 +84,23 @@ function d4os_io_db_os_event_save($event) {
           case 'covercharge':
           case 'coveramount':
           case 'eventflags':
-            $grid_fields[] = $key;
-            $grid_values[] = $value;
-            $grid_s[] = "%d";
-            $node_fields[] = $key;
-            $node_values[] = $value;
-            $node_s[] = "%d";
+            $fields[] = $key;
+            $values[] = $value;
+            $s[] = "%d";
             break;
           case 'name':
           case 'description':
-            $grid_fields[] = $key;
-            $grid_values[] = $value;
-            $grid_s[] = "'%s'";
+            $fields[] = $key;
+            $values[] = $value;
+            $s[] = "'%s'";
             break;
         }
       }
     }
 
+    $query = 'INSERT INTO {events} ('. implode(', ', $fields) .') VALUES ('. implode(', ', $s) .')';
     d4os_io_db_set_active('os_search');
-    $success = db_query('INSERT INTO {events} ('. implode(', ', $grid_fields) .') VALUES ('. implode(', ', $grid_s) .')', $grid_values);
+    $success = db_query($query, $values);
     $eventid = db_last_insert_id('events', 'eventid');
     d4os_io_db_set_active('default');
     if (!$success) {
@@ -129,19 +109,15 @@ function d4os_io_db_os_event_save($event) {
       return FALSE;
     }
     // save the node item
-    $node_fields[] = 'eventid';
-    $node_values[] = $eventid;
-    $node_s[] = '%d';
-    $node_fields[] = 'vid';
-    $node_values[] = $event->vid;
-    $node_s[] = '%d';
-    $node_fields[] = 'nid';
-    $node_values[] = $event->nid;
-    $node_s[] = '%d';
-    $success = db_query('INSERT INTO {d4os_ui_events} ('. implode(', ', $node_fields) .') VALUES ('. implode(', ', $node_s) .')', $node_values);
+    $values = array(
+      $event->nid,
+      $event->vid,
+      $eventid
+    );
+    $success = db_query('INSERT INTO {d4os_ui_events} (nid, vid, eventid) VALUES (%d, %d, %d)', $values);
     if (!$success) {
-      drupal_set_message(t('Error saving the event to the website database'), 'error');
       // The query failed - better to abort the save than risk further data loss.
+      drupal_set_message(t('Error saving the event to the website database'), 'error');
       return FALSE;
     }
   }
@@ -153,7 +129,16 @@ function d4os_io_db_os_event_save($event) {
 }
 
 
-function d4os_io_db_os_event_load($array = array()) {
+function d4os_io_db_os_event_load($data = array()) {
+  if (is_numeric($data)) {
+    // get event id from node
+    $event_id = db_result(db_query("SELECT eventid FROM {d4os_ui_events} WHERE nid=%d", $data));
+    if (!$event_id) {
+      return FALSE;
+    }
+    // get event values
+    $data = array('eventid' => $event_id);
+  }
   // get inworld fields
   $fields = d4os_ui_events_get_grid_fields();
 
@@ -161,11 +146,11 @@ function d4os_io_db_os_event_load($array = array()) {
   $query = array();
   $params = array();
 
-  if (!is_array($array)) {
+  if (!is_array($data)) {
     return FALSE;
   }
 
-  foreach ($array as $key => $value) {
+  foreach ($data as $key => $value) {
     if (in_array($key, $fields)) {
       switch ($key) {
         case 'owneruuid':
@@ -175,7 +160,7 @@ function d4os_io_db_os_event_load($array = array()) {
         case 'simname':
         case 'globalPos':
         case 'mature':
-          $query[]= "$key = '%s'";
+          $query[]= $key. " = '%s'";
           $params[] = $value;
           break;
         case 'category':
@@ -184,38 +169,40 @@ function d4os_io_db_os_event_load($array = array()) {
         case 'covercharge':
         case 'coveramount':
         case 'eventflags':
-          $query[]= "$key = %d";
+        case 'eventid':
+          $query[]= $key. " = %d";
           $params[] = $value;
           break;
       }
     }
-    else if ($key == 'nid') {
-      $query[]= "$key = %d";
-      $params[] = $value;
-    }
   }
-  //d4os_io_db_set_active('os_events');
-  //$result = db_query('SELECT * FROM {events} WHERE '. implode(' AND ', $query), $params);
-  $result = db_query('SELECT * FROM {d4os_ui_events} WHERE '. implode(' AND ', $query), $params);
+  $query = 'SELECT * FROM {events} WHERE '. implode(' AND ', $query);
+  d4os_io_db_set_active('os_search');
+  $result = db_query($query, $params);
   if ($event = db_fetch_object($result)) {
-    //d4os_io_db_set_active('default');
+    d4os_io_db_set_active('default');
+    // get nid
+    $result = db_query("SELECT * FROM {d4os_ui_events} WHERE eventid=%d", $event->eventid);
+    if ($website_event = db_fetch_object($result)) {
+      $event->nid = $website_event->nid;
+      $event->vid = $website_event->vid;
+    }
     return $event;
   }
   else {
-    //d4os_io_db_set_active('default');
+    d4os_io_db_set_active('default');
     return FALSE;
   }
 }
 
 function d4os_io_db_os_event_load_all() {
   $users = array();
-  //d4os_io_db_set_active('os_search');
-  //$result = db_query('SELECT * FROM {events}');
-  $result = db_query('SELECT * FROM {d4os_ui_events}');
+  d4os_io_db_set_active('os_search');
+  $result = db_query('SELECT * FROM {events}');
   while ($event = db_fetch_object($result)) {
     $events[] = $event;
   }
-  //d4os_io_db_set_active('default');
+  d4os_io_db_set_active('default');
   return $event;
 }
 

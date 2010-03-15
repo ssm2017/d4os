@@ -1,0 +1,7 @@
+; $Id$
+name = "d4os ui profile"
+description = "Provides tools to manage profiles in an opensim grid."
+package = d4os ui
+core = 6.x
+dependencies[] = d4os
+dependencies[] = d4os_io_services_profile
