@@ -15,14 +15,31 @@
  * Copyright (c)Melanie Thielker (http://opensimulator.org/)
  */
 
+//$raw_data = file_get_contents("php://input");
+//$xml = simplexml_load_string($raw_data);
+//
+//$log = array();
+//    $log[] = array(
+//      'name' => 'function call',
+//      'type' => 'string',
+//      'data' => 'dir_places_query',
+//    );
+//    $log[] = array(
+//      'name' => 'xml',
+//      'type' => 'array',
+//      'data' => $xml,
+//    );
+//    d4os_log('d4os_io_services_search', $log, WATCHDOG_DEBUG);
+
 global $d4os_io_services_search_log_level;
 $d4os_io_services_search_log_level = variable_get('d4os_io_services_search_log_level', 0);
 
-function d4os_io_services_search_dir_places_query($text, $category, $query_start=0) {
-  global $d4os_io_services_profile_log_level;
+function d4os_io_services_search_dir_places_query($params) {
+  global $d4os_io_services_search_log_level;
+//$text, $category='-1', $sim_name='', $query_start=0, $flags
 
-  $pieces = split(" ", $text);
-  $text = join("%", $pieces);
+  $pieces = split(" ", $params['text']);
+  $params['text'] = join("%", $pieces);
   
   if ($text == "%%%") {
     return array(
@@ -30,12 +47,6 @@ function d4os_io_services_search_dir_places_query($text, $category, $query_start
       'errorMessage' => t('Invalid search terms'),
     );
   }
-
-  $params = array(
-    'category'  => $category,
-    'text'      => $text,
-    'start'     => $start,
-  );
 
   // log
   if ($d4os_io_services_search_log_level > 6) {
@@ -77,12 +88,8 @@ function d4os_io_services_search_dir_places_query_access() {
   return TRUE;
 }
 
-function d4os_io_services_search_dir_popular_query($flags) {
-  global $d4os_io_services_profile_log_level;
-
-  $params = array(
-    'flags' => $flags,
-  );
+function d4os_io_services_search_dir_popular_query($params) {
+  global $d4os_io_services_search_log_level;
 
   // log
   if ($d4os_io_services_search_log_level > 6) {
@@ -124,16 +131,8 @@ function d4os_io_services_search_dir_popular_query_access() {
   return TRUE;
 }
 
-function d4os_io_services_search_dir_land_query($flags, $type, $price, $area, $query_start) {
-  global $d4os_io_services_profile_log_level;
-
-  $params = array(
-    'flags'       => $flags,
-    'type'        => $type,
-    'price'       => $price,
-    'area'        => $area,
-    'query_start' => $query_start,
-  );
+function d4os_io_services_search_dir_land_query($params) {
+  global $d4os_io_services_search_log_level;
 
   // log
   if ($d4os_io_services_search_log_level > 6) {
@@ -175,21 +174,15 @@ function d4os_io_services_search_dir_land_query_access() {
   return TRUE;
 }
 
-function d4os_io_services_search_dir_events_query($text="", $flags="", $query_start=0) {
-  global $d4os_io_services_profile_log_level;
+function d4os_io_services_search_dir_events_query($params) {
+  global $d4os_io_services_search_log_level;
   
-  if ($text == "%%%") {
+  if ($params['text'] == "%%%") {
     return array(
       'success'      => FALSE,
       'errorMessage' => t('Invalid search terms.'),
     );
   }
-
-  $params = array(
-    'text'        => $text,
-    'flags'       => $flags,
-    'query_start' => $query_start,
-  );
 
   // log
   if ($d4os_io_services_search_log_level > 6) {
@@ -231,22 +224,15 @@ function d4os_io_services_search_dir_events_query_access() {
   return TRUE;
 }
 
-function d4os_io_services_search_dir_classified_query($text, $flags, $category, $query_start) {
-  global $d4os_io_services_profile_log_level;
+function d4os_io_services_search_dir_classified_query($params) {
+  global $d4os_io_services_search_log_level;
 
-  if ($text == "%%%") {
+  if ($params['text'] == "%%%") {
     return array(
       'success'      => FALSE,
       'errorMessage' => t('Invalid search terms.'),
     );
   }
-
-  $params = array(
-    'text'        => $text,
-    'flags'       => $flags,
-    'category'    => $category,
-    'query_start' => $query_start,
-  );
 
   // log
   if ($d4os_io_services_search_log_level > 6) {
@@ -288,8 +274,8 @@ function d4os_io_services_search_dir_classified_query_access() {
   return TRUE;
 }
 
-function d4os_io_services_search_event_info_query($eventID=0) {
-  global $d4os_io_services_profile_log_level;
+function d4os_io_services_search_event_info_query($params) {
+  global $d4os_io_services_search_log_level;
 
   // log
   if ($d4os_io_services_search_log_level > 6) {
@@ -308,7 +294,7 @@ function d4os_io_services_search_event_info_query($eventID=0) {
   }
 
   // do the job
-  $return = module_invoke_all('os_search_services_event_info_query', array('eventID' => $eventID));
+  $return = module_invoke_all('os_search_services_event_info_query', $params);
 
   if ($d4os_io_services_search_log_level > 6) {
     $log = array();
@@ -331,8 +317,8 @@ function d4os_io_services_search_event_info_query_access() {
   return TRUE;
 }
 
-function d4os_io_services_search_classifieds_info_query($classifiedID) {
-  global $d4os_io_services_profile_log_level;
+function d4os_io_services_search_classifieds_info_query($params) {
+  global $d4os_io_services_search_log_level;
 
   // log
   if ($d4os_io_services_search_log_level > 6) {
@@ -351,7 +337,7 @@ function d4os_io_services_search_classifieds_info_query($classifiedID) {
   }
 
   // do the job
-  $return = module_invoke_all('os_search_services_classifieds_info_query', array('classifiedID' => $classifiedID));
+  $return = module_invoke_all('os_search_services_classifieds_info_query', $params);
 
   if ($d4os_io_services_search_log_level > 6) {
     $log = array();

@@ -89,23 +89,9 @@ function d4os_io_services_search_service() {
       '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_search'),
       '#args'             => array(
         array(
-          '#name'           => 'text',
-          '#type'           => 'string',
+          '#name'           => 'params',
+          '#type'           => 'array',
           '#description'    => t('Text.'),
-          '#optional'       => TRUE,
-        ),
-        array(
-          '#name'           => 'category',
-          '#type'           => 'string',
-          '#description'    => t('Category.'),
-          '#optional'       => TRUE,
-        ),
-        // TODO : sim_name ?
-        array(
-          '#name'           => 'query_start',
-          '#type'           => 'int',
-          '#description'    => t('Query_start.'),
-          '#optional'       => TRUE,
         ),
       ),
       '#return'           => 'struct',
@@ -120,10 +106,9 @@ function d4os_io_services_search_service() {
       '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_search'),
       '#args'             => array(
         array(
-          '#name'           => 'flags',
-          '#type'           => 'int',
-          '#description'    => t('Flags.'),
-          '#optional'       => TRUE,
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Text.'),
         ),
       ),
       '#return'           => 'struct',
@@ -138,34 +123,9 @@ function d4os_io_services_search_service() {
       '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_search'),
       '#args'             => array(
         array(
-          '#name'           => 'flags',
-          '#type'           => 'int',
-          '#description'    => t('Flags.'),
-          '#optional'       => TRUE,
-        ),
-        array(
-          '#name'           => 'type',
-          '#type'           => 'int',
-          '#description'    => t('Type.'),
-          '#optional'       => TRUE,
-        ),
-        array(
-          '#name'           => 'price',
-          '#type'           => 'int',
-          '#description'    => t('Price.'),
-          '#optional'       => TRUE,
-        ),
-        array(
-          '#name'           => 'area',
-          '#type'           => 'string',
-          '#description'    => t('Area.'),
-          '#optional'       => TRUE,
-        ),
-        array(
-          '#name'           => 'query_start',
-          '#type'           => 'int',
-          '#description'    => t('Query_start.'),
-          '#optional'       => TRUE,
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Text.'),
         ),
       ),
       '#return'           => 'struct',
@@ -180,22 +140,9 @@ function d4os_io_services_search_service() {
       '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_search'),
       '#args'             => array(
         array(
-          '#name'           => 'text',
-          '#type'           => 'string',
+          '#name'           => 'params',
+          '#type'           => 'array',
           '#description'    => t('Text.'),
-          '#optional'       => TRUE,
-        ),
-        array(
-          '#name'           => 'flags',
-          '#type'           => 'int',
-          '#description'    => t('Flags.'),
-          '#optional'       => TRUE,
-        ),
-        array(
-          '#name'           => 'query_start',
-          '#type'           => 'int',
-          '#description'    => t('Query_start.'),
-          '#optional'       => TRUE,
         ),
       ),
       '#return'           => 'struct',
@@ -210,28 +157,9 @@ function d4os_io_services_search_service() {
       '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_search'),
       '#args'             => array(
         array(
-          '#name'           => 'text',
-          '#type'           => 'string',
+          '#name'           => 'params',
+          '#type'           => 'array',
           '#description'    => t('Text.'),
-          '#optional'       => TRUE,
-        ),
-        array(
-          '#name'           => 'flags',
-          '#type'           => 'int',
-          '#description'    => t('Flags.'),
-          '#optional'       => TRUE,
-        ),
-        array(
-          '#name'           => 'category',
-          '#type'           => 'string',
-          '#description'    => t('Category.'),
-          '#optional'       => TRUE,
-        ),
-        array(
-          '#name'           => 'query_start',
-          '#type'           => 'int',
-          '#description'    => t('Query_start.'),
-          '#optional'       => TRUE,
         ),
       ),
       '#return'           => 'struct',
@@ -246,10 +174,9 @@ function d4os_io_services_search_service() {
       '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_search'),
       '#args'             => array(
         array(
-          '#name'           => 'eventID',
-          '#type'           => 'int',
-          '#description'    => t('EventID.'),
-          '#optional'       => TRUE,
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Text.'),
         ),
       ),
       '#return'           => 'struct',
@@ -264,10 +191,9 @@ function d4os_io_services_search_service() {
       '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_search'),
       '#args'             => array(
         array(
-          '#name'           => 'classifiedID',
-          '#type'           => 'int',
-          '#description'    => t('ClassifiedID.'),
-          '#optional'       => TRUE,
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Text.'),
         ),
       ),
       '#return'           => 'struct',

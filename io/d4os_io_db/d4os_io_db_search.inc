@@ -187,6 +187,7 @@ function d4os_io_db_os_event_load($data = array()) {
       $event->nid = $website_event->nid;
       $event->vid = $website_event->vid;
     }
+    unset($event->name);
     return $event;
   }
   else {
@@ -235,6 +236,9 @@ function d4os_io_db_os_events_get_parcels_by_owner($ownerid) {
 
 /*
  * search services
+ * The code in this script was inspired and mostly copied from ossearch
+ * http://forge.opensimulator.org/gf/project/ossearch
+ * Copyright (c)Melanie Thielker (http://opensimulator.org/)
  */
 
 function d4os_io_db_os_search_services_dir_places_query($params) {
