@@ -30,8 +30,8 @@ function d4os_ui_users_user_generate($username, $lastname, $password, $mail, $ho
   $user['grid_created']            = time();
   $user['grid_lastLogin']          = 0;
   
-  $user['grid_userInventoryURI']   = variable_get('d4os_default_inventory_server_uri', $base_url);
-  $user['grid_userAssetURI']       = variable_get('d4os_default_asset_server_uri', $base_url);
+  $user['grid_userInventoryURI']   = variable_get('d4os_default_inventory_server_uri', $base_url). ':'. variable_get('d4os_default_inventory_server_port', '8004');
+  $user['grid_userAssetURI']       = variable_get('d4os_default_asset_server_uri', $base_url). ':'. variable_get('d4os_default_asset_server_port', '8003');
   
   $user['grid_profileCanDoMask']   = 0;
   $user['grid_profileWantDoMask']  = 0;

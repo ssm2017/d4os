@@ -93,6 +93,7 @@ function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
         '#weight'       => -1,
       );
       array_unshift($form['#validate'], 'd4os_ui_users_account_validate');
+      $form['#submit'] = array('d4os_ui_users_user_register_submit');
       break;
 
     case 'user_profile_form':
@@ -177,9 +178,6 @@ function d4os_ui_users_account_validate($form, &$form_state) {
         form_set_error('username', t('This name already exists'));
         return;
       }
-      else {
-        $form_state['values'] = array_merge($form_state['values'], d4os_ui_users_user_generate($username,$lastname,$form_state['values']['pass'], $form_state['values']['mail']));
-      }
       break;
     case 'user_profile_form':
       // check if the user already exists after changing username
@@ -246,11 +244,16 @@ function d4os_ui_users_user($op, &$edit, &$account, $category = NULL) {
 function d4os_ui_users_user_load(&$account) {
   if ($account->uid < 2) return;
 
+  $data = (isset($account->grid_UUID) && $account->grid_UUID != NULL) ? array('UUID' => $account->grid_UUID) : $account->uid;
   // get the grid user
-  $grid_account = module_invoke_all('os_user_load', array('UUID' => $account->grid_UUID));
-  $grid_account = d4os_ui_users_grid_to_account($grid_account[0]);
-  // merge the values
-  $account = (object) array_merge((array) $account, (array) $grid_account);
+  $grid_account = module_invoke_all('os_user_load', $data);
+  $grid_account = $grid_account[0];
+
+  if (is_object($grid_account)) {
+    $grid_account = d4os_ui_users_grid_to_account($grid_account);
+    // merge the values
+    $account = (object) array_merge((array) $account, (array) $grid_account);
+  }
 }
 
 function d4os_ui_users_update(&$edit, &$account) {
@@ -743,4 +746,109 @@ function d4os_ui_users_check_users_add_user($values) {
   $account = user_save(NULL, $data);
   db_query("INSERT INTO {d4os_ui_users} (uid, UUID) VALUES (%d, '%s')", array($account->uid, $values['UUID']));
   drupal_set_message(t('User !name added on the website.', array('!name' => $values['name'])));
+}
+
+function d4os_ui_users_user_register_submit($form, &$form_state) {
+  global $base_url;
+  $admin = user_access('administer users');
+
+  $mail = $form_state['values']['mail'];
+  $name = $form_state['values']['name'];
+  if (!variable_get('user_email_verification', TRUE) || $admin) {
+    $pass = $form_state['values']['pass'];
+  }
+  else {
+    $pass = user_password();
+  };
+  $notify = isset($form_state['values']['notify']) ? $form_state['values']['notify'] : NULL;
+  $from = variable_get('site_mail', ini_get('sendmail_from'));
+  if (isset($form_state['values']['roles'])) {
+    // Remove unset roles.
+    $roles = array_filter($form_state['values']['roles']);
+  }
+  else {
+    $roles = array();
+  }
+
+  if (!$admin && array_intersect(array_keys($form_state['values']), array('uid', 'roles', 'init', 'session', 'status'))) {
+    watchdog('security', 'Detected malicious attempt to alter protected user fields.', array(), WATCHDOG_WARNING);
+    $form_state['redirect'] = 'user/register';
+    return;
+  }
+  // The unset below is needed to prevent these form values from being saved as
+  // user data.
+  unset($form_state['values']['form_token'], $form_state['values']['submit'], $form_state['values']['op'], $form_state['values']['notify'], $form_state['values']['form_id'], $form_state['values']['affiliates'], $form_state['values']['destination']);
+
+  $merge_data = array('pass' => $pass, 'init' => $mail, 'roles' => $roles);
+  if (!$admin) {
+    // Set the user's status because it was not displayed in the form.
+    $merge_data['status'] = variable_get('user_register', 1) == 1;
+  }
+
+  // generate the grid user
+  $username = $form_state['values']['username'];
+  $lastname = $form_state['values']['lastname'];
+  $form_state['values'] = array_merge($form_state['values'], d4os_ui_users_user_generate($username, $lastname, $pass, $mail));
+
+  // save the account
+  $account = user_save('', array_merge($form_state['values'], $merge_data));
+  // Terminate if an error occured during user_save().
+  if (!$account) {
+    drupal_set_message(t("Error saving user account."), 'error');
+    $form_state['redirect'] = '';
+    return;
+  }
+  $form_state['user'] = $account;
+  watchdog('user', 'New user: %name (%email).', array('%name' => $name, '%email' => $mail), WATCHDOG_NOTICE, l(t('edit'), 'user/'. $account->uid .'/edit'));
+
+  // The first user may login immediately, and receives a customized welcome e-mail.
+  if ($account->uid == 1) {
+    drupal_set_message(t('Welcome to Drupal. You are now logged in as user #1, which gives you full control over your website.'));
+    if (variable_get('user_email_verification', TRUE)) {
+      drupal_set_message(t('</p><p> Your password is <strong>%pass</strong>. You may change your password below.</p>', array('%pass' => $pass)));
+    }
+
+    user_authenticate(array_merge($form_state['values'], $merge_data));
+
+    $form_state['redirect'] = 'user/1/edit';
+    return;
+  }
+  else {
+    // Add plain text password into user account to generate mail tokens.
+    $account->password = $pass;
+    if ($admin && !$notify) {
+      drupal_set_message(t('Created a new user account for <a href="@url">%name</a>. No e-mail has been sent.', array('@url' => url("user/$account->uid"), '%name' => $account->name)));
+    }
+    else if (!variable_get('user_email_verification', TRUE) && $account->status && !$admin) {
+      // No e-mail verification is required, create new user account, and login
+      // user immediately.
+      _user_mail_notify('register_no_approval_required', $account);
+      if (user_authenticate(array_merge($form_state['values'], $merge_data))) {
+        drupal_set_message(t('Registration successful. You are now logged in.'));
+      }
+      $form_state['redirect'] = '';
+      return;
+    }
+    else if ($account->status || $notify) {
+      // Create new user account, no administrator approval required.
+      $op = $notify ? 'register_admin_created' : 'register_no_approval_required';
+      _user_mail_notify($op, $account);
+      if ($notify) {
+        drupal_set_message(t('Password and further instructions have been e-mailed to the new user <a href="@url">%name</a>.', array('@url' => url("user/$account->uid"), '%name' => $account->name)));
+      }
+      else {
+        drupal_set_message(t('Your password and further instructions have been sent to your e-mail address.'));
+        $form_state['redirect'] = '';
+        return;
+      }
+    }
+    else {
+      // Create new user account, administrator approval required.
+      _user_mail_notify('register_pending_approval', $account);
+      drupal_set_message(t('Thank you for applying for an account. Your account is currently pending approval by the site administrator.<br />In the meantime, a welcome message with further instructions has been sent to your e-mail address.'));
+      $form_state['redirect'] = '';
+      return;
+
+    }
+  }
 }

@@ -18,6 +18,7 @@ function d4os_io_db_os_user_save($account) {
 
   // get all the grid keys
   $grid_user = (array)d4os_ui_users_account_to_grid($account);
+  
   if (!isset($grid_user['username']) && !isset($grid_user['lastname'])) {
     $names = explode(' ', $account->name);
     $grid_user['username'] = $names[0];
@@ -150,6 +151,7 @@ function d4os_io_db_os_user_save($account) {
 }
 
 function d4os_io_db_os_user_load($array = array()) {
+
   if (is_numeric($array)) {
     // get the user by uid
     $UUID = db_result(db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid = %d", array($array)));
