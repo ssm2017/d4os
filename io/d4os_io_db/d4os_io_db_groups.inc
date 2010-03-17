@@ -269,8 +269,72 @@ function d4os_io_db_os_groups_services_createGroup($params) {
   }
   d4os_io_db_set_active('default');
 
-  
-  return array('success' => 'true');
+  // Create Everyone Role
+  // NOTE: FIXME: This is a temp fix until the libomv enum for group powers is fixed in OpenSim
+  $params = array(
+    'GroupID'     => $groupID,
+    'RoleID'      => UUID_ZERO,
+    'Name'        => 'Everyone',
+    'Description' => t('Everyone in the group is in the everyone role.'),
+    'Title'       => "Member of $name",
+    'Powers'      => $everyonePowers
+  );
+  $result = _d4os_io_services_groups_addRoleToGroup($params);
+  if (isset($result['error'])) {
+    return $result;
+  }
+
+  // Create Owner Role
+  $params = array(
+    'GroupID'     => $groupID,
+    'RoleID'      => $ownerRoleID,
+    'Name'        => 'Owners',
+    'Description' => t('Owners of !groupname', array('!groupname' => $name)),
+    'Title'       => t('Owner of !groupname', array('!groupname' => $name)),
+    'Powers'      => $ownersPowers
+  );
+  $result = _d4os_io_services_groups_addRoleToGroup($params);
+  if (isset($result['error'])) {
+    return $result;
+  }
+
+  // Add founder to group, will automatically place them in the Everyone Role, also places them in specified Owner Role
+  $params = array(
+    'AgentID' => $founderID,
+    'GroupID' => $groupID,
+    'RoleID'  => $ownerRoleID
+  );
+  $result = _d4os_io_services_groups_addAgentToGroup($params);
+  if (isset($result['error'])) {
+    return $result;
+  }
+
+  // Select the owner's role for the founder
+  $params = array(
+    'AgentID' => $founderID,
+    'RoleID'  => $ownerRoleID,
+    'GroupID' => $groupID
+  );
+  $result = _d4os_io_services_groups_setAgentGroupSelectedRole($params);
+  if (isset($result['error'])) {
+    return $result;
+  }
+
+  // Set the new group as the founder's active group
+  $params = array(
+    'AgentID' => $founderID,
+    'GroupID' => $groupID
+  );
+  $result = _d4os_io_services_groups_setAgentActiveGroup($params);
+  if (isset($result['error'])) {
+    return $result;
+  }
+
+  // reload the created group
+  $params = array(
+    "GroupID"=>$groupID
+  );
+  return d4os_io_services_groups_getGroup($params);
 }
 
 function d4os_io_db_os_groups_services_addRoleToGroup($params) {
@@ -533,8 +597,17 @@ function d4os_io_db_os_groups_services_findGroups($params) {
 }
 
 function d4os_io_db_os_groups_services_setAgentActiveGroup($params) {
+  global $requestingAgent;
+
   $agentID = $params['AgentID'];
   $groupID = $params['GroupID'];
+
+  if (isset($requestingAgent) && ($requestingAgent != UUID_ZERO) && ($requestingAgent != $agentID)) {
+    return array(
+      'error'   => t('Agent can only change their own Selected Group Role'),
+      'params'  => var_export($params, TRUE)
+    );
+  }
 
   $sql = " UPDATE {osagent} "
         ." SET ActiveGroupID = '%s'"
@@ -566,33 +639,60 @@ function d4os_io_db_os_groups_services_setAgentActiveGroup($params) {
 }
 
 function d4os_io_db_os_groups_services_addAgentToGroup($params) {
+  global $groupPowers;
+
   $groupID = $params["GroupID"];
   $agentID = $params["AgentID"];
-  // Group is not open enrollment, check if the specified agentid has an invite
-  $sql = " SELECT GroupID, RoleID, AgentID"
-        ." FROM {osgroupinvite}"
-        ." WHERE AgentID = '%s' AND GroupID = '%s'";
-  $values = array($agentID, $groupID);
 
-  d4os_io_db_set_active('os_groups');
-  $results = db_query($sql, $values);
-  if (!$results) {
-    d4os_io_db_set_active('default');
-    return array(
-      'error' => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
-      'params' => var_export($params, TRUE)
-    );
-  }
+  if (is_array($error = d4os_io_services_groups_checkGroupPermission($groupID, $groupPowers['AssignMember']))) {
+    // If they don't have direct permission, check to see if the group is marked for open enrollment
+    $groupInfo = _d4os_io_services_groups_getGroup(array ('GroupID'=>$groupID));
+    if( isset($groupInfo['error'])) {
+      return $groupInfo;
+    }
 
-  $inviteInfo = db_fetch_array($results);
-  d4os_io_db_set_active('default');
-  if (!is_array($inviteInfo)) {
-    return array(
-      'error' => t("Could not add agent to group "),
-      'params' => var_export($params, TRUE)
-    );
+    if($groupInfo['OpenEnrollment'] != 1) {
+
+      // Group is not open enrollment, check if the specified agentid has an invite
+      $sql = " SELECT GroupID, RoleID, AgentID"
+            ." FROM {osgroupinvite}"
+            ." WHERE AgentID = '%s' AND GroupID = '%s'";
+      $values = array($agentID, $groupID);
+    
+      d4os_io_db_set_active('os_groups');
+      $results = db_query($sql, $values);
+      if (!$results) {
+        d4os_io_db_set_active('default');
+        return array(
+          'error'   => t("Could not successfully run query (!sql) from DB: ", array('!sql' => $sql)) . db_error(),
+          'params'  => var_export($params, TRUE)
+        );
+      }
+
+      $inviteInfo = NULL;
+      while ($temp = db_fetch_array($results)) {
+        $inviteInfo = $temp;
+      }
+      d4os_io_db_set_active('default');
+      if (!is_array($inviteInfo)) {
+        return array(
+          'error'   => t("Could not add agent to group "),
+          'params'  => var_export($params, TRUE)
+        );
+      }
+      return $inviteInfo;
+  
+      if(is_array($inviteInfo) && isset($inviteInfo['RoleID'])) {
+        // if there is an invite, make sure we're adding the user to the role specified in the invite
+        $params['RoleID'] = $inviteInfo['RoleID'];
+      }
+      else {
+        // Not openenrollment, not invited, return permission denied error
+        return $error;
+      }
+    }
   }
-  return $inviteInfo;
+  return _d4os_io_services_groups_addAgentToGroup($params);
 }
 
 function d4os_io_db_os_groups_services_addAgentToGroup_2($params) {
@@ -634,12 +734,56 @@ function d4os_io_db_os_groups_services_addAgentToGroup_2($params) {
     }
   }
   d4os_io_db_set_active('default');
-  return array('success' => 'true');
+
+  // Make sure they're in the Everyone role
+  $params = array(
+    "GroupID" => $groupID,
+    "RoleID"  => UUID_ZERO,
+    "AgentID" => $agentID
+  );
+  $result = _d4os_io_services_groups_addAgentToGroupRole($params);
+  if(isset($result['error'])) {
+    return $result;
+  }
+
+  // Make sure they're in specified role, if they were invited
+  if ($roleID != UUID_ZERO) {
+    $params = array(
+      "GroupID" => $groupID,
+      "RoleID"  => $roleID,
+      "AgentID" => $agentID
+    );
+    $result = _d4os_io_services_groups_addAgentToGroupRole($params);
+    if(isset($result['error'])) {
+      return $result;
+    }
+  }
+
+  //Set the role they were invited to as their selected role
+  $params = array(
+    'AgentID' => $agentID,
+    'RoleID'  => $roleID,
+    'GroupID' => $groupID
+  );
+  _d4os_io_services_groups_setAgentGroupSelectedRole($params);
+  
+  // Set the group as their active group.
+  // _d4os_io_services_groups_setAgentActiveGroup(array("GroupID" => $groupID, "AgentID" => $agentID));
+  return array("success" => "true");
 }
 
 function d4os_io_db_os_groups_services_removeAgentFromGroup($params) {
+  global $requestingAgent, $groupPowers;
+
   $agentID = $params["AgentID"];
   $groupID = $params["GroupID"];
+
+  // An agent is always allowed to remove themselves from a group -- so only check if the requesting agent is different then the agent being removed.
+  if ($agentID != $requestingAgent) {
+    if (is_array($error = d4os_io_services_groups_checkGroupPermission($groupID, $groupPowers['RemoveMember']))) {
+      return $error;
+    }
+  }
 
   // 1. If group is agent's active group, change active group to uuidZero
   // 2. Remove Agent from group (osgroupmembership)
@@ -681,7 +825,7 @@ function d4os_io_db_os_groups_services_removeAgentFromGroup($params) {
   return array("success" => "true");
 }
 
-function d4os_io_db_os_groups_services_addAgentToGroupRole($params) {
+function d4os_io_db_os_groups_services_addAgentToGroupRole_2($params) {
   $agentID = $params["AgentID"];
   $groupID = $params["GroupID"];
   $roleID = $params["RoleID"];
@@ -715,7 +859,9 @@ function d4os_io_db_os_groups_services_addAgentToGroupRole($params) {
   return array("success" => "true");
 }
 
-function d4os_io_db_os_groups_services_addAgentToGroupRole_2($params) {
+function d4os_io_db_os_groups_services_addAgentToGroupRole($params) {
+  global $requestingAgent, $groupPowers;
+
   $agentID = $params["AgentID"];
   $groupID = $params["GroupID"];
   $roleID = $params["RoleID"];
@@ -743,7 +889,26 @@ function d4os_io_db_os_groups_services_addAgentToGroupRole_2($params) {
       'params' => var_export($params, TRUE)
     );
   }
-  return $ownerRoleInfo;
+
+  if(!is_array($ownerRoleInfo) || !isset($ownerRoleInfo['OwnerRoleID'])) {
+    return array(
+      'error' => t("Group (!group) not found or Agent (!agent) is not in the owner's role", array('!group' => $groupID, '!agent' => $agentID)),
+      'params' => var_export($params, TRUE)
+    );
+  }
+
+  if (($ownerRoleInfo['OwnerRoleID'] == $roleID) && ($ownerRoleInfo['AgentID'] != $requestingAgent)) {
+    return array(
+      'error' => t("Requesting agent !requestingAgent is not a member of the Owners Role and cannot add members to the owners role.", array('!requestingAgent' => $requestingAgent)),
+      'params' => var_export($params, TRUE)
+    );
+  }
+
+  if (is_array($error = d4os_io_services_groups_checkGroupPermission($groupID, $groupPowers['AssignMember']))) {
+    return $error;
+  }
+
+  return _d4os_io_services_groups_addAgentToGroupRole($params);
 }
 
 function d4os_io_db_os_groups_services_removeAgentFromGroupRole($params) {
@@ -778,9 +943,18 @@ function d4os_io_db_os_groups_services_removeAgentFromGroupRole($params) {
 }
 
 function d4os_io_db_os_groups_services_setAgentGroupSelectedRole($params) {
+  global $requestingAgent;
+
   $agentID = $params["AgentID"];
   $groupID = $params["GroupID"];
   $roleID = $params["RoleID"];
+
+  if (isset($requestingAgent) && ($requestingAgent != UUID_ZERO) && ($requestingAgent != $agentID)) {
+    return array(
+      'error'   => t('Agent can only change their own Selected Group Role'),
+      'params'  => var_export($params, TRUE)
+    );
+  }
 
   $sql = " UPDATE {osgroupmembership} SET SelectedRoleID = '%s' WHERE AgentID = '%s' AND GroupID = '%s'";
   $values = array($roleID, $agentID, $groupID);
@@ -973,11 +1147,13 @@ function d4os_io_db_os_groups_services_canAgentViewRoleMembers($params) {
 }
 
 function d4os_io_db_os_groups_services_getGroupMembers($params) {
-  $groupID = $params['GroupID'];
-  $requestingAgent = $params['RequestingAgentID'];
-  $roleMembersVisibleBit = $groupPowers['RoleMembersVisible'];
-  $memberResults = array();
-  $members_infos = array();
+  global $groupPowers;
+
+  $groupID                = $params['GroupID'];
+  $requestingAgent        = $params['RequestingAgentID'];
+  $roleMembersVisibleBit  = $groupPowers['RoleMembersVisible'];
+  $memberResults          = array();
+  $members_infos          = array();
   
   $sql = " SELECT osgroupmembership.AgentID"
         ." , osgroupmembership.Contribution, osgroupmembership.ListInProfile, osgroupmembership.AcceptNotices"
@@ -992,6 +1168,7 @@ function d4os_io_db_os_groups_services_getGroupMembers($params) {
         ." AND (osgroupmembership.AgentID = OwnerRoleMembership.AgentID))"
         ." WHERE osgroup.GroupID = '%s'";
   $values = array($groupID);
+
   d4os_io_db_set_active('os_groups');
   $groupmemberResults = db_query($sql, $values);
   if (!$groupmemberResults) {
@@ -1001,13 +1178,19 @@ function d4os_io_db_os_groups_services_getGroupMembers($params) {
       'params' => var_export($params, TRUE)
     );
   }
+
   // get group members
   while ($memberInfo = db_fetch_array($groupmemberResults)) {
     $members_infos[] = $memberInfo;
   }
   d4os_io_db_set_active('default');
+
   if (count($members_infos) == 0) {
-    return array('success' => 'true', 'members' => 0, 'member_result' => array());
+    return array(
+      'succeed' => 'false',
+      'error' => t('No Group Members found'),
+      'sql' => $sql
+    );
   }
 
   // get members rights
@@ -1018,6 +1201,7 @@ function d4os_io_db_os_groups_services_getGroupMembers($params) {
           ." JOIN {osrole} AS osrole ON (osgrouprolemembership.GroupID = osrole.GroupID AND osgrouprolemembership.RoleID = osrole.RoleID)"
           ." WHERE osgrouprolemembership.GroupID = '%s' AND osgrouprolemembership.AgentID = '%s'";
     $values = array($roleMembersVisibleBit, $groupID, $agentID);
+
     d4os_io_db_set_active('os_groups');
     $memberPowersResult = db_query($sql, $values);
     if (!$memberPowersResult) {
@@ -1027,10 +1211,19 @@ function d4os_io_db_os_groups_services_getGroupMembers($params) {
         'params' => var_export($params, TRUE)
       );
     }
-    $memberPowersInfo = db_fetch_array($memberPowersResult);
+    $memberPowersInfo = '';
+    while($temp = db_fetch_array($memberPowersResult)) {
+      $memberPowersInfo = $temp;
+    }
     d4os_io_db_set_active('default');
 
-    $canViewAllGroupRoleMembers = d4os_io_services_groups_canAgentViewRoleMembers($requestingAgent, $groupID, '');
+    $canViewAllGroupRoleMembers = d4os_io_services_groups_canAgentViewRoleMembers(
+      array(
+        'agentID' => $requestingAgent,
+        'groupID' => $groupID,
+        'roleID'  => ''
+      )
+    );
 
     if (!is_array($memberPowersInfo)) {
       if( $canViewAllGroupRoleMembers || ($memberResults[$agentID] == $requestingAgent)) {
@@ -1051,7 +1244,16 @@ function d4os_io_db_os_groups_services_getGroupMembers($params) {
       }
     }
   }
-  return array('success' => 'true', 'members' => $members, 'member_result' => $memberResults);
+
+  if (count($memberResults) == 0) {
+    return array(
+      'succeed' => 'false',
+      'error' => 'No Visible Group Members found',
+      'sql' => $sql
+    );
+  }
+
+  return $memberResults;
 }
 
 function d4os_io_db_os_groups_services_getAgentActiveMembership($params) {
@@ -1150,6 +1352,15 @@ function d4os_io_db_os_groups_services_getAgentRoles($params) {
       'params' => var_export($params, TRUE)
     );
   }
+
+  if (count($roles) == 0) {
+    return array(
+      'succeed' => 'false',
+      'error' => 'None found',
+      'params' => var_export($params, TRUE),
+      'sql' => $sql
+    );
+  }
   return $roles;
 }
 
@@ -1185,15 +1396,32 @@ function d4os_io_db_os_groups_services_getGroupRoles($params) {
       'params' => var_export($params, TRUE)
     );
   }
+
+  if (count($roles) == 0) {
+    return array(
+      'succeed' => 'false',
+      'error' => 'No roles found for group',
+      'params' => var_export($params, TRUE),
+      'sql' => $sql
+    );
+  }
+
   return $roles;
 }
 
 function d4os_io_db_os_groups_services_getGroupRoleMembers($params) {
   global $groupPowers;
+
   $groupID                    = $params['GroupID'];
   $requestingAgent            = $params['RequestingAgentID'];
   $roleMembersVisibleBit      = $groupPowers['RoleMembersVisible'];
-  $canViewAllGroupRoleMembers = d4os_io_services_groups_canAgentViewRoleMembers($requestingAgent, $groupID, '');
+  $canViewAllGroupRoleMembers = d4os_io_services_groups_canAgentViewRoleMembers(
+    array(
+      'agentID' => $requestingAgent,
+      'groupID' => $groupID,
+      'roleID'  => ''
+    )
+  );
   
   $sql = " SELECT osrole.RoleID, osgrouprolemembership.AgentID"
         ." , (osrole.Powers & %d) as MemberVisible"
@@ -1347,6 +1575,14 @@ function d4os_io_db_os_groups_services_getGroupNotices($params) {
       'params' => var_export($params, TRUE)
     );
   }
+  if (count($notices) == 0) {
+    return array(
+      'succeed' => 'false',
+      'error' => 'No Notices',
+      'params' => var_export($params, TRUE),
+      'sql' => $sql
+    );
+  }
   return $notices;
 }
 
@@ -1374,6 +1610,14 @@ function d4os_io_db_os_groups_services_getGroupNotice($params) {
     return array(
       'error' => t("Could not get group notice"),
       'params' => var_export($params, TRUE)
+    );
+  }
+  if(!is_array($notice)) {
+    return array(
+      'succeed' => 'false',
+      'error' => 'Group Notice Not Found',
+      'params' => var_export($params, TRUE),
+      'sql' => $sql
     );
   }
   return $notice;

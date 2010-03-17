@@ -14,15 +14,16 @@
  * http://code.google.com/p/flotsam/wiki/XmlRpcGroups
  */
 
-function d4os_io_services_groups_createGroup($params, $inworld = TRUE) {
-  global $d4os_io_services_groups_log_level;
+function d4os_io_services_groups_run($method, $params, $inworld=TRUE) {
+  global $groupPowers, $d4os_io_services_groups_log_level;
+
   // log
   if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
       'type' => 'string',
-      'data' => 'createGroup',
+      'data' => $method,
     );
     $log[] = array(
       'name' => 'input params',
@@ -31,67 +32,131 @@ function d4os_io_services_groups_createGroup($params, $inworld = TRUE) {
     );
     d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
   }
-  if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
-    return $error;
-  }
-  $groupID        = $params["GroupID"];
-  $name           = addslashes( $params["Name"] );
-  $charter        = addslashes( $params["Charter"] );
-  $insigniaID     = $params["InsigniaID"];
-  $founderID      = $params["FounderID"];
-  $membershipFee  = $params["MembershipFee"];
-  $openEnrollment = $params["OpenEnrollment"];
-  $showInList     = $params["ShowInList"];
-  $allowPublish   = $params["AllowPublish"];
-  $maturePublish  = $params["MaturePublish"];
-  $ownerRoleID    = $params["OwnerRoleID"];
-  $everyonePowers = $params["EveryonePowers"];
-  $ownersPowers   = $params["OwnersPowers"];
 
-  // do the job
-  $group_created = module_invoke_all('os_groups_services_createGroup', $params);
-  if (isset($group_created['error'])) {
-    return $group_created;
-  }
-
-  // Create Everyone Role
-  // NOTE: FIXME: This is a temp fix until the libomv enum for group powers is fixed in OpenSim
-  $result = _d4os_io_services_groups_addRoleToGroup(array('GroupID' => $groupID, 'RoleID' => UUID_ZERO, 'Name' => 'Everyone', 'Description' => 'Everyone in the group is in the everyone role.', 'Title' => "Member of $name", 'Powers' => $everyonePowers));
-  if (isset($result['error'])) {
-    return $result;
-  }
-
-  // Create Owner Role
-  $result = _d4os_io_services_groups_addRoleToGroup(array('GroupID' => $groupID, 'RoleID' => $ownerRoleID, 'Name' => 'Owners', 'Description' => "Owners of $name", 'Title' => "Owner of $name", 'Powers' => $ownersPowers));
-  if (isset($result['error'])) {
-    return $result;
-  }
-
-  // Add founder to group, will automatically place them in the Everyone Role, also places them in specified Owner Role
-  $result = _d4os_io_services_groups_addAgentToGroup(array('AgentID' => $founderID, 'GroupID' => $groupID, 'RoleID' => $ownerRoleID));
-  if (isset($result['error'])) {
-    return $result;
+  switch ($method) {
+    case 'createGroup':
+    case 'addRoleToGroup':
+    case 'updateGroupRole':
+    case 'removeRoleFromGroup':
+    case 'getGroup':
+    case 'updateGroup':
+    case 'findGroups':
+    case 'setAgentActiveGroup':
+    case 'addAgentToGroup':
+    case 'removeAgentFromGroup':
+    case 'addAgentToGroupRole':
+    case 'removeAgentFromGroupRole':
+    case 'setAgentGroupSelectedRole':
+    case 'getAgentGroupMembership':
+    case 'getAgentGroupMemberships':
+    case 'getGroupMembers':
+    case 'getAgentActiveMembership':
+    case 'getAgentRoles':
+    case 'getGroupRoles':
+    case 'getGroupRoleMembers':
+    case 'setAgentGroupInfo':
+    case 'getGroupNotices':
+    case 'getGroupNotice':
+    case 'addGroupNotice':
+    case 'addAgentToGroupInvite':
+    case 'getAgentToGroupInvite':
+    case 'removeAgentToGroupInvite':
+       // check
+      if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
+        return $error;
+      }
+      break;
   }
 
-  // Select the owner's role for the founder
-  $result = _d4os_io_services_groups_setAgentGroupSelectedRole(array('AgentID' => $founderID, 'RoleID' => $ownerRoleID, 'GroupID' => $groupID));
-  if (isset($result['error'])) {
-    return $result;
+  $check_group_perms = FALSE;
+  switch ($method) {
+    case 'addRoleToGroup':
+      $check_group_perms = TRUE;
+      $perm = $groupPowers['CreateRole'];
+      break;
+    case 'updateGroupRole':
+    case 'removeRoleFromGroup':
+      $check_group_perms = TRUE;
+      $perm = $groupPowers['RoleProperties'];
+      break;
+    case 'updateGroup':
+      $check_group_perms = TRUE;
+      $perm = $groupPowers['ChangeOptions'];
+      break;
+    case 'removeAgentFromGroupRole':
+      $check_group_perms = TRUE;
+      $perm = $groupPowers['AssignMember'];
+      break;
+    case 'addGroupNotice':
+      $check_group_perms = TRUE;
+      $perm = $groupPowers['SendNotices'];
+      break;
+    case 'addAgentToGroupInvite':
+      $check_group_perms = TRUE;
+      $perm = $groupPowers['Invite'];
+      break;
   }
 
-  // Set the new group as the founder's active group
-  $result = _d4os_io_services_groups_setAgentActiveGroup(array('AgentID' => $founderID, 'GroupID' => $groupID));
-  if (isset($result['error'])) {
-    return $result;
+  if ($check_group_perms) {
+    if (is_array($error = d4os_io_services_groups_checkGroupPermission($params['GroupID'], $perm))) {
+      return $error;
+    }
   }
 
-  $return = d4os_io_services_groups_getGroup(array("GroupID"=>$groupID));
+  switch ($method) {
+    case 'createGroup':
+    case 'updateGroupRole':
+    case 'removeRoleFromGroup':
+    case 'getGroup':
+    case 'updateGroup':
+    case 'findGroups':
+    case 'removeAgentFromGroup':
+    case 'addAgentToGroupRole':
+    case 'removeAgentFromGroupRole':
+    case 'getAgentGroupMembership':
+    case 'getAgentGroupMemberships':
+    case 'canAgentViewRoleMembers':
+    case 'getGroupMembers':
+    case 'getAgentActiveMembership':
+    case 'getAgentRoles':
+    case 'getGroupRoles':
+    case 'getGroupRoleMembers':
+    case 'setAgentGroupInfo':
+    case 'getGroupNotices':
+    case 'getGroupNotice':
+    case 'addGroupNotice':
+    case 'addAgentToGroupInvite':
+    case 'getAgentToGroupInvite':
+    case 'removeAgentToGroupInvite':
+      $return = module_invoke_all('os_groups_services_'. $method, $params);
+      break;
+    case 'addRoleToGroup':
+      $return = _d4os_io_services_groups_addRoleToGroup($params, $inworld);
+      break;
+    case 'setAgentActiveGroup':
+      $return = _d4os_io_services_groups_setAgentActiveGroup($params, $inworld);
+      break;
+    case 'addAgentToGroup':
+      $return = _d4os_io_services_groups_addAgentToGroup($params, $inworld);
+      break;
+    case 'setAgentGroupSelectedRole':
+      $return = _d4os_io_services_groups_setAgentGroupSelectedRole($params, $inworld);
+      break;
+  }
+
+  switch ($method) {
+    case 'canAgentViewRoleMembers':
+      $return = $return[0];
+      break;
+  }
+
+  // log
   if ($d4os_io_services_groups_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
       'type' => 'string',
-      'data' => 'createGroup',
+      'data' => $method,
     );
     $log[] = array(
       'name' => 'output values',
@@ -100,9 +165,18 @@ function d4os_io_services_groups_createGroup($params, $inworld = TRUE) {
     );
     d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
   }
+
+  return $return;
+}
+function d4os_io_services_groups_createGroup($params, $inworld = TRUE) {
+
+  $return = d4os_io_services_groups_run('createGroup', $params, $inworld);
+
+  // build group for og if group was created inworld
   if ($inworld) {
     module_invoke_all('os_group_grid_create', $return);
   }
+
   return $return;
 }
 
@@ -113,278 +187,32 @@ function _d4os_io_services_groups_addRoleToGroup($params, $inworld = TRUE) {
 }
 
 function d4os_io_services_groups_addRoleToGroup($params, $inworld = TRUE) {
-  global $groupPowers, $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'addRoleToGroup',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
-    return $error;
-  }
-
-
-  // Verify the requesting agent has permission
-  if (is_array($error = d4os_io_services_groups_checkGroupPermission($params['GroupID'], $groupPowers['CreateRole']))) {
-    return $error;
-  }
-
-  $return = _d4os_io_services_groups_addRoleToGroup($params, $inworld);
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'addRoleToGroup',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+  return d4os_io_services_groups_run('createGroup', $params, $inworld);
 }
 
 function d4os_io_services_groups_updateGroupRole($params, $inworld = TRUE) {
-  global $groupPowers, $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'updateGroupRole',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
-    return $error;
-  }
-
-  // Verify the requesting agent has permission
-  if (is_array($error = d4os_io_services_groups_checkGroupPermission($params['GroupID'], $groupPowers['RoleProperties']))) {
-    return $error;
-  }
-
-  // do the job
-  $output = module_invoke_all('os_groups_services_updateGroupRole', $params);
-  if (isset($output['error'])) {
-    return $output;
-  }
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'updateGroupRole',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $output;
+  return d4os_io_services_groups_run('updateGroupRole', $params, $inworld);
 }
 
 function d4os_io_services_groups_removeRoleFromGroup($params, $inworld = TRUE) {
-  global $groupPowers, $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'removeRoleFromGroup',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
-    return $error;
-  }
-
-  if (is_array($error = d4os_io_services_groups_checkGroupPermission($params['GroupID'], $groupPowers['RoleProperties']))) {
-    return $error;
-  }
-
-  // do the job
-  $return = module_invoke_all('os_groups_services_removeRoleFromGroup', $params);
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'removeRoleFromGroup',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+  return d4os_io_services_groups_run('removeRoleFromGroup', $params, $inworld);
 }
 
 function d4os_io_services_groups_getGroup($params, $inworld = TRUE) {
-  global $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'getGroup',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-
-  if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
-    return $error;
-  }
-
-  $return = _d4os_io_services_groups_getGroup($params, $inworld);
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'getGroup',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+  return d4os_io_services_groups_run('getGroup', $params, $inworld);
 }
 
 function _d4os_io_services_groups_getGroup($params, $inworld = TRUE) {
   // do the job
-  $group = module_invoke_all('os_groups_services_getGroup', $params);
-  return $group;
+  return module_invoke_all('os_groups_services_getGroup', $params);
 }        
 
 function d4os_io_services_groups_updateGroup($params, $inworld = TRUE) {
-  global $groupPowers, $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'updateGroup',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-
-  if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
-    return $error;
-  }
-
-  if (is_array($error = d4os_io_services_groups_checkGroupPermission($params["GroupID"], $groupPowers['ChangeOptions']))) {
-    return $error;
-  }
-
-  // do the job
-  $return = module_invoke_all('os_groups_services_updateGroup', $params);
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'updateGroup',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+  return d4os_io_services_groups_run('updateGroup', $params, $inworld);
 }
 
 function d4os_io_services_groups_findGroups($params, $inworld = TRUE) {
-  global $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'findGroups',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-
-  if(is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
-    return $error;
-  }
-
-  // do the job
-  $return = module_invoke_all('os_groups_services_findGroups', $params);
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'findGroups',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+  return d4os_io_services_groups_run('findGroups', $params, $inworld);
 }
 
 function _d4os_io_services_groups_setAgentActiveGroup($params, $inworld = TRUE) {
@@ -393,334 +221,34 @@ function _d4os_io_services_groups_setAgentActiveGroup($params, $inworld = TRUE) 
 }
 
 function d4os_io_services_groups_setAgentActiveGroup($params, $inworld = TRUE) {
-  global $requestingAgent, $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-       'type' => 'string',
-      'data' => 'setAgentActiveGroup',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-
-  if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
-    return $error;
-  }
-
-  $agentID = $params['AgentID'];
-  $groupID = $params['GroupID'];
-
-  if (isset($requestingAgent) && ($requestingAgent != UUID_ZERO) && ($requestingAgent != $agentID)) {
-    return array(
-      'error' => "Agent can only change their own Selected Group Role",
-      'params' => var_export($params, TRUE)
-    );
-  }
-
-  $return = _d4os_io_services_groups_setAgentActiveGroup($params, $inworld);
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'setAgentActiveGroup',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+  return d4os_io_services_groups_run('setAgentActiveGroup', $params, $inworld);
 }
 
 function d4os_io_services_groups_addAgentToGroup($params, $inworld = TRUE) {
-  global $groupPowers, $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'addAgentToGroup',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-
-  if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
-    return $error;
-  }
-
-  $groupID = $params["GroupID"];
-  $agentID = $params["AgentID"];
-
-  if (is_array($error = d4os_io_services_groups_checkGroupPermission($groupID, $groupPowers['AssignMember']))) {
-    // If they don't have direct permission, check to see if the group is marked for open enrollment
-    $groupInfo = _d4os_io_services_groups_getGroup( array ('GroupID'=>$groupID) );
-  
-    if( isset($groupInfo['error'])) {
-      return $groupInfo;
-    }
-
-    if($groupInfo['OpenEnrollment'] != 1) {
-
-      // do the job
-      $inviteInfo = module_invoke_all('os_groups_services_addAgentToGroup', $params);
-      if (isset($inviteInfo['error'])) {
-        return $inviteInfo;
-      }
-  
-      if(is_array($inviteInfo) && isset($inviteInfo['RoleID'])) {
-        // if there is an invite, make sure we're adding the user to the role specified in the invite
-        $params['RoleID'] = $inviteInfo['RoleID'];
-      }
-      else {
-        // Not openenrollment, not invited, return permission denied error
-        return $error;
-      }
-    }
-  }
-
-  $return = _d4os_io_services_groups_addAgentToGroup($params, $inworld);
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'addAgentToGroup',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+  return d4os_io_services_groups_run('addAgentToGroup', $params, $inworld);
 }
 
 // Private method, does not include security, to only be called from places that have already verified security
 function _d4os_io_services_groups_addAgentToGroup($params, $inworld = TRUE) {
-  $agentID = $params["AgentID"];
-  $groupID = $params["GroupID"];
-  
-  $roleID  = UUID_ZERO;
-  if (isset($params["RoleID"])) {
-    $roleID = $params["RoleID"];
-  }
-
   // do the job
-  $agent_added = module_invoke_all('os_groups_services_addAgentToGroup_2', $params);
-  if (isset($agent_added['error'])) {
-    return $agent_added;
-  }
-
-  // Make sure they're in the Everyone role
-  $result = _d4os_io_services_groups_addAgentToGroupRole(array("GroupID" => $groupID, "RoleID" => UUID_ZERO, "AgentID" => $agentID));
-  if(isset($result['error'])) {
-    return $result;
-  }
-
-  // Make sure they're in specified role, if they were invited
-  if ($roleID != UUID_ZERO) {
-    $result = _d4os_io_services_groups_addAgentToGroupRole(array("GroupID" => $groupID, "RoleID" => $roleID, "AgentID" => $agentID));
-    if(isset($result['error'])) {
-      return $result;
-    }
-  }
-
-  //Set the role they were invited to as their selected role
-  _d4os_io_services_groups_setAgentGroupSelectedRole(array('AgentID' => $agentID, 'RoleID' => $roleID, 'GroupID' => $groupID));
-  
-  // Set the group as their active group.
-  // _d4os_io_services_groups_setAgentActiveGroup(array("GroupID" => $groupID, "AgentID" => $agentID));
-  return array("success" => "true");
+  return module_invoke_all('os_groups_services_addAgentToGroup_2', $params);
 }
 
 function d4os_io_services_groups_removeAgentFromGroup($params, $inworld = TRUE) {
-  global $requestingAgent, $groupPowers, $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'removeAgentFromGroup',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-
-  if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
-    return $error;
-  }
-
-  $agentID = $params["AgentID"];
-  $groupID = $params["GroupID"];
-
-  // An agent is always allowed to remove themselves from a group -- so only check if the requesting agent is different then the agent being removed.
-  if ($agentID != $requestingAgent) {
-    if (is_array($error = d4os_io_services_groups_checkGroupPermission($groupID, $groupPowers['RemoveMember']))) {
-      return $error;
-    }
-  }
-
-  // do the job
-  $return = module_invoke_all('os_groups_services_removeAgentFromGroup', $params);
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'removeAgentFromGroup',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+  return d4os_io_services_groups_run('removeAgentFromGroup', $params, $inworld);
 }
 
 function _d4os_io_services_groups_addAgentToGroupRole($params, $inworld = TRUE) {
   // do the job
-  return module_invoke_all('os_groups_services_addAgentToGroupRole', $params);
+  return module_invoke_all('os_groups_services_addAgentToGroupRole_2', $params);
 }
 
 function d4os_io_services_groups_addAgentToGroupRole($params, $inworld = TRUE) {
-  global $requestingAgent, $groupPowers, $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'addAgentToGroupRole',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
-    return $error;
-  }
-
-  $agentID = $params["AgentID"];
-  $groupID = $params["GroupID"];
-  $roleID = $params["RoleID"];
-  
-  // do the job
-  $ownerRoleInfo = module_invoke_all('os_groups_services_addAgentToGroupRole_2', $params);
-  if (isset($ownerRoleInfo['error'])) {
-    return $ownerRoleInfo;
-  }
-
-  if(!is_array($ownerRoleInfo) || !isset($ownerRoleInfo['OwnerRoleID'])) {
-    return array(
-      'error' => t("Group (!group) not found or Agent (!agent) is not in the owner's role", array('!group' => $groupID, '!agent' => $agentID)),
-      'params' => var_export($params, TRUE)
-    );
-  }
-
-  if (($ownerRoleInfo['OwnerRoleID'] == $roleID) && ($ownerRoleInfo['AgentID'] != $requestingAgent)) {
-    return array(
-      'error' => t("Requesting agent !requestingAgent is not a member of the Owners Role and cannot add members to the owners role.", array('!requestingAgent' => $requestingAgent)),
-      'params' => var_export($params, TRUE)
-    );
-  }
-
-  if (is_array($error = d4os_io_services_groups_checkGroupPermission($groupID, $groupPowers['AssignMember']))) {
-    return $error;
-  }
-  
-  $return = _d4os_io_services_groups_addAgentToGroupRole($params, $inworld);
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'addAgentToGroupRole',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+  return d4os_io_services_groups_run('addAgentToGroupRole', $params, $inworld);
 }
 
 function d4os_io_services_groups_removeAgentFromGroupRole($params, $inworld = TRUE) {
-  global $groupPowers, $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'removeAgentFromGroupRole',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-
-  if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
-    return $error;
-  }
-
-  if (is_array($error = d4os_io_services_groups_checkGroupPermission($params["GroupID"], $groupPowers['AssignMember']))) {
-    return $error;
-  }
-  
-  // do the job
-  $return = module_invoke_all('os_groups_services_removeAgentFromGroupRole', $params);
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'removeAgentFromGroupRole',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+  return d4os_io_services_groups_run('removeAgentFromGroupRole', $params, $inworld);
 }
 
 function _d4os_io_services_groups_setAgentGroupSelectedRole($params, $inworld = TRUE) {
@@ -729,820 +257,77 @@ function _d4os_io_services_groups_setAgentGroupSelectedRole($params, $inworld = 
 }
 
 function d4os_io_services_groups_setAgentGroupSelectedRole($params, $inworld = TRUE) {
-  global $requestingAgent, $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'setAgentGroupSelectedRole',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-
-  if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
-    return $error;
-  }
-
-  $agentID = $params["AgentID"];
-  $groupID = $params["GroupID"];
-  $roleID = $params["RoleID"];
-
-  if (isset($requestingAgent) && ($requestingAgent != UUID_ZERO) && ($requestingAgent != $agentID)) {
-    return array(
-      'error' => "Agent can only change their own Selected Group Role",
-      'params' => var_export($params, TRUE)
-    );
-  }
-
-  $return = _d4os_io_services_groups_setAgentGroupSelectedRole($params, $inworld);
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'setAgentGroupSelectedRole',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+  return d4os_io_services_groups_run('setAgentGroupSelectedRole', $params, $inworld);
 }
 
 function d4os_io_services_groups_getAgentGroupMembership($params, $inworld = TRUE) {
-  global $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'getAgentGroupMembership',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-
-  if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
-    return $error;
-  }
-
-  // do the job
-  $return = module_invoke_all('os_groups_services_getAgentGroupMembership', $params);
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'getAgentGroupMembership',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+  return d4os_io_services_groups_run('getAgentGroupMembership', $params, $inworld);
 }
 
 function d4os_io_services_groups_getAgentGroupMemberships($params, $inworld = TRUE) {
-  global $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'getAgentGroupMemberships',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-
-  if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
-    return $error;
-  }
-
-  // do the job
-  $return = module_invoke_all('os_groups_services_getAgentGroupMemberships', $params);
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'getAgentGroupMemberships',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+  return d4os_io_services_groups_run('getAgentGroupMemberships', $params, $inworld);
 }
 
-function d4os_io_services_groups_canAgentViewRoleMembers($agentID, $groupID, $roleID) {
-  global $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'canAgentViewRoleMembers',
-    );
-    $log[] = array(
-      'name' => 'agentID',
-      'type' => 'string',
-      'data' => $agentID,
-    );
-    $log[] = array(
-      'name' => 'groupID',
-      'type' => 'string',
-      'data' => $groupID,
-    );
-    $log[] = array(
-      'name' => 'roleID',
-      'type' => 'string',
-      'data' => $roleID,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-
-  // do the job
-  $params = array(
-    'agentID' => $agentID,
-    'groupID' => $groupID,
-    'roleID'  => $roleID
-  );
-  $viewMemberInfo = module_invoke_all('os_groups_services_canAgentViewRoleMembers', $params);
-  $return = $viewMemberInfo[0];
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'canAgentViewRoleMembers',
-    );
-    $log[] = array(
-      'name' => 'output value',
-      'type' => 'string',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+function d4os_io_services_groups_canAgentViewRoleMembers($params, $inworld=TRUE) {
+  return d4os_io_services_groups_run('canAgentViewRoleMembers', $params, $inworld);
 }
 
 function d4os_io_services_groups_getGroupMembers($params, $inworld = TRUE) {
-  global $requestingAgent, $groupPowers, $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'getGroupMembers',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-
-  if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
-    return $error;
-  }
-
-  // do the job
-  $members_list = module_invoke_all('os_groups_services_getGroupMembers', $params);
-  if (isset($members_list['error'])) {
-    return $members_list;
-  }
-  $members = $members_list['members'];
-  $memberResults = $members_list['member_results'];
-
-  if ($members == 0) {
-    return array(
-      'succeed' => 'false',
-      'error' => 'No Group Members found',
-      'params' => var_export($params, TRUE),
-      'sql' => $sql
-    );
-  }
-  
-  if (count($memberResults) == 0) {
-    return array(
-      'succeed' => 'false',
-      'error' => 'No Visible Group Members found',
-      'params' => var_export($params, TRUE),
-      'sql' => $sql
-    );
-  }
-  
-  $return = $memberResults;
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'getGroupMembers',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+  return d4os_io_services_groups_run('getGroupMembers', $params, $inworld);
 }
 
 function d4os_io_services_groups_getAgentActiveMembership($params, $inworld = TRUE) {
-  global $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'getAgentActiveMembership',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-
-  if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
-    return $error;
-  }
-  
-  d4os_io_services_groups_secureRequest($params, FALSE);
-
-  // do the job
-  $active_membership = module_invoke_all('os_groups_services_getAgentActiveMembership', $params);
-  if (isset($active_membership['error'])) {
-    return $active_membership;
-  }
-  $return = $active_membership;
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'getAgentActiveMembership',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+  return d4os_io_services_groups_run('getAgentActiveMembership', $params, $inworld);
 }
 
 function d4os_io_services_groups_getAgentRoles($params, $inworld = TRUE) {
-  global $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'getAgentRoles',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-
-  if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
-    return $error;
-  }
-
-  // do the job
-  $roles = module_invoke_all('os_groups_services_getAgentRoles', $params);
-  if (isset($roles['error'])) {
-    return $roles;
-  }
-
-  if (count($roles) == 0) {
-    return array(
-      'succeed' => 'false',
-      'error' => 'None found',
-      'params' => var_export($params, TRUE),
-      'sql' => $sql
-    );
-  }
-
-  $return = $roles;
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'getAgentRoles',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+  return d4os_io_services_groups_run('getAgentRoles', $params, $inworld);
 }
 
 function d4os_io_services_groups_getGroupRoles($params, $inworld = TRUE) {
-  global $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'getGroupRoles',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-
-  if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
-    return $error;
-  }
-
-  // do the job
-  $roles = module_invoke_all('os_groups_services_getGroupRoles', $params);
-  $roles = $roles[0];
-  if (isset($roles['error'])) {
-    return $roles;
-  }
-
-  if (count($roles) == 0) {
-    return array(
-      'succeed' => 'false',
-      'error' => 'No roles found for group',
-      'params' => var_export($params, TRUE),
-      'sql' => $sql
-    );
-  }
-  
-  $return = $roles;
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'getGroupRoles',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+  return d4os_io_services_groups_run('getGroupRoles', $params, $inworld);
 }
 
 function d4os_io_services_groups_getGroupRoleMembers($params, $inworld = TRUE) {
-  global $requestingAgent, $groupPowers, $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'getGroupRoleMembers',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-
-  if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
-    return $error;
-  }
-
-  // do the job
-  $return = module_invoke_all('os_groups_services_getGroupRoleMembers', $params);
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'getGroupRoleMembers',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+  return d4os_io_services_groups_run('getGroupRoleMembers', $params, $inworld);
 }
 
 function d4os_io_services_groups_setAgentGroupInfo($params, $inworld = TRUE) {
-  global $requestingAgent, $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'setAgentGroupInfo',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-
-  if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
-    return $error;
-  }
-
-  // do the job
-  $group_info = module_invoke_all('os_groups_services_setAgentGroupInfo', $params);
-  if (isset($group_info['error'])) {
-    return $group_info;
-  }
-  $return = $group_info;
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'setAgentGroupInfo',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+  return d4os_io_services_groups_run('setAgentGroupInfo', $params, $inworld);
 }
 
 function d4os_io_services_groups_getGroupNotices($params, $inworld = TRUE) {
-  global $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'getGroupNotices',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-
-  if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
-    return $error;
-  }
-
-  // do the job
-  $notices = module_invoke_all('os_groups_services_getGroupNotices', $params);
-  if (isset($notices['error'])) {
-    return $notices;
-  }
-
-  if (count($notices) == 0) {
-    return array(
-      'succeed' => 'false',
-      'error' => 'No Notices',
-      'params' => var_export($params, TRUE),
-      'sql' => $sql
-    );
-  }
-  
-  $return = $notices;
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'getGroupNotices',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+  return d4os_io_services_groups_run('getGroupNotices', $params, $inworld);
 }
 
 function d4os_io_services_groups_getGroupNotice($params, $inworld = TRUE) {
-  global $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'getGroupNotice',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-
-  if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
-    return $error;
-  }
-
-  // do the job
-  $notice = module_invoke_all('os_groups_services_getGroupNotice', $params);
-  if (isset($notice['error'])) {
-    return $notice;
-  }
-  
-  if(!is_array($notice)) {
-    return array(
-      'succeed' => 'false',
-      'error' => 'Group Notice Not Found',
-      'params' => var_export($params, TRUE),
-      'sql' => $sql
-    );
-  }
-  
-  $return = $notice;
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'getGroupNotice',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+  return d4os_io_services_groups_run('getGroupNotice', $params, $inworld);
 }
 
 function d4os_io_services_groups_addGroupNotice($params, $inworld = TRUE) {
-  global $groupPowers, $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'addGroupNotice',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-
-  if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
-    return $error;
-  }
-  
-  if (is_array($error = d4os_io_services_groups_checkGroupPermission($params['GroupID'], $groupPowers['SendNotices']))) {
-    return $error;
-  }
-  
-  // do the job
-  $notice = module_invoke_all('os_groups_services_addGroupNotice', $params);
-  if (isset($notice['error'])) {
-    return $notice;
-  }
-  $return = $notice;
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'addGroupNotice',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+  return d4os_io_services_groups_run('addGroupNotice', $params, $inworld);
 }
 
 function d4os_io_services_groups_addAgentToGroupInvite($params, $inworld = TRUE) {
-  global $groupPowers, $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'addAgentToGroupInvite',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-
-  if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
-    return $error;
-  }
-
-  if (is_array($error = d4os_io_services_groups_checkGroupPermission($params['GroupID'], $groupPowers['Invite']))) {
-    return $error;
-  }
-  
-  // do the job
-  $agent = module_invoke_all('os_groups_services_addAgentToGroupInvite', $params);
-  if (isset($agent['error'])) {
-    return $agent;
-  }
-  $return = $agent;
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'addAgentToGroupInvite',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+  return d4os_io_services_groups_run('addAgentToGroupInvite', $params, $inworld);
 }
 
 function d4os_io_services_groups_getAgentToGroupInvite($params, $inworld = TRUE) {
-  global $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'getAgentToGroupInvite',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-
-  if (is_array($error = d4os_io_services_groups_secureRequest($params, FALSE))) {
-    return $error;
-  }
-  
-  // do the job
-  $agent = module_invoke_all('os_groups_services_getAgentToGroupInvite', $params);
-  if (isset($agent['error'])) {
-    return $agent;
-  }
-  $return = $agent;
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'getAgentToGroupInvite',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+  return d4os_io_services_groups_run('getAgentToGroupInvite', $params, $inworld);
 }
 
 function d4os_io_services_groups_removeAgentToGroupInvite($params, $inworld = TRUE) {
-  global $d4os_io_services_groups_log_level;
-  // log
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function call',
-      'type' => 'string',
-      'data' => 'removeAgentToGroupInvite',
-    );
-    $log[] = array(
-      'name' => 'input params',
-      'type' => 'array',
-      'data' => $params,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-
-  if ($inworld && is_array($error = d4os_io_services_groups_secureRequest($params, TRUE))) {
-    return $error;
-  }
-
-  // do the job
-  $agent = module_invoke_all('os_groups_services_removeAgentToGroupInvite', $params);
-  if (isset($agent['error'])) {
-    return $agent;
-  }
-  $return = $agent;
-
-  if ($d4os_io_services_groups_log_level > 6) {
-    $log = array();
-    $log[] = array(
-      'name' => 'function output',
-      'type' => 'string',
-      'data' => 'removeAgentToGroupInvite',
-    );
-    $log[] = array(
-      'name' => 'output values',
-      'type' => 'array',
-      'data' => $return,
-    );
-    d4os_log('d4os_io_svc_grps', $log, WATCHDOG_DEBUG);
-  }
-  return $return;
+  return d4os_io_services_groups_run('removeAgentToGroupInvite', $params, $inworld);
 }
 
 function d4os_io_services_groups_secureRequest($params, $write = FALSE) {
   global $verifiedReadKey, $verifiedWriteKey, $requestingAgent;
-  $overrideAgentUserService = variable_get('d4os_io_services_groups_overrideAgentUserService', '');
-  $groupWriteKey = variable_get('d4os_io_services_groups_writeKey', '');
-  $groupReadKey = variable_get('d4os_io_services_groups_readKey', '');
-  $groupRequireAgentAuthForWrite = variable_get('d4os_io_services_groups_groupRequireAgentAuthForWrite', 0);
+
+  $overrideAgentUserService       = variable_get('d4os_io_services_groups_overrideAgentUserService', '');
+  $groupWriteKey                  = variable_get('d4os_io_services_groups_writeKey', '');
+  $groupReadKey                   = variable_get('d4os_io_services_groups_readKey', '');
+  $groupRequireAgentAuthForWrite  = variable_get('d4os_io_services_groups_groupRequireAgentAuthForWrite', 0);
+
   // Cache this for access by other security functions
   $requestingAgent = $params['RequestingAgentID'];
   
@@ -1632,6 +417,7 @@ function d4os_io_services_groups_secureRequest($params, $write = FALSE) {
 
 function d4os_io_services_groups_checkGroupPermission($GroupID, $Permission) {
   global $requestingAgent, $groupPowers, $d4os_io_services_groups_log_level;
+
   $groupEnforceGroupPerms = variable_get('d4os_io_services_groups_groupEnforceGroupPerms', 0);
   // log
   if ($d4os_io_services_groups_log_level > 6) {
