@@ -18,14 +18,28 @@ function d4os_ui_profile_help($path, $arg) {
   }
 }
 
+function d4os_ui_profile_menu_alter(&$items) {
+  if (variable_get('d4os_ui_profile_disable_drupal_user_view_tab', 0)) {
+    unset($items['user/%user/view']);
+  }
+}
+
 function d4os_ui_profile_menu() {
-  $items['user/%/grid/profile'] = array(
+  $items['user/%user/grid-profile'] = array(
     'title'             => 'Profile',
     'description'       => 'Grid profile.',
     'page callback'     => 'd4os_ui_profile_display_public_profile',
     'page arguments'    => array(1),
+    'access callback'   => 'd4os_ui_profile_display_public_profile_access',
+    'access arguments'  => array(1),
     'type'              => MENU_LOCAL_TASK,
+  );
+  $items['user/%user/grid-profile/js/%'] = array(
+    'page callback'     => 'd4os_ui_profile_save_profile_js',
+    'page arguments'    => array(1, 4),
     'access callback'   => TRUE,
+    'access arguments'  => array(1),
+    'type'              => MENU_CALLBACK,
   );
   $items['admin/settings/d4os/ui/profile'] = array(
     'title'             => 'profile',
@@ -35,7 +49,7 @@ function d4os_ui_profile_menu() {
     'access arguments'  => array('admin d4os ui profile'),
     'type'              => MENU_LOCAL_TASK,
     'file'              => 'd4os_ui_profile.admin.inc'
-   );
+  );
   return $items;
 }
 
@@ -46,6 +60,436 @@ function d4os_ui_profile_perm() {
   );
 }
 
-function d4os_ui_profile_display_public_profile($uid) {
-  return t('Not yet implemented');
+function d4os_ui_profile_display_public_profile_access($account) {
+  return variable_get('d4os_ui_profile_enable_profile_tab', 0);
+  //return TRUE;
+  //return
+  //  (($GLOBALS['user']->uid == $account->uid) || user_access('administer users'))
+  //  && (user_access('access d4os ui profile'));
+  //return (($GLOBALS['user']->uid == $account->uid) || user_access('administer users')) && (user_access('access d4os ui profile') && $account->allow_profile_view);
+}
+
+function d4os_ui_profile_display_public_profile($account) {
+  global $base_url, $user;
+
+  $profile = $account;
+  $profile->messages = '<div class="messages error">'. t('Not yet implemented'). '</div>';
+  $profile->can_edit = user_access('administer users') || ($user->uid == $account->uid);
+
+  // build some usefull pictures links
+  $asset_pictures_server_url = variable_get('d4os_default_asset_pictures_server_url', $base_url. '/asset.php?id=');
+  $account->grid_profileImage_img = theme_image(
+    $asset_pictures_server_url. $account->grid_profileImage,
+    t('No picture available'),
+    t("!user's profile picture", array('!user'=>$account->name)),
+    NULL,
+    FALSE
+  );
+  $account->grid_profileFirstImage_img  = theme_image(
+    $asset_pictures_server_url. $account->grid_profileFirstImage,
+    t('No picture available'),
+    t("!user's first life picture", array('!user'=>$account->name)),
+    NULL,
+    FALSE
+  );
+
+  // inworld
+  $profile->show_inworld = TRUE;
+  // convert the dates
+  $format = variable_get('date_format_medium', 'm/d/Y H:i');
+  $profile->grid_created    = format_date($account->grid_created, $format);
+
+  if ($profile->can_edit) {
+    $profile->grid_lastLogin  = format_date($account->grid_lastLogin, $format);
+
+    // build the forms
+    $profile->grid_homeRegion        = drupal_get_form('d4os_ui_profile_home_region_form', $account);
+    $profile->grid_profileImage      = drupal_get_form('d4os_ui_profile_image_form', $account, $asset_pictures_server_url);
+    $profile->grid_profileAboutText  = drupal_get_form('d4os_ui_profile_about_text_form', $account);
+  }
+  else {
+    $profile->grid_profileImage = $account->grid_profileImage_img;
+  }
+
+  // web
+  $profile->show_web = FALSE;
+  if ($profile->can_edit) {
+    $profile->web = drupal_get_form('d4os_ui_profile_url_form', $account);
+  }
+
+  // interests
+  $profile->show_interests = FALSE;
+
+  // picks
+  $profile->show_picks = FALSE;
+
+  // classifieds
+  $profile->show_classifieds = FALSE;
+
+  // first life
+  $profile->show_firstlife = TRUE;
+  if ($profile->can_edit) {
+    $profile->grid_profileFirstImage = drupal_get_form('d4os_ui_profile_first_image_form', $account, $asset_pictures_server_url);
+    $profile->grid_profileFirstText  = drupal_get_form('d4os_ui_profile_first_text_form', $account);
+  }
+  else {
+    $profile->grid_profileFirstImage = $account->grid_profileFirstImage_img;
+  }
+
+  // notes
+  $profile->show_my_notes = TRUE;
+  if ($profile->show_my_notes) {
+    $profile->my_notes = drupal_get_form('d4os_ui_profile_notes_form', $account);
+  }
+
+  // options
+  $profile->show_options = $profile->can_edit;
+  if ($profile->show_options) {
+    $profile->options = drupal_get_form('d4os_ui_profile_options_form', $account);
+  }
+
+  return theme('d4os_ui_profile_display', $profile);
+}
+
+function d4os_ui_profile_image_form($form_state, $account, $asset_pictures_server_url) {
+  // get values
+  if (isset($form_state['values']['image-uuid'])) {
+    $picture = theme_image(
+      $asset_pictures_server_url. $form_state['values']['image-uuid'],
+      t('No picture available'),
+      t("!user's profile picture", array('!user'=>$account->name)),
+      NULL,
+      FALSE
+    );
+  }
+  else {
+    $picture = $account->grid_profileImage_img;
+  }
+  $uuid = isset($form_state['values']['image-uuid']) ? $form_state['values']['image-uuid'] : $account->grid_profileImage;
+
+  // build the form
+  $form = array();
+  $form['image']['wrapper'] = array(
+    '#type'   => 'item',
+    '#prefix' => '<div class="clear-block" id="image-answer">',
+    '#suffix' => '</div>',
+  );
+  $form['image']['wrapper']['image-picture'] = array(
+    '#type'   => 'item',
+    '#value'  => $picture,
+  );
+  $form['image']['wrapper']['form'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Change image'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+  );
+  $form['image']['wrapper']['form']['image-uuid'] = array(
+    '#type'          => 'textfield',
+    '#size'          => 36,
+    '#maxlength'     => 36,
+    '#default_value' => $uuid,
+  );
+  $form['image']['wrapper']['form']['image-save'] = array(
+    '#type'   => 'submit',
+    '#value'  => t('Save'),
+    '#submit' => array('d4os_ui_profile_profile_submit'),
+    '#ahah'   => array(
+      'path'    => 'user/'. $account->uid. '/grid-profile/js/image',
+      'wrapper' => 'image-answer',
+      'method'  => 'replace',
+      'effect'  => 'fade',
+    ),
+  );
+  return $form;
+}
+
+function d4os_ui_profile_home_region_form($form_state, $account) {
+  $form = array();
+  $form['home_region']['home-regionform'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Change region'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+  );
+  $form['home_region']['form']['home-region-answer'] = array(
+    '#type'   => 'item',
+    '#prefix' => '<div class="clear-block" id="home-region-answer">',
+    '#suffix' => '</div>',
+  );
+  $form['home_region']['form']['home-region-uuid'] = array(
+    '#type'          => 'textfield',
+    '#default_value' => 'test',
+  );
+  $form['home_region']['form']['home-region-save'] = array(
+    '#type'   => 'submit',
+    '#value'  => t('Save'),
+    '#weight' => 1,
+    '#submit' => array('d4os_ui_profile_profile_submit'),
+    '#ahah'   => array(
+      'path'    => 'user/'. $account->uid. '/grid-profile/js/home-region',
+      'wrapper' => 'home-region-answer',
+      'method'  => 'replace',
+      'effect'  => 'fade',
+    ),
+  );
+  return $form;
+}
+
+function d4os_ui_profile_about_text_form($form_state, $account) {
+  $text = isset($form_state['values']['about-text-text']) ? $form_state['values']['about-text-text'] : $account->grid_profileAboutText;
+  $form = array();
+  $form['about-text']['wrapper'] = array(
+    '#type'   => 'item',
+    '#prefix' => '<div class="clear-block" id="about-text-answer">',
+    '#suffix' => '</div>',
+  );
+  $form['about-text']['wrapper']['about-text-text'] = array(
+    '#type'          => 'textarea',
+    '#default_value' => $text,
+  );
+  $form['about-text']['form']['about-text-save'] = array(
+    '#type'   => 'submit',
+    '#value'  => t('Save'),
+    '#weight' => 1,
+    '#submit' => array('d4os_ui_profile_profile_submit'),
+    '#ahah'   => array(
+      'path'    => 'user/'. $account->uid. '/grid-profile/js/about-text',
+      'wrapper' => 'about-text-answer',
+      'method'  => 'replace',
+      'effect'  => 'fade',
+    ),
+  );
+  return $form;
+}
+
+function d4os_ui_profile_url_form($form_state, $account) {
+  $url = isset($form_state['values']['url-url']) ? $form_state['values']['url-url'] : 'test';
+  $form = array();
+  $form['url']['form'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Change url'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+  );
+  $form['url']['form']['wrapper'] = array(
+    '#type'   => 'item',
+    '#prefix' => '<div class="clear-block" id="url-answer">',
+    '#suffix' => '</div>',
+  );
+  $form['url']['form']['wrapper']['url-url'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Url'),
+    '#default_value'  => $url,
+  );
+  $form['url']['form']['url-save'] = array(
+    '#type'   => 'submit',
+    '#value'  => t('Save'),
+    '#weight' => 1,
+    '#submit' => array('d4os_ui_profile_profile_submit'),
+    '#ahah'   => array(
+      'path'    => 'user/'. $account->uid. '/grid-profile/js/url',
+      'wrapper' => 'url-answer',
+      'method'  => 'replace',
+      'effect'  => 'fade',
+    ),
+  );
+  return $form;
+}
+
+function d4os_ui_profile_first_image_form($form_state, $account, $asset_pictures_server_url) {
+  // get values
+  if (isset($form_state['values']['first-image-uuid'])) {
+    $picture = theme_image(
+      $asset_pictures_server_url. $form_state['values']['first-image-uuid'],
+      t('No picture available'),
+      t("!user's profile picture", array('!user'=>$account->name)),
+      NULL,
+      FALSE
+    );
+  }
+  else {
+    $picture = $account->grid_profileFirstImage_img;
+  }
+  $uuid = isset($form_state['values']['first-image-uuid']) ? $form_state['values']['first-image-uuid'] : $account->grid_profileFirstImage;
+
+  // build the form
+  $form = array();
+  $form['first-image']['wrapper'] = array(
+    '#type'   => 'item',
+    '#prefix' => '<div class="clear-block" id="first-image-answer">',
+    '#suffix' => '</div>',
+  );
+  $form['first-image']['wrapper']['first-image-picture'] = array(
+    '#type'   => 'item',
+    '#value'  => $picture,
+  );
+  $form['first-image']['wrapper']['form'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Change image'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+  );
+  $form['first-image']['wrapper']['form']['first-image-uuid'] = array(
+    '#type'          => 'textfield',
+    '#size'          => 36,
+    '#maxlength'     => 36,
+    '#default_value' => $uuid,
+  );
+  $form['first-image']['wrapper']['form']['first-image-save'] = array(
+    '#type'   => 'submit',
+    '#value'  => t('Save'),
+    '#submit' => array('d4os_ui_profile_profile_submit'),
+    '#ahah'   => array(
+      'path'    => 'user/'. $account->uid. '/grid-profile/js/first-image',
+      'wrapper' => 'first-image-answer',
+      'method'  => 'replace',
+      'effect'  => 'fade',
+    ),
+  );
+  return $form;
+}
+
+function d4os_ui_profile_first_text_form($form_state, $account) {
+  $text = isset($form_state['values']['first-text-text']) ? $form_state['values']['first-text-text'] : 'test';
+  $form = array();
+  $form['first-text']['wrapper'] = array(
+    '#type'   => 'item',
+    '#prefix' => '<div class="clear-block" id="first-text-answer">',
+    '#suffix' => '</div>',
+  );
+  $form['first-text']['wrapper']['first-text-text'] = array(
+    '#type'          => 'textarea',
+    '#default_value' => $text,
+  );
+  $form['first-text']['form']['first-text-save'] = array(
+    '#type'   => 'submit',
+    '#value'  => t('Save'),
+    '#weight' => 1,
+    '#submit' => array('d4os_ui_profile_profile_submit'),
+    '#ahah'   => array(
+      'path'    => 'user/'. $account->uid. '/grid-profile/js/first-text',
+      'wrapper' => 'first-text-answer',
+      'method'  => 'replace',
+      'effect'  => 'fade',
+    ),
+  );
+  return $form;
+}
+
+function d4os_ui_profile_notes_form($form_state, $account) {
+  $text = isset($form_state['values']['notes-text']) ? $form_state['values']['notes-text'] : 'test';
+  $form = array();
+  $form['notes']['wrapper'] = array(
+    '#type'   => 'item',
+    '#prefix' => '<div class="clear-block" id="notes-answer">',
+    '#suffix' => '</div>',
+  );
+  $form['notes']['wrapper']['notes-text'] = array(
+    '#type'          => 'textarea',
+    '#default_value' => $text,
+  );
+  $form['notes']['form']['notes-save'] = array(
+    '#type'   => 'submit',
+    '#value'  => t('Save'),
+    '#weight' => 1,
+    '#submit' => array('d4os_ui_profile_profile_submit'),
+    '#ahah'   => array(
+      'path'    => 'user/'. $account->uid. '/grid-profile/js/notes',
+      'wrapper' => 'notes-answer',
+      'method'  => 'replace',
+      'effect'  => 'fade',
+    ),
+  );
+  return $form;
+}
+
+function d4os_ui_profile_options_form($form_state, $account) {
+  $form = array();
+  $form['options']['wrapper'] = array(
+    '#type'   => 'item',
+    '#prefix' => '<div class="clear-block" id="options-answer">',
+    '#suffix' => '</div>',
+  );
+  $form['options']['wrapper']['options-options'] = array(
+    '#type'           => 'checkboxes',
+    '#title'          => t('Profile options'),
+    '#default_value'  => array(),
+    '#options'        => array(
+      'show_profile'      => t('Show profile'),
+      //'show_inworld'      => t('Show inworld'),
+      //'show_web'          => t('Show web'),
+      //'show_interests'    => t('Show interests'),
+      //'show_picks'        => t('Show picks'),
+      //'show_classifieds'  => t('Show classifieds'),
+    ),
+    '#description' => t('Check the options to allow profile access to other users.'),
+  );
+  $form['options']['options-save'] = array(
+    '#type'   => 'submit',
+    '#value'  => t('Save'),
+    '#weight' => 1,
+    '#submit' => array('d4os_ui_profile_profile_submit'),
+    '#ahah'   => array(
+      'path'    => 'user/'. $account->uid. '/grid-profile/js/options',
+      'wrapper' => 'options-answer',
+      'method'  => 'replace',
+      'effect'  => 'fade',
+    ),
+  );
+  return $form;
+}
+
+function d4os_ui_profile_profile_submit($form, &$form_state) {
+  drupal_set_message('not saved because not implemented :)');
+
+  switch (arg(4)) {
+    case 'about-text':
+    case 'first-text':
+    case 'notes':
+      $value = $form_state['values']['text'];
+      break;
+    case 'image':
+    case 'first-image':
+      $value = $form_state['values']['uuid'];
+      break;
+    case 'home-region':
+    case 'url':
+      $value = $form_state['values']['url'];
+      break;
+    case 'options':
+      $value = print_r($form_state['values']['options']);
+      break;
+  }
+  drupal_set_message('method called is : '. arg(4));
+  drupal_set_message('value saved is : '. $value);
+}
+
+function d4os_ui_profile_save_profile_js($uid, $item) {
+  $form = d4os_ajax_form_handler();
+
+  // Render the new output.
+  $track_form = $form[$item]['wrapper'];
+  // Prevent duplicate wrappers.
+  unset($track_form['#prefix'], $track_form['#suffix']);
+
+  $output = theme('status_messages') . drupal_render($track_form);
+
+  $javascript = drupal_add_js(NULL, NULL);
+  if (isset($javascript['setting'])) {
+    $output .= '<script type="text/javascript">jQuery.extend(Drupal.settings, '. drupal_to_js(call_user_func_array('array_merge_recursive', $javascript['setting'])) .');</script>';
+  }
+
+  // Final rendering callback.
+  drupal_json(array('status' => TRUE, 'data' => $output));
+}
+
+function d4os_ui_profile_theme() {
+  return array(
+    'd4os_ui_profile_display' => array(
+      'path'      => drupal_get_path('module', 'd4os_ui_profile').'/theme',
+      'template'  => 'd4os_ui_profile_display',
+      'arguments' => array('profile' => new stdClass),
+    ),
+  );
 }
