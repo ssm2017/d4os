@@ -11,38 +11,48 @@
 
 function d4os_ui_users_user_generate($username, $lastname, $password, $mail, $home=0) {
   global $base_url;
-  $user = array();
-  $user['grid_UUID']               = d4os_build_uuid();
-  $user['grid_username']           = $username;
-  $user['grid_lastname']           = $lastname;
-  
-  $user['grid_passwordSalt']       = md5(microtime() . mt_rand(0,0xffff));
-  $user['grid_passwordHash']       = md5(md5($password) . ":" . $user['grid_passwordSalt']);
-  
-  $user['grid_homeRegion']         = $home;
-  $user['grid_homeLocationX']      = 128;
-  $user['grid_homeLocationY']      = 128;
-  $user['grid_homeLocationZ']      = 128;
-  $user['grid_homeLookAtX']        = 100;
-  $user['grid_homeLookAtY']        = 100;
-  $user['grid_homeLookAtZ']        = 100;
-  
-  $user['grid_created']            = time();
-  $user['grid_lastLogin']          = 0;
-  
-  $user['grid_userInventoryURI']   = variable_get('d4os_default_inventory_server_uri', $base_url). ':'. variable_get('d4os_default_inventory_server_port', '8004');
-  $user['grid_userAssetURI']       = variable_get('d4os_default_asset_server_uri', $base_url). ':'. variable_get('d4os_default_asset_server_port', '8003');
-  
-  $user['grid_profileCanDoMask']   = 0;
-  $user['grid_profileWantDoMask']  = 0;
-  $user['grid_profileAboutText']   = variable_get('d4os_ui_users_default_profile_about_text', 'I am a new user');
-  $user['grid_profileFirstText']   = variable_get('d4os_ui_users_default_profile_first_text', 'Stuf.');
-  $user['grid_profileImage']       = sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x', 0, 0, 0, 0, 0, 0, 0, 0 );
-  $user['grid_profileFirstImage']  = sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x', 0, 0, 0, 0, 0, 0, 0, 0 );
-  $user['grid_godLevel']           = variable_get('d4os_ui_users_default_god_level', 10);
-  $user['grid_email']              = $mail;
-  
-  return $user;
+
+  $password_salt = md5(microtime() . mt_rand(0,0xffff));
+  return array(
+    'grid' => array(
+
+      'account' => array(
+        'uuid'                => d4os_build_uuid(),
+        'username'            => $username,
+        'lastname'            => $lastname,
+        'created'             => time(),
+        'user_inventory_uri'  => variable_get('d4os_default_inventory_server_uri', $base_url). ':'. variable_get('d4os_default_inventory_server_port', '8004'),
+        'user_asset_uri'      => variable_get('d4os_default_asset_server_uri', $base_url). ':'. variable_get('d4os_default_asset_server_port', '8003'),
+        'login_level'         => variable_get('d4os_ui_users_default_god_level', 10),
+        'email'               => $mail,
+      ),
+
+      'auth' => array(
+        'password_salt' => $password_salt,
+        'password_hash' => md5(md5($password) . ":" . $password_salt),
+      ),
+
+      'presence' => array(
+        'home_region'     => $home,
+        'home_location_x' => 128,
+        'home_location_y' => 128,
+        'home_location_z' => 128,
+        'home_look_at_x'  => 100,
+        'home_look_at_y'  => 100,
+        'home_look_at_z'  => 100,
+        'last_login'      => 0,
+      ),
+
+      'profile' => array(
+        'can_do_mask'   => 0,
+        'want_do_mask'  => 0,
+        'about_text'    => variable_get('d4os_ui_users_default_profile_about_text', 'I am a new user'),
+        'first_text'    => variable_get('d4os_ui_users_default_profile_first_text', 'Stuf.'),
+        'image'         => sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x', 0, 0, 0, 0, 0, 0, 0, 0 ),
+        'first_image'   => sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x', 0, 0, 0, 0, 0, 0, 0, 0 ),
+      ),
+    )
+  );
 }
 
 function d4os_ui_users_validate_name($name, $type, $type_str) {
@@ -72,16 +82,16 @@ function d4os_ui_users_validate_name($name, $type, $type_str) {
 
 function d4os_ui_users_get_god_roles() {
   $roles = array(
-    0  => variable_get('d4os_ui_users_god_level_roles_0',0),
-    10 => variable_get('d4os_ui_users_god_level_roles_10',0),
-    20 => variable_get('d4os_ui_users_god_level_roles_20',0),
-    30 => variable_get('d4os_ui_users_god_level_roles_30',0),
-    40 => variable_get('d4os_ui_users_god_level_roles_40',0),
-    50 => variable_get('d4os_ui_users_god_level_roles_50',0),
-    60 => variable_get('d4os_ui_users_god_level_roles_60',0),
-    70 => variable_get('d4os_ui_users_god_level_roles_70',0),
-    80 => variable_get('d4os_ui_users_god_level_roles_80',0),
-    90 => variable_get('d4os_ui_users_god_level_roles_90',0),
+    0   => variable_get('d4os_ui_users_god_level_roles_0',0),
+    10  => variable_get('d4os_ui_users_god_level_roles_10',0),
+    20  => variable_get('d4os_ui_users_god_level_roles_20',0),
+    30  => variable_get('d4os_ui_users_god_level_roles_30',0),
+    40  => variable_get('d4os_ui_users_god_level_roles_40',0),
+    50  => variable_get('d4os_ui_users_god_level_roles_50',0),
+    60  => variable_get('d4os_ui_users_god_level_roles_60',0),
+    70  => variable_get('d4os_ui_users_god_level_roles_70',0),
+    80  => variable_get('d4os_ui_users_god_level_roles_80',0),
+    90  => variable_get('d4os_ui_users_god_level_roles_90',0),
     100 => variable_get('d4os_ui_users_god_level_roles_100',0),
     200 => variable_get('d4os_ui_users_god_level_roles_200',0),
   );
@@ -110,11 +120,21 @@ function d4os_ui_users_get_god_level($roles) {
 
 function d4os_ui_users_get_grid_fields() {
   return array(
+    // account
     'UUID',
     'username',
     'lastname',
+    'created',
+    'godLevel',
+    'email',
+    'userInventoryURI',
+    'userAssetURI',
+
+    // auth
     'passwordSalt',
     'passwordHash',
+
+    // presence
     'homeRegion',
     'homeLocationX',
     'homeLocationY',
@@ -122,44 +142,128 @@ function d4os_ui_users_get_grid_fields() {
     'homeLookAtX',
     'homeLookAtY',
     'homeLookAtZ',
-    'created',
     'lastLogin',
-    'userInventoryURI',
-    'userAssetURI',
+
+    // profile
     'profileCanDoMask',
     'profileWantDoMask',
     'profileAboutText',
     'profileFirstText',
     'profileImage',
     'profileFirstImage',
-    'godLevel',
-    'email'
+  );
+}
+
+function d4os_ui_users_clean_account(&$account) {
+  unset(
+    // account
+    $account->grid_UUID,
+    $account->grid_username,
+    $account->grid_lastname,
+    $account->grid_created,
+    $account->grid_godLevel,
+    $account->grid_email,
+    $account->grid_userInventoryURI,
+    $account->grid_userAssetURI,
+
+    // auth
+    $account->grid_passwordSalt,
+    $account->grid_passwordHash,
+
+    // presence
+    $account->grid_homeRegion,
+    $account->grid_homeLocationX,
+    $account->grid_homeLocationY,
+    $account->grid_homeLocationZ,
+    $account->grid_homeLookAtX,
+    $account->grid_homeLookAtY,
+    $account->grid_homeLookAtZ,
+    $account->grid_lastLogin,
+
+    // profile
+    $account->grid_profileCanDoMask,
+    $account->grid_profileWantDoMask,
+    $account->grid_profileAboutText,
+    $account->grid_profileFirstText,
+    $account->grid_profileImage,
+    $account->grid_profileFirstImage
+    
   );
 }
 
 function d4os_ui_users_account_to_grid($account) {
-  $is_object = is_object($account);
-  $account = $is_object ? (array)$account : $account;
-  $grid_user = array();
-  foreach ($account as $key => $value) {
-    if ((substr($key, 0, 5) == 'grid_')) {
-      $new_key = substr($key, 5);
-      $grid_user[$new_key] = $value;
-    }
-  }
-  $grid_user = $is_object ? (object)$grid_user : $grid_user;
-  return $grid_user;
+  $grid_account = array();
+
+  // account
+  if (isset($account['d4os']['grid']['account']['uuid']))               $grid_account['UUID']             = $account['d4os']['grid']['account']['uuid'];
+  if (isset($account['d4os']['grid']['account']['username']))           $grid_account['username']         = $account['d4os']['grid']['account']['username'];
+  if (isset($account['d4os']['grid']['account']['lastname']))           $grid_account['lastname']         = $account['d4os']['grid']['account']['lastname'];
+  if (isset($account['d4os']['grid']['account']['created']))            $grid_account['created']          = $account['d4os']['grid']['account']['created'];
+  if (isset($account['d4os']['grid']['account']['login_level']))        $grid_account['godLevel']         = $account['d4os']['grid']['account']['login_level'];
+  if (isset($account['d4os']['grid']['account']['email']))              $grid_account['email']            = $account['d4os']['grid']['account']['email'];
+  if (isset($account['d4os']['grid']['account']['user_inventory_uri'])) $grid_account['userInventoryURI'] = $account['d4os']['grid']['account']['user_inventory_uri'];
+  if (isset($account['d4os']['grid']['account']['user_asset_uri']))     $grid_account['userAssetURI']     = $account['d4os']['grid']['account']['user_asset_uri'];
+  
+  // auth
+  if (isset($account['d4os']['grid']['auth']['password_salt'])) $grid_account['passwordSalt'] = $account['d4os']['grid']['auth']['password_salt'];
+  if (isset($account['d4os']['grid']['auth']['password_hash'])) $grid_account['passwordHash'] = $account['d4os']['grid']['auth']['password_hash'];
+  
+  // presence
+  if (isset($account['d4os']['grid']['presence']['home_region']))     $grid_account['homeRegion']     = $account['d4os']['grid']['presence']['home_region'];
+  if (isset($account['d4os']['grid']['presence']['home_location_x'])) $grid_account['homeLocationX']  = $account['d4os']['grid']['presence']['home_location_x'];
+  if (isset($account['d4os']['grid']['presence']['home_location_y'])) $grid_account['homeLocationY']  = $account['d4os']['grid']['presence']['home_location_y'];
+  if (isset($account['d4os']['grid']['presence']['home_location_z'])) $grid_account['homeLocationZ']  = $account['d4os']['grid']['presence']['home_location_z'];
+  if (isset($account['d4os']['grid']['presence']['home_look_at_x']))  $grid_account['homeLookAtX']    = $account['d4os']['grid']['presence']['home_look_at_x'];
+  if (isset($account['d4os']['grid']['presence']['home_look_at_y']))  $grid_account['homeLookAtY']    = $account['d4os']['grid']['presence']['home_look_at_y'];
+  if (isset($account['d4os']['grid']['presence']['home_look_at_z']))  $grid_account['homeLookAtZ']    = $account['d4os']['grid']['presence']['home_look_at_z'];
+  if (isset($account['d4os']['grid']['presence']['last_login']))      $grid_account['lastLogin']      = $account['d4os']['grid']['presence']['last_login'];
+  
+  //profile
+  if (isset($account['d4os']['grid']['profile']['can_do_mask']))  $grid_account['profileCanDoMask']   = $account['d4os']['grid']['profile']['can_do_mask'];
+  if (isset($account['d4os']['grid']['profile']['want_do_mask'])) $grid_account['profileWantDoMask']  = $account['d4os']['grid']['profile']['want_do_mask'];
+  if (isset($account['d4os']['grid']['profile']['about_text']))   $grid_account['profileAboutText']   = $account['d4os']['grid']['profile']['about_text'];
+  if (isset($account['d4os']['grid']['profile']['first_text']))   $grid_account['profileFirstText']   = $account['d4os']['grid']['profile']['first_text'];
+  if (isset($account['d4os']['grid']['profile']['image']))        $grid_account['profileImage']       = $account['d4os']['grid']['profile']['image'];
+  if (isset($account['d4os']['grid']['profile']['first_image']))  $grid_account['profileFirstImage']  = $account['d4os']['grid']['profile']['first_image'];
+
+  return $grid_account;
 }
 
 function d4os_ui_users_grid_to_account($grid_account) {
-  $is_object = is_object($grid_account);
-  $grid_account = $is_object ? (array)$grid_account : $grid_account;
   $account = array();
-  foreach ($grid_account as $key => $value) {
-    $new_key = 'grid_'. $key;
-    $account[$new_key] = $value;
-  }
-  $account = $is_object ? (object)$account : $account;
+
+  // account
+  if (isset($grid_account['UUID']))              $account['grid']['account']['uuid']               = $grid_account['UUID'];
+  if (isset($grid_account['username']))          $account['grid']['account']['username']           = $grid_account['username'];
+  if (isset($grid_account['lastname']))          $account['grid']['account']['lastname']           = $grid_account['lastname'];
+  if (isset($grid_account['userInventoryURI']))  $account['grid']['account']['user_inventory_uri'] = $grid_account['userInventoryURI'];
+  if (isset($grid_account['userAssetURI']))      $account['grid']['account']['user_asset_uri']     = $grid_account['userAssetURI'];
+  if (isset($grid_account['created']))           $account['grid']['account']['created']            = $grid_account['created'];
+  if (isset($grid_account['godLevel']))          $account['grid']['account']['login_level']        = $grid_account['godLevel'];
+  if (isset($grid_account['email']))             $account['grid']['account']['email']              = $grid_account['email'];
+
+  // auth
+  if (isset($grid_account['passwordSalt'])) $account['grid']['auth']['password_salt'] = $grid_account['passwordSalt'];
+  if (isset($grid_account['passwordHash'])) $account['grid']['auth']['password_hash'] = $grid_account['passwordHash'];
+
+  // presence
+  if (isset($grid_account['homeRegion']))    $account['grid']['presence']['home_region']     = $grid_account['homeRegion'];
+  if (isset($grid_account['homeLocationX'])) $account['grid']['presence']['home_location_x'] = $grid_account['homeLocationX'];
+  if (isset($grid_account['homeLocationY'])) $account['grid']['presence']['home_location_y'] = $grid_account['homeLocationY'];
+  if (isset($grid_account['homeLocationZ'])) $account['grid']['presence']['home_location_z'] = $grid_account['homeLocationZ'];
+  if (isset($grid_account['homeLookAtX']))   $account['grid']['presence']['home_look_at_x']  = $grid_account['homeLookAtX'];
+  if (isset($grid_account['homeLookAtY']))   $account['grid']['presence']['home_look_at_y']  = $grid_account['homeLookAtY'];
+  if (isset($grid_account['homeLookAtZ']))   $account['grid']['presence']['home_look_at_z']  = $grid_account['homeLookAtZ'];
+  if (isset($grid_account['lastLogin']))     $account['grid']['presence']['last_login']      = $grid_account['lastLogin'];
+
+  // profile
+  if (isset($grid_account['profileCanDoMask']))  $account['grid']['profile']['can_do_mask']  = $grid_account['profileCanDoMask'];
+  if (isset($grid_account['profileWantDoMask'])) $account['grid']['profile']['want_do_mask'] = $grid_account['profileWantDoMask'];
+  if (isset($grid_account['profileAboutText']))  $account['grid']['profile']['about_text']   = $grid_account['profileAboutText'];
+  if (isset($grid_account['profileFirstText']))  $account['grid']['profile']['first_text']   = $grid_account['profileFirstText'];
+  if (isset($grid_account['profileImage']))      $account['grid']['profile']['image']        = $grid_account['profileImage'];
+  if (isset($grid_account['profileFirstImage'])) $account['grid']['profile']['first_image']  = $grid_account['profileFirstImage'];
+
   return $account;
 }
 

@@ -78,7 +78,7 @@ function d4os_ui_events_build_parcels_list($uid) {
   // get the user
   $account = user_load($uid);
   // get the parcels
-  $parcels = module_invoke_all('os_events_get_parcels_by_owner', $account->grid_UUID);
+  $parcels = module_invoke_all('os_events_get_parcels_by_owner', $account->d4os['grid']['account']['uuid']);
   $options = array();
   //$options['none'] = t('Nowhere'));
   if (count($parcels)) {

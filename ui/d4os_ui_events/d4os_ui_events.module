@@ -193,7 +193,7 @@ function d4os_ui_events_nodeapi(&$node, $op, $teaser, $page) {
           // get the user
           $account = user_load($node->uid);
           // check if the user's got some parcels
-          $parcels = module_invoke_all('os_events_get_parcels_by_owner', $account->grid_UUID);
+          $parcels = module_invoke_all('os_events_get_parcels_by_owner', $account->d4os['grid']['account']['uuid']);
           if ($parcels[0] === FALSE) {
             drupal_set_message(t('You need to be a parcel owner to create an event'), 'error');
             drupal_goto('node/add');
@@ -328,9 +328,9 @@ function d4os_ui_events_build_output($node) {
   return array(
     'nid'           => $node->nid,
     'vid'           => $node->vid,
-    'owneruuid'     => $account->grid_UUID,
+    'owneruuid'     => $account->d4os['grid']['account']['uuid'],
     'name'          => $node->title,
-    'creatoruuid'   => $account->grid_UUID,
+    'creatoruuid'   => $account->d4os['grid']['account']['uuid'],
     'category'      => $node->category,
     'description'   => $node->body,
     'dateUTC'       => $start_stamp,

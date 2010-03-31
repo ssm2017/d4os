@@ -72,86 +72,114 @@ function d4os_ui_profile_display_public_profile_access($account) {
 function d4os_ui_profile_display_public_profile($account) {
   global $base_url, $user;
 
-  $profile = $account;
-  $profile->messages = '<div class="messages error">'. t('Not yet implemented'). '</div>';
+  $user->d4os['grid']['account']['uuid'] = $user->uid == 1 ? UUID_ZERO : $user->d4os['grid']['account']['uuid'];
+
+  $profile = new stdClass;
+  $profile->messages = '';
   $profile->can_edit = user_access('administer users') || ($user->uid == $account->uid);
 
   // build some usefull pictures links
   $asset_pictures_server_url = variable_get('d4os_default_asset_pictures_server_url', $base_url. '/asset.php?id=');
-  $account->grid_profileImage_img = theme_image(
-    $asset_pictures_server_url. $account->grid_profileImage,
+
+  $profile->first_image_uuid = $account->d4os['grid']['profile']['first_image'];
+  $profile->first_image_img  = theme_image(
+    $asset_pictures_server_url. $account->d4os['grid']['profile']['first_image'],
     t('No picture available'),
     t("!user's profile picture", array('!user'=>$account->name)),
     NULL,
     FALSE
   );
-  $account->grid_profileFirstImage_img  = theme_image(
-    $asset_pictures_server_url. $account->grid_profileFirstImage,
+
+  $profile->image_uuid = $account->d4os['grid']['profile']['image'];
+  $profile->image_img  = theme_image(
+    $asset_pictures_server_url. $account->d4os['grid']['profile']['image'],
     t('No picture available'),
     t("!user's first life picture", array('!user'=>$account->name)),
     NULL,
     FALSE
   );
 
+  // *****************
   // inworld
+  // *****************
   $profile->show_inworld = TRUE;
+  $profile->uuid = $account->d4os['grid']['account']['uuid'];
+  $profile->username = $account->d4os['grid']['account']['username'];
+  $profile->lastname = $account->d4os['grid']['account']['lastname'];
   // convert the dates
   $format = variable_get('date_format_medium', 'm/d/Y H:i');
-  $profile->grid_created    = format_date($account->grid_created, $format);
+  $profile->created = format_date($account->d4os['grid']['account']['created'], $format);
 
   if ($profile->can_edit) {
-    $profile->grid_lastLogin  = format_date($account->grid_lastLogin, $format);
+    $profile->last_login  = $account->d4os['grid']['presence']['last_login'] > 0 ? format_date($account->d4os['grid']['presence']['last_login'], $format) : t('Never connected to the grid');
 
     // build the forms
-    $profile->grid_homeRegion        = drupal_get_form('d4os_ui_profile_home_region_form', $account);
-    $profile->grid_profileImage      = drupal_get_form('d4os_ui_profile_image_form', $account, $asset_pictures_server_url);
-    $profile->grid_profileAboutText  = drupal_get_form('d4os_ui_profile_about_text_form', $account);
+    $profile->home_region = drupal_get_form('d4os_ui_profile_home_region_form', $profile, $account);
+    $profile->image       = drupal_get_form('d4os_ui_profile_image_form', $profile, $account, $asset_pictures_server_url);
+    $profile->about_text  = drupal_get_form('d4os_ui_profile_about_text_form', $profile, $account);
   }
   else {
-    $profile->grid_profileImage = $account->grid_profileImage_img;
+    $profile->image = $profile->image_img;
+    $profile->about_text = $account->d4os['grid']['profile']['about_text'];
   }
 
+  // *****************
   // web
+  // *****************
   $profile->show_web = FALSE;
   if ($profile->can_edit) {
-    $profile->web = drupal_get_form('d4os_ui_profile_url_form', $account);
+    $profile->web = drupal_get_form('d4os_ui_profile_url_form', $profile, $account);
   }
 
+  // *****************
   // interests
+  // *****************
   $profile->show_interests = FALSE;
 
+  // *****************
   // picks
+  // *****************
   $profile->show_picks = FALSE;
 
+  // *****************
   // classifieds
+  // *****************
   $profile->show_classifieds = FALSE;
 
+  // *****************
   // first life
+  // *****************
   $profile->show_firstlife = TRUE;
   if ($profile->can_edit) {
-    $profile->grid_profileFirstImage = drupal_get_form('d4os_ui_profile_first_image_form', $account, $asset_pictures_server_url);
-    $profile->grid_profileFirstText  = drupal_get_form('d4os_ui_profile_first_text_form', $account);
+    $profile->first_image = drupal_get_form('d4os_ui_profile_first_image_form', $profile, $account, $asset_pictures_server_url);
+    $profile->first_text  = drupal_get_form('d4os_ui_profile_first_text_form', $profile, $account);
   }
   else {
-    $profile->grid_profileFirstImage = $account->grid_profileFirstImage_img;
+    $profile->first_image = $profile->first_image_img;
+    $profile->first_text = $account->d4os['grid']['profile']['first_text'];
   }
 
+  // *****************
   // notes
-  $profile->show_my_notes = TRUE;
+  // *****************
+  $profile->show_my_notes = $user->uid > 0 ? TRUE : FALSE;
   if ($profile->show_my_notes) {
-    $profile->my_notes = drupal_get_form('d4os_ui_profile_notes_form', $account);
+    $profile->my_notes = drupal_get_form('d4os_ui_profile_notes_form', $profile, $account);
   }
 
+  // *****************
   // options
-  $profile->show_options = $profile->can_edit;
+  // *****************
+  //$profile->show_options = $profile->can_edit;
+  $profile->show_options = FALSE;
   if ($profile->show_options) {
-    $profile->options = drupal_get_form('d4os_ui_profile_options_form', $account);
+    $profile->options = drupal_get_form('d4os_ui_profile_options_form', $profile, $account);
   }
 
   return theme('d4os_ui_profile_display', $profile);
 }
 
-function d4os_ui_profile_image_form($form_state, $account, $asset_pictures_server_url) {
+function d4os_ui_profile_image_form($form_state, $profile, $account, $asset_pictures_server_url) {
   // get values
   if (isset($form_state['values']['image-uuid'])) {
     $picture = theme_image(
@@ -163,9 +191,9 @@ function d4os_ui_profile_image_form($form_state, $account, $asset_pictures_serve
     );
   }
   else {
-    $picture = $account->grid_profileImage_img;
+    $picture = $profile->image_img;
   }
-  $uuid = isset($form_state['values']['image-uuid']) ? $form_state['values']['image-uuid'] : $account->grid_profileImage;
+  $uuid = isset($form_state['values']['image-uuid']) ? $form_state['values']['image-uuid'] : $account->d4os['grid']['profile']['image'];
 
   // build the form
   $form = array();
@@ -173,6 +201,10 @@ function d4os_ui_profile_image_form($form_state, $account, $asset_pictures_serve
     '#type'   => 'item',
     '#prefix' => '<div class="clear-block" id="image-answer">',
     '#suffix' => '</div>',
+  );
+  $form['image']['wrapper']['uuid'] = array(
+    '#type'   => 'hidden',
+    '#value'  => $account->d4os['grid']['account']['uuid'],
   );
   $form['image']['wrapper']['image-picture'] = array(
     '#type'   => 'item',
@@ -204,9 +236,9 @@ function d4os_ui_profile_image_form($form_state, $account, $asset_pictures_serve
   return $form;
 }
 
-function d4os_ui_profile_home_region_form($form_state, $account) {
+function d4os_ui_profile_home_region_form($form_state, $profile, $account) {
   $form = array();
-  $form['home_region']['home-regionform'] = array(
+  $form['home_region']['form'] = array(
     '#type'         => 'fieldset',
     '#title'        => t('Change region'),
     '#collapsible'  => TRUE,
@@ -217,9 +249,14 @@ function d4os_ui_profile_home_region_form($form_state, $account) {
     '#prefix' => '<div class="clear-block" id="home-region-answer">',
     '#suffix' => '</div>',
   );
+  $form['home_region']['form']['uuid'] = array(
+    '#type'   => 'hidden',
+    '#value'  => $account->d4os['grid']['account']['uuid'],
+  );
   $form['home_region']['form']['home-region-uuid'] = array(
-    '#type'          => 'textfield',
-    '#default_value' => 'test',
+    '#type'          => 'select',
+    '#default_value' => $account->d4os['grid']['presence']['home_region'],
+    '#options'       => d4os_ui_regions_get_regions_array()
   );
   $form['home_region']['form']['home-region-save'] = array(
     '#type'   => 'submit',
@@ -236,13 +273,17 @@ function d4os_ui_profile_home_region_form($form_state, $account) {
   return $form;
 }
 
-function d4os_ui_profile_about_text_form($form_state, $account) {
-  $text = isset($form_state['values']['about-text-text']) ? $form_state['values']['about-text-text'] : $account->grid_profileAboutText;
+function d4os_ui_profile_about_text_form($form_state, $profile, $account) {
+  $text = isset($form_state['values']['about-text-text']) ? $form_state['values']['about-text-text'] : $account->d4os['grid']['profile']['about_text'];
   $form = array();
   $form['about-text']['wrapper'] = array(
     '#type'   => 'item',
     '#prefix' => '<div class="clear-block" id="about-text-answer">',
     '#suffix' => '</div>',
+  );
+  $form['about-text']['wrapper']['uuid'] = array(
+    '#type'   => 'hidden',
+    '#value'  => $account->d4os['grid']['account']['uuid'],
   );
   $form['about-text']['wrapper']['about-text-text'] = array(
     '#type'          => 'textarea',
@@ -263,7 +304,7 @@ function d4os_ui_profile_about_text_form($form_state, $account) {
   return $form;
 }
 
-function d4os_ui_profile_url_form($form_state, $account) {
+function d4os_ui_profile_url_form($form_state, $profile, $account) {
   $url = isset($form_state['values']['url-url']) ? $form_state['values']['url-url'] : 'test';
   $form = array();
   $form['url']['form'] = array(
@@ -276,6 +317,10 @@ function d4os_ui_profile_url_form($form_state, $account) {
     '#type'   => 'item',
     '#prefix' => '<div class="clear-block" id="url-answer">',
     '#suffix' => '</div>',
+  );
+  $form['url']['form']['wrapper']['uuid'] = array(
+    '#type'   => 'hidden',
+    '#value'  => $account->d4os['grid']['account']['uuid'],
   );
   $form['url']['form']['wrapper']['url-url'] = array(
     '#type'           => 'textfield',
@@ -297,7 +342,7 @@ function d4os_ui_profile_url_form($form_state, $account) {
   return $form;
 }
 
-function d4os_ui_profile_first_image_form($form_state, $account, $asset_pictures_server_url) {
+function d4os_ui_profile_first_image_form($form_state, $profile, $account, $asset_pictures_server_url) {
   // get values
   if (isset($form_state['values']['first-image-uuid'])) {
     $picture = theme_image(
@@ -309,9 +354,9 @@ function d4os_ui_profile_first_image_form($form_state, $account, $asset_pictures
     );
   }
   else {
-    $picture = $account->grid_profileFirstImage_img;
+    $picture = $profile->first_image_img;
   }
-  $uuid = isset($form_state['values']['first-image-uuid']) ? $form_state['values']['first-image-uuid'] : $account->grid_profileFirstImage;
+  $uuid = isset($form_state['values']['first-image-uuid']) ? $form_state['values']['first-image-uuid'] : $account->d4os['grid']['profile']['first_image'];
 
   // build the form
   $form = array();
@@ -319,6 +364,10 @@ function d4os_ui_profile_first_image_form($form_state, $account, $asset_pictures
     '#type'   => 'item',
     '#prefix' => '<div class="clear-block" id="first-image-answer">',
     '#suffix' => '</div>',
+  );
+  $form['first-image']['wrapper']['uuid'] = array(
+    '#type'   => 'hidden',
+    '#value'  => $account->d4os['grid']['account']['uuid'],
   );
   $form['first-image']['wrapper']['first-image-picture'] = array(
     '#type'   => 'item',
@@ -350,13 +399,17 @@ function d4os_ui_profile_first_image_form($form_state, $account, $asset_pictures
   return $form;
 }
 
-function d4os_ui_profile_first_text_form($form_state, $account) {
-  $text = isset($form_state['values']['first-text-text']) ? $form_state['values']['first-text-text'] : 'test';
+function d4os_ui_profile_first_text_form($form_state, $profile, $account) {
+  $text = isset($form_state['values']['first-text-text']) ? $form_state['values']['first-text-text'] : $account->d4os['grid']['profile']['first_text'];
   $form = array();
   $form['first-text']['wrapper'] = array(
     '#type'   => 'item',
     '#prefix' => '<div class="clear-block" id="first-text-answer">',
     '#suffix' => '</div>',
+  );
+  $form['first-text']['wrapper']['uuid'] = array(
+    '#type'   => 'hidden',
+    '#value'  => $account->d4os['grid']['account']['uuid'],
   );
   $form['first-text']['wrapper']['first-text-text'] = array(
     '#type'          => 'textarea',
@@ -377,13 +430,24 @@ function d4os_ui_profile_first_text_form($form_state, $account) {
   return $form;
 }
 
-function d4os_ui_profile_notes_form($form_state, $account) {
-  $text = isset($form_state['values']['notes-text']) ? $form_state['values']['notes-text'] : 'test';
+function d4os_ui_profile_notes_form($form_state, $profile, $account) {
+  // get the user
+  global $user;
+  // get the notes
+  $params['avatar_id']  = $user->d4os['grid']['account']['uuid'];
+  $params['uuid']       = $profile->uuid;
+  $notes = module_invoke_all('os_profile_services_avatarnotesrequest', $params);
+  $text = isset($form_state['values']['notes-text']) ? $form_state['values']['notes-text'] : $notes['data'][0]['notes'];
+
   $form = array();
   $form['notes']['wrapper'] = array(
     '#type'   => 'item',
     '#prefix' => '<div class="clear-block" id="notes-answer">',
     '#suffix' => '</div>',
+  );
+  $form['notes']['wrapper']['uuid'] = array(
+    '#type'   => 'hidden',
+    '#value'  => $account->d4os['grid']['account']['uuid'],
   );
   $form['notes']['wrapper']['notes-text'] = array(
     '#type'          => 'textarea',
@@ -404,17 +468,23 @@ function d4os_ui_profile_notes_form($form_state, $account) {
   return $form;
 }
 
-function d4os_ui_profile_options_form($form_state, $account) {
+function d4os_ui_profile_options_form($form_state, $profile, $account) {
+  $account->d4os['params']['profile']['website']['display'] = isset($account->d4os['params']['profile']['website']['display']) ? $account->d4os['params']['profile']['website']['display'] : array();
+  $default = isset($form_state['values']['options-options']) ? $form_state['values']['options-options'] : $account->d4os['params']['profile']['website']['display'];
   $form = array();
   $form['options']['wrapper'] = array(
     '#type'   => 'item',
     '#prefix' => '<div class="clear-block" id="options-answer">',
     '#suffix' => '</div>',
   );
+  $form['options']['wrapper']['uuid'] = array(
+    '#type'   => 'hidden',
+    '#value'  => $account->d4os['grid']['account']['uuid'],
+  );
   $form['options']['wrapper']['options-options'] = array(
     '#type'           => 'checkboxes',
     '#title'          => t('Profile options'),
-    '#default_value'  => array(),
+    '#default_value'  => $default,
     '#options'        => array(
       'show_profile'      => t('Show profile'),
       //'show_inworld'      => t('Show inworld'),
@@ -441,28 +511,44 @@ function d4os_ui_profile_options_form($form_state, $account) {
 }
 
 function d4os_ui_profile_profile_submit($form, &$form_state) {
-  drupal_set_message('not saved because not implemented :)');
+  $params = array();
+  $params['op'] = arg(4);
+  $params['d4os']['grid']['account']['uuid'] = $form_state['values']['uuid'];
+  $passed = TRUE;
 
-  switch (arg(4)) {
+  switch ($params['op']) {
     case 'about-text':
+      $params['d4os']['grid']['profile']['about_text'] = $form_state['values']['about-text-text'];
+      break;
     case 'first-text':
+      $params['d4os']['grid']['profile']['first_text'] = $form_state['values']['first-text-text'];
+      break;
     case 'notes':
-      $value = $form_state['values']['text'];
+      $params['d4os']['grid']['profile']['notes']      = $form_state['values']['notes-text'];
       break;
     case 'image':
+      $params['d4os']['grid']['profile']['image'] = $form_state['values']['image-uuid'];
+      break;
     case 'first-image':
-      $value = $form_state['values']['uuid'];
+      $params['d4os']['grid']['profile']['first_image'] = $form_state['values']['first-image-uuid'];
       break;
     case 'home-region':
+      $params['d4os']['grid']['presence']['home_region'] = $form_state['values']['home-region-uuid'];
+      break;
     case 'url':
-      $value = $form_state['values']['url'];
+      $params['d4os']['grid']['profile']['url'] = $form_state['values']['url-url'];
       break;
     case 'options':
-      $value = print_r($form_state['values']['options']);
+      $params['d4os']['params']['profile']['website']['display'] = $form_state['values']['options-options'];
+      break;
+    case 'default':
+      $passed = FALSE;
       break;
   }
-  drupal_set_message('method called is : '. arg(4));
-  drupal_set_message('value saved is : '. $value);
+
+  if ($passed) {
+    module_invoke_all('os_profile_save', $params);
+  }
 }
 
 function d4os_ui_profile_save_profile_js($uid, $item) {

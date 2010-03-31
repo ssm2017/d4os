@@ -68,7 +68,7 @@ function d4os_ui_groups_confirm_subscribe_validate($node, $uid = NULL) {
     }
   }
   // check if the user is registered in the grid
-  $AgentID = isset($account->grid_UUID) ? $account->grid_UUID : FALSE;
+  $AgentID = isset($account->d4os['grid']['account']['uuid']) ? $account->d4os['grid']['account']['uuid'] : FALSE;
   if (!$AgentID) {
     drupal_set_message(t('You need to be registerd in the grid to join a group.'), 'error');
     drupal_goto($dest);
@@ -87,7 +87,7 @@ function d4os_ui_groups_confirm_subscribe_validate($node, $uid = NULL) {
 function d4os_ui_groups_confirm_subscribe_submit($form, &$form_state) {
   // check if the user is registered inworld
   $account = $form_state['values']['account'];
-  $AgentID = isset($account->grid_UUID) ? $account->grid_UUID : FALSE;
+  $AgentID = isset($account->d4os['grid']['account']['uuid']) ? $account->d4os['grid']['account']['uuid'] : FALSE;
   if (!$AgentID) {
     drupal_set_message(t('You need to be registerd in the grid to join a group.'), 'error');
     return;
@@ -107,7 +107,7 @@ function d4os_ui_groups_confirm_unsubscribe_submit($form, &$form_state) {
   $account = $form_state['values']['account'];
   $nid = $group_node->nid;
   // check if the user is registered inworld
-  $AgentID = isset($account->grid_UUID) ? $account->grid_UUID : FALSE;
+  $AgentID = isset($account->d4os['grid']['account']['uuid']) ? $account->d4os['grid']['account']['uuid'] : FALSE;
   if (!$AgentID) {
     drupal_set_message(t('This user is not registered on the grid.'), 'error');
     return;

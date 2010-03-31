@@ -2,7 +2,7 @@
 <style>
   .profile_block {
     border:1px solid white;
-    padding:10px;
+    padding:20px;
     margin:10px;
     -moz-border-radius: 20px;
     -webkit-border-radius: 20px;
@@ -69,23 +69,23 @@
     <div class="profile_block">
       <dl>
         <dt><?php print t('Photo'); ?></dt>
-          <dd><?php print $profile->grid_profileImage; ?></dd>
+          <dd><?php print $profile->image; ?></dd>
         <dt><?php print t('Key'); ?></dt>
-          <dd><?php print $profile->grid_UUID; ?></dd>
+          <dd><?php print $profile->uuid; ?></dd>
         <dt><?php print t('Firstname'); ?></dt>
-          <dd><?php print $profile->grid_username; ?></dd>
+          <dd><?php print $profile->username; ?></dd>
         <dt><?php print t('Lastname'); ?></dt>
-          <dd><?php print $profile->grid_lastname; ?></dd>
+          <dd><?php print $profile->lastname; ?></dd>
         <dt><?php print t('Born'); ?></dt>
-          <dd><?php print $profile->grid_created; ?></dd>
+          <dd><?php print $profile->created; ?></dd>
 <?php if($profile->can_edit): ?>
         <dt><?php print t('Last connection'); ?></dt>
-          <dd><?php print $profile->grid_lastLogin; ?></dd>
+          <dd><?php print $profile->last_login; ?></dd>
         <dt><?php print t('Home region'); ?></dt>
-          <dd><?php print $profile->grid_homeRegion; ?></dd>
+          <dd><?php print $profile->home_region; ?></dd>
 <?php endif; // can_edit ?>
         <dt><?php print t('About text'); ?></dt>
-          <dd><?php print $profile->grid_profileAboutText; ?></dd>
+          <dd><?php print $profile->about_text; ?></dd>
       </dl>
     </div>
   </div>
@@ -96,7 +96,7 @@
     <div class="profile_block">
       <dl>
         <dt><?php print t('Web'); ?></dt>
-          <dd><?php print $profile->grid_web; ?></dd>
+          <dd><?php print $profile->web; ?></dd>
       </dl>
       <iframe width="600px" height="400px" src="http://d4os.org"></iframe>
     </div>
@@ -108,7 +108,7 @@
     <div class="profile_block">
       <dl>
         <dt><?php print t('Interests'); ?></dt>
-          <dd><?php print $profile->grid_interests; ?></dd>
+          <dd><?php print $profile->interests; ?></dd>
       </dl>
     </div>
   </div>
@@ -119,7 +119,7 @@
     <div class="profile_block">
       <dl>
         <dt><?php print t('Picks'); ?></dt>
-          <dd><?php print $profile->grid_picks; ?></dd>
+          <dd><?php print $profile->picks; ?></dd>
       </dl>
     </div>
   </div>
@@ -130,7 +130,7 @@
     <div class="profile_block">
       <dl>
         <dt><?php print t('Classifieds'); ?></dt>
-          <dd><?php print $profile->grid_classifieds; ?></dd>
+          <dd><?php print $profile->classifieds; ?></dd>
       </dl>
     </div>
   </div>
@@ -141,9 +141,9 @@
     <div class="profile_block">
       <dl>
         <dt><?php print t('Photo'); ?></dt>
-          <dd><?php print $profile->grid_profileFirstImage; ?></dd>
+          <dd><?php print $profile->first_image; ?></dd>
         <dt><?php print t('Info'); ?></dt>
-          <dd><?php print $profile->grid_profileFirstText; ?></dd>
+          <dd><?php print $profile->first_text; ?></dd>
       </dl>
     </div>
   </div>

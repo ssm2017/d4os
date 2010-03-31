@@ -107,12 +107,13 @@ function d4os_ui_auth_grid_login(&$form_state) {
     drupal_set_message(t('Grid authentication has failed. Please try again.'), 'error');
     return FALSE;
   }
-  $data = (array)d4os_ui_users_grid_to_account($grid_account);
+  $data = array();
+  $data['d4os'] = d4os_ui_users_grid_to_account((array)$grid_account);
 
   // check the password
   // md5(md5($pass) . ":" . $user['passwordSalt'])
-  if ($grid_account->passwordHash != md5(md5($pass). ':'. $grid_account->passwordSalt)) {
-    drupal_set_message(t('Grid authentication has failed. Please try again.'), 'error');
+  if ($data['d4os']['grid']['auth']['password_hash'] != md5(md5($pass). ':'. $data['d4os']['grid']['auth']['password_salt'])) {
+    drupal_set_message(t('Grid authentication has failed. Please try again. Or create an account'), 'error');
     return FALSE;
   }
 
@@ -139,11 +140,11 @@ function d4os_ui_auth_grid_login(&$form_state) {
       return FALSE;
     }
     // check email
-    $data['mail'] = $grid_account->email;
-    if ($msg = user_validate_mail($grid_account->email)) {
+    $data['mail'] = $data['d4os']['grid']['account']['email'];
+    if ($msg = user_validate_mail($data['d4os']['grid']['account']['email'])) {
       drupal_set_message($msg, 'error');
       drupal_set_message(t('A new email address was generated. The user will need to update it.'), 'error');
-      $data['mail'] = d4os_ui_users_generate_mail($grid_account->UUID);
+      $data['mail'] = d4os_ui_users_generate_mail($data['d4os']['grid']['account']['uuid']);
       drupal_set_message($data['mail'], 'error');
       $assigned_role = variable_get('d4os_ui_users_default_missing_email_role',0);
       if ($assigned_role != 0) {
@@ -156,7 +157,7 @@ function d4os_ui_auth_grid_login(&$form_state) {
     $data['pass']   = $pass;
     $data['status'] = 1;
     $account = user_save(NULL, $data);
-    db_query("INSERT INTO {d4os_ui_users} (uid, UUID) VALUES (%d, '%s')", array($account->uid, $grid_account->UUID));
+    module_invoke_all('os_user_set_uid', $account->uid, $data['d4os']['grid']['account']['uuid']);
     // login the user
     if ($account->uid) {
       global $user;

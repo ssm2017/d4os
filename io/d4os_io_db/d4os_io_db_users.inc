@@ -17,8 +17,8 @@ function d4os_io_db_os_user_save($account) {
   $user_fields = d4os_ui_users_get_grid_fields();
 
   // get all the grid keys
-  $grid_user = (array)d4os_ui_users_account_to_grid($account);
-  
+  $grid_user = d4os_ui_users_account_to_grid((array)$account);
+
   if (!isset($grid_user['username']) && !isset($grid_user['lastname'])) {
     $names = explode(' ', $account->name);
     $grid_user['username'] = $names[0];
@@ -79,12 +79,13 @@ function d4os_io_db_os_user_save($account) {
       // The query failed - better to abort the save than risk further data loss.
       return FALSE;
     }
-
-    // TODO : Delete a blocked user's sessions to kick them if they are online.
-    //if (isset($array['status']) && $array['status'] == 0) {
-    //  sess_destroy_uid($account->uid);
-    //}
-
+    else {
+      // check if the account is linked
+      $uid = db_result(db_query("SELECT uid FROM {d4os_ui_users} WHERE UUID = '%s'", array($grid_user['UUID'])));
+      if (!$uid) {
+        db_query("INSERT INTO {d4os_ui_users} (uid, UUID) VALUES (%d, '%s')", array($account->uid, $grid_user['UUID']));
+      }
+    }
   }
   else {
     // create the new user
@@ -150,11 +151,11 @@ function d4os_io_db_os_user_save($account) {
   return $user;
 }
 
-function d4os_io_db_os_user_load($array = array()) {
+function d4os_io_db_os_user_load($data = array()) {
 
-  if (is_numeric($array)) {
+  if (is_numeric($data)) {
     // get the user by uid
-    $UUID = db_result(db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid = %d", array($array)));
+    $UUID = db_result(db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid = %d", array($data)));
     if (!$UUID) {
       return FALSE;
     }
@@ -178,7 +179,7 @@ function d4os_io_db_os_user_load($array = array()) {
   $params = array();
 
   // get the user by keys
-  foreach ($array as $key => $value) {
+  foreach ($data as $key => $value) {
     if (in_array($key, $user_fields)) {
       switch ($key) {
         case 'UUID':
@@ -229,6 +230,13 @@ function d4os_io_db_os_user_load($array = array()) {
     d4os_io_db_set_active('default');
     return FALSE;
   }
+}
+
+function d4os_io_db_os_user_set_uid($uid, $uuid) {
+  db_query("INSERT INTO {d4os_ui_users} (uid, UUID) VALUES (%d, '%s')", array($uid, $uuid));
+}
+function d4os_io_db_os_user_get_uid($uuid) {
+  return db_result(db_query("SELECT uid FROM {d4os_ui_users} WHERE UUID = '%s'", array($uuid)));
 }
 
 function d4os_io_db_os_user_load_all() {

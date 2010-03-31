@@ -31,7 +31,7 @@ function d4os_ui_profile_admin() {
 
 function d4os_ui_profile_admin_submit($form, &$form_state) {
   if ($form_state['values']['d4os_ui_profile_disable_drupal_user_view_tab'] != variable_get('d4os_ui_profile_disable_drupal_user_view_tab', 0)) {
-    drupal_set_message(t('The cache menu was rebuilt.')); // del
+    drupal_set_message(t('The cache menu was rebuilt.'));
     module_invoke('menu', 'rebuild');
   }
 }

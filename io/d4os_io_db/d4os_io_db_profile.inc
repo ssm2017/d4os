@@ -15,6 +15,62 @@
  * Copyright (c)Melanie Thielker (http://opensimulator.org/)
  */
 
+function d4os_io_db_os_profile_save($params) {
+  global $user;
+  $success = FALSE;
+  $user->uuid = $user->uid == 1 ? UUID_ZERO : $user->d4os['grid']['account']['uuid'];
+
+  // get the uuid
+  $uid = module_invoke_all('os_user_get_uid', $params['d4os']['grid']['account']['uuid']);
+  $uid = $uid[0];
+  // load the account
+  $account = user_load($uid);
+
+  switch ($params['op']) {
+
+    case 'about-text':
+    case 'first-text':
+    case 'image':
+    case 'first-image':
+    case 'home-region':
+      $data = array();
+      $data['d4os']['grid'] = d4os_array_merge_recursive_distinct($account->d4os['grid'], $params['d4os']['grid']);
+      $saved = user_save($account, $data);
+      if ($saved->uid) {
+        $success = TRUE;
+      }
+      break;
+
+    case 'notes':
+      $params['avatar_id']  = $user->uuid;
+      $params['target_id']  = $params['d4os']['grid']['account']['uuid'];
+      $params['notes']      = $params['d4os']['grid']['profile']['notes'];
+      $result = module_invoke_all('os_profile_services_avatar_notes_update', $params);
+      if ($result['success'] == TRUE) $success = TRUE;
+      break;
+
+    case 'url':
+      $params['profileURL'] = $params['d4os']['grid']['profile']['url'];
+      break;
+
+    case 'options':
+      // save the account
+      $data = array();
+      $data['d4os']['params']['profile']['website']['display'] = $params['d4os']['params']['profile']['website']['display'];
+      $saved = user_save($account, $data);
+      if ($saved->uid) {
+        $success = TRUE;
+      }
+      break;
+  }
+  if ($success) {
+    drupal_set_message(t('Saved'));
+  }
+  else {
+    drupal_set_message(t('An error occured during saving'));
+  }
+}
+
 /*
  * Profile services
  */
