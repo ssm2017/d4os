@@ -70,51 +70,51 @@ function d4os_io_db_admin() {
   );
   
 // asset
-  //$form['multiple_base']['asset'] = array(
-  //  '#type'           => 'fieldset',
-  //  '#title'          => t('Asset'),
-  //  '#collapsible'    => TRUE,
-  //  '#collapsed'      => TRUE,
-  //);
-  //$options = $bases;
-  //unset($options['os_asset']);
-  //$form['multiple_base']['asset']['d4os_io_db_multiple_asset_same'] = array(
-  //  '#type'           => 'select',
-  //  '#title'          => t('Same as'),
-  //  '#default_value'  => variable_get('d4os_io_db_multiple_asset_same', 'none'),
-  //  '#options'        => $options,
-  //  '#description'    => t('Select if this database is the same as another one.'),
-  //);
-  //$form['multiple_base']['asset']['d4os_io_db_multiple_asset_host'] = array(
-  //  '#type'           => 'textfield',
-  //  '#title'          => t('Host'),
-  //  '#default_value'  => variable_get('d4os_io_db_multiple_asset_host', 'localhost'),
-  //  '#description'    => t('Host'),
-  //);
-  //$form['multiple_base']['asset']['d4os_io_db_multiple_asset_db'] = array(
-  //  '#type'           => 'textfield',
-  //  '#title'          => t('Database'),
-  //  '#default_value'  => variable_get('d4os_io_db_multiple_asset_db', 'asset'),
-  //  '#description'    => t('Database'),
-  //);
-  //$form['multiple_base']['asset']['d4os_io_db_multiple_asset_prefix'] = array(
-  //  '#type'           => 'textfield',
-  //  '#title'          => t('Prefix'),
-  //  '#default_value'  => variable_get('d4os_io_db_multiple_asset_prefix', ''),
-  //  '#description'    => t('Prefix'),
-  //);
-  //$form['multiple_base']['asset']['d4os_io_db_multiple_asset_username'] = array(
-  //  '#type'           => 'textfield',
-  //  '#title'          => t('Username'),
-  //  '#default_value'  => variable_get('d4os_io_db_multiple_asset_username', 'root'),
-  //  '#description'    => t('Username'),
-  //);
-  //$form['multiple_base']['asset']['d4os_io_db_multiple_asset_password'] = array(
-  //  '#type'           => 'textfield',
-  //  '#title'          => t('Password'),
-  //  '#default_value'  => variable_get('d4os_io_db_multiple_asset_password', 'root'),
-  //  '#description'    => t('Password'),
-  //);
+  $form['multiple_base']['asset'] = array(
+    '#type'           => 'fieldset',
+    '#title'          => t('Asset'),
+    '#collapsible'    => TRUE,
+    '#collapsed'      => TRUE,
+  );
+  $options = $bases;
+  unset($options['os_asset']);
+  $form['multiple_base']['asset']['d4os_io_db_multiple_asset_same'] = array(
+    '#type'           => 'select',
+    '#title'          => t('Same as'),
+    '#default_value'  => variable_get('d4os_io_db_multiple_asset_same', 'none'),
+    '#options'        => $options,
+    '#description'    => t('Select if this database is the same as another one.'),
+  );
+  $form['multiple_base']['asset']['d4os_io_db_multiple_asset_host'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Host'),
+    '#default_value'  => variable_get('d4os_io_db_multiple_asset_host', 'localhost'),
+    '#description'    => t('Host'),
+  );
+  $form['multiple_base']['asset']['d4os_io_db_multiple_asset_db'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Database'),
+    '#default_value'  => variable_get('d4os_io_db_multiple_asset_db', 'asset'),
+    '#description'    => t('Database'),
+  );
+  $form['multiple_base']['asset']['d4os_io_db_multiple_asset_prefix'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Prefix'),
+    '#default_value'  => variable_get('d4os_io_db_multiple_asset_prefix', ''),
+    '#description'    => t('Prefix'),
+  );
+  $form['multiple_base']['asset']['d4os_io_db_multiple_asset_username'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Username'),
+    '#default_value'  => variable_get('d4os_io_db_multiple_asset_username', 'root'),
+    '#description'    => t('Username'),
+  );
+  $form['multiple_base']['asset']['d4os_io_db_multiple_asset_password'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Password'),
+    '#default_value'  => variable_get('d4os_io_db_multiple_asset_password', 'root'),
+    '#description'    => t('Password'),
+  );
 // auth
   //$form['multiple_base']['auth'] = array(
   //  '#type'           => 'fieldset',
@@ -304,51 +304,51 @@ function d4os_io_db_admin() {
     );
   }
 // inventory
-  //$form['multiple_base']['inventory'] = array(
-  //  '#type'           => 'fieldset',
-  //  '#title'          => t('Inventory'),
-  //  '#collapsible'    => TRUE,
-  //  '#collapsed'      => TRUE,
-  //);
-  //$options = $bases;
-  //unset($options['os_inventory']);
-  //$form['multiple_base']['inventory']['d4os_io_db_multiple_inventory_same'] = array(
-  //  '#type'           => 'select',
-  //  '#title'          => t('Same as'),
-  //  '#default_value'  => variable_get('d4os_io_db_multiple_inventory_same', 'none'),
-  //  '#options'        => $options,
-  //  '#description'    => t('Select if this database is the same as another one.'),
-  //);
-  //$form['multiple_base']['inventory']['d4os_io_db_multiple_inventory_host'] = array(
-  //  '#type'           => 'textfield',
-  //  '#title'          => t('Host'),
-  //  '#default_value'  => variable_get('d4os_io_db_multiple_inventory_host', 'localhost'),
-  //  '#description'    => t('Host'),
-  //);
-  //$form['multiple_base']['inventory']['d4os_io_db_multiple_inventory_db'] = array(
-  //  '#type'           => 'textfield',
-  //  '#title'          => t('Database'),
-  //  '#default_value'  => variable_get('d4os_io_db_multiple_inventory_db', 'inventory'),
-  //  '#description'    => t('Database'),
-  //);
-  //$form['multiple_base']['inventory']['d4os_io_db_multiple_inventory_prefix'] = array(
-  //  '#type'           => 'textfield',
-  //  '#title'          => t('Prefix'),
-  //  '#default_value'  => variable_get('d4os_io_db_multiple_inventory_prefix', ''),
-  //  '#description'    => t('Prefix'),
-  //);
-  //$form['multiple_base']['inventory']['d4os_io_db_multiple_inventory_username'] = array(
-  //  '#type'           => 'textfield',
-  //  '#title'          => t('Username'),
-  //  '#default_value'  => variable_get('d4os_io_db_multiple_inventory_username', 'root'),
-  //  '#description'    => t('Username'),
-  //);
-  //$form['multiple_base']['inventory']['d4os_io_db_multiple_inventory_password'] = array(
-  //  '#type'           => 'textfield',
-  //  '#title'          => t('Password'),
-  //  '#default_value'  => variable_get('d4os_io_db_multiple_inventory_password', 'root'),
-  //  '#description'    => t('Password'),
-  //);
+  $form['multiple_base']['inventory'] = array(
+    '#type'           => 'fieldset',
+    '#title'          => t('Inventory'),
+    '#collapsible'    => TRUE,
+    '#collapsed'      => TRUE,
+  );
+  $options = $bases;
+  unset($options['os_inventory']);
+  $form['multiple_base']['inventory']['d4os_io_db_multiple_inventory_same'] = array(
+    '#type'           => 'select',
+    '#title'          => t('Same as'),
+    '#default_value'  => variable_get('d4os_io_db_multiple_inventory_same', 'none'),
+    '#options'        => $options,
+    '#description'    => t('Select if this database is the same as another one.'),
+  );
+  $form['multiple_base']['inventory']['d4os_io_db_multiple_inventory_host'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Host'),
+    '#default_value'  => variable_get('d4os_io_db_multiple_inventory_host', 'localhost'),
+    '#description'    => t('Host'),
+  );
+  $form['multiple_base']['inventory']['d4os_io_db_multiple_inventory_db'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Database'),
+    '#default_value'  => variable_get('d4os_io_db_multiple_inventory_db', 'inventory'),
+    '#description'    => t('Database'),
+  );
+  $form['multiple_base']['inventory']['d4os_io_db_multiple_inventory_prefix'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Prefix'),
+    '#default_value'  => variable_get('d4os_io_db_multiple_inventory_prefix', ''),
+    '#description'    => t('Prefix'),
+  );
+  $form['multiple_base']['inventory']['d4os_io_db_multiple_inventory_username'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Username'),
+    '#default_value'  => variable_get('d4os_io_db_multiple_inventory_username', 'root'),
+    '#description'    => t('Username'),
+  );
+  $form['multiple_base']['inventory']['d4os_io_db_multiple_inventory_password'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Password'),
+    '#default_value'  => variable_get('d4os_io_db_multiple_inventory_password', 'root'),
+    '#description'    => t('Password'),
+  );
 // messaging
   //$form['multiple_base']['messaging'] = array(
   //  '#type'           => 'fieldset',

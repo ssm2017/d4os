@@ -71,6 +71,23 @@ function d4os_io_db_os_profile_save($params) {
   }
 }
 
+function d4os_io_db_os_profile_user_delete($uuid) {
+  d4os_io_db_set_active('os_profile');
+  // delete all classifieds
+  db_query("DELETE FROM {classifieds} WHERE creatoruuid = '%s'", array($uuid));
+  // delete all usernotes
+  db_query("DELETE FROM {usernotes} WHERE useruuid = '%s' OR targetuuid = '%s'", array($uuid, $uuid));
+  // delete all userpicks
+  db_query("DELETE FROM {userpicks} WHERE creatoruuid = '%s'", array($uuid));
+  // delete all userprofile
+  db_query("DELETE FROM {userprofile} WHERE useruuid = '%s'", array($uuid));
+  // delete partner
+  db_query("UPDATE {userprofile} SET profilePartner= '' WHERE profilePartner = '%s'", array($uuid));
+  // delete settings
+  db_query("DELETE FROM {usersettings} WHERE useruuid = '%s'", array($uuid));
+  d4os_io_db_set_active('default');
+}
+
 /*
  * Profile services
  */

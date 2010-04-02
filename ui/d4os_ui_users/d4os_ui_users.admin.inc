@@ -170,5 +170,84 @@ function d4os_ui_users_admin() {
     '#options'        => $roles,
     '#description'    => t('200 : allow user to get admin level'),
   );
+  // models
+  $form['models'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Models'),
+    '#description'  => t('UUID of the users to use as models for new registrations.'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+  );
+  $form['models']['d4os_ui_users_default_model_1'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Model'). ' 1',
+    '#size'           => 36,
+    '#maxlength'      => 36,
+    '#default_value'  => variable_get('d4os_ui_users_default_model_1', UUID_ZERO),
+  );
+  $form['models']['d4os_ui_users_default_model_2'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Model'). ' 2',
+    '#size'           => 36,
+    '#maxlength'      => 36,
+    '#default_value'  => variable_get('d4os_ui_users_default_model_2', UUID_ZERO),
+  );
+  $form['models']['d4os_ui_users_default_model_3'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Model'). ' 3',
+    '#size'           => 36,
+    '#maxlength'      => 36,
+    '#default_value'  => variable_get('d4os_ui_users_default_model_3', UUID_ZERO),
+  );
+  $form['models']['d4os_ui_users_default_model_4'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Model'). ' 4',
+    '#size'           => 36,
+    '#maxlength'      => 36,
+    '#default_value'  => variable_get('d4os_ui_users_default_model_4', UUID_ZERO),
+  );
+  $form['models']['d4os_ui_users_default_model_5'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Model'). ' 5',
+    '#size'           => 36,
+    '#maxlength'      => 36,
+    '#default_value'  => variable_get('d4os_ui_users_default_model_5', UUID_ZERO),
+  );
+  $form['models']['d4os_ui_users_default_model_6'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Model'). ' 6',
+    '#size'           => 36,
+    '#maxlength'      => 36,
+    '#default_value'  => variable_get('d4os_ui_users_default_model_6', UUID_ZERO),
+  );
+  $form['models']['d4os_ui_users_default_model_7'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Model'). ' 7',
+    '#size'           => 36,
+    '#maxlength'      => 36,
+    '#default_value'  => variable_get('d4os_ui_users_default_model_7', UUID_ZERO),
+  );
+  $form['models']['d4os_ui_users_default_model_8'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Model'). ' 8',
+    '#size'           => 36,
+    '#maxlength'      => 36,
+    '#default_value'  => variable_get('d4os_ui_users_default_model_8', UUID_ZERO),
+  );
+  $form['models']['d4os_ui_users_default_model_9'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Model'). ' 9',
+    '#size'           => 36,
+    '#maxlength'      => 36,
+    '#default_value'  => variable_get('d4os_ui_users_default_model_9', UUID_ZERO),
+  );
+  $form['models']['d4os_ui_users_default_model_10'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Model'). ' 10',
+    '#size'           => 36,
+    '#maxlength'      => 36,
+    '#default_value'  => variable_get('d4os_ui_users_default_model_10', UUID_ZERO),
+  );
+  
   return system_settings_form($form);
 }

@@ -9,6 +9,28 @@
 * other free or open source software licenses.
 */
 
+function d4os_io_db_os_search_user_delete($uuid) {
+  // get the uid
+  $uid = d4os_io_db_os_user_get_uid($uuid);
+
+  d4os_io_db_set_active('os_search');
+  // delete parcels
+  db_query("DELETE FROM {allparcels} WHERE ownerUUID = '%s'", array($uuid));
+  // delete classifieds
+  db_query("DELETE FROM {classifieds} WHERE creatoruuid = '%s'", array($uuid));
+  d4os_io_db_set_active('default');
+
+  // delete events
+  $result = db_query("SELECT nid FROM {node} WHERE uid='%s' AND type='grid_event'", array($uid));
+  $events = array();
+  while ($event = db_fetch_object($result)) {
+    $events[] = $event->nid;
+  }
+  foreach ($events as $event) {
+    node_delete($event->nid);
+  }
+}
+
 function d4os_io_db_os_event_save($event) {
 // TODO : check if success before saving the node itself
   // convert array to object
@@ -207,13 +229,13 @@ function d4os_io_db_os_event_load_all() {
   return $event;
 }
 
-function d4os_io_db_os_event_delete($node) {
+function d4os_io_db_os_event_delete($nid) {
   // load the local event
-  $eventid = db_result(db_query('SELECT eventid FROM {d4os_ui_events} WHERE nid=%d', $node->nid));
+  $eventid = db_result(db_query('SELECT eventid FROM {d4os_ui_events} WHERE nid=%d', $nid));
   d4os_io_db_set_active('os_search');
-  db_query("DELETE FROM {events} WHERE eventid='%d'", $eventid);
+  db_query("DELETE FROM {events} WHERE eventid=%d", $eventid);
   d4os_io_db_set_active('default');
-  db_query("DELETE FROM {d4os_ui_events} WHERE eventid='%d'", $eventid);
+  db_query("DELETE FROM {d4os_ui_events} WHERE eventid=%d", $eventid);
 }
 
 function d4os_io_db_os_event_delete_revision($vid) {

@@ -185,7 +185,7 @@ function d4os_ui_events_nodeapi(&$node, $op, $teaser, $page) {
         break;
   
       case 'delete':
-        module_invoke_all('os_event_delete', $node);
+        module_invoke_all('os_event_delete', $node->nid);
         break;
   
       case 'prepare':

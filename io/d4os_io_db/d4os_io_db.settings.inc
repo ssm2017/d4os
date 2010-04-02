@@ -30,16 +30,16 @@ $db_url['os_single'] = 'mysqli://'
 $d4os_db_prefix['os_single'] = variable_get('d4os_io_db_single_prefix', '');
 
 // asset
-//$db_url['os_asset'] = 'mysqli://'
-//. variable_get('d4os_io_db_multiple_asset_username', 'root')
-//.':'
-//. variable_get('d4os_io_db_multiple_asset_password', 'root')
-//. '@'
-//. variable_get('d4os_io_db_multiple_asset_host', 'localhost')
-//. '/'
-//. variable_get('d4os_io_db_multiple_asset_db', 'asset');
-//$d4os_db_prefix['os_asset'] = variable_get('d4os_io_db_multiple_asset_prefix', '');
-//$d4os_same_db['os_asset'] = variable_get('d4os_io_db_multiple_asset_same', 'none');
+$db_url['os_asset'] = 'mysqli://'
+. variable_get('d4os_io_db_multiple_asset_username', 'root')
+.':'
+. variable_get('d4os_io_db_multiple_asset_password', 'root')
+. '@'
+. variable_get('d4os_io_db_multiple_asset_host', 'localhost')
+. '/'
+. variable_get('d4os_io_db_multiple_asset_db', 'asset');
+$d4os_db_prefix['os_asset'] = variable_get('d4os_io_db_multiple_asset_prefix', '');
+$d4os_same_db['os_asset'] = variable_get('d4os_io_db_multiple_asset_same', 'none');
 
 // auth
 //$db_url['os_auth'] = 'mysqli://'
@@ -90,16 +90,16 @@ $d4os_db_prefix['os_groups'] = variable_get('d4os_io_db_multiple_groups_prefix',
 $d4os_same_db['os_groups'] = variable_get('d4os_io_db_multiple_groups_same', 'none');
 
 // inventory
-//$db_url['os_inventory'] = 'mysqli://'
-//. variable_get('d4os_io_db_multiple_inventory_username', 'root')
-//.':'
-//. variable_get('d4os_io_db_multiple_inventory_password', 'root')
-//. '@'
-//. variable_get('d4os_io_db_multiple_inventory_host', 'localhost')
-//. '/'
-//. variable_get('d4os_io_db_multiple_inventory_db', 'inventory');
-//$d4os_db_prefix['os_inventory'] = variable_get('d4os_io_db_multiple_inventory_prefix', '');
-//$d4os_same_db['os_inventory'] = variable_get('d4os_io_db_multiple_inventory_same', 'none');
+$db_url['os_inventory'] = 'mysqli://'
+. variable_get('d4os_io_db_multiple_inventory_username', 'root')
+.':'
+. variable_get('d4os_io_db_multiple_inventory_password', 'root')
+. '@'
+. variable_get('d4os_io_db_multiple_inventory_host', 'localhost')
+. '/'
+. variable_get('d4os_io_db_multiple_inventory_db', 'inventory');
+$d4os_db_prefix['os_inventory'] = variable_get('d4os_io_db_multiple_inventory_prefix', '');
+$d4os_same_db['os_inventory'] = variable_get('d4os_io_db_multiple_inventory_same', 'none');
 
 // messaging
 //$db_url['os_messaging'] = 'mysqli://'

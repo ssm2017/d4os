@@ -90,6 +90,7 @@ function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
         '#description'  => t('Enter the last name for the avatar. Spaces are NOT allowed;punctuation is not allowed except for periods, hyphens, and underscores.'),
         '#weight'       => -1,
       );
+      d4os_ui_users_avatars_models_form($form);
       array_unshift($form['#validate'], 'd4os_ui_users_account_validate');
       $form['#submit'] = array('d4os_ui_users_user_register_submit');
       break;
@@ -126,6 +127,71 @@ function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
         }
       }
       break;
+  }
+}
+
+function d4os_ui_users_avatars_models_form(&$form) {
+  global $base_url;
+
+  // get the list of models
+  $available_models = array();
+  for ($i=1; $i<11; ++$i) {
+    $model_nbr = 'd4os_ui_users_default_model_'. $i;
+    $model_uuid = variable_get($model_nbr, UUID_ZERO);
+    if ($model_uuid != UUID_ZERO) {
+      $available_models[] = $model_uuid;
+    }
+  }
+
+  if (count($available_models) == 0) {
+    return;
+  }
+
+  // build the form fieldset
+  $form['models'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Models'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => FALSE,
+  );
+
+  $asset_pictures_server_url = variable_get('d4os_default_asset_pictures_server_url', $base_url. '/asset.php?id=');
+
+  // get the avatars
+  $i = 0;
+  foreach ($available_models as $model) {
+    ++$i;
+    $model_infos = module_invoke_all('os_user_load', array('UUID' => $model));
+    $model_infos = $model_infos[0];
+    // build the form
+    $field_name = 'model_'.$i;
+    $form['models'][$field_name] = array(
+      '#type'         => 'fieldset',
+      '#title'        => $model_infos->username,
+      '#collapsible'  => FALSE,
+      '#collapsed'    => FALSE,
+    );
+    $form['models'][$field_name]['model_uuid'] = array(
+      '#type'   => 'radio',
+      '#value'  => $model,
+    );
+    // display the picture
+    $picture = theme_image(
+      $asset_pictures_server_url. $model_infos->profileImage,
+      t('No picture available'),
+      t("!user's first life picture", array('!user'=>$model_infos->profileImage)),
+      NULL,
+      FALSE
+    );
+    $form['models'][$field_name]['picture'] = array(
+      '#type'   => 'item',
+      '#value'  => $picture,
+    );
+    $form['models'][$field_name]['infos'] = array(
+      '#type'   => 'item',
+      '#title'  => t('Infos'),
+      '#value'  => $model_infos->profileAboutText,
+    );
   }
 }
 
@@ -186,7 +252,7 @@ function d4os_ui_users_account_validate($form, &$form_state) {
       break;
   }
 }
-
+
 function d4os_ui_users_user($op, &$edit, &$account, $category = NULL) {
   switch ($op) {
     case 'insert':
@@ -270,7 +336,6 @@ function d4os_ui_users_update(&$edit, &$account) {
     module_invoke_all('os_user_save', $edit);
   }
 }
-
 function d4os_ui_users_check_users() {
   // get the admin account
   $admin = user_load(1);
@@ -502,6 +567,16 @@ function d4os_ui_users_user_register_submit($form, &$form_state) {
     $form_state['redirect'] = '';
     return;
   }
+
+  // create inventory using a model
+  if (isset($form_state['values']['model_uuid']) && $form_state['values']['model_uuid'] != UUID_ZERO) {
+    $params = array(
+      'avatar_src_uuid'   => $form_state['values']['model_uuid'],
+      'avatar_dest_uuid'  => $account->d4os['grid']['account']['uuid'],
+    );
+    module_invoke_all('os_inventory_clone_model', $params);
+  }
+
   $form_state['user'] = $account;
   watchdog('user', 'New user: %name (%email).', array('%name' => $name, '%email' => $mail), WATCHDOG_NOTICE, l(t('edit'), 'user/'. $account->uid .'/edit'));
 

@@ -34,10 +34,10 @@ function d4os_io_db_os_group_save($params) {
       drupal_set_message(t('This user is not registered in the grid. Inworld group was not created for this user.'), 'error');
       return FALSE;
     }
-    $params['GroupID']        = d4os_build_uuid();
+    $params['GroupID']        = d4os_uuid_create();
     $params['InsigniaID']     = UUID_ZERO;
     $params['FounderID']      = $account->d4os['grid']['account']['uuid'];
-    $params['OwnerRoleID']    = d4os_build_uuid();
+    $params['OwnerRoleID']    = d4os_uuid_create();
     $params['EveryonePowers'] = 62672565501952;
     $params['OwnersPowers']   = 349644697632766;
     $group = d4os_io_services_groups_createGroup($params, FALSE);

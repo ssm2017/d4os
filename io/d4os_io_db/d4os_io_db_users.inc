@@ -251,14 +251,35 @@ function d4os_io_db_os_user_load_all() {
 }
 
 function d4os_io_db_os_user_delete($uuid) {
-  // TODO : delete all assets
-  // TODO : delete all sessions
-  // TODO : delete inventory
-  // TODO : delete friends
+  // TODO : delete all assets (impossible ?)
+  // TODO : delete groups
 
-  // delete user entry in the grid
+  // delete offline messages
+  drupal_set_message(t('Deleting offline messages.'));
+  d4os_io_db_offline_message_user_delete($uuid);
+
+  // delete search
+  drupal_set_message(t('Deleting search info.'));
+  d4os_io_db_os_search_user_delete($uuid);
+
+  // delete profile
+  drupal_set_message(t('Deleting profile info.'));
+  d4os_io_db_os_profile_user_delete($uuid);
+
+  // delete attachments and inventory
+  drupal_set_message(t('Deleting inventory.'));
+  d4os_io_db_os_inventory_user_delete($uuid);
+
   d4os_io_db_set_active('os_users');
-  $user = db_query("DELETE FROM {users} WHERE UUID='%s'", $uuid);
+  // delete sessions
+  drupal_set_message(t('Deleting sessions.'));
+  db_query("DELETE FROM {agents} WHERE UUID='%s'", $uuid);
+  // delete friends
+  drupal_set_message(t('Deleting friends.'));
+  db_query("DELETE FROM {userfriends} WHERE ownerID='%s' OR friendID = '%s'", array($uuid, $uuid));
+  // delete user entry in the grid
+  drupal_set_message(t('Deleting user.'));
+  db_query("DELETE FROM {users} WHERE UUID='%s'", $uuid);
   d4os_io_db_set_active('default');
 
   // delete the user drupal link  

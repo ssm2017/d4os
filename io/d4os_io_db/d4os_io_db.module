@@ -16,8 +16,6 @@ function d4os_io_db_init() {
   module_load_include('settings.inc', 'd4os_io_db');
 }
 
-d4os_io_db_load_includes();
-
 function d4os_io_db_help($path, $arg) {
   switch ($path) {
     // Main module help for the block module
@@ -118,7 +116,6 @@ function d4os_io_db_set_active($name = 'default') {
     db_set_active('default');
     return;
   }
-
   // set db for multiple values
   switch (variable_get('d4os_io_db_type', 0)) {
     // same as website
@@ -146,10 +143,10 @@ function d4os_io_db_build_bases_list() {
     'none'            => t('None'),
     'default'         => t('Website'),
     'os_grid'         => t('Grid'),
-    //'os_asset '       => t('Asset'),
+    'os_asset '       => t('Asset'),
     //'os_auth'         => t('Auth'),
     //'os_estate'       => t('Estate'),
-    //'os_inventory'    => t('Inventory'),
+    'os_inventory'    => t('Inventory'),
     //'os_messaging'    => t('Messaging'),
     //'os_opensim'      => t('Opensim'),
     //'os_user_account' => t('User account'),
@@ -176,7 +173,7 @@ function d4os_io_db_load_includes() {
   //module_load_include('inc', 'd4os_io_db', 'd4os_io_db_asset');
   //module_load_include('inc', 'd4os_io_db', 'd4os_io_db_auth');
   module_load_include('inc', 'd4os_io_db', 'd4os_io_db_grid');
-  //module_load_include('inc', 'd4os_io_db', 'd4os_io_db_inventory');
+  module_load_include('inc', 'd4os_io_db', 'd4os_io_db_inventory');
   //module_load_include('inc', 'd4os_io_db', 'd4os_io_db_messaging');
   //module_load_include('inc', 'd4os_io_db', 'd4os_io_db_account');
   module_load_include('inc', 'd4os_io_db', 'd4os_io_db_users');
@@ -187,3 +184,5 @@ function d4os_io_db_load_includes() {
   module_load_include('inc', 'd4os_io_db', 'd4os_io_db_profile');
   module_load_include('inc', 'd4os_io_db', 'd4os_io_db_messages');
 }
+
+d4os_io_db_load_includes();

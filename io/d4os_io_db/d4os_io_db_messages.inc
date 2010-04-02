@@ -49,3 +49,9 @@ function d4os_io_db_os_services_offline_message_retrievemessages($params) {
     'data'    => $messages_list,
   );
 }
+
+function d4os_io_db_offline_message_user_delete($uuid) {
+  d4os_io_db_set_active('os_offline_message');
+  db_query("DELETE FROM {offline_msgs} WHERE uuid = '%s'", array($uuid));
+  d4os_io_db_set_active('default');
+}

@@ -53,7 +53,7 @@ function d4os_log($module, $array, $severity = WATCHDOG_DEBUG) {
   watchdog($module, $output, array(), $severity);
 }
 
-function d4os_build_uuid() {
+function d4os_uuid_create() {
   return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
   mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
   mt_rand( 0, 0x0fff ) | 0x4000,

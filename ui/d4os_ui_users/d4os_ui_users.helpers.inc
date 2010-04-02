@@ -17,7 +17,7 @@ function d4os_ui_users_user_generate($username, $lastname, $password, $mail, $ho
     'grid' => array(
 
       'account' => array(
-        'uuid'                => d4os_build_uuid(),
+        'uuid'                => d4os_uuid_create(),
         'username'            => $username,
         'lastname'            => $lastname,
         'created'             => time(),
