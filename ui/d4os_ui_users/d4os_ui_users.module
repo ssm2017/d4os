@@ -171,7 +171,7 @@ function d4os_ui_users_avatars_models_form(&$form) {
       '#collapsible'  => FALSE,
       '#collapsed'    => FALSE,
     );
-    $attributes = ($i == 1) ? array('selected' => 'selectd') : array();
+    $attributes = ($i == 1) ? array('checked' => 'true') : array();
     $form['models'][$field_name]['model_uuid'] = array(
       '#type'       => 'radio',
       '#value'      => $model,
