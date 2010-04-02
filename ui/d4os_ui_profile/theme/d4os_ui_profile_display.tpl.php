@@ -19,8 +19,8 @@
   }
   .tabNavigation li a {
     padding: 4px 10px;
-    color: #fff;
-    border: 1px solid #fff;
+    color: #ccc;
+    border: 1px solid #ccc;
     line-height: 1em;
     text-align: center;
     text-decoration: none;

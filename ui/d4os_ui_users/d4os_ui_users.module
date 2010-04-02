@@ -294,8 +294,9 @@ function d4os_ui_users_user_load(&$account) {
 
   if (is_object($grid_account)) {
     $grid_account = d4os_ui_users_grid_to_account((array)$grid_account);
+    $grid_info = isset($account->d4os) ? $account->d4os : array();
     // merge the values
-    $account->d4os = array_merge($account->d4os, $grid_account);
+    $account->d4os = array_merge($grid_info, $grid_account);
   }
 }
 
