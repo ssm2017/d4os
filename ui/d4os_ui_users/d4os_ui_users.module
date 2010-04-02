@@ -138,7 +138,7 @@ function d4os_ui_users_avatars_models_form(&$form) {
   for ($i=1; $i<11; ++$i) {
     $model_nbr = 'd4os_ui_users_default_model_'. $i;
     $model_uuid = variable_get($model_nbr, UUID_ZERO);
-    if ($model_uuid != UUID_ZERO) {
+    if ($model_uuid != UUID_ZERO && $model_uuid != '') {
       $available_models[] = $model_uuid;
     }
   }
@@ -171,9 +171,11 @@ function d4os_ui_users_avatars_models_form(&$form) {
       '#collapsible'  => FALSE,
       '#collapsed'    => FALSE,
     );
+    $attributes = ($i == 1) ? array('selected' => 'selectd') : array();
     $form['models'][$field_name]['model_uuid'] = array(
-      '#type'   => 'radio',
-      '#value'  => $model,
+      '#type'       => 'radio',
+      '#value'      => $model,
+      '#attributes' => $attributes,
     );
     // display the picture
     $picture = theme_image(
@@ -187,11 +189,13 @@ function d4os_ui_users_avatars_models_form(&$form) {
       '#type'   => 'item',
       '#value'  => $picture,
     );
-    $form['models'][$field_name]['infos'] = array(
-      '#type'   => 'item',
-      '#title'  => t('Infos'),
-      '#value'  => $model_infos->profileAboutText,
-    );
+    if ($model_infos->profileAboutText != '') {
+      $form['models'][$field_name]['infos'] = array(
+        '#type'   => 'item',
+        '#title'  => t('Infos'),
+        '#value'  => $model_infos->profileAboutText,
+      );
+    }
   }
 }
 
