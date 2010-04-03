@@ -270,15 +270,21 @@ function d4os_io_db_os_user_delete($uuid) {
   drupal_set_message(t('Deleting inventory.'));
   d4os_io_db_os_inventory_user_delete($uuid);
 
-  d4os_io_db_set_active('os_users');
   // delete sessions
   drupal_set_message(t('Deleting sessions.'));
+  d4os_io_db_set_active('os_users');
   db_query("DELETE FROM {agents} WHERE UUID='%s'", $uuid);
+  d4os_io_db_set_active('default');
+
   // delete friends
   drupal_set_message(t('Deleting friends.'));
+  d4os_io_db_set_active('os_users');
   db_query("DELETE FROM {userfriends} WHERE ownerID='%s' OR friendID = '%s'", array($uuid, $uuid));
+  d4os_io_db_set_active('default');
+
   // delete user entry in the grid
   drupal_set_message(t('Deleting user.'));
+  d4os_io_db_set_active('os_users');
   db_query("DELETE FROM {users} WHERE UUID='%s'", $uuid);
   d4os_io_db_set_active('default');
 

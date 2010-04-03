@@ -72,8 +72,7 @@ function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
       break;
 
     case 'user_register':
-      unset($form['name']);
-      $form['username'] = array(
+      $username_field = array(
         '#type'         => 'textfield',
         '#title'        => t('User Name'),
         '#size'         => 32,
@@ -81,7 +80,7 @@ function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
         '#description'  => t('Enter the first name for the avatar. Spaces are NOT allowed;Punctuation is not allowed except for periods, hyphens, and underscores.'),
         '#weight'       => -2,
       );
-      $form['lastname'] = array(
+      $lastname_field = array(
         '#type'         => 'textfield',
         '#title'        => t('Last Name'),
         '#size'         => 32,
@@ -90,6 +89,17 @@ function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
         '#description'  => t('Enter the last name for the avatar. Spaces are NOT allowed;punctuation is not allowed except for periods, hyphens, and underscores.'),
         '#weight'       => -1,
       );
+      // workaround for this bug : http://drupal.org/node/760838
+      if (isset($form['account'])) {
+        unset($form['account']['name']);
+        $form['account']['username'] = $username_field;
+        $form['account']['lastname'] = $lastname_field;
+      }
+      else {
+        unset($form['name']);
+        $form['username'] = $username_field;
+        $form['lastname'] = $lastname_field;
+      }
       d4os_ui_users_avatars_models_form($form);
       array_unshift($form['#validate'], 'd4os_ui_users_account_validate');
       $form['#submit'] = array('d4os_ui_users_user_register_submit');
@@ -101,7 +111,6 @@ function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
       $names = explode(' ', $account->name);
       if (user_access('administer users') || user_access('change own username')) {
         if ($account->uid > 1 && $form['_category']['#value'] == 'account') {
-          //$names = explode(' ', $form['account']['name']['#default_value']);
           unset($form['account']['name']);
           $form['account']['username'] = array(
             '#type'           => 'textfield',

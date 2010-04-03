@@ -251,3 +251,20 @@ function d4os_ui_users_admin() {
   
   return system_settings_form($form);
 }
+
+function d4os_ui_users_admin_validate($form, &$form_state) {
+  // check the list of models
+  for ($i=1; $i<11; ++$i) {
+    $model_nbr = 'd4os_ui_users_default_model_'. $i;
+    $model_uuid = $form_state['values'][$model_nbr];
+    if ($model_uuid != UUID_ZERO && $model_uuid != '') {
+      // check if the uuid is valid
+      $grid_user = module_invoke_all('os_user_load', array('UUID' => $model_uuid));
+      $grid_user = $grid_user[0];
+      if (!is_object($grid_user)) {
+        form_set_error($model_nbr, t('This uuid for model !id is not registered on the grid.', array('!id' => $i)));
+        return;
+      }
+    }
+  }
+}
