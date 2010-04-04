@@ -9,6 +9,8 @@
 * other free or open source software licenses.
 */
 
+// This script was made with the help of RomainFG, Olish Newman, Alex_Kid
+
 define("TYPE_TEXTURES",     0);
 define("TYPE_SOUNDS",       1);
 define("TYPE_CALLINGCARDS", 2);

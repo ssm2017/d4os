@@ -9,17 +9,20 @@
 * other free or open source software licenses.
 */
 
-// TODO : refine users
+// TODO : refine users
+
 define(USERNAME_MAX_LENGTH, 32);
-define(LASTNAME_MAX_LENGTH, 32);
-module_load_include('helpers.inc', 'd4os_ui_users');
+define(LASTNAME_MAX_LENGTH, 32);
+
+module_load_include('helpers.inc', 'd4os_ui_users');
+
 function d4os_ui_users_help($path, $arg) {
   switch ($path) {
     case 'admin/help#d4os_ui_users':
       return '<p>' . t('OpenSim grid users management') . '</p>';
   }
-}
-
+}
+
 function d4os_ui_users_menu() {
   $items = array();
   $items['admin/settings/d4os/ui/users'] = array(
@@ -30,7 +33,7 @@ function d4os_ui_users_menu() {
     'access arguments'  => array('admin d4os ui users'),
     'type'              => MENU_LOCAL_TASK,
     'file'              => 'd4os_ui_users.admin.inc'
-  );
+  );
   $items['grid/users/check'] = array(
     'title'             => 'Check users',
     'description'       => 'Check users',
@@ -39,13 +42,21 @@ function d4os_ui_users_menu() {
     'type'              => MENU_NORMAL_ITEM,
   );
   return $items;
-}
-
+}
+
+function d4os_ui_users_theme() {
+  return array(
+    'd4os_ui_users_models_select_form' => array(
+      'arguments' => array('form'),
+    ),
+  );
+}
+
 function d4os_ui_users_perm() {
   return array(
     'admin d4os ui users',
   );
-}
+}
 
 function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
   switch ($form_id) {
@@ -100,7 +111,7 @@ function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
         $form['username'] = $username_field;
         $form['lastname'] = $lastname_field;
       }
-      d4os_ui_users_avatars_models_form($form);
+      d4os_ui_users_avatars_models_select_form($form);
       array_unshift($form['#validate'], 'd4os_ui_users_account_validate');
       $form['#submit'] = array('d4os_ui_users_user_register_submit');
       break;
@@ -139,7 +150,7 @@ function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
   }
 }
 
-function d4os_ui_users_avatars_models_form(&$form) {
+function d4os_ui_users_avatars_models_select_form(&$form) {
   global $base_url;
 
   // get the list of models
@@ -148,7 +159,8 @@ function d4os_ui_users_avatars_models_form(&$form) {
     $model_nbr = 'd4os_ui_users_default_model_'. $i;
     $model_uuid = variable_get($model_nbr, UUID_ZERO);
     if ($model_uuid != UUID_ZERO && $model_uuid != '') {
-      $available_models[] = $model_uuid;
+      $model_infos = module_invoke_all('os_user_load', array('UUID' => $model_uuid));
+      $available_models[] = $model_infos[0];
     }
   }
 
@@ -156,56 +168,66 @@ function d4os_ui_users_avatars_models_form(&$form) {
     return;
   }
 
+  $asset_pictures_server_url = variable_get('d4os_default_asset_pictures_server_url', $base_url. '/asset.php?id=');
+
   // build the form fieldset
   $form['models'] = array(
     '#type'         => 'fieldset',
     '#title'        => t('Models'),
     '#collapsible'  => TRUE,
     '#collapsed'    => FALSE,
+    '#theme'        => 'd4os_ui_users_models_select_form',
   );
 
-  $asset_pictures_server_url = variable_get('d4os_default_asset_pictures_server_url', $base_url. '/asset.php?id=');
-
-  // get the avatars
-  $i = 0;
+  $options = array();
+  $i = 1;
   foreach ($available_models as $model) {
-    ++$i;
-    $model_infos = module_invoke_all('os_user_load', array('UUID' => $model));
-    $model_infos = $model_infos[0];
     // build the form
-    $field_name = 'model_'.$i;
-    $form['models'][$field_name] = array(
-      '#type'         => 'fieldset',
-      '#title'        => $model_infos->username,
-      '#collapsible'  => FALSE,
-      '#collapsed'    => FALSE,
+    $form['models'][$model->UUID]['name'] = array(
+      '#value' => $model->username,
     );
-    $attributes = ($i == 1) ? array('checked' => 'true') : array();
-    $form['models'][$field_name]['model_uuid'] = array(
-      '#type'       => 'radio',
-      '#value'      => $model,
-      '#attributes' => $attributes,
-    );
-    // display the picture
     $picture = theme_image(
-      $asset_pictures_server_url. $model_infos->profileImage,
+      $asset_pictures_server_url. $model->profileImage,
       t('No picture available'),
-      t("!user's first life picture", array('!user'=>$model_infos->profileImage)),
+      t("!user's first life picture", array('!user'=>$model->username)),
       NULL,
       FALSE
     );
-    $form['models'][$field_name]['picture'] = array(
-      '#type'   => 'item',
-      '#value'  => $picture,
+    $form['models'][$model->UUID]['picture'] = array(
+      '#value' => $picture,
     );
-    if ($model_infos->profileAboutText != '') {
-      $form['models'][$field_name]['infos'] = array(
-        '#type'   => 'item',
-        '#title'  => t('Infos'),
-        '#value'  => $model_infos->profileAboutText,
-      );
-    }
+    $form['models'][$model->UUID]['infos'] = array(
+      '#type'   => 'item',
+      '#title'  => t('Infos'),
+      '#value'  => $model->profileAboutText,
+    );
+    $options[$model->UUID] = '';
+    ++$i;
   }
+  $form['models']['model'] = array(
+    '#type'     => 'radios',
+    '#title'    => t('Models'),
+    '#options'  => $options,
+  );
+}
+
+function theme_d4os_ui_users_models_select_form($form) {
+  $rows = array();
+  foreach (element_children($form) as $key) {
+    $row = array();
+    if (isset($form[$key]['picture']) && is_array($form[$key]['picture'])) {
+      $row[] = drupal_render($form['model'][$key]);
+      $row[] = drupal_render($form[$key]['name']);
+      $row[] = drupal_render($form[$key]['picture']);
+      $row[] = drupal_render($form[$key]['infos']);
+    }
+    $rows[] = $row;
+  }
+
+  $header = array(t('Selected'), t('Name'), t('Picture'), t('Infos'));
+
+  $output = theme('table', $header, $rows);
+  return $output;
 }
 
 function d4os_ui_users_login_authenticate_validate($form, &$form_state) {
@@ -219,6 +241,11 @@ function d4os_ui_users_login_authenticate_validate($form, &$form_state) {
 }
 
 function d4os_ui_users_account_validate($form, &$form_state) {
+  // chekc for the model
+  if (isset($form_state['values']['model']) && $form_state['values']['model'] == '') {
+    form_set_error('model', t('Please select a model.'));
+  }
+
   // get username and lastname
   $username = $form_state['values']['username'];
   $lastname = $form_state['values']['lastname'];
@@ -266,7 +293,8 @@ function d4os_ui_users_account_validate($form, &$form_state) {
   }
 }
 
-function d4os_ui_users_user($op, &$edit, &$account, $category = NULL) {
+function d4os_ui_users_user($op, &$edit, &$account, $category = NULL) {
+
   switch ($op) {
     case 'insert':
       module_invoke_all('os_user_save', $edit);
@@ -274,12 +302,14 @@ function d4os_ui_users_user($op, &$edit, &$account, $category = NULL) {
 
     case 'load':
       d4os_ui_users_user_load($account);
-      break;
+      break;
+
     case 'update':
       if ($account->uid > 1) {
         d4os_ui_users_update($edit, $account);
       }
-      break;
+      break;
+
     case 'delete':
       module_invoke_all('os_user_delete', $account->d4os['grid']['account']['uuid']);
       break;
@@ -290,9 +320,9 @@ function d4os_ui_users_user($op, &$edit, &$account, $category = NULL) {
       if ($email == $account->mail) {
         drupal_set_message(l(t('Please update your email address.'), 'user/'. $account->uid. '/edit'), 'error');
       }
-      break;
+      break;
   }
-}
+}
 
 function d4os_ui_users_user_load(&$account) {
   if ($account->uid < 2) return;
@@ -312,55 +342,67 @@ function d4os_ui_users_user_load(&$account) {
     $account->d4os = array_merge($grid_info, $grid_account);
   }
 }
-
-function d4os_ui_users_update(&$edit, &$account) {
+
+function d4os_ui_users_update(&$edit, &$account) {
+
   // manage username, lastname and UUID
   $edit['d4os']['grid']['account']['username'] = empty($edit['d4os']['grid']['account']['username']) ? $account->d4os['grid']['account']['username'] : $edit['d4os']['grid']['account']['username'];
   $edit['d4os']['grid']['account']['lastname'] = empty($edit['d4os']['grid']['account']['lastname']) ? $account->d4os['grid']['account']['lastname'] : $edit['d4os']['grid']['account']['lastname'];
   $edit['d4os']['grid']['account']['uuid']     = empty($edit['d4os']['grid']['account']['uuid']) ? $account->d4os['grid']['account']['uuid'] : $edit['d4os']['grid']['account']['uuid'];
 
   // check if the user has an account on the grid and if not create one
-  $user_exists = module_invoke_all('os_user_load', array('UUID' => $edit['d4os']['grid']['account']['uuid']));
+  $user_exists = module_invoke_all('os_user_load', array('UUID' => $edit['d4os']['grid']['account']['uuid']));
+
   if (!is_object($user_exists[0])) {
     unset($edit['d4os']['grid']['account']['uuid']);
     $edit = array_merge($edit, d4os_ui_users_user_generate($edit['d4os']['grid']['account']['username'],$edit['d4os']['grid']['account']['lastname'],$edit['pass'], $edit['mail']));
     module_invoke_all('os_user_save', $edit);
     drupal_set_message(t('User added to the grid.'));
     // TODO : change user password and send an email
-    return;
-  }
-  else {
+    return;
+  }
+  else {
     // check if password has changed
     $edit['d4os']['grid']['auth']['password_salt'] = $account->d4os['grid']['auth']['password_salt'];
-    $edit['d4os']['grid']['auth']['password_hash'] = $account->d4os['grid']['auth']['password_hash'];
+    $edit['d4os']['grid']['auth']['password_hash'] = $account->d4os['grid']['auth']['password_hash'];
+
     if (!empty($edit['pass']) && md5($edit['pass']) != $account->pass) {
       $edit['d4os']['grid']['auth']['password_salt'] = md5(microtime() . mt_rand(0,0xffff));
       $edit['d4os']['grid']['auth']['password_hash'] = md5(md5($edit['pass']) . ":" . $edit['d4os']['grid']['auth']['password_salt']);
-    }
+    }
+
     // block user ?
     $edit['d4os']['grid']['account']['login_level'] = $account->d4os['grid']['account']['login_level'];
-    $edit['d4os']['grid']['account']['login_level'] = d4os_ui_users_get_god_level($edit['roles']);
+    $edit['d4os']['grid']['account']['login_level'] = d4os_ui_users_get_god_level($edit['roles']);
+
     //if ($edit['status'] == 0) {
     //  $edit['d4os']['grid']['account']['login_level'] = 0;
-    //}
+    //}
+
     $edit['d4os']['grid']['account']['email'] = empty($edit['mail']) ? $account->d4os['grid']['account']['email'] : $edit['mail'];
     // TODO : why home region ?
     $edit['d4os']['grid']['presence']['home_region'] = empty($edit['d4os']['grid']['presence']['home_region']) ? $account->d4os['grid']['presence']['home_region'] : $edit['d4os']['grid']['presence']['home_region'];
-    $edit['d4os']['grid']['account']['uuid'] = $account->d4os['grid']['account']['uuid'];
+    $edit['d4os']['grid']['account']['uuid'] = $account->d4os['grid']['account']['uuid'];
+
     module_invoke_all('os_user_save', $edit);
   }
-}
+}
+
 function d4os_ui_users_check_users() {
   // get the admin account
-  $admin = user_load(1);
+  $admin = user_load(1);
+
   // get drupal users
   $website_users = array();
-  $result = db_query('SELECT * FROM {users}');
+  $result = db_query('SELECT * FROM {users}');
+
   while ($user = db_fetch_object($result)) {
     $website_users[] = $user;
-  }
+  }
+
   // get grid users
-  $grid_users = module_invoke_all('os_user_load_all');
+  $grid_users = module_invoke_all('os_user_load_all');
+
   // check if drupal users are in the grid base
   $not_in_grid = array();
   foreach ($website_users as $website_user) {
@@ -374,7 +416,8 @@ function d4os_ui_users_check_users() {
     if ($website_user->uid > 1 && d4os_array_search_recursive($name, $grid_users) === NULL) {
       $not_in_grid[] = $website_user;
     }
-  }
+  }
+
   // check if grid users are in the drupal base
   $not_in_website = array();
   foreach ($grid_users as $grid_user) {
@@ -387,7 +430,8 @@ function d4os_ui_users_check_users() {
     if (d4os_array_search_recursive($name, $website_users) === NULL) {
       $not_in_website[] = $grid_user;
     }
-  }
+  }
+
   $output = '';
   // build the output for the website users
   $output .= '<h2>'. t('Website users'). '</h2>';
@@ -402,11 +446,13 @@ function d4os_ui_users_check_users() {
       array(
         'data'  => t('Id')
       ),
-    );
+    );
+
     $rows = array();
     $params['cols'] = $params['cols'] ? $params['cols'] : 1;
     $col = 0;
-    $cells = array();
+    $cells = array();
+
     foreach($not_in_grid as $website_user) {
       $cells[] = l($website_user->name, 'user/'.$website_user->uid);
       $cells[] = l($website_user->uid, 'user/'.$website_user->uid);
@@ -421,13 +467,15 @@ function d4os_ui_users_check_users() {
   }
   else {
     $output .= '<div class="messages status">'. t('All users are registered on the grid.'). '</div>';
-  }
+  }
+
   // build the output for the grid users
   $output .= '<h2>'. t('Grid users'). '</h2>';
   if ($not_in_website_qty = count($not_in_website)) {
     $output .= '<div class="messages warning">'. t('There !are currently !members not registered on the website.', array(
               '!are' => format_plural($not_in_website_qty, 'is', 'are'),
-              '!members' => format_plural($not_in_website_qty, '1 user', '@count users'))). '</div>';
+              '!members' => format_plural($not_in_website_qty, '1 user', '@count users'))). '</div>';
+
     $headers = array(
       array(
         'data'  => t('Name')
@@ -441,16 +489,19 @@ function d4os_ui_users_check_users() {
       array(
         'data'  => t('Action')
       ),
-    );
+    );
+
     $rows = array();
     $params['cols'] = $params['cols'] ? $params['cols'] : 1;
     $col = 0;
-    $cells = array();
+    $cells = array();
+
     foreach($not_in_website as $grid_user) {
       $cells[] = $grid_user->username. ' '. $grid_user->lastname;
       $cells[] = $grid_user->UUID;
       $cells[] = $grid_user->email;
-      $cells[] = drupal_get_form('d4os_ui_users_check_users_set_user_form', $grid_user);
+      $cells[] = drupal_get_form('d4os_ui_users_check_users_set_user_form', $grid_user);
+
       ++$col;
       if ($col >= $params['cols']) {
         $rows[] = $cells;
@@ -463,9 +514,11 @@ function d4os_ui_users_check_users() {
   else {
     $output .= '<div class="messages status">'. t('All users are registered on the website.'). '</div>';
   }
-  return $output;
-}
-function d4os_ui_users_check_users_set_user_form($form_state, $account) {
+  return $output;
+}
+
+function d4os_ui_users_check_users_set_user_form($form_state, $account) {
+
   $form = array();
   $form['username'] = array('#type' => 'hidden', '#value' => $account->username);
   $form['lastname'] = array('#type' => 'hidden', '#value' => $account->lastname);
@@ -475,30 +528,36 @@ function d4os_ui_users_check_users_set_user_form($form_state, $account) {
   $form['action']   = array(
     '#type' => 'select',
     '#options' => array('none' => t('None'), 'add' => t('Add'), 'del' => t('Delete'))
-  );
+  );
+
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Go'),
-  );
+  );
+
   $form['#submit'][] = 'd4os_ui_users_check_users_set_user_form_submit';
-  return $form;
-}
-function d4os_ui_users_check_users_set_user_form_submit($form, &$form_state) {
+  return $form;
+}
+
+function d4os_ui_users_check_users_set_user_form_submit($form, &$form_state) {
   $values = $form['#post'];
-  $values['name'] = $values['username']. ' '. $values['lastname'];
+  $values['name'] = $values['username']. ' '. $values['lastname'];
+
   switch ($values['action']) {
     case 'none':
       drupal_set_message(t('Nothing changed for user !name.', array('!name' => $values['name'])));
-      break;
+      break;
+
     case 'add':
       d4os_ui_users_check_users_add_user($values);
-      break;
+      break;
+
     case 'del':
       module_invoke_all('os_user_delete', $values['UUID']);
       drupal_set_message(t('User !name deleted on the grid.', array('!name' => $values['name'])));
       break;
   }
-}
+}
 
 function d4os_ui_users_check_users_add_user($values) {
   $data = array();
@@ -519,10 +578,10 @@ function d4os_ui_users_check_users_add_user($values) {
     }
   }
   // save user
-  $data['name']           = $values['name'];
-  $data['mail']           = $values['mail'];
-  $data['status']         = $values['status'];
-  $data['pass']           = user_password();
+  $data['name']                         = $values['name'];
+  $data['mail']                         = $values['mail'];
+  $data['status']                       = $values['status'];
+  $data['pass']                         = user_password();
   $data['grid']['account']['uuid']      = $values['UUID'];
   $data['grid']['account']['username']  = $values['username'];
   $data['grid']['account']['lastname']  = $values['lastname'];

@@ -1,7 +1,7 @@
 <?php print $profile->text; ?>
 <style>
   .profile_block {
-    border:1px solid white;
+    border:1px solid #ccc;
     padding:20px;
     margin:10px;
     -moz-border-radius: 20px;
