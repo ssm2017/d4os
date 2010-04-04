@@ -204,7 +204,7 @@ function d4os_ui_users_avatars_models_select_form(&$form) {
     $options[$model->UUID] = '';
     ++$i;
   }
-  $form['models']['model'] = array(
+  $form['models']['model_uuid'] = array(
     '#type'     => 'radios',
     '#title'    => t('Models'),
     '#options'  => $options,
@@ -216,7 +216,7 @@ function theme_d4os_ui_users_models_select_form($form) {
   foreach (element_children($form) as $key) {
     $row = array();
     if (isset($form[$key]['picture']) && is_array($form[$key]['picture'])) {
-      $row[] = drupal_render($form['model'][$key]);
+      $row[] = drupal_render($form['model_uuid'][$key]);
       $row[] = drupal_render($form[$key]['name']);
       $row[] = drupal_render($form[$key]['picture']);
       $row[] = drupal_render($form[$key]['infos']);
@@ -242,7 +242,7 @@ function d4os_ui_users_login_authenticate_validate($form, &$form_state) {
 
 function d4os_ui_users_account_validate($form, &$form_state) {
   // chekc for the model
-  if (isset($form_state['values']['model']) && $form_state['values']['model'] == '') {
+  if (isset($form_state['values']['model_uuid']) && $form_state['values']['model_uuid'] == '') {
     form_set_error('model', t('Please select a model.'));
   }
 
