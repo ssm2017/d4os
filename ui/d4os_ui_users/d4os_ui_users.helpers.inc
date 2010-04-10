@@ -28,8 +28,10 @@ function d4os_ui_users_user_generate($username, $lastname, $password, $mail, $ho
       ),
 
       'auth' => array(
-        'password_salt' => $password_salt,
-        'password_hash' => md5(md5($password) . ":" . $password_salt),
+        'password_salt'   => $password_salt,
+        'password_hash'   => md5(md5($password) . ":" . $password_salt),
+        'simian_md5hash'  => '$1$'. md5($password),
+        'simian_a1hash'   => md5($username. ' '. $lastname. ':Inventory:'. $password),
       ),
 
       'presence' => array(
@@ -205,8 +207,10 @@ function d4os_ui_users_account_to_grid($account) {
   if (isset($account['d4os']['grid']['account']['user_asset_uri']))     $grid_account['userAssetURI']     = $account['d4os']['grid']['account']['user_asset_uri'];
   
   // auth
-  if (isset($account['d4os']['grid']['auth']['password_salt'])) $grid_account['passwordSalt'] = $account['d4os']['grid']['auth']['password_salt'];
-  if (isset($account['d4os']['grid']['auth']['password_hash'])) $grid_account['passwordHash'] = $account['d4os']['grid']['auth']['password_hash'];
+  if (isset($account['d4os']['grid']['auth']['password_salt']))   $grid_account['passwordSalt'] = $account['d4os']['grid']['auth']['password_salt'];
+  if (isset($account['d4os']['grid']['auth']['password_hash']))   $grid_account['passwordHash'] = $account['d4os']['grid']['auth']['password_hash'];
+  if (isset($account['d4os']['grid']['auth']['simian_md5hash']))  $grid_account['md5hash']      = $account['d4os']['grid']['auth']['simian_md5hash'];
+  if (isset($account['d4os']['grid']['auth']['simian_a1hash']))   $grid_account['a1hash']       = $account['d4os']['grid']['auth']['simian_a1hash'];
   
   // presence
   if (isset($account['d4os']['grid']['presence']['home_region']))     $grid_account['homeRegion']     = $account['d4os']['grid']['presence']['home_region'];
@@ -243,8 +247,10 @@ function d4os_ui_users_grid_to_account($grid_account) {
   if (isset($grid_account['email']))             $account['grid']['account']['email']              = $grid_account['email'];
 
   // auth
-  if (isset($grid_account['passwordSalt'])) $account['grid']['auth']['password_salt'] = $grid_account['passwordSalt'];
-  if (isset($grid_account['passwordHash'])) $account['grid']['auth']['password_hash'] = $grid_account['passwordHash'];
+  if (isset($grid_account['passwordSalt'])) $account['grid']['auth']['password_salt']   = $grid_account['passwordSalt'];
+  if (isset($grid_account['passwordHash'])) $account['grid']['auth']['password_hash']   = $grid_account['passwordHash'];
+  if (isset($grid_account['md5hash']))      $account['grid']['auth']['simian_md5hash']  = $grid_account['md5hash'];
+  if (isset($grid_account['a1hash']))       $account['grid']['auth']['simian_a1hash']   = $grid_account['a1hash'];
 
   // presence
   if (isset($grid_account['homeRegion']))    $account['grid']['presence']['home_region']     = $grid_account['homeRegion'];
@@ -286,4 +292,8 @@ function d4os_ui_users_generate_mail($uuid) {
     $string = str_replace($key, $value, $string);
   }
   return $string;
+}
+
+function d4os_ui_users_validate_email($address) {
+  return ( ! preg_match("/^([a-z0-9\+_\-]+)(\.[a-z0-9\+_\-]+)*@([a-z0-9\-]+\.)+[a-z]{2,6}$/ix", $address)) ? FALSE : TRUE;
 }

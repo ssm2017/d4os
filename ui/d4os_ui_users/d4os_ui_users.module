@@ -241,7 +241,7 @@ function d4os_ui_users_login_authenticate_validate($form, &$form_state) {
 }
 
 function d4os_ui_users_account_validate($form, &$form_state) {
-  // chekc for the model
+  // check for the model
   if (isset($form_state['values']['model_uuid']) && $form_state['values']['model_uuid'] == '') {
     form_set_error('model', t('Please select a model.'));
   }
@@ -269,6 +269,14 @@ function d4os_ui_users_account_validate($form, &$form_state) {
   $lastname_validate = d4os_ui_users_validate_name($lastname, 'lastname', t('lastname'));
   if ($lastname_validate) {
     form_set_error('lastname', $lastname_validate);
+  }
+  // check the password length
+  if (isset($form_state['values']['pass']) && strlen($form_state['values']['pass']) < 6) {
+    form_set_error('pass', t('The Password field must be at least 6 characters in length.'));
+  }
+  // check the email address to fit new opensim rules
+  if (!d4os_ui_users_validate_email($form_state['values']['mail'])) {
+    form_set_error('pass', t('The Email field must contain a valid email address.'));
   }
 
   // get the inworld user
@@ -619,7 +627,15 @@ function d4os_ui_users_user_register_submit($form, &$form_state) {
   }
   // The unset below is needed to prevent these form values from being saved as
   // user data.
-  unset($form_state['values']['form_token'], $form_state['values']['submit'], $form_state['values']['op'], $form_state['values']['notify'], $form_state['values']['form_id'], $form_state['values']['affiliates'], $form_state['values']['destination']);
+  unset(
+    $form_state['values']['form_token'],
+    $form_state['values']['submit'],
+    $form_state['values']['op'],
+    $form_state['values']['notify'],
+    $form_state['values']['form_id'],
+    $form_state['values']['affiliates'],
+    $form_state['values']['destination']
+  );
 
   $merge_data = array('pass' => $pass, 'init' => $mail, 'roles' => $roles);
   if (!$admin) {
@@ -630,10 +646,11 @@ function d4os_ui_users_user_register_submit($form, &$form_state) {
   // generate the grid user
   $username = $form_state['values']['username'];
   $lastname = $form_state['values']['lastname'];
-  $form_state['values']['d4os'] = d4os_ui_users_user_generate($username, $lastname, $pass, $mail);
+  $merge_data['d4os'] = d4os_ui_users_user_generate($username, $lastname, $pass, $mail);
 
   // save the account
   $account = user_save('', array_merge($form_state['values'], $merge_data));
+
   // Terminate if an error occured during user_save().
   if (!$account) {
     drupal_set_message(t("Error saving user account."), 'error');
