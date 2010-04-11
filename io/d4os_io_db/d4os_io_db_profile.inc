@@ -22,7 +22,6 @@ function d4os_io_db_os_profile_save($params) {
 
   // get the uuid
   $uid = d4os_io_db_os_user_get_uid($params['d4os']['grid']['account']['uuid']);
-  $uid = $uid[0];
   // load the account
   $account = user_load($uid);
 
@@ -38,6 +37,24 @@ function d4os_io_db_os_profile_save($params) {
       $saved = user_save($account, $data);
       if ($saved->uid) {
         $success = TRUE;
+      }
+      break;
+
+    case 'partner':
+      // get the accounts
+      $names    = explode(' ', $params['d4os']['grid']['profile']['partner']['name']);
+      $partner  = d4os_io_db_os_user_load(array('username' => $names[0], 'lastname' => $names[1]));
+      if (is_object($partner)) {
+        $partner_uid            = d4os_io_db_os_user_get_uid($partner->UUID);
+        $partner_account        = user_load($partner_uid);
+        $params['source']       = $account;
+        $params['destination']  = $partner_account;
+        $result = d4os_ui_profile_send_partner_request($params);
+        if ($result['success'] == TRUE) $success = TRUE;
+      }
+      else {
+        drupal_set_message(t('Could not find the user in the grid.'), 'error');
+        $success = FALSE;
       }
       break;
 

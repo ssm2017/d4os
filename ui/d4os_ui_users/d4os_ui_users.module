@@ -25,6 +25,12 @@ function d4os_ui_users_help($path, $arg) {
 
 function d4os_ui_users_menu() {
   $items = array();
+  $items['grid/users/autocomplete'] = array(
+    'title'             => 'User autocomplete',
+    'page callback'     => 'd4os_ui_users_user_autocomplete',
+    'access arguments'  => array('access user profiles'),
+    'type'              => MENU_CALLBACK,
+  );
   $items['admin/settings/d4os/ui/users'] = array(
     'title'             => 'users',
     'description'       => 'd4os ui users settings',
@@ -720,4 +726,16 @@ function d4os_ui_users_user_register_submit($form, &$form_state) {
 
     }
   }
+}
+
+function d4os_ui_users_user_autocomplete($string = '') {
+  $matches = array();
+  if ($string) {
+    $result = db_query_range("SELECT name FROM {users} WHERE LOWER(name) LIKE LOWER('%s%%')", $string, 0, 10);
+    while ($user = db_fetch_object($result)) {
+      $matches[$user->name] = check_plain($user->name);
+    }
+  }
+
+  drupal_json($matches);
 }

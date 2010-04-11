@@ -78,6 +78,8 @@
           <dd><?php print $profile->lastname; ?></dd>
         <dt><?php print t('Born'); ?></dt>
           <dd><?php print $profile->created; ?></dd>
+        <dt><?php print t('Partner'); ?></dt>
+          <dd><?php print $profile->partner; ?></dd>
 <?php if($profile->can_edit): ?>
         <dt><?php print t('Last connection'); ?></dt>
           <dd><?php print $profile->last_login; ?></dd>

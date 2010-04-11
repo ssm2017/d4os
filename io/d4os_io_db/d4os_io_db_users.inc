@@ -259,6 +259,7 @@ function d4os_io_db_users_add_extra_fields(&$user) {
 function d4os_io_db_os_user_set_uid($uid, $uuid) {
   db_query("INSERT INTO {d4os_ui_users} (uid, UUID) VALUES (%d, '%s')", array($uid, $uuid));
 }
+
 function d4os_io_db_os_user_get_uid($uuid) {
   return db_result(db_query("SELECT uid FROM {d4os_ui_users} WHERE UUID = '%s'", array($uuid)));
 }

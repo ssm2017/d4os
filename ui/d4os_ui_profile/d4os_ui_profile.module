@@ -116,6 +116,15 @@ function d4os_ui_profile_display_public_profile($account) {
   // convert the dates
   $format = variable_get('date_format_medium', 'm/d/Y H:i');
   $profile->created = format_date($account->d4os['grid']['account']['created'], $format);
+  // get the partner infos
+  $profile->partner_uuid = '';
+  $profile->partner_name = '';
+  $partner = module_invoke_all('os_user_load', array('UUID' => $account->d4os['grid']['profile']['partner']));
+  $partner = $partner[0];
+  if (is_object($partner)) {
+    $profile->partner_uuid = $account->d4os['grid']['profile']['partner'];
+    $profile->partner_name = $partner->username. ' '. $partner->lastname;
+  }
 
   if ($profile->can_edit) {
     $profile->last_login  = $account->d4os['grid']['presence']['last_login'] > 0 ? format_date($account->d4os['grid']['presence']['last_login'], $format) : t('Never connected to the grid');
@@ -124,10 +133,12 @@ function d4os_ui_profile_display_public_profile($account) {
     $profile->home_region = drupal_get_form('d4os_ui_profile_home_region_form', $profile, $account);
     $profile->image       = drupal_get_form('d4os_ui_profile_image_form', $profile, $account, $asset_pictures_server_url);
     $profile->about_text  = drupal_get_form('d4os_ui_profile_about_text_form', $profile, $account);
+    $profile->partner     = drupal_get_form('d4os_ui_profile_partner_form', $profile, $account);
   }
   else {
-    $profile->image = $profile->image_img;
-    $profile->about_text = $account->d4os['grid']['profile']['about_text'];
+    $profile->image       = $profile->image_img;
+    $profile->about_text  = $account->d4os['grid']['profile']['about_text'];
+    $profile->partner     = $profile->partner_name;
   }
 
   // *****************
@@ -314,6 +325,45 @@ function d4os_ui_profile_about_text_form($form_state, $profile, $account) {
   return $form;
 }
 
+function d4os_ui_profile_partner_form($form_state, $profile, $account) {
+  $partner_name = isset($form_state['values']['partner-name']) ? $form_state['values']['partner-name'] : $profile->partner_name;
+  $form = array();
+  $form['partner'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Change partner'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => FALSE,
+  );
+  $form['partner']['wrapper'] = array(
+    '#type'   => 'item',
+    '#prefix' => '<div class="clear-block" id="partner-answer">',
+    '#suffix' => '</div>',
+  );
+  $form['partner']['wrapper']['partner-name'] = array(
+    '#type'               => 'textfield',
+    '#title'              => t('Name'),
+    '#maxlength'          => 60,
+    '#autocomplete_path'  => 'grid/users/autocomplete',
+    '#default_value'      => $partner_name,
+  );
+  $form['partner']['wrapper']['uuid'] = array(
+    '#type'   => 'hidden',
+    '#value'  => $account->d4os['grid']['account']['uuid'],
+  );
+  $form['partner']['wrapper']['partner-save'] = array(
+    '#type'   => 'submit',
+    '#value'  => t('Save'),
+    '#weight' => 1,
+    '#submit' => array('d4os_ui_profile_profile_submit'),
+    '#ahah'   => array(
+      'path'    => 'user/'. $account->uid. '/grid-profile/js/partner',
+      'wrapper' => 'partner-answer',
+      'method'  => 'replace',
+      'effect'  => 'fade',
+    ),
+  );
+  return $form;
+}
 
 function d4os_ui_profile_url_iframe_form($form_state, $profile, $account) {
   $url = isset($form_state['values']['url-url']) ? $form_state['values']['url-url'] : $account->d4os['grid']['profile']['url'];
@@ -552,6 +602,9 @@ function d4os_ui_profile_profile_submit($form, &$form_state) {
     case 'first-text':
       $params['d4os']['grid']['profile']['first_text'] = $form_state['values']['first-text-text'];
       break;
+    case 'partner':
+      $params['d4os']['grid']['profile']['partner']['name'] = $form_state['values']['partner-name'];
+      break;
     case 'notes':
       $params['d4os']['grid']['profile']['notes']      = $form_state['values']['notes-text'];
       break;
@@ -607,13 +660,13 @@ function d4os_ui_profile_partner_validate($token) {
     $dest = $values->destination_uuid;
     // assign the partners
     $params = array(
-      'avatarID'  => $src,
-      'partner'   => $dest,
+      'avatarID'        => $src,
+      'profilePartner'  => $dest,
     );
     module_invoke_all('os_profile_services_update_avatar_properties', $params);
     $params = array(
-      'avatarID'  => $dest,
-      'partner'   => $src,
+      'avatarID'        => $dest,
+      'profilePartner'  => $src,
     );
     module_invoke_all('os_profile_services_update_avatar_properties', $params);
     // delete the entries
@@ -631,6 +684,49 @@ function d4os_ui_profile_partner_validate($token) {
     drupal_goto();
   }
 }
+
+function d4os_ui_profile_send_partner_request($params) {
+  $source           = $params['source'];
+  $source_uuid      = $source->d4os['grid']['account']['uuid'];
+  $destination      = $params['destination'];
+  $destination_uuid = $destination->d4os['grid']['account']['uuid'];
+
+  // check for the email
+  if ($partner->email == d4os_ui_users_generate_mail($destination_uuid)) {
+    drupal_set_message(t('Unable to send the partner request. The email address is not valid.'));
+    return array(
+      'success' => FALSE,
+      'message' => 'wrong email',
+    );
+  }
+
+  // delete previous entries
+  db_query("DELETE FROM {d4os_ui_profile_partners} WHERE source_uuid='%s'", array($source_uuid));
+  // build the token
+  $params['token'] = d4os_uuid_create();
+  db_query("INSERT INTO {d4os_ui_profile_partners} (source_uuid, destination_uuid, token) VALUES ('%s', '%s', '%s')", array($source_uuid, $destination_uuid, $params['token']));
+  // send the email
+  drupal_mail('d4os_ui_profile', 'partner_request', $destination->mail, user_preferred_language($destination), $params);
+  drupal_set_message(t('A request was sent to the avatar.'));
+  return array(
+    'success' => TRUE,
+    'message' => '',
+  );
+}
+
+function d4os_ui_profile_mail($key, &$message, $params) {
+  $language   = $message['language'];
+  $variables  = user_mail_tokens($params['destination'], $language);
+  $variables['!source_name'] = $params['source']->name;
+  $variables['!request_url'] = url('grid/profile/partner/validate/'. $params['token'], array('absolute' => TRUE, 'language' => $language));
+  switch($key) {
+    case 'partner_request':
+      $message['subject'] = t('Partner request from !site', $variables, $language->language);
+      $message['body'][] = t("Dear !username\n\nThe user called !source_name would like you to accept his partnership request.\n\nYou may accept it by clicking on this link or copying and pasting it in your browser:\n\n!request_url!", $variables, $language->language);
+    break;
+  }
+}
+
 
 function d4os_ui_profile_theme() {
   return array(

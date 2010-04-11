@@ -38,6 +38,7 @@ function d4os_ui_profile_schema() {
       ),
       'token' => array(
         'type'      => 'char',
+        'length'    => 36,
         'not null'  => TRUE
       ),
     ),
