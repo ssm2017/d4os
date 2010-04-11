@@ -163,6 +163,7 @@ function d4os_io_db_os_user_load($data = array()) {
     $result = db_query("SELECT * FROM {users} WHERE UUID = '%s'", array($UUID));
     if ($user = db_fetch_object($result)) {
       d4os_io_db_set_active('default');
+      d4os_io_db_users_add_extra_fields($user);
       return $user;
     }
     else {
@@ -224,11 +225,34 @@ function d4os_io_db_os_user_load($data = array()) {
     d4os_io_db_set_active('default');
     $uid = db_result(db_query("SELECT uid FROM {d4os_ui_users} WHERE UUID = '%s'", array($user->UUID)));
     $user->uid = $uid;
+    d4os_io_db_users_add_extra_fields($user);
     return $user;
   }
   else {
     d4os_io_db_set_active('default');
     return FALSE;
+  }
+}
+
+function d4os_io_db_users_add_extra_fields(&$user) {
+  if (module_exists('d4os_io_services_profile')) {
+    $params = array();
+    $params['avatar_id'] = $user->UUID;
+    $properties = d4os_io_db_os_profile_services_avatar_properties_request($params);
+    if (isset($properties['data'][0])) {
+      $user->profilePartner        = $properties['data'][0]['profilePartner']; // 1
+      $user->profileAllowPublish   = $properties['data'][0]['profileAllowPublish']; // 2
+      $user->profileMaturePublish  = $properties['data'][0]['profileMaturePublish']; // 3
+      $user->profileURL            = $properties['data'][0]['profileURL']; // 4
+      $user->ProfileUrl            = $properties['data'][0]['profileURL']; // 5
+      $user->profileWantToMask     = $properties['data'][0]['profileWantToMask']; // 6
+      $user->profileWantToText     = $properties['data'][0]['profileWantToText']; // 7
+      $user->profileSkillsMask     = $properties['data'][0]['profileSkillsMask']; // 8
+      $user->profileSkillsText     = $properties['data'][0]['profileSkillsText']; // 9
+      $user->profileLanguages      = $properties['data'][0]['profileLanguages']; // 10
+      $user->profileFirstImage     = $properties['data'][0]['profileFirstImage']; // 11
+      $user->profileFirstText      = $properties['data'][0]['profileFirstText']; // 12
+    }
   }
 }
 

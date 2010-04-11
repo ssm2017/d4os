@@ -13,16 +13,22 @@ function d4os_ui_profile_admin() {
   $form = array();
 
   $form['d4os_ui_profile_enable_profile_tab'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Enable profile tab'),
-    '#default_value' => variable_get('d4os_ui_profile_enable_profile_tab', 0),
-    '#description' => t('Select if you want to enable the profile tab for users.'),
+    '#type'           => 'checkbox',
+    '#title'          => t('Enable profile tab'),
+    '#default_value'  => variable_get('d4os_ui_profile_enable_profile_tab', 0),
+    '#description'    => t('Select if you want to enable the profile tab for users.'),
   );
   $form['d4os_ui_profile_disable_drupal_user_view_tab'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Disable Drupal user view tab'),
-    '#default_value' => variable_get('d4os_ui_profile_disable_drupal_user_view_tab', 0),
-    '#description' => t('Select if you want to disable the Drupal user view tab. You need to flush caches after changing this option.'),
+    '#type'           => 'checkbox',
+    '#title'          => t('Disable Drupal user view tab'),
+    '#default_value'  => variable_get('d4os_ui_profile_disable_drupal_user_view_tab', 0),
+    '#description'    => t('Select if you want to disable the Drupal user view tab. You need to flush caches after changing this option.'),
+  );
+  $form['d4os_ui_profile_url_iframe_attributes'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('URL iframe attributes'),
+    '#default_value'  => variable_get('d4os_ui_profile_url_iframe_attributes', 'width="600px" height="400px"'),
+    '#description'    => t('Define some optional attributes for the profile URL iframe.'),
   );
   $form['#submit'][] = 'd4os_ui_profile_admin_submit';
 

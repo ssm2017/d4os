@@ -43,68 +43,7 @@ function d4os_io_db_perm() {
     'admin d4os db'
   );
 }
-/*
-function d4os_io_db_check_bases() {
-  // Check if the database array is set
-  global $db_url;
-  if (!is_array($db_url)) {
-    drupal_set_message(t('No extra database defined'), 'error');
-    return FALSE;
-  }
-  $output = TRUE;
-  // asset
-  if (!isset($db_url['os_asset'])) {
-    drupal_set_message(t('The "asset" database info is not defined'), 'error');
-    $output = FALSE;
-  }
-  // auth
-  if (!isset($db_url['os_auth'])) {
-    drupal_set_message(t('The "auth" database info is not defined'), 'error');
-    $output = FALSE;
-  }
-  // grid
-  if (!isset($db_url['os_grid'])) {
-    drupal_set_message(t('The "grid" database info is not defined'), 'error');
-    $output = FALSE;
-  }
-  // inventory
-  if (!isset($db_url['os_inventory'])) {
-    drupal_set_message(t('The "inventory" database info is not defined'), 'error');
-    $output = FALSE;
-  }
-  // messaging
-  if (!isset($db_url['os_messaging'])) {
-    drupal_set_message(t('The "messaging" database info is not defined'), 'error');
-    $output = FALSE;
-  }
-  // account
-  if (!isset($db_url['os_user_account'])) {
-    drupal_set_message(t('The "user_account" database info is not defined'), 'error');
-    $output = FALSE;
-  }
-  // users
-  if (!isset($db_url['os_users'])) {
-    drupal_set_message(t('The "users" database info is not defined'), 'error');
-    $output = FALSE;
-  }
-  // opensim
-  if (!isset($db_url['os_opensim'])) {
-    drupal_set_message(t('The "opensim" database info is not defined'), 'error');
-    $output = FALSE;
-  }
-  // search
-  if (!isset($db_url['os_search'])) {
-    drupal_set_message(t('The "search" database info is not defined'), 'error');
-    $output = FALSE;
-  }
-  // groups
-  if (!isset($db_url['os_groups'])) {
-    drupal_set_message(t('The "groups" database info is not defined'), 'error');
-    $output = FALSE;
-  }
-  return $output;
-}
-*/
+
 function d4os_io_db_set_active($name = 'default') {
   global $d4os_same_db, $d4os_db_prefix, $db_prefix;
   static $temp_db_prefix;
@@ -136,37 +75,6 @@ function d4os_io_db_set_active($name = 'default') {
       db_set_active($name);
       break;
   }
-}
-
-function d4os_io_db_build_bases_list() {
-  $bases = array(
-    'none'            => t('None'),
-    'default'         => t('Website'),
-    'os_grid'         => t('Grid'),
-    'os_asset '       => t('Asset'),
-    //'os_auth'         => t('Auth'),
-    //'os_estate'       => t('Estate'),
-    'os_inventory'    => t('Inventory'),
-    //'os_messaging'    => t('Messaging'),
-    //'os_opensim'      => t('Opensim'),
-    //'os_user_account' => t('User account'),
-  );
-  if (module_exists('d4os_ui_groups') || module_exists('d4os_io_services_groups')) {
-    $bases['os_groups'] = t('Groups');
-  }
-  if (module_exists('d4os_io_services_profile')) {
-    $bases['os_profile'] = t('Profile');
-  }
-  if (module_exists('d4os_io_services_search')) {
-    $bases['os_search'] = t('Search');
-  }
-  if (module_exists('d4os_ui_users')) {
-    $bases['os_users'] = t('Users');
-  }
-  if (module_exists('d4os_io_services_offline_message')) {
-    $bases['os_offline_message'] = t('offline_message');
-  }
-  return $bases;
 }
 
 function d4os_io_db_load_includes() {

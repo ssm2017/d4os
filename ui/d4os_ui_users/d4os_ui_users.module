@@ -198,7 +198,6 @@ function d4os_ui_users_avatars_models_select_form(&$form) {
     );
     $form['models'][$model->UUID]['infos'] = array(
       '#type'   => 'item',
-      '#title'  => t('Infos'),
       '#value'  => $model->profileAboutText,
     );
     $options[$model->UUID] = '';
@@ -548,6 +547,7 @@ function d4os_ui_users_check_users_set_user_form($form_state, $account) {
 }
 
 function d4os_ui_users_check_users_set_user_form_submit($form, &$form_state) {
+  // TODO : use $form_state instead using form theming like for user models
   $values = $form['#post'];
   $values['name'] = $values['username']. ' '. $values['lastname'];
 

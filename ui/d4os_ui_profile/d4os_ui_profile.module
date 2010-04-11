@@ -50,6 +50,13 @@ function d4os_ui_profile_menu() {
     'type'              => MENU_LOCAL_TASK,
     'file'              => 'd4os_ui_profile.admin.inc'
   );
+  $items['grid/profile/partner/validate/%'] = array(
+    'page callback'     => 'd4os_ui_profile_partner_validate',
+    'page arguments'    => array(4),
+    'access callback'   => TRUE,
+    'access arguments'  => array(1),
+    'type'              => MENU_CALLBACK,
+  );
   return $items;
 }
 
@@ -126,9 +133,12 @@ function d4os_ui_profile_display_public_profile($account) {
   // *****************
   // web
   // *****************
-  $profile->show_web = FALSE;
+  $profile->show_web = TRUE;
   if ($profile->can_edit) {
     $profile->web = drupal_get_form('d4os_ui_profile_url_form', $profile, $account);
+  }
+  else {
+    $profile->web = drupal_get_form('d4os_ui_profile_url_iframe_form', $profile, $account);
   }
 
   // *****************
@@ -304,30 +314,48 @@ function d4os_ui_profile_about_text_form($form_state, $profile, $account) {
   return $form;
 }
 
-function d4os_ui_profile_url_form($form_state, $profile, $account) {
-  $url = isset($form_state['values']['url-url']) ? $form_state['values']['url-url'] : 'test';
+
+function d4os_ui_profile_url_iframe_form($form_state, $profile, $account) {
+  $url = isset($form_state['values']['url-url']) ? $form_state['values']['url-url'] : $account->d4os['grid']['profile']['url'];
+  $value = '';
+  if ($url != '') {
+    $value = '<iframe '. variable_get('d4os_ui_profile_url_iframe_attributes', 'width="600px" height="400px"'). ' src="'. $url. '"></iframe>';
+  }
+  else {
+    $value = t('No website defined');
+  }
   $form = array();
-  $form['url']['form'] = array(
+  $form['iframe'] = array(
+    '#type'   => 'item',
+    '#value'  => $value,
+  );
+  return $form;
+}
+
+function d4os_ui_profile_url_form($form_state, $profile, $account) {
+  $url = isset($form_state['values']['url-url']) ? $form_state['values']['url-url'] : $account->d4os['grid']['profile']['url'];
+  $form = array();
+  $form['url'] = array(
     '#type'         => 'fieldset',
     '#title'        => t('Change url'),
     '#collapsible'  => TRUE,
-    '#collapsed'    => TRUE,
+    '#collapsed'    => FALSE,
   );
-  $form['url']['form']['wrapper'] = array(
+  $form['url']['wrapper'] = array(
     '#type'   => 'item',
     '#prefix' => '<div class="clear-block" id="url-answer">',
     '#suffix' => '</div>',
   );
-  $form['url']['form']['wrapper']['uuid'] = array(
+  $form['url']['wrapper']['uuid'] = array(
     '#type'   => 'hidden',
     '#value'  => $account->d4os['grid']['account']['uuid'],
   );
-  $form['url']['form']['wrapper']['url-url'] = array(
+  $form['url']['wrapper']['url-url'] = array(
     '#type'           => 'textfield',
     '#title'          => t('Url'),
     '#default_value'  => $url,
   );
-  $form['url']['form']['url-save'] = array(
+  $form['url']['wrapper']['url-save'] = array(
     '#type'   => 'submit',
     '#value'  => t('Save'),
     '#weight' => 1,
@@ -339,6 +367,7 @@ function d4os_ui_profile_url_form($form_state, $profile, $account) {
       'effect'  => 'fade',
     ),
   );
+  $form['url']['wrapper'] += d4os_ui_profile_url_iframe_form($form_state, $profile, $account);
   return $form;
 }
 
@@ -568,6 +597,39 @@ function d4os_ui_profile_save_profile_js($uid, $item) {
 
   // Final rendering callback.
   drupal_json(array('status' => TRUE, 'data' => $output));
+}
+
+function d4os_ui_profile_partner_validate($token) {
+  // check the token
+  $values = db_fetch_object(db_query("SELECT * FROM {d4os_ui_profile_partners} WHERE token='%s'", array($token)));
+  if (is_object($values)) {
+    $src  = $values->source_uuid;
+    $dest = $values->destination_uuid;
+    // assign the partners
+    $params = array(
+      'avatarID'  => $src,
+      'partner'   => $dest,
+    );
+    module_invoke_all('os_profile_services_update_avatar_properties', $params);
+    $params = array(
+      'avatarID'  => $dest,
+      'partner'   => $src,
+    );
+    module_invoke_all('os_profile_services_update_avatar_properties', $params);
+    // delete the entries
+    $data = array(
+      $src,
+      $dest,
+    );
+    db_query("DELETE FROM {d4os_ui_profile_partners} WHERE source_uuid IN (". db_placeholders($data, 'varchar'). ") OR destination_uuid IN (". db_placeholders($data, 'varchar'). ")", array($src, $dest));
+    // return the answer
+    drupal_set_message('Your partnership is validated.');
+    drupal_goto();
+  }
+  else {
+    drupal_set_message('Unable to find entries for this partnership.');
+    drupal_goto();
+  }
 }
 
 function d4os_ui_profile_theme() {

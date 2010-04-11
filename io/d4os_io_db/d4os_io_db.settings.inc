@@ -11,6 +11,37 @@
 
 global $db_url, $d4os_db_prefix, $d4os_same_db;
 
+function d4os_io_db_build_bases_list() {
+  $bases = array(
+    'none'            => t('None'),
+    'default'         => t('Website'),
+    'os_grid'         => t('Grid'),
+    'os_asset '       => t('Asset'),
+    //'os_auth'         => t('Auth'),
+    //'os_estate'       => t('Estate'),
+    'os_inventory'    => t('Inventory'),
+    //'os_messaging'    => t('Messaging'),
+    //'os_opensim'      => t('Opensim'),
+    //'os_user_account' => t('User account'),
+  );
+  if (module_exists('d4os_ui_groups') || module_exists('d4os_io_services_groups')) {
+    $bases['os_groups'] = t('Groups');
+  }
+  if (module_exists('d4os_io_services_profile')) {
+    $bases['os_profile'] = t('Profile');
+  }
+  if (module_exists('d4os_io_services_search')) {
+    $bases['os_search'] = t('Search');
+  }
+  if (module_exists('d4os_ui_users')) {
+    $bases['os_users'] = t('Users');
+  }
+  if (module_exists('d4os_io_services_offline_message')) {
+    $bases['os_offline_message'] = t('offline_message');
+  }
+  return $bases;
+}
+
 if (!is_array($db_url)) {
   $db_url = array(
     'default' => $db_url

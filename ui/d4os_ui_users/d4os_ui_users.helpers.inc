@@ -188,8 +188,9 @@ function d4os_ui_users_clean_account(&$account) {
     $account->grid_profileAboutText,
     $account->grid_profileFirstText,
     $account->grid_profileImage,
-    $account->grid_profileFirstImage
-    
+    $account->grid_profileFirstImage,
+    $account->grid_profileURL,
+    $account->grid_profilePartner
   );
 }
 
@@ -229,6 +230,8 @@ function d4os_ui_users_account_to_grid($account) {
   if (isset($account['d4os']['grid']['profile']['first_text']))   $grid_account['profileFirstText']   = $account['d4os']['grid']['profile']['first_text'];
   if (isset($account['d4os']['grid']['profile']['image']))        $grid_account['profileImage']       = $account['d4os']['grid']['profile']['image'];
   if (isset($account['d4os']['grid']['profile']['first_image']))  $grid_account['profileFirstImage']  = $account['d4os']['grid']['profile']['first_image'];
+  if (isset($account['d4os']['grid']['profile']['url']))          $grid_account['profileURL']         = $account['d4os']['grid']['profile']['url'];
+  if (isset($account['d4os']['grid']['profile']['partner']))      $grid_account['profilePartner']     = $account['d4os']['grid']['profile']['partner'];
 
   return $grid_account;
 }
@@ -263,12 +266,14 @@ function d4os_ui_users_grid_to_account($grid_account) {
   if (isset($grid_account['lastLogin']))     $account['grid']['presence']['last_login']      = $grid_account['lastLogin'];
 
   // profile
-  if (isset($grid_account['profileCanDoMask']))  $account['grid']['profile']['can_do_mask']  = $grid_account['profileCanDoMask'];
-  if (isset($grid_account['profileWantDoMask'])) $account['grid']['profile']['want_do_mask'] = $grid_account['profileWantDoMask'];
-  if (isset($grid_account['profileAboutText']))  $account['grid']['profile']['about_text']   = $grid_account['profileAboutText'];
-  if (isset($grid_account['profileFirstText']))  $account['grid']['profile']['first_text']   = $grid_account['profileFirstText'];
-  if (isset($grid_account['profileImage']))      $account['grid']['profile']['image']        = $grid_account['profileImage'];
-  if (isset($grid_account['profileFirstImage'])) $account['grid']['profile']['first_image']  = $grid_account['profileFirstImage'];
+  if (isset($grid_account['profileCanDoMask']))   $account['grid']['profile']['can_do_mask']  = $grid_account['profileCanDoMask'];
+  if (isset($grid_account['profileWantDoMask']))  $account['grid']['profile']['want_do_mask'] = $grid_account['profileWantDoMask'];
+  if (isset($grid_account['profileAboutText']))   $account['grid']['profile']['about_text']   = $grid_account['profileAboutText'];
+  if (isset($grid_account['profileFirstText']))   $account['grid']['profile']['first_text']   = $grid_account['profileFirstText'];
+  if (isset($grid_account['profileImage']))       $account['grid']['profile']['image']        = $grid_account['profileImage'];
+  if (isset($grid_account['profileFirstImage']))  $account['grid']['profile']['first_image']  = $grid_account['profileFirstImage'];
+  if (isset($grid_account['profileURL']))         $account['grid']['profile']['url']          = $grid_account['profileURL'];
+  if (isset($grid_account['profilePartner']))     $account['grid']['profile']['partner']      = $grid_account['profilePartner'];
 
   return $account;
 }

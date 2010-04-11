@@ -21,7 +21,7 @@ function d4os_io_db_os_profile_save($params) {
   $user->uuid = $user->uid == 1 ? UUID_ZERO : $user->d4os['grid']['account']['uuid'];
 
   // get the uuid
-  $uid = module_invoke_all('os_user_get_uid', $params['d4os']['grid']['account']['uuid']);
+  $uid = d4os_io_db_os_user_get_uid($params['d4os']['grid']['account']['uuid']);
   $uid = $uid[0];
   // load the account
   $account = user_load($uid);
@@ -45,12 +45,15 @@ function d4os_io_db_os_profile_save($params) {
       $params['avatar_id']  = $user->uuid;
       $params['target_id']  = $params['d4os']['grid']['account']['uuid'];
       $params['notes']      = $params['d4os']['grid']['profile']['notes'];
-      $result = module_invoke_all('os_profile_services_avatar_notes_update', $params);
+      $result = d4os_io_db_os_profile_services_avatar_notes_update($params);
       if ($result['success'] == TRUE) $success = TRUE;
       break;
 
     case 'url':
+      $params['avatarID']   = $user->uuid;
       $params['profileURL'] = $params['d4os']['grid']['profile']['url'];
+      $result = d4os_io_db_os_profile_services_update_avatar_properties($params);
+      if ($result['success'] == TRUE) $success = TRUE;
       break;
 
     case 'options':
@@ -474,19 +477,100 @@ function d4os_io_db_os_profile_services_avatar_properties_request($params) {
   $result = db_query("SELECT * FROM {userprofile} WHERE useruuid = '%s'", array($uuid));
   while ($row = db_fetch_array($result)) {
     $data[] = array(
-      "ProfileUrl" => $row["profileURL"]
+      'profilePartner'        => $row['profilePartner'], // 1
+      'profileAllowPublish'   => $row['profileAllowPublish'], // 2
+      'profileMaturePublish'  => $row['profileMaturePublish'], // 3
+      'profileURL'            => $row['profileURL'], // 4
+      'ProfileUrl'            => $row['profileURL'], // 5
+      'profileWantToMask'     => $row['profileWantToMask'], // 6
+      'profileWantToText'     => $row['profileWantToText'], // 7
+      'profileSkillsMask'     => $row['profileSkillsMask'], // 8
+      'profileSkillsText'     => $row['profileSkillsText'], // 9
+      'profileLanguages'      => $row['profileLanguages'], // 10
+      'profileFirstImage'     => $row['profileFirstImage'], // 11
+      'profileFirstText'      => $row['profileFirstText'], // 12
     );
   }
   d4os_io_db_set_active('default');
 
   if (count($data) == 0) {
-    $data[]["ProfileUrl"] = '';
+    $data[]["profilePartner"]       = ''; // 1
+    $data[]["profileAllowPublish"]  = 'false'; // 2
+    $data[]["profileMaturePublish"] = 'false'; // 3
+    $data[]["profileURL"]           = ''; // 4
+    $data[]["ProfileUrl"]           = ''; // 5
+    $data[]["profileWantToMask"]    = '0'; // 6
+    $data[]["profileWantToText"]    = ''; // 7
+    $data[]["profileSkillsMask"]    = '0'; // 8
+    $data[]["profileSkillsText"]    = ''; // 9
+    $data[]["profileLanguages"]     = ''; // 10
+    $data[]["profileFirstImage"]    = ''; // 11
+    $data[]["profileFirstText"]     = ''; // 12
   }
 
   return array(
     'success'       => TRUE,
     'errorMessage'  => "",
     'data'          => $data
+  );
+}
+
+function d4os_io_db_os_profile_services_update_avatar_properties($params) {
+  $avatarID = $params['avatarID'];
+
+  // check if the user has a profile
+  d4os_io_db_set_active('os_profile');
+  $profile = db_result(db_query("SELECT useruuid FROM {userprofile} WHERE useruuid = '%s'", array($avatarID)));
+  d4os_io_db_set_active('default');
+
+  if (!$profile) {
+    $f = array();
+    $s = array();
+    $v = array();
+    foreach ($params as $key => $value) {
+      switch ($key) {
+        case 'profilePartner':
+        case 'profileURL':
+        case 'profileFirstImage':
+        case 'profileFirstText':
+          $f[] = $key;
+          $s[] = "'%s'";
+          $v[] = $value;
+          break;
+      }
+    }
+    $f[] = 'useruuid';
+    $s[] = "'%s'";
+    $v[] = $avatarID;
+
+    d4os_io_db_set_active('os_profile');
+    $result = db_query("INSERT INTO {userprofile} (". implode(',', $f). ") VALUES (". implode(',', $s). ")", $v);
+    d4os_io_db_set_active('default');
+  }
+  else {
+    $f = array();
+    $v = array();
+    foreach ($params as $key => $value) {
+      switch ($key) {
+        case 'profilePartner':
+        case 'profileURL':
+        case 'profileFirstImage':
+        case 'profileFirstText':
+          $f[] = $key. "='%s'";
+          $v[] = $value;
+          break;
+      }
+    }
+    $v[] = $avatarID;
+
+    d4os_io_db_set_active('os_profile');
+    $result = db_query("UPDATE {userprofile} SET ". implode(',', $f). " WHERE useruuid = '%s'", $v);
+    d4os_io_db_set_active('default');
+  }
+
+  return array(
+    'success'       => TRUE,
+    'errorMessage'  => "",
   );
 }
 

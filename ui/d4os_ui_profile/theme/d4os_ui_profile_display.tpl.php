@@ -98,7 +98,6 @@
         <dt><?php print t('Web'); ?></dt>
           <dd><?php print $profile->web; ?></dd>
       </dl>
-      <iframe width="600px" height="400px" src="http://d4os.org"></iframe>
     </div>
   </div>
 <?php endif; // web ?>
