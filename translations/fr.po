@@ -1,0 +1,2861 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: d4os\n"
+"POT-Creation-Date: 2010-04-20 08:33+0200\n"
+"PO-Revision-Date: \n"
+"Last-Translator: ssm2017.binder <ssm2017.binder@gmail.com>\n"
+"Language-Team: d4os <ssm2017.binder@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: french\n"
+"X-Poedit-Country: france\n"
+
+#: d4os.admin.inc:18
+#: io/d4os_io_osservices/d4os_io_osservices.admin.inc:34
+msgid "Default URI"
+msgstr "URI par défaut"
+
+#: d4os.admin.inc:25
+#: io/d4os_io_db/d4os_io_db.admin.inc:214
+#: io/d4os_io_db/d4os_io_db.settings.inc:18
+#: io/d4os_io_osservices/d4os_io_osservices.admin.inc:17
+#: io/d4os_io_osservices/d4os_io_osservices.module:67
+msgid "Grid"
+msgstr "Grille"
+
+#: d4os.admin.inc:31;33
+msgid "Default grid URI"
+msgstr "URI par défaut de la grille"
+
+#: d4os.admin.inc:38;42
+msgid "Default grid port"
+msgstr "Port par défaut de la grille"
+
+#: d4os.admin.inc:47
+msgid "LoginURI"
+msgstr "URI de connection"
+
+#: d4os.admin.inc:53;55
+msgid "Default login URI"
+msgstr "URI de connection par défaut"
+
+#: d4os.admin.inc:60;64
+msgid "Default login port"
+msgstr "Port de connection par défaut"
+
+#: d4os.admin.inc:71
+#: io/d4os_io_db/d4os_io_db.admin.inc:309
+#: io/d4os_io_db/d4os_io_db.settings.inc:22
+msgid "Inventory"
+msgstr "Inventaire"
+
+#: d4os.admin.inc:77;79
+msgid "Default inventory URI"
+msgstr "URI par défaut de l'inventaire"
+
+#: d4os.admin.inc:84;88
+msgid "Default inventory port"
+msgstr "Port par défaut de l'inventaire"
+
+#: d4os.admin.inc:94
+#: io/d4os_io_db/d4os_io_db.admin.inc:75
+#: io/d4os_io_db/d4os_io_db.settings.inc:19
+#: io/d4os_io_simian/d4os_io_simian.test.inc:25
+msgid "Asset"
+msgstr "Asset"
+
+#: d4os.admin.inc:100;102
+msgid "Default asset URI"
+msgstr "URI par défaut des assets"
+
+#: d4os.admin.inc:107;111
+msgid "Default asset port"
+msgstr "Port par défaut des assets"
+
+#: d4os.admin.inc:117
+msgid "Pictures"
+msgstr "Images"
+
+#: d4os.admin.inc:123;125
+msgid "Default asset server URL"
+msgstr "URL par défaut des assets"
+
+#: d4os.admin.inc:132
+msgid "Use these tabs to configure the io settings"
+msgstr "Utilisez ces onglets pour configurer les réglages io"
+
+#: d4os.admin.inc:136
+msgid "Use these tabs to configure the services settings"
+msgstr "Utilisez ces onglets pour configurer les réglages des services"
+
+#: d4os.admin.inc:140
+msgid "Use these tabs to configure the ui settings"
+msgstr "Utilisez ces onglets pour configurer les réglages de ui"
+
+#: d4os.module:17
+#: io/d4os_io_osservices/d4os_io_osservices.module:15
+#: io/d4os_io_radmin/d4os_io_radmin.module:15
+msgid "OpenSim grid management"
+msgstr "Gestion de grille OpenSim"
+
+#: d4os.module:61
+msgid "admin d4os"
+msgstr "admin d4os"
+
+#: d4os.module:24;25
+msgid "d4os settings"
+msgstr "réglages d4os"
+
+#: d4os.module:33
+msgid "IO"
+msgstr "IO"
+
+#: d4os.module:34
+msgid "IO settings"
+msgstr "Réglages IO"
+
+#: d4os.module:41
+msgid "services"
+msgstr "services"
+
+#: d4os.module:42
+msgid "services settings"
+msgstr "réglages des services"
+
+#: d4os.module:49
+msgid "UI"
+msgstr "UI"
+
+#: d4os.module:50
+msgid "UI settings"
+msgstr "Réglages UI"
+
+#: d4os.info:0
+msgid "d4os"
+msgstr "d4os"
+
+#: d4os.info:0
+#: io/d4os_io_radmin/d4os_io_radmin.info:0
+#: io/d4os_io_simian/d4os_io_simian.info:0
+msgid "Provides tools to manage an opensim grid."
+msgstr "Fournit des outils pour gérer une grille opensim."
+
+#: d4os.info:0
+msgid "d4os core"
+msgstr "noyau d4os"
+
+#: io/d4os_io_db/d4os_io_db.admin.inc:19
+msgid "Database system"
+msgstr "Système de bases de données"
+
+#: io/d4os_io_db/d4os_io_db.admin.inc:20
+msgid "Same as website"
+msgstr "Identique au site web"
+
+#: io/d4os_io_db/d4os_io_db.admin.inc:20
+msgid "Single"
+msgstr "Unique"
+
+#: io/d4os_io_db/d4os_io_db.admin.inc:20
+msgid "Multiple"
+msgstr "Multiple"
+
+#: io/d4os_io_db/d4os_io_db.admin.inc:22
+msgid "Select if you are using only one database for all the OpenSim grid or if you are using separated bases."
+msgstr "Choisissez si vous utilisez une seule base de données pour toute la grille ou si vous utilisez des bases différentes."
+
+#: io/d4os_io_db/d4os_io_db.admin.inc:27
+msgid "Single base"
+msgstr "Base unique"
+
+#: io/d4os_io_db/d4os_io_db.admin.inc:30
+msgid "Fill these values if you are using a single database."
+msgstr "Remplissez ces valeurs si vous utilisez une seule base de données."
+
+#: io/d4os_io_db/d4os_io_db.admin.inc:34;36;90;92;229;231;277;279;324;326;463;465;511;513;605;607;654;656
+msgid "Host"
+msgstr "Hôte"
+
+#: io/d4os_io_db/d4os_io_db.admin.inc:40;42;96;98;235;237;283;285;330;332;469;471;517;519;611;613;660;662
+msgid "Database"
+msgstr "Base de données"
+
+#: io/d4os_io_db/d4os_io_db.admin.inc:46;48;102;104;241;243;289;291;336;338;475;477;523;525;617;619;666;668
+msgid "Prefix"
+msgstr "Préfixe"
+
+#: io/d4os_io_db/d4os_io_db.admin.inc:52;54;108;110;247;249;295;297;342;344;481;483;529;531;623;625;672;674
+msgid "Username"
+msgstr "Nom d'utilisateur"
+
+#: io/d4os_io_db/d4os_io_db.admin.inc:58;60;114;116;253;255;301;303;348;350;487;489;535;537;629;631;678;680
+msgid "Password"
+msgstr "Mot de passe"
+
+#: io/d4os_io_db/d4os_io_db.admin.inc:66
+msgid "Multiple bases"
+msgstr "Bases multiples"
+
+#: io/d4os_io_db/d4os_io_db.admin.inc:69
+msgid "Fill these values if you are using multiple databases."
+msgstr "Remplissez ces valeurs si vous utilisez plusieurs bases de données."
+
+#: io/d4os_io_db/d4os_io_db.admin.inc:83;222;270;317;456;504;598;647
+msgid "Same as"
+msgstr "Identique à"
+
+#: io/d4os_io_db/d4os_io_db.admin.inc:86;225;273;320;459;507;601;650
+msgid "Select if this database is the same as another one."
+msgstr "Choisissez si cette base de données est la même qu'une autre"
+
+#: io/d4os_io_db/d4os_io_db.admin.inc:262
+#: io/d4os_io_db/d4os_io_db.settings.inc:28
+msgid "Groups"
+msgstr "Groupes"
+
+#: io/d4os_io_db/d4os_io_db.admin.inc:448
+#: io/d4os_io_db/d4os_io_db.settings.inc:31
+#: ui/d4os_ui_profile/d4os_ui_profile.module:29
+msgid "Profile"
+msgstr "Profils"
+
+#: io/d4os_io_db/d4os_io_db.admin.inc:496
+#: io/d4os_io_db/d4os_io_db.settings.inc:34
+msgid "Search"
+msgstr "Recherche"
+
+#: io/d4os_io_db/d4os_io_db.admin.inc:590
+#: io/d4os_io_db/d4os_io_db.settings.inc:37
+#: io/d4os_io_osservices/d4os_io_osservices.module:141
+#: io/d4os_io_radmin/d4os_io_radmin.module:416;874;915
+msgid "Users"
+msgstr "Utilisateurs"
+
+#: io/d4os_io_db/d4os_io_db.admin.inc:639
+msgid "Offline messages"
+msgstr "Messages hors ligne"
+
+#: io/d4os_io_db/d4os_io_db.settings.inc:16
+#: ui/d4os_ui_groups/d4os_ui_groups.module:308
+#: ui/d4os_ui_users/d4os_ui_users.admin.inc:16
+#: ui/d4os_ui_users/d4os_ui_users.module:555
+msgid "None"
+msgstr "Aucune"
+
+#: io/d4os_io_db/d4os_io_db.settings.inc:17
+msgid "Website"
+msgstr "Site web"
+
+#: io/d4os_io_db/d4os_io_db.settings.inc:40
+#: io/d4os_io_services/d4os_io_services_offline_message/d4os_io_services_offline_message.module:29;38
+msgid "offline_message"
+msgstr "offline_message"
+
+#: io/d4os_io_db/d4os_io_db_groups.inc:34
+msgid "This user is not registered in the grid. Inworld group was not created for this user."
+msgstr "L'utilisateur n'est pas enregistré sur la grille. Le groupe inworld n'a pas été créé pour cet utilisateur."
+
+#: io/d4os_io_db/d4os_io_db_groups.inc:266;361;414;436;446;458;494;540;573;620;631;667;714;731;800;810;820;841;852;880;926;936;966;995;1025;1058;1077;1123;1177;1210;1277;1305;1338;1382;1438;1540;1561;1602;1645;1668;1682;1703;1746;1762
+msgid "Could not successfully run query (!sql) from DB: "
+msgstr "N'a pu exécuter la requête (!sql) dans la base:"
+
+#: io/d4os_io_db/d4os_io_db_groups.inc:278
+msgid "Everyone in the group is in the everyone role."
+msgstr "Tout le monde dans le groupe possède le rôle \"everyone\""
+
+#: io/d4os_io_db/d4os_io_db_groups.inc:292
+msgid "Owners of !groupname"
+msgstr "Propriétaires de !groupname"
+
+#: io/d4os_io_db/d4os_io_db_groups.inc:293
+msgid "Owner of !groupname"
+msgstr "Propriétaire de !groupname"
+
+#: io/d4os_io_db/d4os_io_db_groups.inc:607;954
+msgid "Agent can only change their own Selected Group Role"
+msgstr "Un agent ne peut changer le rôle que de son groupe sélectionné"
+
+#: io/d4os_io_db/d4os_io_db_groups.inc:679
+msgid "Could not add agent to group "
+msgstr "N'a pas pu ajouter l'agent au groupe"
+
+#: io/d4os_io_db/d4os_io_db_groups.inc:888
+msgid "Could not add agent to group role"
+msgstr "N'a pas pu ajouter l'agent au rôle de groupe"
+
+#: io/d4os_io_db/d4os_io_db_groups.inc:895
+msgid "Group (!group) not found or Agent (!agent) is not in the owner's role"
+msgstr ""
+
+#: io/d4os_io_db/d4os_io_db_groups.inc:902
+msgid "Requesting agent !requestingAgent is not a member of the Owners Role and cannot add members to the owners role."
+msgstr ""
+
+#: io/d4os_io_db/d4os_io_db_groups.inc:1191
+msgid "No Group Members found"
+msgstr "Aucun membre de groupe trouvé"
+
+#: io/d4os_io_db/d4os_io_db_groups.inc:1351
+msgid "Could not get agent roles"
+msgstr ""
+
+#: io/d4os_io_db/d4os_io_db_groups.inc:1395
+msgid "Could not get group roles"
+msgstr ""
+
+#: io/d4os_io_db/d4os_io_db_groups.inc:1574
+msgid "Could not get group notices"
+msgstr ""
+
+#: io/d4os_io_db/d4os_io_db_groups.inc:1611
+msgid "Could not get group notice"
+msgstr ""
+
+#: io/d4os_io_db/d4os_io_db_inventory.inc:333;489
+msgid "Could not find folders for this user."
+msgstr ""
+
+#: io/d4os_io_db/d4os_io_db_inventory.inc:513
+msgid "Could not find items for this user."
+msgstr ""
+
+#: io/d4os_io_db/d4os_io_db_inventory.inc:852
+msgid "Inventory folders created and default items added."
+msgstr "Les dossiers de l'invetaire ont été créés et les éléments par défaut ont été ajoutés."
+
+#: io/d4os_io_db/d4os_io_db_inventory.inc:854
+msgid "Appearance added."
+msgstr "Apparence ajoutée."
+
+#: io/d4os_io_db/d4os_io_db_inventory.inc:856
+msgid "Appearance attached."
+msgstr "Apparence attachée."
+
+#: io/d4os_io_db/d4os_io_db_profile.inc:56
+msgid "Could not find the user in the grid."
+msgstr "N'a pas pu trouver l'utilisateur sur la grille."
+
+#: io/d4os_io_db/d4os_io_db_profile.inc:87
+msgid "Saved"
+msgstr "Sauvé"
+
+#: io/d4os_io_db/d4os_io_db_profile.inc:90
+msgid "An error occured during saving"
+msgstr "une erreur est survenue durant la sauvegarde"
+
+#: io/d4os_io_db/d4os_io_db_search.inc:82;130
+msgid "Error saving the event to the grid database"
+msgstr "Erreur en sauvant l'évènement dans la base de données de la grille"
+
+#: io/d4os_io_db/d4os_io_db_search.inc:142
+msgid "Error saving the event to the website database"
+msgstr "Erreur en sauvant l'évènement dans la base de données du site web"
+
+#: io/d4os_io_db/d4os_io_db_search.inc:394
+msgid "No auctions listed."
+msgstr ""
+
+#: io/d4os_io_db/d4os_io_db_search.inc:648
+msgid "Starting parsing host values."
+msgstr ""
+
+#: io/d4os_io_db/d4os_io_db_search.inc:663
+msgid "Host !host was parsed."
+msgstr ""
+
+#: io/d4os_io_db/d4os_io_db_search.inc:667
+msgid "No host found."
+msgstr "Aucun hôte n'a été trouvé."
+
+#: io/d4os_io_db/d4os_io_db_search.inc:675
+msgid "Host !host was unreachable."
+msgstr "Hôte !host n'a pu être accesible."
+
+#: io/d4os_io_db/d4os_io_db_search.inc:867
+msgid "XML data for !host was unreachable."
+msgstr ""
+
+#: io/d4os_io_db/d4os_io_db_users.inc:283
+msgid "Deleting offline messages."
+msgstr "Suppression des messages hors ligne."
+
+#: io/d4os_io_db/d4os_io_db_users.inc:287
+msgid "Deleting search info."
+msgstr "Suppression des infos de recherche."
+
+#: io/d4os_io_db/d4os_io_db_users.inc:291
+msgid "Deleting profile info."
+msgstr "Suppression des infos du profil."
+
+#: io/d4os_io_db/d4os_io_db_users.inc:295
+msgid "Deleting inventory."
+msgstr "Suppression de l'inventaire."
+
+#: io/d4os_io_db/d4os_io_db_users.inc:299
+msgid "Deleting sessions."
+msgstr "Suppression des sessions."
+
+#: io/d4os_io_db/d4os_io_db_users.inc:305
+msgid "Deleting friends."
+msgstr "Suppression des amis."
+
+#: io/d4os_io_db/d4os_io_db_users.inc:311
+msgid "Deleting user."
+msgstr "Suppression de l'utilisateur."
+
+#: io/d4os_io_db/d4os_io_db.module:23
+msgid "OpenSim grid management saving to the database"
+msgstr "Gestion de la grille sauvant dans la base de données"
+
+#: io/d4os_io_db/d4os_io_db.module:43
+msgid "admin d4os db"
+msgstr "administrer d4os db"
+
+#: io/d4os_io_db/d4os_io_db.module:30
+msgid "db"
+msgstr "db"
+
+#: io/d4os_io_db/d4os_io_db.module:31
+msgid "d4os io db settings"
+msgstr "réglages d4os io db"
+
+#: io/d4os_io_db/d4os_io_db.info:0
+msgid "d4os io db"
+msgstr "d4os io db"
+
+#: io/d4os_io_db/d4os_io_db.info:0
+msgid "Provides tools to manage an opensim grid saving to the database."
+msgstr "Fournit des outils pour gérer une grille opensim en sauvant vers la base de données."
+
+#: io/d4os_io_db/d4os_io_db.info:0
+#: io/d4os_io_osservices/d4os_io_osservices.info:0
+#: io/d4os_io_radmin/d4os_io_radmin.info:0
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.info:0
+#: io/d4os_io_services/d4os_io_services_offline_message/d4os_io_services_offline_message.info:0
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.info:0
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.info:0
+#: io/d4os_io_simian/d4os_io_simian.info:0
+msgid "d4os io"
+msgstr "d4os io"
+
+#: io/d4os_io_osservices/d4os_io_osservices.admin.inc:24
+msgid "Default grid pause"
+msgstr "Pause par défaut pour la grille"
+
+#: io/d4os_io_osservices/d4os_io_osservices.admin.inc:28
+msgid "Delay between every call."
+msgstr "Délai entre chaque appel."
+
+#: io/d4os_io_osservices/d4os_io_osservices.admin.inc:41;43
+msgid "Default oss URI"
+msgstr "URI oss par défaut"
+
+#: io/d4os_io_osservices/d4os_io_osservices.admin.inc:49;53
+msgid "Default oss port"
+msgstr "Port oss par défaut"
+
+#: io/d4os_io_osservices/d4os_io_osservices.admin.inc:59
+msgid "Default credentials"
+msgstr "Paramètres de connection par défaut"
+
+#: io/d4os_io_osservices/d4os_io_osservices.admin.inc:66;70
+msgid "Default user"
+msgstr "Utilisateur par défaut"
+
+#: io/d4os_io_osservices/d4os_io_osservices.admin.inc:76;80
+msgid "Default password"
+msgstr "Mot de passe par défaut"
+
+#: io/d4os_io_osservices/d4os_io_osservices.admin.inc:86
+msgid "Default UUID"
+msgstr ""
+
+#: io/d4os_io_osservices/d4os_io_osservices.admin.inc:93;97
+msgid "Default OSMAPS UUID"
+msgstr ""
+
+#: io/d4os_io_osservices/d4os_io_osservices.admin.inc:103;107
+msgid "Default USERS UUID"
+msgstr ""
+
+#: io/d4os_io_osservices/d4os_io_osservices.admin.inc:113;117
+msgid "Default ROBUST UUID"
+msgstr ""
+
+#: io/d4os_io_osservices/d4os_io_osservices.admin.inc:123;127
+msgid "Default MESSAGING UUID"
+msgstr ""
+
+#: io/d4os_io_osservices/d4os_io_osservices.admin.inc:133;137
+msgid "Default OPENSIM UUID"
+msgstr ""
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:57
+msgid "No action"
+msgstr "Aucune action"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:58
+msgid "Start"
+msgstr "Démarrer"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:59
+msgid "Stop"
+msgstr "Arrêter"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:60
+msgid "Kill"
+msgstr "Tuer"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:73
+msgid "Grid control service"
+msgstr "Service de contrôle de la grille"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:75;112;149;203;257;311
+msgid "Start stop kill."
+msgstr "Démarrer arrêter tuer."
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:79;116;153;170;207;224;261;278;315;332
+#: io/d4os_io_radmin/d4os_io_radmin.module:157;186;233;269;300;329;360;396;461;517;551;606;663;710;751;792;838;879;920;956
+#: io/d4os_io_simian/d4os_io_simian.test.inc:64;143;188;228;273
+#: ui/d4os_ui_groups/d4os_ui_groups.module:312
+#: ui/d4os_ui_users/d4os_ui_users.module:560
+msgid "Go"
+msgstr "Exécuter"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:86;123;160;177;214;231;268;285;322;339
+msgid "Connecting..."
+msgstr "Connection...."
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:91;128;182;236;290;344
+#: io/d4os_io_radmin/d4os_io_radmin.module:166;195;242;278;309;338;369;405;470;526;560;615;672;719;760;801;847;888;929;965
+#: io/d4os_io_simian/d4os_io_simian.test.inc:73;152;197;237;282
+msgid "Response"
+msgstr "Réponse"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:104
+msgid "OsMaps"
+msgstr "OsMaps"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:110
+msgid "OsMaps control service"
+msgstr "Service de contrôle pour OsMaps"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:147
+msgid "Users control service"
+msgstr "Service de contrôle pour les utilisateurs"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:165;219;273;327
+msgid "Console commands"
+msgstr "Commandes de la console"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:166;220;274;328
+msgid "Console commands."
+msgstr "Commandes de la console."
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:195
+msgid "Robust"
+msgstr "Robust"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:201
+msgid "Robust control service"
+msgstr "Service de contrôle de robust"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:249
+msgid "Messaging"
+msgstr "Messages"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:255
+msgid "Messaging control service"
+msgstr "Service de contrôle des messages"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:303
+msgid "OpenSim"
+msgstr "OpenSim"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:309
+msgid "OpenSim control service"
+msgstr "Service de contrôle OpenSim"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:462
+msgid "Success"
+msgstr "Succès"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:463
+msgid "StdOut"
+msgstr "Sortie"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:470
+msgid "Service"
+msgstr "Service"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:471
+msgid "UUID"
+msgstr "UUID"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:472
+msgid "Method"
+msgstr "Méthode"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:473
+msgid "Command"
+msgstr "Commande"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:474
+msgid "Result"
+msgstr "Résultat"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:475
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:63
+#: io/d4os_io_services/d4os_io_services_offline_message/d4os_io_services_offline_message.admin.inc:19
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.admin.inc:19
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.admin.inc:28
+msgid "Error"
+msgstr "Erreur"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:476
+msgid "Error N°"
+msgstr "Erreur N°"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:485
+msgid "Oops...I have pushed the wrong button..."
+msgstr "Zut... j'ai appuyé sur le mauvais bouton..."
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:50
+msgid "admin d4os osservices"
+msgstr "administrer d4os osservices"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:51
+msgid "access d4os osservices"
+msgstr "accéder à d4os osservices"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:22;31
+msgid "osservices"
+msgstr "osservices"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:23
+msgid "d4os io osservices settings"
+msgstr "réglages d4os io osservices"
+
+#: io/d4os_io_osservices/d4os_io_osservices.module:32
+msgid "d4os osservices"
+msgstr "d4os osservices"
+
+#: io/d4os_io_osservices/d4os_io_osservices.info:0
+msgid "d4os io osservices"
+msgstr "d4os io osservices"
+
+#: io/d4os_io_osservices/d4os_io_osservices.info:0
+msgid "Provides tools to manage an opensim grid using the osservices system."
+msgstr "Fournit des outils pour gérer une grille opensim en utilisant le système osservices."
+
+#: io/d4os_io_radmin/d4os_io_radmin.admin.inc:17;19
+msgid "Default radmin password"
+msgstr "Mot de passe par défaut de radmin"
+
+#: io/d4os_io_radmin/d4os_io_radmin.admin.inc:24
+msgid "Use osservices"
+msgstr "Utiliser osservices"
+
+#: io/d4os_io_radmin/d4os_io_radmin.admin.inc:26
+msgid "Use the osservices radmin proxy."
+msgstr "Utiliser le proxy de osservices pour radmin."
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:67
+#: ui/d4os_ui_regions/d4os_ui_regions.module:23
+msgid "Regions"
+msgstr "Régions"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:77
+msgid "Create a new region"
+msgstr "Créer une nouvelle région"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:81;181;182;211;212;257;258;645;646;692;693;739;740;780;781;826;903;944
+msgid "Region name"
+msgstr "Nom de la région"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:82;827;863;904;945
+msgid "Region name."
+msgstr "Nom de la région."
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:86;353;354;389;390
+msgid "Region id"
+msgstr "Région id"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:87
+msgid "Region id (optional)."
+msgstr "Région id (optionnel)"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:91;92
+msgid "Master firstname"
+msgstr "Prénom maître"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:96;97
+msgid "Master lastname"
+msgstr "Nom maître"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:101
+msgid "Master uuid"
+msgstr "Uuid maître"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:102
+msgid "Master uuid (optional)"
+msgstr "Uuid maître (optionnel)"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:106;107
+msgid "Master password"
+msgstr "Mot de passe maître"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:111;112
+msgid "Listen IP"
+msgstr "IP d'écoute"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:116;117
+msgid "Listen port"
+msgstr "Port d'écoute"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:123;124
+msgid "External address"
+msgstr "Adresse externe"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:128;129
+msgid "Region X"
+msgstr "Région X"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:135;136
+msgid "Region Y"
+msgstr "Région Y"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:142;143
+msgid "Persist"
+msgstr "Persistant"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:147;148;223;224
+msgid "Public"
+msgstr "Public"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:152;153;228;229
+msgid "Enable voice"
+msgstr "Activer la voice"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:177
+msgid "Delete a region"
+msgstr "Supprimer une région"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:207
+msgid "Modify a region"
+msgstr "Modifier une région"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:216;217;262;263;650;651;697;698;744;745;785;786;831;832;867;868;908;909;949;950
+msgid "Region uuid"
+msgstr "Uuid de la région"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:253
+msgid "Query the \"health\" of a region"
+msgstr "Requiert la \"santé\" de la région"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:289
+msgid "Shut down the simulator"
+msgstr "Arrêter le simulateur"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:293
+msgid "Delay"
+msgstr "Délai"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:294
+msgid "Delay in seconds (optional)"
+msgstr "Délai en secondes (optionnel)"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:320
+msgid "Send a general alert"
+msgstr "Envoyer une alerte générale"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:324
+msgid "Message"
+msgstr "Message"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:325
+msgid "Message."
+msgstr "Message."
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:349
+msgid "Restart Region"
+msgstr "Redémarrer la région"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:380
+msgid "Load Height Map"
+msgstr "Charger la carte des hauteurs"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:384;385;640;641;687;688;734;735;775;776
+msgid "File name"
+msgstr "Nom de fichier"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:426
+msgid "Create a new user"
+msgstr "Créer un nouvel utilisateur"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:430;431;486;487;541;542;575;576
+msgid "User firstname"
+msgstr "Prénom utilisateur"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:435;436;491;492;546;547;580;581
+msgid "User lastname"
+msgstr "Nom utilisateur"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:440;441;496;497;585;586
+msgid "User password"
+msgstr "Mot de passe de l'utilisateur"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:445;446;501;502;590;591
+msgid "Start region X"
+msgstr "Coordonnée en X de départ pour la région"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:453;454;509;510;598;599
+msgid "Start region Y"
+msgstr "Coordonnée en Y de départ pour la région"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:482
+msgid "Create a new user (alias for admin_create_user)"
+msgstr ""
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:537
+msgid "Check whether a certain user account exists"
+msgstr ""
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:571
+msgid "Update the password/home of a user account"
+msgstr ""
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:626
+msgid "Region state"
+msgstr "Etat de la région"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:636
+msgid "Execute the Load XML command"
+msgstr "Exécuter la commande Load XML"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:658;659;705;706
+msgid "XML version"
+msgstr "Version XML"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:683
+msgid "Execute the Save XML command"
+msgstr "Exécuter la commande Save XML"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:730
+msgid "Load a saved OAR file into a region"
+msgstr "Charger un fichier OAR d'un contenu de région"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:771
+msgid "Saved an OAR file of a regions contents"
+msgstr ""
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:812
+msgid "Acl"
+msgstr "Acl"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:822
+msgid "Clear the access list for the region"
+msgstr ""
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:858
+msgid "Add a list of users to the access control list"
+msgstr ""
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:862
+msgid "Region"
+msgstr "Région"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:875;916
+msgid "Users (firstname lastname;firstname lastname; firstname lastname...)"
+msgstr "Utilisateurs (prénom nom;prénom nom;prénom nom...)"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:899
+msgid "Remove a list of users from the access control list"
+msgstr ""
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:940
+msgid "Retrieve a list of users who can access the region"
+msgstr ""
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:50
+msgid "admin d4os radmin"
+msgstr "administrer d4os radmin"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:51
+msgid "access d4os radmin"
+msgstr "utiliser d4os radmin"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:22
+msgid "radmin"
+msgstr "radmin"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:23
+msgid "d4os io radmin settings"
+msgstr ""
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:31
+msgid "Radmin"
+msgstr "Radmin"
+
+#: io/d4os_io_radmin/d4os_io_radmin.module:32
+msgid "d4os radmin"
+msgstr "d4os radmin"
+
+#: io/d4os_io_radmin/d4os_io_radmin.info:0
+msgid "d4os io radmin"
+msgstr "d4os io radmin"
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:17
+msgid "Keys"
+msgstr "Clefs"
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:20
+msgid "A xmlrpc client must have this key to commit changes to the Groups DB.Leave blank to allow all clients to make changes."
+msgstr ""
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:24
+msgid "Write key"
+msgstr "Clef d'écriture"
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:29
+msgid "Read key"
+msgstr "Clef de lecture"
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:34
+msgid "groupRequireAgentAuthForWrite"
+msgstr ""
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:36
+msgid "Enabling this, will require that the service attempt to verify the agent is authentic by contacting the User Service specified in the request to authenticate the AgentID and SessionID provided."
+msgstr ""
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:40
+msgid "groupEnforceGroupPerms"
+msgstr ""
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:42
+msgid "This enforces the role Permissions bitmask."
+msgstr ""
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:46
+msgid "overrideAgentUserService"
+msgstr ""
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:48
+msgid ""
+"<p>Specify the following to hard-code / lockdown the User Service used to authenticate user sessions<br />\n"
+"  Example: http://osgrid.org:8002<br />\n"
+"  Note:  This causes the User Service specified with requests to be ignored, and prevents the service from being used cross-grid or by hypergridded users.</p>"
+msgstr ""
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:54
+msgid "membersVisibleTo"
+msgstr ""
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:55
+msgid "All"
+msgstr "Tous"
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:55
+msgid "Group"
+msgstr "Groupe"
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:55
+msgid "Owners"
+msgstr "Propriétaires"
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:55
+msgid "Roles"
+msgstr "Rôles"
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:57
+msgid "Define who can see group members"
+msgstr "Définir qui peut voir les membres du groupe"
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:60
+#: io/d4os_io_services/d4os_io_services_offline_message/d4os_io_services_offline_message.admin.inc:16
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.admin.inc:16
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.admin.inc:25
+msgid "Emergency"
+msgstr "Urgence"
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:61
+#: io/d4os_io_services/d4os_io_services_offline_message/d4os_io_services_offline_message.admin.inc:17
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.admin.inc:17
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.admin.inc:26
+msgid "Alert"
+msgstr "Alerte"
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:62
+#: io/d4os_io_services/d4os_io_services_offline_message/d4os_io_services_offline_message.admin.inc:18
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.admin.inc:18
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.admin.inc:27
+msgid "Critical"
+msgstr "Critique"
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:64
+#: io/d4os_io_services/d4os_io_services_offline_message/d4os_io_services_offline_message.admin.inc:20
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.admin.inc:20
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.admin.inc:29
+msgid "Warning"
+msgstr "Avertissement"
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:65
+#: io/d4os_io_services/d4os_io_services_offline_message/d4os_io_services_offline_message.admin.inc:21
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.admin.inc:21
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.admin.inc:30
+msgid "Notice"
+msgstr "Notification"
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:66
+#: io/d4os_io_services/d4os_io_services_offline_message/d4os_io_services_offline_message.admin.inc:22
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.admin.inc:22
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.admin.inc:31
+#: ui/d4os_ui_profile/theme/d4os_ui_profile_display.tpl.php:146
+msgid "Info"
+msgstr "Info"
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:67
+#: io/d4os_io_services/d4os_io_services_offline_message/d4os_io_services_offline_message.admin.inc:23
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.admin.inc:23
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.admin.inc:32
+msgid "Debug"
+msgstr "Debug"
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:71
+#: io/d4os_io_services/d4os_io_services_offline_message/d4os_io_services_offline_message.admin.inc:27
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.admin.inc:27
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.admin.inc:36
+msgid "Log level"
+msgstr "Niveau de connection"
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:74
+#: io/d4os_io_services/d4os_io_services_offline_message/d4os_io_services_offline_message.admin.inc:30
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.admin.inc:30
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.admin.inc:39
+msgid "Define the log level"
+msgstr "Définir le niveau de connection"
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.module:141;143
+msgid "Provides groups methods to services applications. Requires services.module."
+msgstr ""
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.module:181;197;213;229;245;261;277;293;309;325;341;357;373;389;405;421;437;453;469;485;501;517;533;549;565;581;597
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.module:73;91;109;127;145;163;181;199;217;235;253;271;289;307
+msgid "Params."
+msgstr "Paramètres."
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.module:185;201;217;233;249;265;281;297;313;329;345;361;377;393;409;425;441;457;473;489;505;521;537;553;569;585;601
+msgid "Return group."
+msgstr "Retourne le groupe."
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.module:162
+msgid "admin d4os io services groups"
+msgstr "administrer d4os io services groups"
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.module:149
+#: ui/d4os_ui_groups/d4os_ui_groups.module:14
+msgid "groups"
+msgstr "groupes"
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.module:150
+msgid "d4os io services groups settings"
+msgstr "réglages io services groups"
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.info:0
+msgid "d4os io services groups"
+msgstr "d4os io services groups"
+
+#: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.info:0
+msgid "Provides a group service."
+msgstr "Fournit un service pour les groupes."
+
+#: io/d4os_io_services/d4os_io_services_offline_message/d4os_io_services_offline_message.module:21;23
+msgid "Provides offline_message methods to services applications. Requires services.module."
+msgstr "Fournit des méthodes de messages hors lignes à des applications de services. Nécéssite le module services."
+
+#: io/d4os_io_services/d4os_io_services_offline_message/d4os_io_services_offline_message.module:50
+msgid "admin d4os io services offline_message"
+msgstr "administrer d4os io services offline_message"
+
+#: io/d4os_io_services/d4os_io_services_offline_message/d4os_io_services_offline_message.module:30
+msgid "d4os io services offline_message settings"
+msgstr "réglages d4os io services offline_message"
+
+#: io/d4os_io_services/d4os_io_services_offline_message/d4os_io_services_offline_message.module:39
+msgid "d4os io services offline_message"
+msgstr "d4os io services offline_message"
+
+#: io/d4os_io_services/d4os_io_services_offline_message/d4os_io_services_offline_message.info:0
+msgid "d4os io services offline message"
+msgstr "d4os io services offline message"
+
+#: io/d4os_io_services/d4os_io_services_offline_message/d4os_io_services_offline_message.info:0
+msgid "Provides tools to manage offline messages in an opensim grid."
+msgstr ""
+
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.module:33;35
+msgid "Provides profile methods to services applications. Requires services.module."
+msgstr ""
+
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.module:78
+msgid "Return avatar classifieds."
+msgstr "Retourne les annonces de l'avatar."
+
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.module:96
+msgid "Update classified."
+msgstr "Mettre à jour les annonces."
+
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.module:114
+msgid "Delete classified."
+msgstr "Supprimer les annonces."
+
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.module:132
+msgid "Return avatar picks."
+msgstr "Retourne les images de l'avatar."
+
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.module:150
+msgid "Return pick info."
+msgstr "Retourne les infos des images."
+
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.module:168
+msgid "Update picks."
+msgstr "Met à jour les images."
+
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.module:186
+msgid "Delete picks."
+msgstr "Supprime les images."
+
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.module:204
+msgid "Return avatar notes."
+msgstr "Retourne les notes de l'avatar."
+
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.module:222
+msgid "Update avatar notes."
+msgstr "Met à jour les notes de l'avatar."
+
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.module:240
+msgid "Return avatar properties."
+msgstr "Retourne les propriétés de l'avatar."
+
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.module:258
+msgid "Return avatar interests."
+msgstr "Retourne les interêts de l'avatar."
+
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.module:276
+msgid "Update avatar interests."
+msgstr "Met à jour les interêts de l'avatar."
+
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.module:294
+msgid "Return user preferences."
+msgstr "Retourne les préférences utilisateurs"
+
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.module:312
+msgid "Update user preferences."
+msgstr "Mettre à jour les préférences utilisateur"
+
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.module:54
+msgid "admin d4os io services profile"
+msgstr "administrer d4os io services profile"
+
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.module:41
+#: ui/d4os_ui_profile/d4os_ui_profile.module:45
+msgid "profile"
+msgstr "profil"
+
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.module:42
+msgid "d4os io services profile settings"
+msgstr "réglages d4os io services profile"
+
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.info:0
+msgid "d4os io services profile"
+msgstr "d4os io services profile"
+
+#: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.info:0
+msgid "Provides a service for persistent profile."
+msgstr ""
+
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.admin.inc:17
+#: ui/d4os_ui_stats/levels/d4os_ui_stats_levels.module:136;148
+#: ui/d4os_ui_stats/status/d4os_ui_stats_status.module:82;94
+msgid "Timer"
+msgstr "Chronomètre"
+
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.admin.inc:21
+msgid "Enter the value for the timer (in minutes) to refresh the data."
+msgstr ""
+
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.services.inc:47
+msgid "Invalid search terms"
+msgstr "Termes de recherche invalides"
+
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.services.inc:183;233
+msgid "Invalid search terms."
+msgstr "Termes de recherche invalides."
+
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.module:33;35
+msgid "Provides search methods to services applications. Requires services.module."
+msgstr ""
+
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.module:94;111;128;145;162;179;196
+msgid "Text."
+msgstr "Texte."
+
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.module:98
+msgid "Return places."
+msgstr "Retourne les emplacements."
+
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.module:115
+msgid "Return popular places."
+msgstr ""
+
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.module:132
+msgid "Return lands infos."
+msgstr ""
+
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.module:149;166
+msgid "Return events infos."
+msgstr ""
+
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.module:183
+msgid "Return event infos."
+msgstr ""
+
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.module:200
+msgid "Return classifieds infos."
+msgstr ""
+
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.module:64
+msgid "admin d4os io services search"
+msgstr ""
+
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.module:65
+msgid "use d4os io services search"
+msgstr ""
+
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.module:41
+msgid "search"
+msgstr "recherche"
+
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.module:42
+msgid "d4os io services search settings"
+msgstr ""
+
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.module:50;51
+msgid "Register host"
+msgstr ""
+
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.info:0
+msgid "d4os io services search"
+msgstr ""
+
+#: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.info:0
+msgid "Provides a service for searching events."
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian.admin.inc:18
+msgid "Default simian url"
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian.admin.inc:20
+msgid "Default simian url (don't forget the trailing / )"
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian.admin.inc:33
+msgid "There was an error when trying to contact the grid. Please check the url."
+msgstr "Il y a eu une erreur en essayant de contacter la grille. Svp, vérifiez l'url."
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:35
+msgid "Create or replace an asset."
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:40
+msgid "UUID of the asset"
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:45
+msgid "UUID of the asset creator"
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:50
+msgid "Raw asset data"
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:55
+msgid "True if this is a temporary asset"
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:60
+msgid "True if this asset is publicly accessible (without authorization)"
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:109
+msgid "User"
+msgstr "Utilisateur"
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:119
+msgid "Create or update a capability resource."
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:124
+msgid "UUID of the capability to create. Can be used to update a capability"
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:129
+msgid "UUID of the owner of this capability"
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:134
+msgid "URL of the protected resource this capability maps to"
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:139
+msgid "UTC timestamp when this capability will expire"
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:164
+msgid "Create or update an identity and associate it with an existing user account. User accounts can have multiple identities (login methods) associated with them."
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:169
+msgid "Identifier, for example a login name"
+msgstr "Identifiant, par exemple un nom de connection"
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:174
+msgid "Credential, for example a hashed password"
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:179
+msgid "Identity type, such as \"md5hash\""
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:184
+msgid "UUID of the user to associate the identity with"
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:209
+msgid "Creates a login session for a user."
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:214
+msgid "UUID of the user to create a login session for"
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:219
+msgid "Identifier to use for this session"
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:224
+msgid "Secure identifier to use for this session. Must only be transmitted across secure channels"
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:249
+msgid "Create or update a user account."
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:254
+msgid "UUID of the user to create or update"
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:259
+msgid "Account name"
+msgstr "Nom du compte"
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:264
+msgid "E-mail address associated with this account"
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian.test.inc:269
+msgid "Value from 0-255 indicating the access level of this account (higher implies more access)"
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian_user.inc:57
+msgid "Error when adding user inventory to the grid."
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian_user.inc:63
+msgid "Error when adding user webdav password to the grid."
+msgstr ""
+
+#: io/d4os_io_simian/d4os_io_simian_user.inc:68
+msgid "Error when adding user password to the grid."
+msgstr "Erreur en ajoutant le mot de passe utilisateur sur la grille."
+
+#: io/d4os_io_simian/d4os_io_simian_user.inc:73
+msgid "Error when adding user to the grid."
+msgstr "Erreur en ajoutant l'utilisateur sur la grille."
+
+#: io/d4os_io_simian/d4os_io_simian.module:47
+msgid "admin d4os simian"
+msgstr "administrer d4os io simian"
+
+#: io/d4os_io_simian/d4os_io_simian.module:48
+msgid "access d4os simian test"
+msgstr "accéder à d4os io simian test"
+
+#: io/d4os_io_simian/d4os_io_simian.module:18
+msgid "simian"
+msgstr "simian"
+
+#: io/d4os_io_simian/d4os_io_simian.module:19
+msgid "d4os io simian settings"
+msgstr "réglages d4os io simian"
+
+#: io/d4os_io_simian/d4os_io_simian.info:0
+msgid "d4os io simian"
+msgstr "d4os io simian"
+
+#: ui/d4os_ui_auth/d4os_ui_auth.admin.inc:20
+msgid "Drupal only"
+msgstr "Drupal seulement"
+
+#: ui/d4os_ui_auth/d4os_ui_auth.admin.inc:21
+msgid "Grid only"
+msgstr "Grille seulement"
+
+#: ui/d4os_ui_auth/d4os_ui_auth.admin.inc:22
+msgid "Drupal -> Grid"
+msgstr "Drupal -> Grille"
+
+#: ui/d4os_ui_auth/d4os_ui_auth.admin.inc:23
+msgid "Grid -> Drupal"
+msgstr "Grille -> Drupal"
+
+#: ui/d4os_ui_auth/d4os_ui_auth.admin.inc:27
+msgid "Login flow"
+msgstr "Flux de connection"
+
+#: ui/d4os_ui_auth/d4os_ui_auth.admin.inc:30
+msgid "Define the login flow."
+msgstr "Définir le flux de connection."
+
+#: ui/d4os_ui_auth/d4os_ui_auth.module:15
+msgid "OpenSim grid auth management"
+msgstr "Gestion de l'autentification sur une grille OpenSIm"
+
+#: ui/d4os_ui_auth/d4os_ui_auth.module:79
+msgid "Sorry, unable to log in using the website credentials. Trying grid process."
+msgstr "Désolé, impossible de se connecter en utilisant les paramètres du site web. Essai avec la grille."
+
+#: ui/d4os_ui_auth/d4os_ui_auth.module:86
+msgid "Sorry, unable to log in using the grid credentials. Trying website process."
+msgstr "Désolé, impossible de se connecter en utilisant les paramètres de la grille. Essai avec le site web."
+
+#: ui/d4os_ui_auth/d4os_ui_auth.module:107
+msgid "Grid authentication has failed. Please try again."
+msgstr "L'autentification sur la grille a échoué. Svp essayez de nouveau."
+
+#: ui/d4os_ui_auth/d4os_ui_auth.module:116
+msgid "Grid authentication has failed. Please try again. Or create an account"
+msgstr "L'autentification sur la grille a échoué. Svp essayez de nouveau. Ou créez un compte"
+
+#: ui/d4os_ui_auth/d4os_ui_auth.module:121
+msgid "Grid Authentication Success"
+msgstr "Autentification sur la grille réussie"
+
+#: ui/d4os_ui_auth/d4os_ui_auth.module:146
+#: ui/d4os_ui_users/d4os_ui_users.module:598
+msgid "A new email address was generated. The user will need to update it."
+msgstr "Une nouvelle adresse de courriel a été générée. L'utilisateur devra la mettre à jour."
+
+#: ui/d4os_ui_auth/d4os_ui_auth.module:167
+#: ui/d4os_ui_users/d4os_ui_users.module:616
+msgid "User !name added on the website."
+msgstr "Utilisateur !name ajouté sur le site web."
+
+#: ui/d4os_ui_auth/d4os_ui_auth.module:171
+msgid "Error adding user !name on the website."
+msgstr "Erreur en ajoutant l'utilisateur !name sur le site web."
+
+#: ui/d4os_ui_auth/d4os_ui_auth.module:35
+msgid "admin d4os ui auth"
+msgstr "administrer d4os ui auth"
+
+#: ui/d4os_ui_auth/d4os_ui_auth.module:22
+msgid "auth"
+msgstr "auth"
+
+#: ui/d4os_ui_auth/d4os_ui_auth.module:23
+msgid "d4os ui auth settings"
+msgstr "réglages d4os ui auth"
+
+#: ui/d4os_ui_auth/d4os_ui_auth.info:0
+msgid "d4os ui auth"
+msgstr "d4os ui auth"
+
+#: ui/d4os_ui_auth/d4os_ui_auth.info:0
+#: ui/d4os_ui_regions/d4os_ui_regions.info:0
+msgid "Provides tools to manage regions in an opensim grid."
+msgstr "Fournit des outils pour gérer des régions dans une grille opensim."
+
+#: ui/d4os_ui_auth/d4os_ui_auth.info:0
+#: ui/d4os_ui_events/d4os_ui_events.info:0
+#: ui/d4os_ui_groups/d4os_ui_groups.info:0
+#: ui/d4os_ui_profile/d4os_ui_profile.info:0
+#: ui/d4os_ui_regions/d4os_ui_regions.info:0
+#: ui/d4os_ui_users/d4os_ui_users.info:0
+msgid "d4os ui"
+msgstr "d4os ui"
+
+#: ui/d4os_ui_events/d4os_ui_events.helpers.inc:82
+msgid "Days"
+msgstr "Jours"
+
+#: ui/d4os_ui_events/d4os_ui_events.helpers.inc:85
+msgid "Hours"
+msgstr "Heures"
+
+#: ui/d4os_ui_events/d4os_ui_events.helpers.inc:88
+msgid "Mins"
+msgstr "Mins"
+
+#: ui/d4os_ui_events/d4os_ui_events.helpers.inc:91
+msgid "Secs"
+msgstr "Secs"
+
+#: ui/d4os_ui_events/d4os_ui_events.helpers.inc:146
+msgid "Arts and Culture"
+msgstr "Arts et culture"
+
+#: ui/d4os_ui_events/d4os_ui_events.helpers.inc:147
+msgid "Charity/Support Groups"
+msgstr "Charité/Support"
+
+#: ui/d4os_ui_events/d4os_ui_events.helpers.inc:148
+msgid "Commercial"
+msgstr "Commercial"
+
+#: ui/d4os_ui_events/d4os_ui_events.helpers.inc:149
+msgid "Discussion"
+msgstr "Discution"
+
+#: ui/d4os_ui_events/d4os_ui_events.helpers.inc:150
+msgid "Education"
+msgstr "Education"
+
+#: ui/d4os_ui_events/d4os_ui_events.helpers.inc:151
+msgid "Games/Contests"
+msgstr "Jeux/Concours"
+
+#: ui/d4os_ui_events/d4os_ui_events.helpers.inc:152
+msgid "Live Music"
+msgstr "Musique Live"
+
+#: ui/d4os_ui_events/d4os_ui_events.helpers.inc:153
+msgid "Miscellaneous"
+msgstr "Divers"
+
+#: ui/d4os_ui_events/d4os_ui_events.helpers.inc:154
+msgid "Nightlife/Entertainment"
+msgstr "Vie nocture/Divertissement"
+
+#: ui/d4os_ui_events/d4os_ui_events.helpers.inc:155
+msgid "Pageants"
+msgstr ""
+
+#: ui/d4os_ui_events/d4os_ui_events.helpers.inc:156
+msgid "Sports"
+msgstr "Sports"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:17
+msgid "Event"
+msgstr "Evènement"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:19
+msgid "This is a node to manage inworld events."
+msgstr "Ceci est un noeud pour gérer des évènements inworld."
+
+#: ui/d4os_ui_events/d4os_ui_events.module:21
+#: ui/d4os_ui_profile/d4os_ui_profile.module:351
+#: ui/d4os_ui_users/d4os_ui_users.module:244;469;506
+msgid "Name"
+msgstr "Nom"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:23
+#: ui/d4os_ui_events/theme/d4os_ui_events_event.tpl.php:17
+msgid "Description"
+msgstr "Description"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:79
+msgid "What"
+msgstr "Quoi"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:94
+#: ui/d4os_ui_events/theme/d4os_ui_events_event.tpl.php:5
+msgid "Category"
+msgstr "Catégorie"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:102
+msgid "Mature ?"
+msgstr "Adulte ?"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:104
+msgid "Select if this event will have mature content."
+msgstr "Sélectionnez si cet évènement contiendra du contenu \"adulte\""
+
+#: ui/d4os_ui_events/d4os_ui_events.module:112
+msgid "When"
+msgstr "Quand"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:122
+msgid "Start date"
+msgstr "Date de début"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:132
+msgid "End date"
+msgstr "Date de fin"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:143
+msgid "Where"
+msgstr "Où"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:151
+msgid "Location"
+msgstr "Emplacement"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:154
+msgid "Select a location for the event."
+msgstr "Sélectionnez un emplacement pour cet évènement."
+
+#: ui/d4os_ui_events/d4os_ui_events.module:160
+#: ui/d4os_ui_events/theme/d4os_ui_events_event.tpl.php:19
+msgid "Cover charge"
+msgstr "Prix"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:167
+msgid "Enable cover charge"
+msgstr "Activer le paiement"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:169
+msgid "Enable cover charge for this event ?"
+msgstr "Faire payer pour cet évènement ?"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:176
+msgid "Cover charge amount"
+msgstr "Montant du prix"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:178
+msgid "Cover charge amount."
+msgstr "Montant du prix."
+
+#: ui/d4os_ui_events/d4os_ui_events.module:191
+msgid "You must select a location."
+msgstr "Vous devez sélectionner un emplacement."
+
+#: ui/d4os_ui_events/d4os_ui_events.module:206
+#: ui/d4os_ui_profile/d4os_ui_profile.module:83
+#: ui/d4os_ui_users/d4os_ui_users.module:93;133
+msgid "The grid is offline now."
+msgstr "La grille n'est pas en ligne actuellement."
+
+#: ui/d4os_ui_events/d4os_ui_events.module:207
+msgid "You can not create an event."
+msgstr "Vous ne pouvez pas créer un évènement."
+
+#: ui/d4os_ui_events/d4os_ui_events.module:208
+#: ui/d4os_ui_profile/d4os_ui_profile.module:85
+#: ui/d4os_ui_users/d4os_ui_users.module:95;135
+msgid "Please try again later."
+msgstr "SVP essayez plus tard."
+
+#: ui/d4os_ui_events/d4os_ui_events.module:216
+msgid "You need to be a parcel owner to create an event"
+msgstr "Vous devez posséder une parcelle pour créer un évènement"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:261
+msgid "No events available."
+msgstr "Aucun évènement disponible."
+
+#: ui/d4os_ui_events/d4os_ui_events.module:290
+msgid "Yes"
+msgstr "Oui"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:290
+msgid "No"
+msgstr "Non"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:60
+msgid "create d4os events content"
+msgstr "créer un évènement"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:61
+msgid "delete own d4os events content"
+msgstr "supprimer ses propres évènements"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:62
+msgid "delete any d4os events content"
+msgstr "supprimer n'importe quel évènement"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:63
+msgid "edit own d4os events content"
+msgstr "éditer ses propres évènements"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:64
+msgid "edit any d4os events content"
+msgstr "éditer n'importe quel évènement"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:65
+msgid "view events list"
+msgstr "voir la liste des évènements"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:31
+msgid "Events"
+msgstr "Evènements"
+
+#: ui/d4os_ui_events/d4os_ui_events.module:32
+msgid "Events list"
+msgstr "Liste d'évènements"
+
+#: ui/d4os_ui_events/d4os_ui_events.install:14
+#: ui/d4os_ui_users/d4os_ui_users.install:45
+msgid "The single table necessary for events storage."
+msgstr "La table nécéssaire pour stocker les évènements."
+
+#: ui/d4os_ui_events/d4os_ui_events.info:0
+msgid "d4os ui events"
+msgstr "d4os ui events"
+
+#: ui/d4os_ui_events/d4os_ui_events.info:0
+msgid "Links the event module with opensimulator."
+msgstr "Lie le module des évènements avec opensimulator."
+
+#: ui/d4os_ui_events/theme/d4os_ui_events_event.tpl.php:3
+#: ui/d4os_ui_groups/d4os_ui_groups.module:235;269
+msgid "Title"
+msgstr "Titre"
+
+#: ui/d4os_ui_events/theme/d4os_ui_events_event.tpl.php:7
+msgid "Mature"
+msgstr "Adulte"
+
+#: ui/d4os_ui_events/theme/d4os_ui_events_event.tpl.php:9
+msgid "Date"
+msgstr "Date"
+
+#: ui/d4os_ui_events/theme/d4os_ui_events_event.tpl.php:11
+msgid "Duration"
+msgstr "Durée"
+
+#: ui/d4os_ui_events/theme/d4os_ui_events_event.tpl.php:13
+msgid "Sim name"
+msgstr "Nom du sim"
+
+#: ui/d4os_ui_events/theme/d4os_ui_events_event.tpl.php:15
+msgid "Global pos"
+msgstr "Position globale"
+
+#: ui/d4os_ui_groups/d4os_ui_groups.admin.inc:21
+msgid "Please choose a content type to use as a group."
+msgstr ""
+
+#: ui/d4os_ui_groups/d4os_ui_groups.admin.inc:27
+msgid "Content type"
+msgstr "Type de contenu"
+
+#: ui/d4os_ui_groups/d4os_ui_groups.admin.inc:28
+msgid "Select the content type to use as an inworld group."
+msgstr ""
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:73;92
+msgid "You need to be registerd in the grid to join a group."
+msgstr ""
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:81;99
+msgid "This group is not registered in the grid."
+msgstr ""
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:112
+msgid "This user is not registered on the grid."
+msgstr ""
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:119
+msgid "This group is not registered on the grid."
+msgstr ""
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:146
+msgid "The group name should be between 4 and 35 characters."
+msgstr "Le nom du groupe doit posséder entre 4 et 35 caractères."
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:169
+msgid "This group name already exists."
+msgstr "Ce nom de groupe existe déjà."
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:190
+msgid "updated"
+msgstr "mis à jour"
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:190
+msgid "added"
+msgstr "ajouté"
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:191
+msgid "Group !action inworld."
+msgstr ""
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:194
+msgid "Could not save the group inworld."
+msgstr "Le goupe inworld n'a pu être sauvegardé."
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:228
+msgid "Website groups"
+msgstr "Groupes du site web"
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:230
+msgid "There !are currently !groups not registered on the grid."
+msgstr ""
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:238
+#: ui/d4os_ui_users/d4os_ui_users.module:472
+msgid "Id"
+msgstr "Id"
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:258
+msgid "All groups are registered on the grid."
+msgstr ""
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:262
+msgid "Grid groups"
+msgstr "Groupes de la grille"
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:264
+msgid "There !are currently !groups not registered on the website."
+msgstr ""
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:272
+#: ui/d4os_ui_users/d4os_ui_users.module:509
+msgid "Uuid"
+msgstr "Uuid"
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:275
+#: ui/d4os_ui_users/d4os_ui_users.module:515
+msgid "Action"
+msgstr "Action"
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:297
+msgid "All groups are registered on the website."
+msgstr "Tous les groupes sont enregistrés sur le site web."
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:308
+#: ui/d4os_ui_users/d4os_ui_users.module:555
+msgid "Add"
+msgstr "Ajouter"
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:308
+#: ui/d4os_ui_users/d4os_ui_users.module:555
+msgid "Delete"
+msgstr "Supprimer"
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:325
+msgid "Nothing changed for group !title."
+msgstr ""
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:338
+msgid "Group founder is not registered on the site. The group can not be added."
+msgstr ""
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:345
+msgid "Group !title deleted on the grid."
+msgstr ""
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:231;265
+#: ui/d4os_ui_users/d4os_ui_users.module:465;501
+msgid "is"
+msgid_plural "are"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:232;266
+msgid "1 group"
+msgid_plural "@count groups"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:34
+msgid "admin d4os ui groups"
+msgstr "administrer d4os ui groups"
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:15
+msgid "d4os ui groups settings"
+msgstr "réglages d4os ui groups"
+
+#: ui/d4os_ui_groups/d4os_ui_groups.module:23;24
+msgid "Check groups"
+msgstr "Vérifier les groupes"
+
+#: ui/d4os_ui_groups/d4os_ui_groups.install:14
+msgid "The single table necessary for groups storage."
+msgstr ""
+
+#: ui/d4os_ui_groups/d4os_ui_groups.info:0
+msgid "d4os ui groups"
+msgstr "d4os ui groups"
+
+#: ui/d4os_ui_groups/d4os_ui_groups.info:0
+msgid "Provides a link between inworld groups and og."
+msgstr ""
+
+#: ui/d4os_ui_profile/d4os_ui_profile.admin.inc:17
+msgid "Enable profile tab"
+msgstr "Activer l'onglet profil"
+
+#: ui/d4os_ui_profile/d4os_ui_profile.admin.inc:19
+msgid "Select if you want to enable the profile tab for users."
+msgstr "Choisissez si vous voulez activer l'onglet profil pour les utilisateurs."
+
+#: ui/d4os_ui_profile/d4os_ui_profile.admin.inc:23
+msgid "Disable Drupal user view tab"
+msgstr "Désactive l'onglet de vue du profil de Drupal"
+
+#: ui/d4os_ui_profile/d4os_ui_profile.admin.inc:25
+msgid "Select if you want to disable the Drupal user view tab. You need to flush caches after changing this option."
+msgstr "Choisissez si vous voulez désactiver l'onglet de la vue du profil de Drupal. Vous devraez vider les caches apres avoir changé cette option."
+
+#: ui/d4os_ui_profile/d4os_ui_profile.admin.inc:29
+msgid "URL iframe attributes"
+msgstr ""
+
+#: ui/d4os_ui_profile/d4os_ui_profile.admin.inc:31
+msgid "Define some optional attributes for the profile URL iframe."
+msgstr ""
+
+#: ui/d4os_ui_profile/d4os_ui_profile.admin.inc:40
+msgid "The cache menu was rebuilt."
+msgstr "Le cache des menus a été reconstruit."
+
+#: ui/d4os_ui_profile/d4os_ui_profile.module:17
+msgid "OpenSim grid profiles management"
+msgstr "Gestion des profils de grille OpenSim"
+
+#: ui/d4os_ui_profile/d4os_ui_profile.module:84
+msgid "You can not see user profiles."
+msgstr "Vous ne pouvez pas voir les profils utilisateur."
+
+#: ui/d4os_ui_profile/d4os_ui_profile.module:101;110;215;436
+#: ui/d4os_ui_users/d4os_ui_users.module:209
+msgid "No picture available"
+msgstr "Aucune image disponible"
+
+#: ui/d4os_ui_profile/d4os_ui_profile.module:102;216;437
+msgid "!user's profile picture"
+msgstr "Image du profil de !user"
+
+#: ui/d4os_ui_profile/d4os_ui_profile.module:111
+#: ui/d4os_ui_users/d4os_ui_users.module:210
+msgid "!user's first life picture"
+msgstr "Image première vie de !user"
+
+#: ui/d4os_ui_profile/d4os_ui_profile.module:137
+msgid "Never connected to the grid"
+msgstr "Jamais connecté sur la grille"
+
+#: ui/d4os_ui_profile/d4os_ui_profile.module:243;464
+msgid "Change image"
+msgstr "Changer l'image"
+
+#: ui/d4os_ui_profile/d4os_ui_profile.module:255;291;322;362;417;476;506;544;586
+msgid "Save"
+msgstr "Sauver"
+
+#: ui/d4os_ui_profile/d4os_ui_profile.module:271
+msgid "Change region"
+msgstr "Changer de région"
+
+#: ui/d4os_ui_profile/d4os_ui_profile.module:340
+msgid "Change partner"
+msgstr "Changer de partenaire"
+
+#: ui/d4os_ui_profile/d4os_ui_profile.module:382
+msgid "No website defined"
+msgstr "Aucun site web défini"
+
+#: ui/d4os_ui_profile/d4os_ui_profile.module:397
+msgid "Change url"
+msgstr "Changer l'url"
+
+#: ui/d4os_ui_profile/d4os_ui_profile.module:412
+msgid "Url"
+msgstr "Url"
+
+#: ui/d4os_ui_profile/d4os_ui_profile.module:572
+msgid "Profile options"
+msgstr "Options du profil"
+
+#: ui/d4os_ui_profile/d4os_ui_profile.module:575
+msgid "Show profile"
+msgstr "Montrer le profil"
+
+#: ui/d4os_ui_profile/d4os_ui_profile.module:582
+msgid "Check the options to allow profile access to other users."
+msgstr "Cochez cette option pour permettre l'accès aux autres utilisateurs."
+
+#: ui/d4os_ui_profile/d4os_ui_profile.module:703
+msgid "Unable to send the partner request. The email address is not valid."
+msgstr "Impossible d'envoyer une requête à l'avatar. L'adresse de courriel est invalide."
+
+#: ui/d4os_ui_profile/d4os_ui_profile.module:717
+msgid "A request was sent to the avatar."
+msgstr "Une requête a été envoyée à l'avatar."
+
+#: ui/d4os_ui_profile/d4os_ui_profile.module:731
+msgid "Partner request from !site"
+msgstr "Requête de partenaire depuis !site"
+
+#: ui/d4os_ui_profile/d4os_ui_profile.module:732
+msgid ""
+"Dear !username\n"
+"\n"
+"The user called !source_name would like you to accept his partnership request.\n"
+"\n"
+"You may accept it by clicking on this link or copying and pasting it in your browser:\n"
+"\n"
+"!request_url!"
+msgstr ""
+"Chèr(e) !username\n"
+"\n"
+"L'utilisateur nommé !source_name souhaiterait que vous acceptiez sa requête de partenaire.\n"
+"\n"
+"Vous pouvez accepter en cliquant sur ce lien ou en le copiant dans votre navigateur:\n"
+"\n"
+"!request_url!"
+
+#: ui/d4os_ui_profile/d4os_ui_profile.module:65
+msgid "admin d4os ui profile"
+msgstr "administrer d4os ui profile"
+
+#: ui/d4os_ui_profile/d4os_ui_profile.module:66
+msgid "access d4os ui profile"
+msgstr "accéder à d4os ui profile"
+
+#: ui/d4os_ui_profile/d4os_ui_profile.module:30
+msgid "Grid profile."
+msgstr "Profil sur la grille."
+
+#: ui/d4os_ui_profile/d4os_ui_profile.module:46
+msgid "d4os ui profile settings"
+msgstr "réglages d4os ui profile"
+
+#: ui/d4os_ui_profile/d4os_ui_profile.info:0
+msgid "d4os ui profile"
+msgstr "d4os ui profile"
+
+#: ui/d4os_ui_profile/d4os_ui_profile.info:0
+msgid "Provides tools to manage profiles in an opensim grid."
+msgstr ""
+
+#: ui/d4os_ui_profile/theme/d4os_ui_profile_display.tpl.php:42;68
+msgid "Inworld"
+msgstr "Inworld"
+
+#: ui/d4os_ui_profile/theme/d4os_ui_profile_display.tpl.php:45;97;100
+msgid "Web"
+msgstr "Web"
+
+#: ui/d4os_ui_profile/theme/d4os_ui_profile_display.tpl.php:48;108;111
+msgid "Interests"
+msgstr "Interêts"
+
+#: ui/d4os_ui_profile/theme/d4os_ui_profile_display.tpl.php:51;119;122
+msgid "Picks"
+msgstr "Images"
+
+#: ui/d4os_ui_profile/theme/d4os_ui_profile_display.tpl.php:54;130;133
+msgid "Classifieds"
+msgstr "Annonces"
+
+#: ui/d4os_ui_profile/theme/d4os_ui_profile_display.tpl.php:57;141
+msgid "First life"
+msgstr "Première vie"
+
+#: ui/d4os_ui_profile/theme/d4os_ui_profile_display.tpl.php:60;154
+msgid "My notes"
+msgstr "Mes notes"
+
+#: ui/d4os_ui_profile/theme/d4os_ui_profile_display.tpl.php:63;165
+msgid "Options"
+msgstr "Options"
+
+#: ui/d4os_ui_profile/theme/d4os_ui_profile_display.tpl.php:71;144
+msgid "Photo"
+msgstr "Photo"
+
+#: ui/d4os_ui_profile/theme/d4os_ui_profile_display.tpl.php:73
+msgid "Key"
+msgstr "Clef"
+
+#: ui/d4os_ui_profile/theme/d4os_ui_profile_display.tpl.php:75
+msgid "Firstname"
+msgstr "Prénom"
+
+#: ui/d4os_ui_profile/theme/d4os_ui_profile_display.tpl.php:77
+msgid "Lastname"
+msgstr "Nom"
+
+#: ui/d4os_ui_profile/theme/d4os_ui_profile_display.tpl.php:79
+msgid "Born"
+msgstr "Né(e)"
+
+#: ui/d4os_ui_profile/theme/d4os_ui_profile_display.tpl.php:81
+msgid "Partner"
+msgstr "Partenaire"
+
+#: ui/d4os_ui_profile/theme/d4os_ui_profile_display.tpl.php:84
+msgid "Last connection"
+msgstr "Dernière connection"
+
+#: ui/d4os_ui_profile/theme/d4os_ui_profile_display.tpl.php:86
+msgid "Home region"
+msgstr "Région domicile"
+
+#: ui/d4os_ui_profile/theme/d4os_ui_profile_display.tpl.php:89
+msgid "About text"
+msgstr "Texte à propos"
+
+#: ui/d4os_ui_profile/theme/d4os_ui_profile_display.tpl.php:157
+msgid "Notes"
+msgstr "Notes"
+
+#: ui/d4os_ui_regions/d4os_ui_regions.admin.inc:17
+msgid "Regions list"
+msgstr "Liste des régions"
+
+#: ui/d4os_ui_regions/d4os_ui_regions.admin.inc:23
+#: ui/d4os_ui_regions/d4os_ui_regions.module:63
+msgid "uuid"
+msgstr "uuid"
+
+#: ui/d4os_ui_regions/d4os_ui_regions.admin.inc:24
+#: ui/d4os_ui_regions/d4os_ui_regions.module:69
+msgid "regionHandle"
+msgstr ""
+
+#: ui/d4os_ui_regions/d4os_ui_regions.admin.inc:25
+#: ui/d4os_ui_regions/d4os_ui_regions.module:75
+msgid "regionName"
+msgstr "Nom de région"
+
+#: ui/d4os_ui_regions/d4os_ui_regions.admin.inc:26
+#: ui/d4os_ui_regions/d4os_ui_regions.module:81
+msgid "serverIP"
+msgstr ""
+
+#: ui/d4os_ui_regions/d4os_ui_regions.admin.inc:27
+#: ui/d4os_ui_regions/d4os_ui_regions.module:87
+msgid "serverPort"
+msgstr ""
+
+#: ui/d4os_ui_regions/d4os_ui_regions.admin.inc:28
+#: ui/d4os_ui_regions/d4os_ui_regions.module:93
+msgid "serverURI"
+msgstr ""
+
+#: ui/d4os_ui_regions/d4os_ui_regions.admin.inc:29
+#: ui/d4os_ui_regions/d4os_ui_regions.module:99
+msgid "locX"
+msgstr "emplacemntX"
+
+#: ui/d4os_ui_regions/d4os_ui_regions.admin.inc:30
+#: ui/d4os_ui_regions/d4os_ui_regions.module:105
+msgid "locY"
+msgstr "emplacemntY"
+
+#: ui/d4os_ui_regions/d4os_ui_regions.admin.inc:31
+#: ui/d4os_ui_regions/d4os_ui_regions.module:111
+msgid "locZ"
+msgstr "emplacemntZ"
+
+#: ui/d4os_ui_regions/d4os_ui_regions.admin.inc:32
+#: ui/d4os_ui_regions/d4os_ui_regions.module:117
+msgid "regionMapTexture"
+msgstr ""
+
+#: ui/d4os_ui_regions/d4os_ui_regions.admin.inc:33
+#: ui/d4os_ui_regions/d4os_ui_regions.module:123
+msgid "serverHttpPort"
+msgstr ""
+
+#: ui/d4os_ui_regions/d4os_ui_regions.admin.inc:34
+#: ui/d4os_ui_regions/d4os_ui_regions.module:129
+msgid "owner_uuid"
+msgstr ""
+
+#: ui/d4os_ui_regions/d4os_ui_regions.admin.inc:35
+#: ui/d4os_ui_regions/d4os_ui_regions.module:135
+msgid "sizeX"
+msgstr "tailleX"
+
+#: ui/d4os_ui_regions/d4os_ui_regions.admin.inc:36
+#: ui/d4os_ui_regions/d4os_ui_regions.module:141
+msgid "sizeY"
+msgstr "tailleY"
+
+#: ui/d4os_ui_regions/d4os_ui_regions.admin.inc:40
+msgid "Items"
+msgstr "Eléments"
+
+#: ui/d4os_ui_regions/d4os_ui_regions.admin.inc:43
+msgid "Select the items you want to display on the list."
+msgstr "Sélectionnez les éléments que vous souhaitez afficher sur la liste."
+
+#: ui/d4os_ui_regions/d4os_ui_regions.module:17
+msgid "OpenSim grid regions management"
+msgstr "Gestion des régions de grille OpenSim"
+
+#: ui/d4os_ui_regions/d4os_ui_regions.module:147
+msgid "Home"
+msgstr "Domicile"
+
+#: ui/d4os_ui_regions/d4os_ui_regions.module:201
+msgid "My home"
+msgstr "Mon domicile"
+
+#: ui/d4os_ui_regions/d4os_ui_regions.module:224
+msgid "Set Home"
+msgstr "Définir comme domicile"
+
+#: ui/d4os_ui_regions/d4os_ui_regions.module:236
+msgid "Home region set to !region"
+msgstr "Région domicile définir à !region"
+
+#: ui/d4os_ui_regions/d4os_ui_regions.module:44
+msgid "admin d4os ui regions"
+msgstr "administrer d4os ui régions"
+
+#: ui/d4os_ui_regions/d4os_ui_regions.module:24
+msgid "Regions available."
+msgstr "Régions disponibles."
+
+#: ui/d4os_ui_regions/d4os_ui_regions.module:31
+msgid "regions"
+msgstr "regions"
+
+#: ui/d4os_ui_regions/d4os_ui_regions.module:32
+msgid "d4os ui regions settings"
+msgstr "réglages d4os ui régions"
+
+#: ui/d4os_ui_regions/d4os_ui_regions.install:30
+#: ui/d4os_ui_users/d4os_ui_users.install:21
+#: ui/d4os_ui_users/d4os_ui_users.info:0
+msgid "d4os ui users"
+msgstr "d4os ui users"
+
+#: ui/d4os_ui_regions/d4os_ui_regions.install:31
+msgid "The module d4os_io_db needs to be installed to use d4os regions"
+msgstr ""
+
+#: ui/d4os_ui_regions/d4os_ui_regions.info:0
+msgid "d4os ui regions"
+msgstr "d4os ui régions"
+
+#: ui/d4os_ui_stats/levels/d4os_ui_stats_levels.module:50;119;187
+msgid "Text"
+msgstr "Texte"
+
+#: ui/d4os_ui_stats/levels/d4os_ui_stats_levels.module:82;89
+msgid "Grid levels"
+msgstr "Niveaux de la grille"
+
+#: ui/d4os_ui_stats/levels/d4os_ui_stats_levels.module:123
+msgid "Data"
+msgstr "Données"
+
+#: ui/d4os_ui_stats/levels/d4os_ui_stats_levels.module:129
+msgid "Levels url"
+msgstr "Url des niveaux"
+
+#: ui/d4os_ui_stats/levels/d4os_ui_stats_levels.module:130
+#: ui/d4os_ui_stats/status/d4os_ui_stats_status.module:71
+msgid "Use the url to get the info from."
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/d4os_ui_stats_levels.module:132
+msgid "Enter the url to get the json infos (you need to enable this option in OpenSim.ini."
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/d4os_ui_stats_levels.module:143
+#: ui/d4os_ui_stats/status/d4os_ui_stats_status.module:89
+msgid "Use timer."
+msgstr "Utiliser le chronomètre"
+
+#: ui/d4os_ui_stats/levels/d4os_ui_stats_levels.module:144
+msgid "Check this option if you want to use a timer to refresh automatically the levels on the web page."
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/d4os_ui_stats_levels.module:152
+msgid "Enter the value for the timer (in seconds) to refresh the data."
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/d4os_ui_stats_levels.module:156
+msgid "Display"
+msgstr "Afficher"
+
+#: ui/d4os_ui_stats/levels/d4os_ui_stats_levels.module:166
+msgid "Select the output widget type"
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/d4os_ui_stats_levels.module:169
+msgid "Select the output widget type."
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/d4os_ui_stats_levels.module:289
+msgid "Data not available"
+msgstr "Données non accessibles"
+
+#: ui/d4os_ui_stats/levels/d4os_ui_stats_levels.module:68
+msgid "Levels"
+msgstr "Niveaux"
+
+#: ui/d4os_ui_stats/levels/d4os_ui_stats_levels.module:69
+msgid "Get the grid levels in json format."
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/d4os_ui_stats_levels.info:0
+msgid "d4os ui stats levels"
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/d4os_ui_stats_levels.info:0
+#: ui/d4os_ui_stats/levels/widgets/bars/d4os_ui_stats_levels_widgets_bars.info:0
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.info:0
+#: ui/d4os_ui_stats/status/d4os_ui_stats_status.info:0
+msgid "Provides tools to display stats for an opensim grid."
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/d4os_ui_stats_levels.info:0
+#: ui/d4os_ui_stats/levels/widgets/bars/d4os_ui_stats_levels_widgets_bars.info:0
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.info:0
+#: ui/d4os_ui_stats/status/d4os_ui_stats_status.info:0
+msgid "d4os stats"
+msgstr "d4os stats"
+
+#: ui/d4os_ui_stats/levels/theme/d4os_ui_stats_levels.tpl.php:5
+msgid "Login uri"
+msgstr "Uri de connection"
+
+#: ui/d4os_ui_stats/levels/theme/d4os_ui_stats_levels.tpl.php:11
+msgid "Version"
+msgstr "Version"
+
+#: ui/d4os_ui_stats/levels/theme/d4os_ui_stats_levels.tpl.php:17
+msgid "Uptime"
+msgstr "En ligne depuis"
+
+#: ui/d4os_ui_stats/levels/theme/d4os_ui_stats_levels.tpl.php:23
+msgid "Root agent"
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/theme/d4os_ui_stats_levels.tpl.php:29
+msgid "Child agent"
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/widgets/bars/d4os_ui_stats_levels_widgets_bars.module:15
+msgid "Bars"
+msgstr "Barres"
+
+#: ui/d4os_ui_stats/levels/widgets/bars/d4os_ui_stats_levels_widgets_bars.info:0
+msgid "d4os ui stats levels widgets bars"
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:15
+msgid "Gauges"
+msgstr "Jauges"
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:23;72;129
+msgid "Sim FPS"
+msgstr "Sim FPS"
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:37
+msgid "Phy FPS"
+msgstr "Phy FPS"
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:51;100;331
+#: ui/d4os_ui_stats/levels/widgets/text/theme/d4os_ui_stats_levels_widgets_text.tpl.php:18
+msgid "Memory"
+msgstr "Mémoire"
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:86;230
+msgid "Phys FPS"
+msgstr "Phys FPS"
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:122
+msgid "Gauges parameters"
+msgstr "Paramètres des jauges"
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:135;236;337
+msgid "Width"
+msgstr "Largeur"
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:139;240;341
+msgid "Width."
+msgstr "Largeur."
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:143;244;345
+msgid "Height"
+msgstr "Hauteur"
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:147;248;349
+msgid "Height."
+msgstr "Hauteur."
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:151;252;353
+msgid "Min"
+msgstr "Min"
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:155;256;357
+msgid "Min."
+msgstr "Min."
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:159;260;361
+msgid "Max"
+msgstr "Max"
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:163;264;365
+msgid "Max."
+msgstr "Max."
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:167;268;369
+msgid "Minor ticks"
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:171;272;373
+msgid "Minor ticks."
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:175;276;377
+msgid "Gauges limits colors"
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:181;282;383
+msgid "Green from"
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:185;286;387
+msgid "Green from."
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:189;290;391
+msgid "Green to"
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:193;225;294;326;395;427
+msgid "Red to."
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:197;298;399
+msgid "Yellow from"
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:201;209;302;310;403;411
+msgid "Yellow from."
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:205;306;407
+msgid "Yellow to"
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:213;314;415
+msgid "Red from"
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:217;318;419
+msgid "Red from."
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.module:221;322;423
+msgid "Red to"
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/widgets/gauges/d4os_ui_stats_levels_widgets_gauges.info:0
+msgid "d4os ui stats levels widgets gauges"
+msgstr ""
+
+#: ui/d4os_ui_stats/levels/widgets/text/theme/d4os_ui_stats_levels_widgets_text.tpl.php:6
+msgid "SimFPS"
+msgstr "SimFPS"
+
+#: ui/d4os_ui_stats/levels/widgets/text/theme/d4os_ui_stats_levels_widgets_text.tpl.php:12
+msgid "PhyFPS"
+msgstr "PhyFPS"
+
+#: ui/d4os_ui_stats/status/d4os_ui_stats_status.module:31;38
+msgid "Grid status"
+msgstr "Etat de la grille"
+
+#: ui/d4os_ui_stats/status/d4os_ui_stats_status.module:70
+msgid "Status url"
+msgstr "Url du statut"
+
+#: ui/d4os_ui_stats/status/d4os_ui_stats_status.module:76
+msgid "Value returned"
+msgstr "Valeur retournée"
+
+#: ui/d4os_ui_stats/status/d4os_ui_stats_status.module:77
+msgid "Enter the value of the body response."
+msgstr "Entrer la valeur du corps de la réponse"
+
+#: ui/d4os_ui_stats/status/d4os_ui_stats_status.module:90
+msgid "Check this option if you want to use a timer to refresh automatically the status on the web page."
+msgstr ""
+
+#: ui/d4os_ui_stats/status/d4os_ui_stats_status.module:98
+msgid "Enter the value (in seconds) for the timer to refresh the status."
+msgstr ""
+
+#: ui/d4os_ui_stats/status/d4os_ui_stats_status.module:148
+msgid "Online"
+msgstr "En ligne"
+
+#: ui/d4os_ui_stats/status/d4os_ui_stats_status.module:151
+msgid "Offline"
+msgstr "Hor ligne"
+
+#: ui/d4os_ui_stats/status/d4os_ui_stats_status.module:17
+msgid "Status"
+msgstr "Etat"
+
+#: ui/d4os_ui_stats/status/d4os_ui_stats_status.module:18
+msgid "Check if the grid is online."
+msgstr "Vérifie si la grille est en ligne."
+
+#: ui/d4os_ui_stats/status/d4os_ui_stats_status.info:0
+msgid "d4os ui stats status"
+msgstr "d4os ui stats status"
+
+#: ui/d4os_ui_users/d4os_ui_users.admin.inc:24
+msgid "Profile texts"
+msgstr "Textes du profil"
+
+#: ui/d4os_ui_users/d4os_ui_users.admin.inc:30
+msgid "Profile about text"
+msgstr "Texte du profil"
+
+#: ui/d4os_ui_users/d4os_ui_users.admin.inc:36
+msgid "Profile first text"
+msgstr "Texte du profil"
+
+#: ui/d4os_ui_users/d4os_ui_users.admin.inc:43
+msgid "Users synchronization"
+msgstr "Synchronisation des utilisateurs"
+
+#: ui/d4os_ui_users/d4os_ui_users.admin.inc:48
+msgid "This email address is used when a user from the grid is created on the website and the user doesnt have an email address."
+msgstr ""
+
+#: ui/d4os_ui_users/d4os_ui_users.admin.inc:49
+msgid " <p>You can use tokens from this list :"
+msgstr "<p>Vous pouvez utiliser des jetons parmi ceux de cette liste:"
+
+#: ui/d4os_ui_users/d4os_ui_users.admin.inc:51
+msgid "The uuid of the inworld user"
+msgstr "Uuid de l'utilisateur inworld"
+
+#: ui/d4os_ui_users/d4os_ui_users.admin.inc:52
+msgid "The url of the website"
+msgstr "Url du site web"
+
+#: ui/d4os_ui_users/d4os_ui_users.admin.inc:56
+msgid "Default email"
+msgstr "Courriel par défaut"
+
+#: ui/d4os_ui_users/d4os_ui_users.admin.inc:64
+msgid "Assigned role"
+msgstr "Rôle assigné"
+
+#: ui/d4os_ui_users/d4os_ui_users.admin.inc:67
+msgid "This role is assigned to synchronized users without an email address."
+msgstr ""
+
+#: ui/d4os_ui_users/d4os_ui_users.admin.inc:73
+msgid "God level"
+msgstr "Niveau de connection"
+
+#: ui/d4os_ui_users/d4os_ui_users.admin.inc:74
+msgid "that usage is NOT supported by OpenSim devs. Use at your own risk. Side effects unknown"
+msgstr ""
+
+#: ui/d4os_ui_users/d4os_ui_users.admin.inc:81
+msgid "Default god level"
+msgstr "Niveau de connection par défaut"
+
+#: ui/d4os_ui_users/d4os_ui_users.admin.inc:85
+msgid "The default god level for new users."
+msgstr "Niveau de connection par défaut pour les nouveaux utilisateurs."
+
+#: ui/d4os_ui_users/d4os_ui_users.admin.inc:91
+msgid "Blocked"
+msgstr "Bloqué"
+
+#: ui/d4os_ui_users/d4os_ui_users.admin.inc:94
+msgid "0 : Resident:Login blocked"
+msgstr ""
+
+#: ui/d4os_ui_users/d4os_ui_users.admin.inc:101
+msgid "10 : Resident:Normal user"
+msgstr ""
+
+#: ui/d4os_ui_users/d4os_ui_users.admin.inc:171
+msgid "200 : allow user to get admin level"
+msgstr ""
+
+#: ui/d4os_ui_users/d4os_ui_users.admin.inc:176
+#: ui/d4os_ui_users/d4os_ui_users.module:194;226
+msgid "Models"
+msgstr "Modèles"
+
+#: ui/d4os_ui_users/d4os_ui_users.admin.inc:177
+msgid "UUID of the users to use as models for new registrations."
+msgstr "UUID des utilisateurs à utiliser pour les nouvelles inscriptions."
+
+#: ui/d4os_ui_users/d4os_ui_users.admin.inc:183;190;197;204;211;218;225;232;239;246
+msgid "Model"
+msgstr "Modèle"
+
+#: ui/d4os_ui_users/d4os_ui_users.admin.inc:265
+msgid "This uuid for model !id is not registered on the grid."
+msgstr "Cet UUID de modèle n'est pas enregistré sur la grille."
+
+#: ui/d4os_ui_users/d4os_ui_users.helpers.inc:61
+msgid "You must enter a !name."
+msgstr "Vous devez fournir un !name."
+
+#: ui/d4os_ui_users/d4os_ui_users.helpers.inc:62
+msgid "The !name cannot begin with a space."
+msgstr "Le !name ne peut pas débuter pas un espace."
+
+#: ui/d4os_ui_users/d4os_ui_users.helpers.inc:63
+msgid "The !name cannot end with a space."
+msgstr "Le !name ne peut pas se terminer avec un espace."
+
+#: ui/d4os_ui_users/d4os_ui_users.helpers.inc:64
+msgid "The !name cannot contain multiple spaces in a row."
+msgstr "Le !name ne peut pas contenir des espaces multiples dans une ligne."
+
+#: ui/d4os_ui_users/d4os_ui_users.helpers.inc:65;76
+msgid "The !name contains an illegal character."
+msgstr "Le !name contient un caractère illégal."
+
+#: ui/d4os_ui_users/d4os_ui_users.helpers.inc:78
+msgid "The !name is not a valid authentication ID."
+msgstr ""
+
+#: ui/d4os_ui_users/d4os_ui_users.helpers.inc:80
+msgid "The !name %name is too long: it must be %max characters or less."
+msgstr "Le !name %name est trop long: il doit passéder %max caractères ou moins."
+
+#: ui/d4os_ui_users/d4os_ui_users.helpers.inc:81
+msgid "You can not use spaces in !name"
+msgstr "Vous ne pouvez pas utiliser d'espaces dans !name"
+
+#: ui/d4os_ui_users/d4os_ui_users.module:22
+msgid "OpenSim grid users management"
+msgstr "Gestion des utilisateurs de grille OpenSim"
+
+#: ui/d4os_ui_users/d4os_ui_users.module:75;100;146
+msgid "User Name"
+msgstr "Prénom"
+
+#: ui/d4os_ui_users/d4os_ui_users.module:82;108;156
+msgid "Last Name"
+msgstr "Nom de famille"
+
+#: ui/d4os_ui_users/d4os_ui_users.module:94
+msgid "You can not register an account."
+msgstr "Vous ne pouvez pas créer un compte."
+
+#: ui/d4os_ui_users/d4os_ui_users.module:103
+msgid "Enter the first name for the avatar. Spaces are NOT allowed;Punctuation is not allowed except for periods, hyphens, and underscores."
+msgstr "Entrez le prénom de l'avatar. Les espaces ne sont pas autorisés. Les signes de ponctuation ne sont pas autorisés sauf les points, les tirets et tiret soulignés."
+
+#: ui/d4os_ui_users/d4os_ui_users.module:112
+msgid "Enter the last name for the avatar. Spaces are NOT allowed;punctuation is not allowed except for periods, hyphens, and underscores."
+msgstr "Entrez le nom de famille de l'avatar. Les espaces ne sont pas autorisés. Les signes de ponctuation ne sont pas autorisés sauf les points, les tirets et tiret soulignés."
+
+#: ui/d4os_ui_users/d4os_ui_users.module:134
+msgid "You can not edit your profile."
+msgstr "Vous ne pouvez pas éditer votre profil."
+
+#: ui/d4os_ui_users/d4os_ui_users.module:151
+msgid "Enter the first name for the avatar. Spaces are not allowed. Punctuation is not allowed except for periods, hyphens, and underscores."
+msgstr "Entrez le prénom de l'avatar. Les espaces ne sont pas autorisés. Les signes de ponctuation ne sont pas autorisés sauf les points, les tirets et tiret soulignés."
+
+#: ui/d4os_ui_users/d4os_ui_users.module:161
+msgid "Enter the last name for the avatar. Spaces are not allowed. Punctuation is not allowed except for periods, hyphens, and underscores."
+msgstr "Entrez le nom de famille de l'avatar. Les espaces ne sont pas autorisés. Les signes de ponctuation ne sont pas autorisés sauf les points, les tirets et tiret soulignés."
+
+#: ui/d4os_ui_users/d4os_ui_users.module:244
+msgid "Selected"
+msgstr "Sélectionné"
+
+#: ui/d4os_ui_users/d4os_ui_users.module:244
+msgid "Picture"
+msgstr "Image"
+
+#: ui/d4os_ui_users/d4os_ui_users.module:244
+msgid "Infos"
+msgstr "Infos"
+
+#: ui/d4os_ui_users/d4os_ui_users.module:263
+msgid "Please select a model."
+msgstr "SVP sélectionnez un modèle."
+
+#: ui/d4os_ui_users/d4os_ui_users.module:274
+msgid "Please use another lastname."
+msgstr "SVP choisissez un autre nom."
+
+#: ui/d4os_ui_users/d4os_ui_users.module:281
+msgid "username"
+msgstr "prénom"
+
+#: ui/d4os_ui_users/d4os_ui_users.module:286
+msgid "lastname"
+msgstr "nom"
+
+#: ui/d4os_ui_users/d4os_ui_users.module:292
+msgid "The Password field must be at least 6 characters in length."
+msgstr "Le champ de mot de passe doit contenir au moins 6 caractères."
+
+#: ui/d4os_ui_users/d4os_ui_users.module:296
+msgid "The Email field must contain a valid email address."
+msgstr "Le champ Courriel doit posséder une adresse valide."
+
+#: ui/d4os_ui_users/d4os_ui_users.module:307;314
+msgid "This name already exists"
+msgstr "Ce nom existe déjà"
+
+#: ui/d4os_ui_users/d4os_ui_users.module:346
+msgid "Please update your email address."
+msgstr "SVP mettez à jour votre adresse de courriel."
+
+#: ui/d4os_ui_users/d4os_ui_users.module:385
+msgid "User added to the grid."
+msgstr "Utilisateur ajouté sur la grille."
+
+#: ui/d4os_ui_users/d4os_ui_users.module:438
+msgid "The website user called !name has the same lastname as admin account."
+msgstr "L'utilisateur du site web nommé !name possède le même nom que le compte admin."
+
+#: ui/d4os_ui_users/d4os_ui_users.module:452
+msgid "The grid user called !name has the same lastname as admin account."
+msgstr "L'utilisateur de la grille nommé !name possède le même nom que le compte admin."
+
+#: ui/d4os_ui_users/d4os_ui_users.module:462
+msgid "Website users"
+msgstr "Utilisateurs du site web"
+
+#: ui/d4os_ui_users/d4os_ui_users.module:464
+msgid "There !are currently !members not registered on the grid."
+msgstr "Il y a actuellement !members non enregistrés sur la grille."
+
+#: ui/d4os_ui_users/d4os_ui_users.module:494
+msgid "All users are registered on the grid."
+msgstr "Tous les utilisateurs sont enregistrés sur la grille."
+
+#: ui/d4os_ui_users/d4os_ui_users.module:498
+msgid "Grid users"
+msgstr "Utilisateurs de la grille"
+
+#: ui/d4os_ui_users/d4os_ui_users.module:500
+msgid "There !are currently !members not registered on the website."
+msgstr "Il y a actuellement !members non enregistrés sur le site web."
+
+#: ui/d4os_ui_users/d4os_ui_users.module:512
+msgid "Email"
+msgstr "Courriel"
+
+#: ui/d4os_ui_users/d4os_ui_users.module:540
+msgid "All users are registered on the website."
+msgstr "Tous les utilisateurs sont enregistrés sur le site web."
+
+#: ui/d4os_ui_users/d4os_ui_users.module:574
+msgid "Nothing changed for user !name."
+msgstr "Rien n'a été changé pour l'utilisateur !name."
+
+#: ui/d4os_ui_users/d4os_ui_users.module:583
+msgid "User !name deleted on the grid."
+msgstr "Utilisateur !name supprimé de la grille."
+
+#: ui/d4os_ui_users/d4os_ui_users.module:674
+msgid "Error saving user account."
+msgstr "Erreur en sauvegardant le compte utilisateur."
+
+#: ui/d4os_ui_users/d4os_ui_users.module:689
+msgid "edit"
+msgstr "éditer"
+
+#: ui/d4os_ui_users/d4os_ui_users.module:693
+msgid "Welcome to Drupal. You are now logged in as user #1, which gives you full control over your website."
+msgstr ""
+
+#: ui/d4os_ui_users/d4os_ui_users.module:695
+msgid "</p><p> Your password is <strong>%pass</strong>. You may change your password below.</p>"
+msgstr ""
+
+#: ui/d4os_ui_users/d4os_ui_users.module:707
+msgid "Created a new user account for <a href=\"@url\">%name</a>. No e-mail has been sent."
+msgstr ""
+
+#: ui/d4os_ui_users/d4os_ui_users.module:714
+msgid "Registration successful. You are now logged in."
+msgstr ""
+
+#: ui/d4os_ui_users/d4os_ui_users.module:724
+msgid "Password and further instructions have been e-mailed to the new user <a href=\"@url\">%name</a>."
+msgstr ""
+
+#: ui/d4os_ui_users/d4os_ui_users.module:727
+msgid "Your password and further instructions have been sent to your e-mail address."
+msgstr ""
+
+#: ui/d4os_ui_users/d4os_ui_users.module:735
+msgid "Thank you for applying for an account. Your account is currently pending approval by the site administrator.<br />In the meantime, a welcome message with further instructions has been sent to your e-mail address."
+msgstr ""
+
+#: ui/d4os_ui_users/d4os_ui_users.module:642
+msgid "security"
+msgstr "sécurité"
+
+#: ui/d4os_ui_users/d4os_ui_users.module:642
+msgid "Detected malicious attempt to alter protected user fields."
+msgstr ""
+
+#: ui/d4os_ui_users/d4os_ui_users.module:689
+msgid "user"
+msgstr "utilisateur"
+
+#: ui/d4os_ui_users/d4os_ui_users.module:689
+msgid "New user: %name (%email)."
+msgstr "Nouvel utilisateur: %name (%email)."
+
+#: ui/d4os_ui_users/d4os_ui_users.module:466;502
+msgid "1 user"
+msgid_plural "@count users"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ui/d4os_ui_users/d4os_ui_users.module:63
+msgid "admin d4os ui users"
+msgstr "administrer d4os ui users"
+
+#: ui/d4os_ui_users/d4os_ui_users.module:29
+msgid "User autocomplete"
+msgstr "Autocomplétion utilisateur"
+
+#: ui/d4os_ui_users/d4os_ui_users.module:35
+msgid "users"
+msgstr "Utilisateurs"
+
+#: ui/d4os_ui_users/d4os_ui_users.module:36
+msgid "d4os ui users settings"
+msgstr "Réglages d4os ui users"
+
+#: ui/d4os_ui_users/d4os_ui_users.module:44;45
+msgid "Check users"
+msgstr "Vérifier les utilisateurs"
+
+#: ui/d4os_ui_users/d4os_ui_users.install:22
+msgid "The module d4os_io_db needs to be installed to use db4os users"
+msgstr "Le module d4os_io_db doit être installé pour utiliser db4os_users"
+
+#: ui/d4os_ui_users/d4os_ui_users.info:0
+msgid "Provides tools to manage users in an opensim grid."
+msgstr "Fournit des outils pour gérer des utilisateurs dans une grille opensim."
+
