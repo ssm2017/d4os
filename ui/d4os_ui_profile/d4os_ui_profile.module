@@ -79,6 +79,13 @@ function d4os_ui_profile_display_public_profile_access($account) {
 function d4os_ui_profile_display_public_profile($account) {
   global $base_url, $user;
 
+  if (!d4os_grid_is_online()) {
+    drupal_set_message(t('The grid is offline now.'), 'error');
+    drupal_set_message(t('You can not see user profiles.'), 'error');
+    drupal_set_message(t('Please try again later.'), 'error');
+    drupal_goto();
+  }
+
   $user->d4os['grid']['account']['uuid'] = $user->uid == 1 ? UUID_ZERO : $user->d4os['grid']['account']['uuid'];
 
   $profile = new stdClass;

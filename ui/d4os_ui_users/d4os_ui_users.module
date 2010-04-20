@@ -89,6 +89,12 @@ function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
       break;
 
     case 'user_register':
+      if (!d4os_grid_is_online()) {
+        drupal_set_message(t('The grid is offline now.'), 'error');
+        drupal_set_message(t('You can not register an account.'), 'error');
+        drupal_set_message(t('Please try again later.'), 'error');
+        drupal_goto();
+      }
       $username_field = array(
         '#type'         => 'textfield',
         '#title'        => t('User Name'),
@@ -123,6 +129,12 @@ function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
       break;
 
     case 'user_profile_form':
+      if (!d4os_grid_is_online()) {
+        drupal_set_message(t('The grid is offline now.'), 'error');
+        drupal_set_message(t('You can not edit your profile.'), 'error');
+        drupal_set_message(t('Please try again later.'), 'error');
+        drupal_goto();
+      }
       global $user;
       $account = $form['_account']['#value'];
       $names = explode(' ', $account->name);

@@ -61,6 +61,20 @@ function d4os_uuid_create() {
   mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ) );
 }
 
+function d4os_grid_is_online() {
+  global $grid_url;
+  $url = $grid_url. '/simstatus/';
+  $response = drupal_http_request(variable_get('d4os_ui_stats_status_url',  $url));
+  $online = FALSE;
+  if ($response->code != 200) {
+    $online = FALSE;
+  }
+  if (strtolower($response->data) == 'ok') {
+    $online = TRUE;
+  }
+  return $online;
+}
+
 /**
  * AJAX form handler.
  */

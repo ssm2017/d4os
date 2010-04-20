@@ -110,15 +110,7 @@ function d4os_ui_stats_status_params_save($edit) {
 function d4os_ui_stats_status_display($load_js=TRUE) {
   global $grid_url, $base_url;
   // get the grid status
-  $url = $grid_url. '/simstatus/';
-  $response = drupal_http_request(variable_get('d4os_ui_stats_status_url',  $url));
-  $online = FALSE;
-  if ($response->code != 200) {
-    $online = FALSE;
-  }
-  if (strtolower($response->data) == 'ok') {
-    $online = TRUE;
-  }
+  $online = d4os_grid_is_online();
   // add the login uri
   $loginuri = variable_get('d4os_default_login_uri', $base_url). ':'. variable_get('d4os_default_login_port', '8002');
   // build the output

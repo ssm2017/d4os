@@ -74,6 +74,25 @@ function d4os_ui_events_get_duration($time) {
   return $duration;
 }
 
+function d4os_ui_events_get_duration_string($time) {
+  $duration = d4os_ui_events_get_duration($time);
+  // build the duration string
+  $duration_string = '';
+  if ($duration['days']) {
+    $duration_string .= $duration['days']. ' '. t('Days'). ' ';
+  }
+  if ($duration['hours']) {
+    $duration_string .= $duration['hours']. ' '. t('Hours'). ' ';
+  }
+  if ($duration['mins']) {
+    $duration_string .= $duration['mins']. ' '. t('Mins'). ' ';
+  }
+  if ($duration['secs']) {
+    $duration_string .= $duration['secs']. ' '. t('Secs'). ' ';
+  }
+  return $duration_string;
+}
+
 function d4os_ui_events_build_parcels_list($uid) {
   // get the user
   $account = user_load($uid);

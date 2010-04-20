@@ -218,15 +218,26 @@ function d4os_io_db_os_event_load($data = array()) {
   }
 }
 
-function d4os_io_db_os_event_load_all() {
-  $users = array();
+function d4os_io_db_os_get_nid_by_eventid($eventid) {
+  return db_result(db_query("SELECT nid FROM {d4os_ui_events} WHERE eventid=%d", $eventid));
+}
+
+function d4os_io_db_os_event_load_all($time_limit = NULL, $order = NULL) {
+  $events = array();
+  $query = "SELECT * FROM {events}";
+  if (!is_null($time_limit)) {
+    $query .= " WHERE dateUTC >= ". $time_limit. " OR (dateUTC + duration) >= ". $time_limit;
+  }
+  if (!is_null($order)) {
+    $query .= " ORDER BY ". $order;
+  }
   d4os_io_db_set_active('os_search');
-  $result = db_query('SELECT * FROM {events}');
+  $result = db_query($query);
   while ($event = db_fetch_object($result)) {
     $events[] = $event;
   }
   d4os_io_db_set_active('default');
-  return $event;
+  return $events;
 }
 
 function d4os_io_db_os_event_delete($nid) {
