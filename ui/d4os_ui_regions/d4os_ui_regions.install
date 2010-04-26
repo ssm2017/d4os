@@ -17,7 +17,7 @@ function d4os_ui_regions_uninstall() {
   db_query("DELETE FROM {variable} WHERE name LIKE 'd4os_ui_regions%%'");
   db_query("DELETE FROM {system} WHERE type='module' AND name='d4os_ui_regions'");
 }
-
+/*
 function d4os_ui_regions_requirements($phase) {
   $requirements = array();
   $check = TRUE;
@@ -34,3 +34,4 @@ function d4os_ui_regions_requirements($phase) {
   }
   return $requirements;
 }
+*/

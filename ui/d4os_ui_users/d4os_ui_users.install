@@ -8,7 +8,7 @@
 * is derivative of works licensed under the GNU General Public License or
 * other free or open source software licenses.
 */
-
+/*
 function d4os_ui_users_requirements($phase) {
   $requirements = array();
   $check = TRUE;
@@ -25,7 +25,7 @@ function d4os_ui_users_requirements($phase) {
   }
   return $requirements;
 }
-
+*/
 function d4os_ui_users_install() {
   drupal_install_schema('d4os_ui_users');
 }
