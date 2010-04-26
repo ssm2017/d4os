@@ -1028,14 +1028,14 @@ msgstr "Debug"
 #: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.admin.inc:27
 #: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.admin.inc:36
 msgid "Log level"
-msgstr "Niveau de connection"
+msgstr "Niveau de log"
 
 #: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.admin.inc:74
 #: io/d4os_io_services/d4os_io_services_offline_message/d4os_io_services_offline_message.admin.inc:30
 #: io/d4os_io_services/d4os_io_services_profile/d4os_io_services_profile.admin.inc:30
 #: io/d4os_io_services/d4os_io_services_search/d4os_io_services_search.admin.inc:39
 msgid "Define the log level"
-msgstr "Définir le niveau de connection"
+msgstr "Définir le niveau de log"
 
 #: io/d4os_io_services/d4os_io_services_groups/d4os_io_services_groups.module:141;143
 msgid "Provides groups methods to services applications. Requires services.module."
@@ -2506,7 +2506,7 @@ msgstr "En ligne"
 
 #: ui/d4os_ui_stats/status/d4os_ui_stats_status.module:151
 msgid "Offline"
-msgstr "Hor ligne"
+msgstr "Hors ligne"
 
 #: ui/d4os_ui_stats/status/d4os_ui_stats_status.module:17
 msgid "Status"

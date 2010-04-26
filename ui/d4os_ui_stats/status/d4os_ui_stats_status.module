@@ -65,7 +65,7 @@ function d4os_ui_stats_status_params_form() {
   global $grid_url;
   $url = $grid_url. '/simstatus/';
   $form = array();
-  $form['d4os_ui_stats_status_url'] = array(
+  /*$form['d4os_ui_stats_status_url'] = array(
     '#type'           => 'textfield',
     '#title'          => t('Status url'),
     '#description'    => t('Use the url to get the info from.'),
@@ -76,7 +76,7 @@ function d4os_ui_stats_status_params_form() {
     '#title'          => t('Value returned'),
     '#description'    => t('Enter the value of the body response.'),
     '#default_value'  => variable_get('d4os_ui_stats_status_value',  'OK'),
-  );
+  );*/
   $form['d4os_ui_stats_status_timer_fieldset'] = array(
     '#type'         => 'fieldset',
     '#title'        => t('Timer'),
@@ -101,8 +101,8 @@ function d4os_ui_stats_status_params_form() {
 }
 
 function d4os_ui_stats_status_params_save($edit) {
-  variable_set('d4os_ui_stats_status_url',             $edit['d4os_ui_stats_status_url']);
-  variable_set('d4os_ui_stats_status_value',           $edit['d4os_ui_stats_status_value']);
+  /*variable_set('d4os_ui_stats_status_url',             $edit['d4os_ui_stats_status_url']);
+  variable_set('d4os_ui_stats_status_value',           $edit['d4os_ui_stats_status_value']);*/
   variable_set('d4os_ui_stats_status_use_timer',       $edit['d4os_ui_stats_status_use_timer']);
   variable_set('d4os_ui_stats_status_timer',           $edit['d4os_ui_stats_status_timer']);
 }

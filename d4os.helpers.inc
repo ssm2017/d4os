@@ -62,7 +62,18 @@ function d4os_uuid_create() {
 }
 
 function d4os_grid_is_online() {
-  global $grid_url;
+  // 8002 = user; 8003 = asset+grid+inventory; 8006 = messaging
+  // -111 = connection refused
+  global $base_url;
+  $online = FALSE;
+
+  // check if the user server is online
+  $user_server_uri = variable_get('d4os_default_user_server_uri', $base_url). ':'. variable_get('d4os_default_user_server_port', '8002');
+  $response = drupal_http_request($user_server_uri);
+  if ($response->code == 404 && $response->headers['Server'] == 'Tiny WebServer') {
+    $online = TRUE;
+  }
+  /*global $grid_url;
   $url = $grid_url. '/simstatus/';
   $response = drupal_http_request(variable_get('d4os_ui_stats_status_url',  $url));
   $online = FALSE;
@@ -71,7 +82,7 @@ function d4os_grid_is_online() {
   }
   if (strtolower($response->data) == 'ok') {
     $online = TRUE;
-  }
+  }*/
   return $online;
 }
 
