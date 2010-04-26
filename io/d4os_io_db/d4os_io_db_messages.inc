@@ -55,3 +55,13 @@ function d4os_io_db_offline_message_user_delete($uuid) {
   db_query("DELETE FROM {offline_msgs} WHERE uuid = '%s'", array($uuid));
   d4os_io_db_set_active('default');
 }
+
+function d4os_io_db_os_offline_messages_is_alive() {
+  d4os_io_db_set_active('os_offline_messages');
+  $success = db_table_exists('offline_msgs');
+  d4os_io_db_set_active('default');
+  return array(
+    'success' => $success,
+    'message' => '',
+  );
+}

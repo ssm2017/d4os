@@ -316,3 +316,13 @@ function d4os_io_db_os_user_delete($uuid) {
   // delete the user drupal link  
   db_query("DELETE FROM {d4os_ui_users} WHERE UUID='%s'", $uuid);
 }
+
+function d4os_io_db_os_users_is_alive() {
+  d4os_io_db_set_active('os_users');
+  $success = db_table_exists('users');
+  d4os_io_db_set_active('default');
+  return array(
+    'success' => $success,
+    'message' => '',
+  );
+}

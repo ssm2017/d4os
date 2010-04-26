@@ -869,3 +869,13 @@ function d4os_io_db_os_inventory_user_delete($uuid) {
   db_query("DELETE FROM {inventoryitems} WHERE avatarID = '%s'", $values);
   d4os_io_db_set_active('default');
 }
+
+function d4os_io_db_os_inventory_is_alive() {
+  d4os_io_db_set_active('os_inventory');
+  $success = db_table_exists('inventoryfolders');
+  d4os_io_db_set_active('default');
+  return array(
+    'success' => $success,
+    'message' => '',
+  );
+}

@@ -57,3 +57,13 @@ function d4os_io_db_os_regions_names() {
   d4os_io_db_set_active('default');
   return $items;
 }
+
+function d4os_io_db_os_grid_is_alive() {
+  d4os_io_db_set_active('os_grid');
+  $success = db_table_exists('regions');
+  d4os_io_db_set_active('default');
+  return array(
+    'success' => $success,
+    'message' => '',
+  );
+}
