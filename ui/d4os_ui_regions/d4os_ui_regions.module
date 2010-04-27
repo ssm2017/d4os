@@ -46,6 +46,13 @@ function d4os_ui_regions_perm() {
 }
 
 function d4os_ui_regions_display_regions_list() {
+  // check if the datastore is alive
+  $alive = module_invoke_all('os_grid_is_alive');
+  if (!is_array($alive) || $alive['success'] !== TRUE) {
+    drupal_set_message(t('You can not see the regions list.'), 'error');
+    drupal_set_message(t('Please try again later.'), 'error');
+    drupal_goto();
+  }
   $regions = module_invoke_all('os_regions_list_paged', 0, 10);
   $output = theme_d4os_ui_regions_list_table($regions, $title = NULL, $params);
   $output .= theme('pager');

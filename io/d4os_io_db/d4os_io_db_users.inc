@@ -318,11 +318,7 @@ function d4os_io_db_os_user_delete($uuid) {
 }
 
 function d4os_io_db_os_users_is_alive() {
-  d4os_io_db_set_active('os_users');
-  $success = db_table_exists('users');
-  d4os_io_db_set_active('default');
   return array(
-    'success' => $success,
-    'message' => '',
+    'success' => d4os_io_db_mysql_is_alive('os_users', 'os user'),
   );
 }

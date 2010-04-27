@@ -202,10 +202,9 @@ function d4os_ui_events_nodeapi(&$node, $op, $teaser, $page) {
         break;
   
       case 'prepare':
-        // check if the "profile" datastore is alive
+        // check if the "search" datastore is alive
         $alive = module_invoke_all('os_search_is_alive');
         if (!is_array($alive) || $alive['success'] !== TRUE) {
-          drupal_set_message(t('The grid is offline now.'), 'error');
           drupal_set_message(t('You can not create an event.'), 'error');
           drupal_set_message(t('Please try again later.'), 'error');
           drupal_goto();
@@ -224,6 +223,13 @@ function d4os_ui_events_nodeapi(&$node, $op, $teaser, $page) {
 }
 
 function d4os_ui_events_load($node) {
+  // check if the "search" datastore is alive
+  $alive = module_invoke_all('os_search_is_alive');
+  if (!is_array($alive) || $alive['success'] !== TRUE) {
+    drupal_set_message(t('You can not view events.'), 'error');
+    drupal_set_message(t('Please try again later.'), 'error');
+    drupal_goto();
+  }
   $additions = module_invoke_all('os_event_load',  $node->nid);
   return $additions[0];
 }
@@ -240,6 +246,13 @@ function d4os_ui_events_view($node, $teaser = FALSE, $page = FALSE) {
 }
 
 function d4os_ui_events_list() {
+  // check if the "search" datastore is alive
+  $alive = module_invoke_all('os_search_is_alive');
+  if (!is_array($alive) || $alive['success'] !== TRUE) {
+    drupal_set_message(t('You can not view events.'), 'error');
+    drupal_set_message(t('Please try again later.'), 'error');
+    drupal_goto();
+  }
   // get time
   $now = date('Y-m-d H:i:s');
   $utc = d4os_ui_events_get_utc_timestamp_from_date($now);

@@ -57,11 +57,7 @@ function d4os_io_db_offline_message_user_delete($uuid) {
 }
 
 function d4os_io_db_os_offline_messages_is_alive() {
-  d4os_io_db_set_active('os_offline_messages');
-  $success = db_table_exists('offline_msgs');
-  d4os_io_db_set_active('default');
   return array(
-    'success' => $success,
-    'message' => '',
+    'success' => d4os_io_db_mysql_is_alive('os_offline_messages', 'os offline messages'),
   );
 }

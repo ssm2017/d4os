@@ -83,7 +83,14 @@ function d4os_ui_profile_display_public_profile($account) {
   // check if the datastore is alive
   $alive = module_invoke_all('os_profile_is_alive');
   if (!is_array($alive) || $alive['success'] !== TRUE) {
-    drupal_set_message(t('The grid is offline now.'), 'error');
+    drupal_set_message(t('You can not see user profiles.'), 'error');
+    drupal_set_message(t('Please try again later.'), 'error');
+    drupal_goto();
+  }
+
+  // check if the datastore is alive
+  $alive = module_invoke_all('os_user_is_alive');
+  if (!is_array($alive) || $alive['success'] !== TRUE) {
     drupal_set_message(t('You can not see user profiles.'), 'error');
     drupal_set_message(t('Please try again later.'), 'error');
     drupal_goto();
@@ -120,9 +127,9 @@ function d4os_ui_profile_display_public_profile($account) {
   // inworld
   // *****************
   $profile->show_inworld = TRUE;
-  $profile->uuid = $account->d4os['grid']['account']['uuid'];
-  $profile->username = $account->d4os['grid']['account']['username'];
-  $profile->lastname = $account->d4os['grid']['account']['lastname'];
+  $profile->uuid      = $account->d4os['grid']['account']['uuid'];
+  $profile->username  = $account->d4os['grid']['account']['username'];
+  $profile->lastname  = $account->d4os['grid']['account']['lastname'];
   // convert the dates
   $format = variable_get('date_format_medium', 'm/d/Y H:i');
   $profile->created = format_date($account->d4os['grid']['account']['created'], $format);

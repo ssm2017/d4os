@@ -870,11 +870,7 @@ function d4os_io_db_os_search_services_parser_parse($hostname, $port) {
 }
 
 function d4os_io_db_os_search_is_alive() {
-  d4os_io_db_set_active('os_search');
-  $success = db_table_exists('allparcels');
-  d4os_io_db_set_active('default');
   return array(
-    'success' => $success,
-    'message' => '',
+    'success' => d4os_io_db_mysql_is_alive('os_search', 'os search'),
   );
 }

@@ -1768,11 +1768,7 @@ function d4os_io_db_os_groups_services_checkGroupPermission($PermMask, $PermValu
 }
 
 function d4os_io_db_os_groups_is_alive() {
-  d4os_io_db_set_active('os_groups');
-  $success = db_table_exists('osgroup');
-  d4os_io_db_set_active('default');
   return array(
-    'success' => $success,
-    'message' => '',
+    'success' => d4os_io_db_mysql_is_alive('os_groups', 'os groups')
   );
 }

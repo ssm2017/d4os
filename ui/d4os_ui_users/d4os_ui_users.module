@@ -92,7 +92,6 @@ function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
       // check if the datastore is alive
       $alive = module_invoke_all('os_users_is_alive');
       if (!is_array($alive) || $alive['success'] !== TRUE) {
-        drupal_set_message(t('The grid is offline now.'), 'error');
         drupal_set_message(t('You can not register an account.'), 'error');
         drupal_set_message(t('Please try again later.'), 'error');
         drupal_goto();
@@ -134,7 +133,6 @@ function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
       // check if the datastore is alive
       $alive = module_invoke_all('os_users_is_alive');
       if (!is_array($alive) || $alive['success'] !== TRUE) {
-        drupal_set_message(t('The grid is offline now.'), 'error');
         drupal_set_message(t('You can not edit your profile.'), 'error');
         drupal_set_message(t('Please try again later.'), 'error');
         drupal_goto();
@@ -323,14 +321,17 @@ function d4os_ui_users_account_validate($form, &$form_state) {
 }
 
 function d4os_ui_users_user($op, &$edit, &$account, $category = NULL) {
-
   switch ($op) {
     case 'insert':
       module_invoke_all('os_user_save', $edit);
       break;
 
     case 'load':
-      d4os_ui_users_user_load($account);
+      // check if the datastore is alive
+      $alive = module_invoke_all('os_users_is_alive');
+      if (is_array($alive) && $alive['success'] === TRUE) {
+        d4os_ui_users_user_load($account);
+      }
       break;
 
     case 'update':

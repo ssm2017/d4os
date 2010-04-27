@@ -13,6 +13,12 @@ function d4os_admin() {
   global $base_url;
   $form = array();
 
+  $form['d4os_check_datastore_health'] = array(
+    '#type'           => 'checkbox',
+    '#title'          => t('Check datastore health'),
+    '#default_value'  => variable_get('d4os_check_datastore_health', 1),
+    '#description'    => t('Use this option to check if the grid datastores are alive before acting some operations like registering users.'),
+  );
   $form['ugaim'] = array(
     '#type'         => 'fieldset',
     '#title'        => t('UGAIM'),

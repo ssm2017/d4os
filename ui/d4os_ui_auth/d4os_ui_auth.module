@@ -95,6 +95,11 @@ function d4os_ui_auth_login_validate($form, &$form_state) {
  * Inworld login
  */
 function d4os_ui_auth_grid_login(&$form_state) {
+  // check if the datastore is alive
+  $alive = module_invoke_all('os_user_is_alive');
+  if (!is_array($alive) || $alive['success'] !== TRUE) {
+    return FALSE;
+  }
   // get the credentials
   $username = $form_state['values']['username'];
   $lastname = $form_state['values']['lastname'];

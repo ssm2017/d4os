@@ -715,11 +715,7 @@ function d4os_io_db_os_profile_services_user_preferences_update($params) {
 }
 
 function d4os_io_db_os_profile_is_alive() {
-  d4os_io_db_set_active('os_profile');
-  $success = db_table_exists('userprofile');
-  d4os_io_db_set_active('default');
   return array(
-    'success' => $success,
-    'message' => '',
+    'success' => d4os_io_db_mysql_is_alive('os_profile', 'os profile'),
   );
 }
