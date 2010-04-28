@@ -345,6 +345,7 @@ function d4os_ui_users_user($op, &$edit, &$account, $category = NULL) {
       break;
 
     case 'login':
+      // TODO : build a module that is sending an email to the user to validate email account and then trigger a rule
       // check the email address
       $email = d4os_ui_users_generate_mail($account->d4os['grid']['account']['uuid']);
       if ($email == $account->mail) {

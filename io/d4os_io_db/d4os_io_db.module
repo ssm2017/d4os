@@ -32,7 +32,7 @@ function d4os_io_db_menu() {
     'page callback'     => 'drupal_get_form',
     'page arguments'    => array('d4os_io_db_admin'),
     'access arguments'  => array('admin d4os db'),
-    'type'              => MENU_NORMAL_ITEM,
+    'type'              => MENU_LOCAL_TASK,
     'file'              => 'd4os_io_db.admin.inc'
    );
   return $items;

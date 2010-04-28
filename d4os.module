@@ -42,7 +42,7 @@ function d4os_menu() {
     'description'       => 'services settings',
     'page callback'     => 'd4os_admin_services',
     'access arguments'  => array('admin d4os'),
-    'type'              => MENU_NORMAL_ITEM,
+    'type'              => MENU_LOCAL_TASK,
     'file'              => 'd4os.admin.inc'
   );
   $items['admin/settings/d4os/ui'] = array(
