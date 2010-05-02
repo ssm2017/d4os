@@ -27,12 +27,22 @@ function d4os_ui_events_node_info() {
 
 function d4os_ui_events_menu() {
   $items = array();
-  $items['events'] = array(
+  $path = variable_get('d4os_ui_events_list_path', 'events');
+  $items[$path] = array(
     'title'             => 'Events',
     'description'       => 'Events list',
     'page callback'     => 'd4os_ui_events_list',
     'access arguments'  => array('view events list'),
     'type'              => MENU_SUGGESTED_ITEM,
+  );
+  $items['admin/settings/d4os/ui/events'] = array(
+    'title'             => 'auth',
+    'description'       => 'd4os ui events settings',
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('d4os_ui_events_settings'),
+    'access arguments'  => array('admin d4os ui events'),
+    'type'              => MENU_LOCAL_TASK,
+    'file'              => 'd4os_ui_events.admin.inc'
   );
   return $items;
 }
@@ -63,6 +73,7 @@ function d4os_ui_events_perm() {
     'edit own d4os events content',
     'edit any d4os events content',
     'view events list',
+    'admin d4os ui events',
   );
 }
 
