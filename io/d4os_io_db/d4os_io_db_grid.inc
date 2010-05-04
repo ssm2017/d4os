@@ -58,6 +58,63 @@ function d4os_io_db_os_regions_names() {
   return $items;
 }
 
+function d4os_io_db_os_grid_get_stats() {
+  // who is online now
+  $now_online = 0;
+  $online_users = array();
+  d4os_io_db_set_active('os_users');
+  $users = db_query("SELECT UUID, currentRegion FROM {agents}"
+                            . " WHERE agentOnline = 1"
+                            . " AND logintime < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"
+                            . " AND logoutTime < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"
+                            . " ORDER BY logintime DESC");
+  while($online_user = db_fetch_object($users)) {
+    $online_users[] = $online_user;
+  }
+  d4os_io_db_set_active('default');
+
+  // get the regions
+  $regions_list = array();
+  d4os_io_db_set_active('os_grid');
+  $regions = db_query("SELECT regionName, UUID FROM {regions}");
+  while ($region = db_fetch_object($regions)) {
+    $regions_list[] = $region;
+  }
+  d4os_io_db_set_active('default');
+
+  // check if the user is in a valid region
+  foreach ($online_users as $online_user) {
+    if (in_array($online_user->currentRegion, $regions_list)) {
+      ++$now_online;
+    }
+  }
+
+  // last month online
+  d4os_io_db_set_active('os_grid');
+  $last_month_online = db_result(db_query("SELECT count(*) FROM {agents} WHERE logintime > UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()) - 2419200))"));
+  d4os_io_db_set_active('default');
+
+  // users count
+  d4os_io_db_set_active('os_users');
+  $users_count = db_result(db_query("SELECT count(*) FROM users"));
+  d4os_io_db_set_active('default');
+
+  // regions count
+  d4os_io_db_set_active('os_grid');
+  $regions_count = db_result(db_query("SELECT count(*) FROM regions"));
+  d4os_io_db_set_active('default');
+
+  return array(
+    'success' => TRUE,
+    'data'    => array(
+      'now_online'        => $now_online,
+      'last_month_online' => $last_month_online,
+      'users_count'       => $users_count,
+      'regions_count'     => $regions_count,
+    ),
+  );
+}
+
 function d4os_io_db_os_grid_is_alive() {
   return array(
     'success' => d4os_io_db_mysql_is_alive('os_grid', 'os grid')

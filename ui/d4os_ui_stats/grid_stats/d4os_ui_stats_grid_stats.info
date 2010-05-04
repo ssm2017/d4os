@@ -1,0 +1,6 @@
+; $Id$
+name = "d4os ui stats grid stats"
+description = "Provides tools to display stats for an opensim grid."
+package = d4os stats
+core = 6.x
+dependencies[] = d4os

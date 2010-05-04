@@ -257,7 +257,11 @@ function d4os_io_db_users_add_extra_fields(&$user) {
 }
 
 function d4os_io_db_os_user_set_uid($uid, $uuid) {
-  db_query("INSERT INTO {d4os_ui_users} (uid, UUID) VALUES (%d, '%s')", array($uid, $uuid));
+  // check if key already exists
+  $exists = db_result(db_query("SELECT count(*) FROM {d4os_ui_users} WHERE uid=%d AND UUID='%s'", array($uid, $uuid)));
+  if ($exists == 0) {
+    db_query("INSERT INTO {d4os_ui_users} (uid, UUID) VALUES (%d, '%s')", array($uid, $uuid));
+  }
 }
 
 function d4os_io_db_os_user_get_uid($uuid) {

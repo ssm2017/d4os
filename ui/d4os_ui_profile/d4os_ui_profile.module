@@ -89,7 +89,7 @@ function d4os_ui_profile_display_public_profile($account) {
   }
 
   // check if the datastore is alive
-  $alive = module_invoke_all('os_user_is_alive');
+  $alive = module_invoke_all('os_users_is_alive');
   if (!is_array($alive) || $alive['success'] !== TRUE) {
     drupal_set_message(t('You can not see user profiles.'), 'error');
     drupal_set_message(t('Please try again later.'), 'error');
@@ -161,7 +161,7 @@ function d4os_ui_profile_display_public_profile($account) {
   // *****************
   // web
   // *****************
-  $profile->show_web = TRUE;
+  $profile->show_web = FALSE;
   if ($profile->can_edit) {
     $profile->web = drupal_get_form('d4os_ui_profile_url_form', $profile, $account);
   }
@@ -349,7 +349,7 @@ function d4os_ui_profile_partner_form($form_state, $profile, $account) {
     '#type'         => 'fieldset',
     '#title'        => t('Change partner'),
     '#collapsible'  => TRUE,
-    '#collapsed'    => FALSE,
+    '#collapsed'    => TRUE,
   );
   $form['partner']['wrapper'] = array(
     '#type'   => 'item',
