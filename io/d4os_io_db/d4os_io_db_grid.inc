@@ -90,7 +90,7 @@ function d4os_io_db_os_grid_get_stats() {
   }
 
   // last month online
-  d4os_io_db_set_active('os_grid');
+  d4os_io_db_set_active('os_users');
   $last_month_online = db_result(db_query("SELECT count(*) FROM {agents} WHERE logintime > UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()) - 2419200))"));
   d4os_io_db_set_active('default');
 
@@ -104,14 +104,14 @@ function d4os_io_db_os_grid_get_stats() {
   $regions_count = db_result(db_query("SELECT count(*) FROM regions"));
   d4os_io_db_set_active('default');
 
+  $values = new stdClass;
+  $values->now_online         = $now_online;
+  $values->last_month_online  = $last_month_online;
+  $values->users_count        = $users_count;
+  $values->regions_count      = $regions_count;
   return array(
     'success' => TRUE,
-    'data'    => array(
-      'now_online'        => $now_online,
-      'last_month_online' => $last_month_online,
-      'users_count'       => $users_count,
-      'regions_count'     => $regions_count,
-    ),
+    'data'    => $values,
   );
 }
 

@@ -22,7 +22,8 @@ function d4os_ui_stats_grid_stats_block($op = 'list', $delta = 0, $edit = array(
     case 'view':
       switch ($delta) {
         case 'grid_stats':
-          $content = d4os_ui_stats_grid_stats_display();
+          $values = module_invoke_all('os_grid_get_stats');
+          $content = theme('d4os_ui_stats_grid_stats', $values['data']);
           $block['subject'] = t('Grid stats');
           $block['content'] = $content;
           break;
@@ -32,44 +33,23 @@ function d4os_ui_stats_grid_stats_block($op = 'list', $delta = 0, $edit = array(
   return $block;
 }
 
-function d4os_ui_stats_grid_stats_display($load_js=TRUE) {
-  global $grid_url, $base_url;
-  // get the grid status
-  $online = d4os_grid_is_online();
-  // add the login uri
-  $loginuri = variable_get('d4os_default_login_uri', $base_url). ':'. variable_get('d4os_default_login_port', '8002');
-  // build the output
-  $output = theme('d4os_ui_stats_status', $online, $loginuri);
-  if (variable_get('d4os_ui_stats_status_use_timer', 1)) {
-    if ($load_js) {
-      drupal_add_js(libraries_get_path('jquery.timer').'/jquery.timer.js');
-      $js_vars = array(
-        'timer'  => variable_get('d4os_ui_stats_status_timer', 15),
-      );
-      drupal_add_js(array('d4os_ui_stats_status' => $js_vars), 'setting');
-      drupal_add_js(drupal_get_path('module', 'd4os_ui_stats_status').'/js/d4os_ui_stats_status.js', 'module', 'footer');
-    }
-  }
-  return $output;
-}
-
 function d4os_ui_stats_grid_stats_theme() {
   return array(
     // status
     'd4os_ui_stats_grid_stats' => array(
-      'arguments' => array('stats' => array()),
+      'arguments' => array('values' => array()),
     ),
   );
 }
 
-function theme_d4os_ui_stats_grid_stats($online, $loginuri) {
-  // TODO : see the loginuri with counter
-  $output = '';//'<div><dl><dt>'. t('Login uri'). '</dt><dd>'. $loginuri. '</dd></dl></div>';
-  if ($online) {
-    $output .= '<div id="grid_status" class="messages status">'. t('Online'). '</div>';
-  }
-  else {
-    $output .= '<div id="grid_status" class="messages error">'. t('Offline'). '</div>';
-  }
+function theme_d4os_ui_stats_grid_stats($values) {
+  $output = '<div id="grid-stats">';
+  $output .= '<ul>';
+  $output .= '<li>'. t('Now online'). ' : '. $values->now_online. '</li>';
+  $output .= '<li>'. t('Last month online'). ' : '. $values->last_month_online. '</li>';
+  $output .= '<li>'. t('Users count'). ' : '. $values->users_count. '</li>';
+  $output .= '<li>'. t('Regions count'). ' : '. $values->regions_count. '</li>';
+  $output .= '</ul>';
+  $output .= '</div>';
   return $output;
 }

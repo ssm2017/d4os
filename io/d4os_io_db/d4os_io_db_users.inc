@@ -250,8 +250,8 @@ function d4os_io_db_users_add_extra_fields(&$user) {
       $user->profileSkillsMask     = $properties['data'][0]['profileSkillsMask']; // 8
       $user->profileSkillsText     = $properties['data'][0]['profileSkillsText']; // 9
       $user->profileLanguages      = $properties['data'][0]['profileLanguages']; // 10
-      $user->profileFirstImage     = $properties['data'][0]['profileFirstImage']; // 11
-      $user->profileFirstText      = $properties['data'][0]['profileFirstText']; // 12
+      //$user->profileFirstImage     = $properties['data'][0]['profileFirstImage']; // 11
+      //$user->profileFirstText      = $properties['data'][0]['profileFirstText']; // 12
     }
   }
 }
