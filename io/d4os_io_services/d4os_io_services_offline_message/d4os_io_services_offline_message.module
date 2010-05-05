@@ -34,6 +34,13 @@ function d4os_io_services_offline_message_menu() {
     'type'              => MENU_LOCAL_TASK,
     'file'              => 'd4os_io_services_offline_message.admin.inc'
   );
+  $items['grid/offline-message'] = array(
+    'title'             => 'offline_message',
+    'description'       => 'd4os io services offline_message',
+    'page callback'     => 'd4os_io_services_offline_message_confirm',
+    'access callback'   => TRUE,
+    'type'              => MENU_CALLBACK,
+  );
   $items['grid/offline-message/%'] = array(
     'title'             => 'offline_message',
     'description'       => 'd4os io services offline_message',
@@ -49,6 +56,10 @@ function d4os_io_services_offline_message_perm() {
   return array(
     'admin d4os io services offline_message',
   );
+}
+
+function d4os_io_services_offline_message_confirm() {
+  return t('Your oflline message module is responding.');
 }
 
 function d4os_io_services_offline_message_query($action) {
