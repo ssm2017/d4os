@@ -108,7 +108,7 @@ function d4os_ui_users_get_god_role_by_role($role) {
   return isset($levels[0]) ? $levels[0] : FALSE;
 }
 
-function d4os_ui_users_get_god_level($roles) {
+function d4os_ui_users_get_god_level($roles = array()) {
   if (!count($roles)) return variable_get('d4os_ui_users_default_god_level', 10);
   $levels = array();
   foreach ($roles as $k=>$v) {

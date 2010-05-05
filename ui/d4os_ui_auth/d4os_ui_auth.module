@@ -161,6 +161,7 @@ function d4os_ui_auth_grid_login(&$form_state) {
     $data['name']   = $name;
     $data['pass']   = $pass;
     $data['status'] = 1;
+    $data['d4os']['grid']['account']['login_level'] = d4os_ui_users_get_god_level();
     $account = user_save(NULL, $data);
     module_invoke_all('os_user_set_uid', $account->uid, $data['d4os']['grid']['account']['uuid']);
     // login the user
