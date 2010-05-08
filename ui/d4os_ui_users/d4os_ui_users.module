@@ -290,7 +290,7 @@ function d4os_ui_users_account_validate($form, &$form_state) {
     form_set_error('lastname', $lastname_validate);
   }
   // check the password length
-  if (isset($form_state['values']['pass']) && strlen($form_state['values']['pass']) < 6) {
+  if (isset($form_state['values']['pass']) && !empty($form_state['values']['pass']) && strlen($form_state['values']['pass']) < 6) {
     form_set_error('pass', t('The Password field must be at least 6 characters in length.'));
   }
   // check the email address to fit new opensim rules
