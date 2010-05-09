@@ -133,14 +133,14 @@ function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
       // check if the datastore is alive
       $alive = module_invoke_all('os_users_is_alive');
       if (!is_array($alive) || $alive['success'] !== TRUE) {
-        drupal_set_message(t('You can not edit your profile.'), 'error');
+        drupal_set_message(t('You can not edit an account.'), 'error');
         drupal_set_message(t('Please try again later.'), 'error');
         drupal_goto();
       }
       global $user;
-      $account = $form['_account']['#value'];
-      $names = explode(' ', $account->name);
       if (user_access('administer users') || user_access('change own username')) {
+        $account = $form['_account']['#value'];
+        $names = explode(' ', $account->name);
         if ($account->uid > 1 && $form['_category']['#value'] == 'account') {
           unset($form['account']['name']);
           $form['account']['username'] = array(
@@ -163,9 +163,9 @@ function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
             '#description'    => t('Enter the last name for the avatar. Spaces are not allowed. Punctuation is not allowed except for periods, hyphens, and underscores.'),
             '#weight'         => -1,
           );
-          array_unshift($form['#validate'], 'd4os_ui_users_account_validate');
         }
       }
+      array_unshift($form['#validate'], 'd4os_ui_users_account_validate');
       break;
   }
 }
@@ -266,9 +266,12 @@ function d4os_ui_users_account_validate($form, &$form_state) {
   }
 
   // get username and lastname
-  $username = $form_state['values']['username'];
-  $lastname = $form_state['values']['lastname'];
-  $name     = $form_state['values']['username']. ' '. $form_state['values']['lastname'];
+  if (isset($form_state['values']['_account']->name)) {
+    $names = explode(' ', $form_state['values']['_account']->name);
+  }
+  $username = isset($form_state['values']['username']) ? $form_state['values']['username'] : $names[0];
+  $lastname = isset($form_state['values']['lastname']) ? $form_state['values']['lastname'] : $names[1];
+  $name     = $username. ' '. $lastname;
 
   // check if the lastname is the same one as admin account
   $admin = user_load(1);
