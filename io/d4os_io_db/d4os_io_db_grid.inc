@@ -29,7 +29,7 @@ function d4os_io_db_os_region_load($array = array()) {
   return $region;
 }
 
-function d4os_io_db_os_regions_list_paged($page = 0, $limit = 5) {
+function d4os_io_db_os_regions_list_paged($page = 0, $limit = 5, $headers) {
   if (!isset($_GET['page'])) {
     $_GET['page'] = $page;
   }
@@ -40,7 +40,7 @@ function d4os_io_db_os_regions_list_paged($page = 0, $limit = 5) {
     $_GET['sort'] = 'DESC';
   }
   d4os_io_db_set_active('os_grid');
-  $result = pager_query('SELECT * FROM {regions} ORDER BY %s %s', $limit, 0, NULL, array('order'=>$_GET['order'], 'sort'=>$_GET['sort']));
+  $result = pager_query('SELECT * FROM {regions} %s', $limit, 0, NULL, array(tablesort_sql($headers)));
   while ($region = db_fetch_object($result)) {
     $items[] = $region;
   }
