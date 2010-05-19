@@ -829,7 +829,7 @@ function d4os_io_db_os_inventory_clone_attachments($params) {
   // remove the trailing ,
   $attachments_list_vars = substr($attachments_list_vars, 0, -1);
 
-  if (count($attachments_list_vars) == 0) {
+  if (count($attachments_list_vars) == 0 || $attachments_list_vars === FALSE) {
     return array(
       'success' => FALSE,
       'message' => t('No attachments found.'),
