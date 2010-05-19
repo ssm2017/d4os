@@ -156,6 +156,7 @@ function d4os_ui_regions_list_build_headers() {
 }
 
 function theme_d4os_ui_regions_list_table($regions, $title = NULL, $params, $headers) {
+  // TODO : declare the theme in the hook_theme
   global $user;
   // get the items list to show
   $items =  variable_get('d4os_ui_regions_list_items', array('regionName', 'locX', 'locY'));

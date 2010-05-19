@@ -34,15 +34,15 @@ msgstr "Port par défaut de la grille"
 
 #: d4os.admin.inc:47
 msgid "LoginURI"
-msgstr "URI de connection"
+msgstr "URI de connexion"
 
 #: d4os.admin.inc:53;55
 msgid "Default login URI"
-msgstr "URI de connection par défaut"
+msgstr "URI de connexion par défaut"
 
 #: d4os.admin.inc:60;64
 msgid "Default login port"
-msgstr "Port de connection par défaut"
+msgstr "Port de connexion par défaut"
 
 #: d4os.admin.inc:71
 #: io/d4os_io_db/d4os_io_db.admin.inc:309
@@ -457,7 +457,7 @@ msgstr "Port oss par défaut"
 
 #: io/d4os_io_osservices/d4os_io_osservices.admin.inc:59
 msgid "Default credentials"
-msgstr "Paramètres de connection par défaut"
+msgstr "Paramètres de connexion par défaut"
 
 #: io/d4os_io_osservices/d4os_io_osservices.admin.inc:66;70
 msgid "Default user"
@@ -525,7 +525,7 @@ msgstr "Exécuter"
 
 #: io/d4os_io_osservices/d4os_io_osservices.module:86;123;160;177;214;231;268;285;322;339
 msgid "Connecting..."
-msgstr "Connection...."
+msgstr "Connexion...."
 
 #: io/d4os_io_osservices/d4os_io_osservices.module:91;128;182;236;290;344
 #: io/d4os_io_radmin/d4os_io_radmin.module:166;195;242;278;309;338;369;405;470;526;560;615;672;719;760;801;847;888;929;965
@@ -1320,7 +1320,7 @@ msgstr ""
 
 #: io/d4os_io_simian/d4os_io_simian.test.inc:169
 msgid "Identifier, for example a login name"
-msgstr "Identifiant, par exemple un nom de connection"
+msgstr "Identifiant, par exemple un nom de connexion"
 
 #: io/d4os_io_simian/d4os_io_simian.test.inc:174
 msgid "Credential, for example a hashed password"
@@ -1424,11 +1424,11 @@ msgstr "Grille -> Drupal"
 
 #: ui/d4os_ui_auth/d4os_ui_auth.admin.inc:27
 msgid "Login flow"
-msgstr "Flux de connection"
+msgstr "Flux de connexion"
 
 #: ui/d4os_ui_auth/d4os_ui_auth.admin.inc:30
 msgid "Define the login flow."
-msgstr "Définir le flux de connection."
+msgstr "Définir le flux de connexion."
 
 #: ui/d4os_ui_auth/d4os_ui_auth.module:15
 msgid "OpenSim grid auth management"
@@ -2101,7 +2101,7 @@ msgstr "Partenaire"
 
 #: ui/d4os_ui_profile/theme/d4os_ui_profile_display.tpl.php:84
 msgid "Last connection"
-msgstr "Dernière connection"
+msgstr "Dernière connexion"
 
 #: ui/d4os_ui_profile/theme/d4os_ui_profile_display.tpl.php:86
 msgid "Home region"
@@ -2152,17 +2152,17 @@ msgstr ""
 #: ui/d4os_ui_regions/d4os_ui_regions.admin.inc:29
 #: ui/d4os_ui_regions/d4os_ui_regions.module:99
 msgid "locX"
-msgstr "emplacemntX"
+msgstr "emplacement X"
 
 #: ui/d4os_ui_regions/d4os_ui_regions.admin.inc:30
 #: ui/d4os_ui_regions/d4os_ui_regions.module:105
 msgid "locY"
-msgstr "emplacemntY"
+msgstr "emplacement Y"
 
 #: ui/d4os_ui_regions/d4os_ui_regions.admin.inc:31
 #: ui/d4os_ui_regions/d4os_ui_regions.module:111
 msgid "locZ"
-msgstr "emplacemntZ"
+msgstr "emplacement Z"
 
 #: ui/d4os_ui_regions/d4os_ui_regions.admin.inc:32
 #: ui/d4os_ui_regions/d4os_ui_regions.module:117
@@ -2329,7 +2329,7 @@ msgstr "d4os stats"
 
 #: ui/d4os_ui_stats/levels/theme/d4os_ui_stats_levels.tpl.php:5
 msgid "Login uri"
-msgstr "Uri de connection"
+msgstr "Uri de connexion"
 
 #: ui/d4os_ui_stats/levels/theme/d4os_ui_stats_levels.tpl.php:11
 msgid "Version"
@@ -2566,7 +2566,7 @@ msgstr ""
 
 #: ui/d4os_ui_users/d4os_ui_users.admin.inc:73
 msgid "God level"
-msgstr "Niveau de connection"
+msgstr "Niveau de connexion"
 
 #: ui/d4os_ui_users/d4os_ui_users.admin.inc:74
 msgid "that usage is NOT supported by OpenSim devs. Use at your own risk. Side effects unknown"
@@ -2574,11 +2574,11 @@ msgstr ""
 
 #: ui/d4os_ui_users/d4os_ui_users.admin.inc:81
 msgid "Default god level"
-msgstr "Niveau de connection par défaut"
+msgstr "Niveau de connexion par défaut"
 
 #: ui/d4os_ui_users/d4os_ui_users.admin.inc:85
 msgid "The default god level for new users."
-msgstr "Niveau de connection par défaut pour les nouveaux utilisateurs."
+msgstr "Niveau de connexion par défaut pour les nouveaux utilisateurs."
 
 #: ui/d4os_ui_users/d4os_ui_users.admin.inc:91
 msgid "Blocked"

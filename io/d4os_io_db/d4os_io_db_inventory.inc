@@ -829,6 +829,13 @@ function d4os_io_db_os_inventory_clone_attachments($params) {
   // remove the trailing ,
   $attachments_list_vars = substr($attachments_list_vars, 0, -1);
 
+  if (count($attachments_list_vars) == 0) {
+    return array(
+      'success' => FALSE,
+      'message' => t('No attachments found.'),
+      'data' => $params
+    );
+  }
   $query = "INSERT INTO {avatarattachments} ("
           . "UUID," // 1
           . "attachpoint," // 2 int
@@ -840,6 +847,7 @@ function d4os_io_db_os_inventory_clone_attachments($params) {
   db_query($query, $values);
   d4os_io_db_set_active('default');
 
+  drupal_set_message(t('Appearance attached.'));
   return array(
     'success' => TRUE,
     'message' => '',
@@ -853,7 +861,6 @@ drupal_set_message(t('Inventory folders created and default items added.'));
   $params = d4os_io_db_os_inventory_clone_appearance($params['data']);
 drupal_set_message(t('Appearance added.'));
   $params = d4os_io_db_os_inventory_clone_attachments($params['data']);
-drupal_set_message(t('Appearance attached.'));
 }
 
 function d4os_io_db_os_inventory_user_delete($uuid) {
