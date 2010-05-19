@@ -397,7 +397,7 @@ function d4os_io_db_os_profile_services_picks_update($params) {
             . "parceluuid = '%s', "
             . "name = '%s', "
             . "description = '%s', "
-            . "snapshotuuid = '%s', "
+            . "snapshotuuid = '%s'"
             . " WHERE pickuuid = '%s'";
     // Update the existing record
     d4os_io_db_set_active('os_profile');
