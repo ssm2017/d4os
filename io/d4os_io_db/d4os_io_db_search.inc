@@ -673,22 +673,18 @@ function d4os_io_db_os_search_services_parser_run() {
 
 function d4os_io_db_os_search_services_parser_checkhost($hostname, $port) {
   // call the host
-  $response = drupal_http_request('http://'. $hostname. ':'. $port);
+  $response = drupal_http_request('http://'. $hostname. ':'. $port, array(), 'GET', NULL, 1);
   if ($response->code != 404) {
     watchdog('d4os_io_services_search_parser', t('Host !host was unreachable.'), array('!host' => $hostname), WATCHDOG_ERROR);
+    //Setting a "fake" update time so this host will have timeto get back online, so we don't get stuck
+    $next = time() + (variable_get('d4os_io_db_os_search_services_parser_timer', 15) * 60);
     d4os_io_db_set_active('os_search');
-    $check = db_query("UPDATE {hostsregister} SET failcounter = failcounter + 1 WHERE host = '%s' AND port = '%s'", array($hostname, $port));
-
-    //Setting a "fake" update time so this host will have time
-    //to get back online
-    //$next = time() + 600; // 10 mins, so we don't get stuck
-    //
-    $updater = db_query("UPDATE {hostsregister} SET lastcheck = %d WHERE host = '%s' AND port = '%s'", array($next, $hostname, $port));
+    db_query("UPDATE {hostsregister} SET lastcheck = %d, failcounter = failcounter + 1 WHERE host = '%s' AND port = '%s'", array($next, $hostname, $port));
     d4os_io_db_set_active('default');
   }
   else {
     d4os_io_db_set_active('os_search');
-    $sql = db_query("UPDATE {hostsregister} set failcounter = 0 WHERE host = '%s' AND port = '%s'", array($hostname, $port));
+    db_query("UPDATE {hostsregister} set failcounter = 0 WHERE host = '%s' AND port = '%s'", array($hostname, $port));
     d4os_io_db_set_active('default');
     d4os_io_db_os_search_services_parser_parse($hostname, $port);
   }
