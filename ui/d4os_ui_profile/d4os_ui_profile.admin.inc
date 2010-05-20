@@ -30,6 +30,22 @@ function d4os_ui_profile_admin() {
     '#default_value'  => variable_get('d4os_ui_profile_url_iframe_attributes', 'width="600px" height="400px"'),
     '#description'    => t('Define some optional attributes for the profile URL iframe.'),
   );
+  $form['d4os_ui_profile_images_width'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Images width'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => variable_get('d4os_ui_profile_images_width', '150'),
+    '#description'    => t('Define the width of the profile images.'),
+  );
+  if (module_exists('lightbox2')) {
+    $form['d4os_ui_profile_images_use_lightbox2'] = array(
+      '#type'           => 'checkbox',
+      '#title'          => t('Use lightbox2'),
+      '#default_value'  => variable_get('d4os_ui_profile_images_use_lightbox2', 0),
+      '#description'    => t('Select if you want to use the lightbox 2 effect to display images in profile.'),
+    );
+  }
   $form['#submit'][] = 'd4os_ui_profile_admin_submit';
 
   return system_settings_form($form);

@@ -110,7 +110,7 @@ function d4os_ui_profile_display_public_profile($account) {
     $asset_pictures_server_url. $account->d4os['grid']['profile']['first_image'],
     t('No picture available'),
     t("!user's profile picture", array('!user'=>$account->name)),
-    NULL,
+    array("width" => variable_get('d4os_ui_profile_images_width', '150'). 'px'),
     FALSE
   );
 
@@ -119,10 +119,18 @@ function d4os_ui_profile_display_public_profile($account) {
     $asset_pictures_server_url. $account->d4os['grid']['profile']['image'],
     t('No picture available'),
     t("!user's first life picture", array('!user'=>$account->name)),
-    NULL,
+    array("width" => variable_get('d4os_ui_profile_images_width', '150'). 'px'),
     FALSE
   );
 
+  if (variable_get('d4os_ui_profile_images_use_lightbox2', 0) == 1) {
+    $profile->first_image_img = l($profile->first_image_img,
+                                  $asset_pictures_server_url. $account->d4os['grid']['profile']['first_image'],
+                                  array('attributes'=> array('rel' => 'lightbox')));
+    $profile->image_img = l($profile->image_img,
+                            $asset_pictures_server_url. $account->d4os['grid']['profile']['image'],
+                            array('attributes'=> array('rel' => 'lightbox')));
+  }
   // *****************
   // inworld
   // *****************
@@ -224,9 +232,14 @@ function d4os_ui_profile_image_form($form_state, $profile, $account, $asset_pict
       $asset_pictures_server_url. $form_state['values']['image-uuid'],
       t('No picture available'),
       t("!user's profile picture", array('!user'=>$account->name)),
-      NULL,
+      array("width" => variable_get('d4os_ui_profile_images_width', '150'). 'px'),
       FALSE
     );
+    if (variable_get('d4os_ui_profile_images_use_lightbox2', 0) == 1) {
+      $picture = l($picture,
+                   $asset_pictures_server_url. $form_state['values']['image-uuid'],
+                   array('attributes'=> array('rel' => 'lightbox')));
+    }
   }
   else {
     $picture = $profile->image_img;
@@ -445,9 +458,14 @@ function d4os_ui_profile_first_image_form($form_state, $profile, $account, $asse
       $asset_pictures_server_url. $form_state['values']['first-image-uuid'],
       t('No picture available'),
       t("!user's profile picture", array('!user'=>$account->name)),
-      NULL,
+      array("width" => variable_get('d4os_ui_profile_images_width', '150'). 'px'),
       FALSE
     );
+    if (variable_get('d4os_ui_profile_images_use_lightbox2', 0) == 1) {
+      $picture = l($picture,
+                   $asset_pictures_server_url. $form_state['values']['first-image-uuid'],
+                   array('attributes'=> array('rel' => 'lightbox')));
+    }
   }
   else {
     $picture = $profile->first_image_img;
