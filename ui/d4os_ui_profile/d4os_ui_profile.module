@@ -126,10 +126,10 @@ function d4os_ui_profile_display_public_profile($account) {
   if (variable_get('d4os_ui_profile_images_use_lightbox2', 0) == 1) {
     $profile->first_image_img = l($profile->first_image_img,
                                   $asset_pictures_server_url. $account->d4os['grid']['profile']['first_image'],
-                                  array('attributes'=> array('rel' => 'lightbox')));
+                                  array('html' => TRUE, 'attributes'=> array('rel' => 'lightbox')));
     $profile->image_img = l($profile->image_img,
                             $asset_pictures_server_url. $account->d4os['grid']['profile']['image'],
-                            array('attributes'=> array('rel' => 'lightbox')));
+                            array('html' => TRUE, 'attributes'=> array('rel' => 'lightbox')));
   }
   // *****************
   // inworld
@@ -238,7 +238,7 @@ function d4os_ui_profile_image_form($form_state, $profile, $account, $asset_pict
     if (variable_get('d4os_ui_profile_images_use_lightbox2', 0) == 1) {
       $picture = l($picture,
                    $asset_pictures_server_url. $form_state['values']['image-uuid'],
-                   array('attributes'=> array('rel' => 'lightbox')));
+                   array('html' => TRUE, 'attributes'=> array('rel' => 'lightbox')));
     }
   }
   else {
@@ -464,7 +464,7 @@ function d4os_ui_profile_first_image_form($form_state, $profile, $account, $asse
     if (variable_get('d4os_ui_profile_images_use_lightbox2', 0) == 1) {
       $picture = l($picture,
                    $asset_pictures_server_url. $form_state['values']['first-image-uuid'],
-                   array('attributes'=> array('rel' => 'lightbox')));
+                   array('html' => TRUE, 'attributes'=> array('rel' => 'lightbox')));
     }
   }
   else {
