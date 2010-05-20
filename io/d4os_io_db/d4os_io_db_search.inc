@@ -663,7 +663,7 @@ function d4os_io_db_os_search_services_parser_run() {
   if (count($hosts) > 0) {
     foreach($hosts as $host) {
       d4os_io_db_os_search_services_parser_checkhost($host->host, $host->port);
-      watchdog('d4os_io_services_search_parser', t('Host !host was parsed.'), array('!host' => $host->host), WATCHDOG_INFO);
+      watchdog('d4os_io_services_search_parser', t('Host !host was parsed.'), array('!host' => $host->host. ':'. $host->port), WATCHDOG_INFO);
     }
   }
   else {
