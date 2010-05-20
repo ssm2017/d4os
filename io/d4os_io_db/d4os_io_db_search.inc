@@ -675,7 +675,7 @@ function d4os_io_db_os_search_services_parser_checkhost($hostname, $port) {
   // call the host
   $response = drupal_http_request('http://'. $hostname. ':'. $port, array(), 'GET', NULL, 1);
   if ($response->code != 404) {
-    watchdog('d4os_io_services_search_parser', t('Host !host was unreachable.'), array('!host' => $hostname), WATCHDOG_ERROR);
+    watchdog('d4os_io_services_search_parser', t('Host !host was unreachable.'), array('!host' => $hostname. ':'. $port), WATCHDOG_ERROR);
     //Setting a "fake" update time so this host will have timeto get back online, so we don't get stuck
     $next = time() + (variable_get('d4os_io_db_os_search_services_parser_timer', 15) * 60);
     d4os_io_db_set_active('os_search');
