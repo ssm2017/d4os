@@ -224,7 +224,7 @@ function d4os_ui_users_avatars_models_select_form(&$form) {
     if (variable_get('d4os_ui_users_models_image_use_lightbox2', 0) == 1) {
       $picture = l($picture,
                    $asset_pictures_server_url. $model->profileImage,
-                   array('html' => TRUE, 'attributes'=> array('rel' => 'lightbox')));
+                   array('html' => TRUE, 'attributes'=> array('rel' => 'lightbox[models]')));
     }
     $form['models'][$model->UUID]['picture'] = array(
       '#value' => $picture,
