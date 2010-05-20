@@ -19,6 +19,23 @@ function d4os_ui_users_admin() {
 
   $form = array();
 
+  $form['reg_flow'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Grid registration flow'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+  );
+  $form['reg_flow']['d4os_ui_users_grid_user_create_flow'] = array(
+    '#type'           => 'select',
+    '#title'          => t('Grid refistration flow'),
+    '#options'        => array(
+      0 => t('After account registration'),
+      1 => t('After account validation'),
+    ),
+    '#default_value'  => variable_get('d4os_ui_users_grid_user_create_flow', 0),
+    '#description'    => t('Select when the grid account is created in the grid database.'),
+  );
+
   $form['profile_texts'] = array(
     '#type'         => 'fieldset',
     '#title'        => t('Profile texts'),
@@ -178,6 +195,22 @@ function d4os_ui_users_admin() {
     '#collapsible'  => TRUE,
     '#collapsed'    => TRUE,
   );
+  $form['models']['d4os_ui_users_models_image_width'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Images width'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => variable_get('d4os_ui_users_models_image_width', '150'),
+    '#description'    => t('Define the width of the model images.'),
+  );
+  if (module_exists('lightbox2')) {
+    $form['models']['d4os_ui_users_models_image_use_lightbox2'] = array(
+      '#type'           => 'checkbox',
+      '#title'          => t('Use lightbox2'),
+      '#default_value'  => variable_get('d4os_ui_users_models_image_use_lightbox2', 0),
+      '#description'    => t('Select if you want to use the lightbox 2 effect to display images for models.'),
+    );
+  }
   $form['models']['d4os_ui_users_default_model_1'] = array(
     '#type'           => 'textfield',
     '#title'          => t('Model'). ' 1',

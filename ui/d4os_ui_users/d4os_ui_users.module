@@ -124,9 +124,11 @@ function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
         $form['username'] = $username_field;
         $form['lastname'] = $lastname_field;
       }
-      d4os_ui_users_avatars_models_select_form($form);
       array_unshift($form['#validate'], 'd4os_ui_users_account_validate');
-      $form['#submit'] = array('d4os_ui_users_user_register_submit');
+      if (variable_get('d4os_ui_users_grid_user_create_flow', 0) == 0) {
+        d4os_ui_users_avatars_models_select_form($form);
+        $form['#submit'] = array('d4os_ui_users_user_register_submit');
+      }
       break;
 
     case 'user_profile_form':
@@ -137,11 +139,10 @@ function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
         drupal_set_message(t('Please try again later.'), 'error');
         drupal_goto();
       }
-      global $user;
-      if (user_access('administer users') || user_access('change own username')) {
-        $account = $form['_account']['#value'];
-        $names = explode(' ', $account->name);
-        if ($account->uid > 1 && $form['_category']['#value'] == 'account') {
+      $account = $form['_account']['#value'];
+      if ($account->uid > 1 && $form['_category']['#value'] == 'account') {
+        if (user_access('administer users') || user_access('change own username')) {
+          $names = explode(' ', $account->name);
           unset($form['account']['name']);
           $form['account']['username'] = array(
             '#type'           => 'textfield',
@@ -163,6 +164,13 @@ function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
             '#description'    => t('Enter the last name for the avatar. Spaces are not allowed. Punctuation is not allowed except for periods, hyphens, and underscores.'),
             '#weight'         => -1,
           );
+        }
+        if (variable_get('d4os_ui_users_grid_user_create_flow', 0) == 1
+            && (!isset($account->d4os['grid']['presence']['last_login'])
+                //|| $account->d4os['grid']['presence']['last_login'] == 0
+                )
+            ) {
+          d4os_ui_users_avatars_models_select_form($form);
         }
       }
       array_unshift($form['#validate'], 'd4os_ui_users_account_validate');
@@ -210,9 +218,14 @@ function d4os_ui_users_avatars_models_select_form(&$form) {
       $asset_pictures_server_url. $model->profileImage,
       t('No picture available'),
       t("!user's first life picture", array('!user'=>$model->username)),
-      NULL,
+      array("width" => variable_get('d4os_ui_users_models_image_width', '150'). 'px'),
       FALSE
     );
+    if (variable_get('d4os_ui_users_models_image_use_lightbox2', 0) == 1) {
+      $picture = l($picture,
+                   $asset_pictures_server_url. $model->profileImage,
+                   array('html' => TRUE, 'attributes'=> array('rel' => 'lightbox')));
+    }
     $form['models'][$model->UUID]['picture'] = array(
       '#value' => $picture,
     );
@@ -389,9 +402,18 @@ function d4os_ui_users_update(&$edit, &$account) {
 
   if (!is_object($user_exists[0])) {
     unset($edit['d4os']['grid']['account']['uuid']);
-    $edit = array_merge($edit, d4os_ui_users_user_generate($edit['d4os']['grid']['account']['username'],$edit['d4os']['grid']['account']['lastname'],$edit['pass'], $edit['mail']));
+    $edit['d4os'] = array_merge($edit, d4os_ui_users_user_generate($edit['d4os']['grid']['account']['username'],$edit['d4os']['grid']['account']['lastname'],$edit['pass'], $edit['mail']));
     module_invoke_all('os_user_save', $edit);
     drupal_set_message(t('User added to the grid.'));
+
+    // create inventory using a model
+    if (isset($edit['model_uuid']) && $edit['model_uuid'] != UUID_ZERO) {
+      $params = array(
+        'avatar_src_uuid'   => $form_state['values']['model_uuid'],
+        'avatar_dest_uuid'  => $account->d4os['grid']['account']['uuid'],
+      );
+      module_invoke_all('os_inventory_clone_model', $params);
+    }
     // TODO : change user password and send an email
     return;
   }
