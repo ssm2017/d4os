@@ -677,7 +677,7 @@ function d4os_io_db_os_search_services_parser_checkhost($hostname, $port) {
   if ($response->code != 404) {
     watchdog('d4os_io_services_search_parser', t('Host !host was unreachable.'), array('!host' => $hostname. ':'. $port), WATCHDOG_ERROR);
     //Setting a "fake" update time so this host will have timeto get back online, so we don't get stuck
-    $next = time() + (variable_get('d4os_io_db_os_search_services_parser_timer', 15) * 60);
+    $next = time() + (variable_get('d4os_io_services_search_parser_timer', 15) * 60);
     d4os_io_db_set_active('os_search');
     db_query("UPDATE {hostsregister} SET lastcheck = %d, failcounter = failcounter + 1 WHERE host = '%s' AND port = '%s'", array($next, $hostname, $port));
     d4os_io_db_set_active('default');
@@ -693,7 +693,7 @@ function d4os_io_db_os_search_services_parser_checkhost($hostname, $port) {
 function d4os_io_db_os_search_services_parser_parse($hostname, $port) {
   global $now;
   if ($hostname != "" && $port != "") {
-    $next = time() + (variable_get('d4os_io_db_os_search_services_parser_timer', 15) * 60);
+    $next = time() + (variable_get('d4os_io_services_search_parser_timer', 15) * 60);
     d4os_io_db_set_active('os_search');
     $updater = db_query("UPDATE hostsregister set lastcheck = %d WHERE host = '%s' AND port = '%s'", array($next, $hostname, $port));
     d4os_io_db_set_active('default');
