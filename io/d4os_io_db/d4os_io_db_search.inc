@@ -650,9 +650,12 @@ function d4os_io_db_os_search_services_parser_run() {
   // get time
   $now = time();
   // get the hosts infos
-  d4os_io_db_set_active('os_search');
-  $jobsearch = db_query("SELECT host, port FROM {hostsregister} WHERE lastcheck < %d LIMIT 0,1", $now);
   $hosts = array();
+  // get the hosts qty to parse in one cron run
+  $qty = variable_get('d4os_io_services_search_parser_host_qty', 1);
+  $limit = ($qty == 0) ? '' : ' LIMIT 0,'. $qty;
+  d4os_io_db_set_active('os_search');
+  $jobsearch = db_query("SELECT host, port FROM {hostsregister} WHERE lastcheck < %d". $limit, $now);
   while ($host = db_fetch_object($jobsearch)) {
     $hosts[] = $host;
   }

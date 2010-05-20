@@ -21,6 +21,15 @@ function d4os_io_services_search_admin() {
     '#description'    => t("Enter the value for the timer (in minutes) to refresh the data."),
   );
 
+  $form['d4os_io_services_search_parser_host_qty'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Host parse qty'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => variable_get('d4os_io_services_search_parser_host_qty', 1),
+    '#description'    => t("Enter the quantity of hosts to parse on every cron run. (0 means no limit)"),
+  );
+
   $options = array(
     0 => t('Emergency'),
     1 => t('Alert'),
