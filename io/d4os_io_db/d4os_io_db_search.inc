@@ -712,10 +712,12 @@ function d4os_io_db_os_search_services_parser_parse($hostname, $port) {
       // Calculate new expire
       $next = time() + $expire;
 
-      d4os_io_db_set_active('os_search');
-      $updater = db_query("UPDATE {hostsregister} SET lastcheck = %d WHERE host = '%s' AND port = '%s'", array($next, $hostname, $port));
-      d4os_io_db_set_active('default');
-    
+      if (variable_get('d4os_io_services_search_parser_bypass_expire', 0) == 0) {
+        d4os_io_db_set_active('os_search');
+        $updater = db_query("UPDATE {hostsregister} SET lastcheck = %d WHERE host = '%s' AND port = '%s'", array($next, $hostname, $port));
+        d4os_io_db_set_active('default');
+      }
+
       $regionlist = $regiondata->getElementsByTagName("region");
     
       foreach ($regionlist as $region ) {

@@ -30,6 +30,13 @@ function d4os_io_services_search_admin() {
     '#description'    => t("Enter the quantity of hosts to parse on every cron run. (0 means no limit)"),
   );
 
+  $form['d4os_io_services_search_parser_bypass_expire'] = array(
+    '#type'           => 'checkbox',
+    '#title'          => t('Bypass sim expiration time'),
+    '#default_value'  => variable_get('d4os_io_services_search_parser_bypass_expire', 0),
+    '#description'    => t("Bypasses the sim recheck expiration time defined in OpenSim.ini."),
+  );
+
   $options = array(
     0 => t('Emergency'),
     1 => t('Alert'),
