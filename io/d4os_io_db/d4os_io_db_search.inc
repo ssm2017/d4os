@@ -267,6 +267,63 @@ function d4os_io_db_os_events_get_parcels_by_owner($ownerid) {
   return FALSE;
 }
 
+
+
+/*
+ * HostManager tools
+ */
+function d4os_io_db_os_search_hosts_count() {
+  d4os_io_db_set_active('os_search');
+  $count = db_result(db_query("SELECT COUNT(*) FROM {hostsregister}"));
+  d4os_io_db_set_active('default');
+  return $count;
+}
+function d4os_io_db_os_search_hosts_list_paged($page = 0, $limit = 5, $headers) {
+  if (!isset($_GET['page'])) {
+    $_GET['page'] = $page;
+  }
+  if (!isset($_GET['order'])) {
+    $_GET['order'] = 'host';
+  }
+  if (!isset($_GET['sort'])) {
+    $_GET['sort'] = 'DESC';
+  }
+  d4os_io_db_set_active('os_search');
+  $result = pager_query('SELECT * FROM {hostsregister} %s', $limit, 0, NULL, array(tablesort_sql($headers)));
+  while ($host = db_fetch_object($result)) {
+    $items[] = $host;
+  }
+  d4os_io_db_set_active('default');
+  return $items;
+}
+
+function d4os_io_db_os_search_hosts_delete($hostname, $hostport) {
+  // get regions
+  $regions = array();
+  $url = 'http://'. $hostname. ':'. $port;
+  d4os_io_db_set_active('os_search');
+  $result = pager_query("SELECT * FROM {regions} WHERE url = '%s'", $url);
+  while ($region = db_fetch_object($result)) {
+    $regions[] = $region;
+  }
+  d4os_io_db_set_active('default');
+
+  // delete regions, parcels, objects, etc...
+  foreach ($regions as $region) {
+    d4os_io_db_set_active('os_search');
+    db_query("DELETE FROM {regions} WHERE regionuuid = '%s'", $region->regionuuid);
+    db_query("DELETE FROM {parcels} WHERE regionuuid = '%s'", $region->regionuuid);
+    db_query("DELETE FROM {objects} WHERE regionuuid = '%s'", $region->regionuuid);
+    db_query("DELETE FROM {allparcels} WHERE regionUUID = '%s'", $region->regionuuid);
+    db_query("DELETE FROM {parcelsales} WHERE regionUUID = '%s'", $region->regionuuid);
+    d4os_io_db_set_active('default');
+  }
+
+  // delete host
+  d4os_io_db_set_active('os_search');
+  db_query("DELETE FROM {hostsregister} WHERE host = '%s' AND port = '%s'", array($hostname, $hostport));
+  d4os_io_db_set_active('default');
+}
 /*
  * search services
  * The code in this script was inspired and mostly copied from ossearch
@@ -731,16 +788,19 @@ function d4os_io_db_os_search_services_parser_parse($hostname, $port) {
 
         // First, check if we already have a region that is the same
         d4os_io_db_set_active('os_search');
-        $check = db_query("SELECT count(*) FROM {regions} WHERE regionuuid = '%s'", $regionuuid);
+        $check = db_result(db_query("SELECT count(*) FROM {regions} WHERE regionuuid = '%s'", $regionuuid));
+        d4os_io_db_set_active('default');
 
-        if (db_result($check) > 0) {
+        if ($check > 0) {
+          d4os_io_db_set_active('os_search');
           db_query("DELETE FROM {regions} WHERE regionuuid = '%s'", $regionuuid);
           db_query("DELETE FROM {parcels} WHERE regionuuid = '%s'", $regionuuid);
           db_query("DELETE FROM {objects} WHERE regionuuid = '%s'", $regionuuid);
           db_query("DELETE FROM {allparcels} WHERE regionUUID = '%s'", $regionuuid);
           db_query("DELETE FROM {parcelsales} WHERE regionUUID = '%s'", $regionuuid);
+          d4os_io_db_set_active('default');
         }
-        d4os_io_db_set_active('default');
+        
 
         $data     = $region->getElementsByTagName("data")->item(0);
         $estate   = $data->getElementsByTagName("estate")->item(0);

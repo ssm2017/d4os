@@ -1,0 +1,264 @@
+<?php
+/**
+* @package    d4os
+* @copyright  Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+* @license    GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+* D4os is free software. This version may have been modified pursuant
+* to the GNU General Public License, and as distributed it includes or
+* is derivative of works licensed under the GNU General Public License or
+* other free or open source software licenses.
+*/
+
+function d4os_ui_hostmanager_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#d4os_ui_hostmanager':
+      return '<p>' . t('OpenSim grid regions management') . '</p>';
+  }
+}
+
+function d4os_ui_hostmanager_menu() {
+  $items['grid/hosts/list'] = array(
+    'title'             => 'Hosts',
+    'description'       => 'Registered hosts.',
+    'page callback'     => 'd4os_ui_hostmanager_display_hosts_list',
+    'access arguments'  => array('view d4os ui hostmanager'),
+    'type'              => MENU_NORMAL_ITEM,
+    'access callback'   => TRUE,
+  );
+  $items['grid/hosts/checkstatus/js/%/%'] = array(
+    'title'             => 'Javascript AHAH check terminal status',
+    'page callback'     => 'd4os_ui_hostmanager_check_host_status_js',
+    'page arguments'    => array(4, 5),
+    'access arguments'  => array('access content'),
+    'type'              => MENU_CALLBACK,
+  );
+  
+  $items['admin/settings/d4os/ui/hostmanager'] = array(
+    'title'             => 'hostmanager',
+    'description'       => 'd4os ui hostmanager settings',
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('d4os_ui_hostmanager_admin'),
+    'access arguments'  => array('admin d4os ui hostmanager'),
+    'type'              => MENU_LOCAL_TASK,
+    'file'              => 'd4os_ui_hostmanager.admin.inc'
+   );
+  return $items;
+}
+
+function d4os_ui_hostmanager_perm() {
+  return array(
+    'view d4os ui hostmanager',
+    'admin d4os ui hostmanager',
+  );
+}
+
+function d4os_ui_hostmanager_display_hosts_list() {
+  // check if the datastore is alive
+  $alive = module_invoke_all('os_search_is_alive');
+  if (!is_array($alive) || $alive['success'] !== TRUE) {
+    drupal_set_message(t('You can not see the hosts list.'), 'error');
+    drupal_set_message(t('Please try again later.'), 'error');
+    drupal_goto();
+  }
+  $headers = d4os_ui_hostmanager_list_build_headers();
+  $hosts = module_invoke_all('os_search_hosts_list_paged', 0, 10, $headers);
+  $count = module_invoke_all('os_search_hosts_count');
+  $count = $count[0];
+  $output = '<div id="hosts-count"><p>';
+  $output .= t('There %hosts registered.', array(
+              '%hosts' => format_plural($count, 'is 1 host', 'are @count hosts')));
+  $output .= '</p></div>';
+  $output .= theme_d4os_ui_hostmanager_list_table($hosts, $title = NULL, $params, $headers);
+  $output .= theme('pager');
+  return $output;
+}
+
+function d4os_ui_hostmanager_list_build_headers() {
+  // check if the user can edit
+  $can_edit = user_perm('admin d4os ui hostmanager');
+  // build headers
+  $items =  variable_get('d4os_ui_hostmanager_list_items', array('host', 'port', 'register', 'lastcheck', 'failcounter'));
+  $headers = array();
+  if ($items['host']) {
+    $headers[] = array(
+      'data'  => t('Host'),
+      'field' => 'host',
+    );
+  }
+  if ($items['port']) {
+    $headers[] = array(
+      'data'  => t('Port'),
+      'field' => 'port',
+    );
+  }
+  if ($items['register']) {
+    $headers[] = array(
+      'data'  => t('Registered'),
+      'field' => 'register',
+    );
+  }
+  if ($items['lastcheck']) {
+    $headers[] = array(
+      'data'  => t('Last Check'),
+      'field' => 'lastcheck',
+    );
+  }
+  if ($items['failcounter']) {
+    $headers[] = array(
+      'data'  => t('Fail Counter'),
+      'field' => 'failcounter',
+    );
+  }
+  if ($items['status']) {
+    $headers[] = array(
+      'data'  => t('Status'),
+    );
+  }
+  if ($can_edit) {
+    $headers[] = array(
+      'data'  => t('Parse'),
+    );
+    $headers[] = array(
+      'data'  => t('Delete'),
+    );
+  }
+  return $headers;
+}
+
+function theme_d4os_ui_hostmanager_list_table($hosts, $title = NULL, $params, $headers) {
+  global $user;
+  // check if the user can edit
+  $can_edit = user_perm('admin d4os ui hostmanager');
+  // get the items list to show
+  $items =  variable_get('d4os_ui_hostmanager_list_items', array('host', 'port', 'register', 'lastcheck', 'failcounter'));
+
+  // build the table
+  $rows = array();
+  $params['cols'] = $params['cols'] ? $params['cols'] : 1;
+  $col = 0;
+  $cells = array();
+  $id = 0;
+  foreach ($hosts as $host) {
+    if ($items['host']) {
+      $cells[] = $host->host;
+    }
+    if ($items['port']) {
+      $cells[] = $host->port;
+    }
+    if ($items['register']) {
+      $cells[] = date(variable_get('date_format_short', 'm/d/Y H:i'), $host->register);
+    }
+    if ($items['lastcheck']) {
+      if ($host->lastcheck == 0) {
+        $cells[] = t('Never checked');
+      }
+      else {
+        $cells[] = date(variable_get('date_format_short', 'm/d/Y H:i'), $host->lastcheck);
+      }
+    }
+    if ($items['failcounter']) {
+      $cells[] = $host->failcounter;
+    }
+    if ($items['status']) {
+      drupal_add_js("$(document).ready(
+                      function(){
+                        $.get(
+                          '/grid/hosts/checkstatus/js/". $host->host. "/". $host->port."',
+                          {},
+                          function(data) {
+                            $('#host-". $id. "-status').html(data);
+                          }
+                        );
+                      }
+                    )", 'inline');
+      $cells[] = '<span id="host-'. $id. '-status"><span>'. t('Checking....'). '</span></span>';
+    }
+    if ($can_edit) {
+      $cells[] = drupal_get_form('d4os_ui_hostmanager_parse_form', $host);
+      $cells[] = drupal_get_form('d4os_ui_hostmanager_delete_form', $host);
+    }
+    ++$col;
+    if ($col >= $params['cols']) {
+      $rows[] = $cells;
+      $cells  = array();
+      $col    = 0;
+    }
+    $id++;
+  }
+  $output = theme_table($headers, $rows);
+  return $output;
+}
+
+function d4os_ui_hostmanager_parse_form($form_state, $host) {
+  $form = array();
+  $form['hostname'] = array('#type' => 'hidden', '#value' => $host->host);
+  $form['hostport'] = array('#type' => 'hidden', '#value' => $host->port);
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Parse'),
+  );
+  $form['#submit'][] = 'd4os_ui_hostmanager_parse_submit';
+  return $form;
+}
+
+function d4os_ui_hostmanager_parse_submit($form, &$form_state) {
+  // TODO : use $form_state['values']
+  $values = $form_state['clicked_button']['#post'];
+  module_invoke_all('os_search_services_parser_checkhost', $values['hostname'], $values['hostport']);
+  drupal_set_message(t('Host !host parsed', array('!host' => $values['hostname']. ':'. $values['hostport'])));
+}
+
+function d4os_ui_hostmanager_delete_form($form_state, $host) {
+  $form = array();
+  $form['hostname'] = array('#type' => 'hidden', '#value' => $host->host);
+  $form['hostport'] = array('#type' => 'hidden', '#value' => $host->port);
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Delete'),
+  );
+  $form['#submit'][] = 'd4os_ui_hostmanager_delete_submit';
+  $form['#attributes']= array('onsubmit' => "return confirm('". t('Do you really want to delete !host ?', array('!host' => $host->host. ':'. $host->port)). "')");
+  return $form;
+}
+
+function d4os_ui_hostmanager_delete_submit($form, &$form_state) {
+  // TODO : use $form_state['values']
+  $values = $form_state['clicked_button']['#post'];
+  module_invoke_all('os_search_hosts_delete', $values['hostname'], $values['hostport']);
+  // set home
+  drupal_set_message(t('Host !host deleted', array('!host' => $values['hostname']. ':'. $values['hostport'])));
+}
+
+function d4os_ui_hostmanager_check_host_status_js($hostname, $port) {
+  $status = "offline";
+
+  if ($hostname != '') {
+    // request status using http_request
+    $response = drupal_http_request('http://'. $hostname. ':'. $port, array(), 'GET');
+  }
+  else {
+    $status = 'error';
+  }
+  
+  if ($response->code == 404 && $response->headers['Server'] == 'Tiny WebServer') {
+    $status = 'online';
+  }
+  else {
+    $status = 'offline';
+  }
+
+  switch ($status) {
+    case 'online':
+      print '<span style="font-weight:bold;color:green">'. t('Online'). '</span>';
+      break;
+
+    case 'offline':
+      print '<span style="font-weight:bold;color:red">'. t('Offline'). '</span>';
+      break;
+
+    case 'error':
+    default:
+      print '<span style="font-weight:bold;color:orange">'. t('Error'). '</span>';
+      break;
+  }
+}
