@@ -23,7 +23,6 @@ function d4os_ui_hostmanager_menu() {
     'page callback'     => 'd4os_ui_hostmanager_display_hosts_list',
     'access arguments'  => array('view d4os ui hostmanager'),
     'type'              => MENU_NORMAL_ITEM,
-    'access callback'   => TRUE,
   );
   $items['grid/hosts/checkstatus/js/%/%'] = array(
     'title'             => 'Javascript AHAH check terminal status',
@@ -75,7 +74,7 @@ function d4os_ui_hostmanager_display_hosts_list() {
 
 function d4os_ui_hostmanager_list_build_headers() {
   // check if the user can edit
-  $can_edit = user_perm('admin d4os ui hostmanager');
+  $can_edit = user_access('admin d4os ui hostmanager');
   // build headers
   $items =  variable_get('d4os_ui_hostmanager_list_items', array('host', 'port', 'register', 'lastcheck', 'failcounter'));
   $headers = array();
@@ -128,7 +127,7 @@ function d4os_ui_hostmanager_list_build_headers() {
 function theme_d4os_ui_hostmanager_list_table($hosts, $title = NULL, $params, $headers) {
   global $user;
   // check if the user can edit
-  $can_edit = user_perm('admin d4os ui hostmanager');
+  $can_edit = user_access('admin d4os ui hostmanager');
   // get the items list to show
   $items =  variable_get('d4os_ui_hostmanager_list_items', array('host', 'port', 'register', 'lastcheck', 'failcounter'));
 
