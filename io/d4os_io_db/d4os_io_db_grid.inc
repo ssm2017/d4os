@@ -84,7 +84,7 @@ function d4os_io_db_os_grid_get_stats() {
 
   // check if the user is in a valid region
   foreach ($online_users as $online_user) {
-    if (in_array($online_user->currentRegion, $regions_list)) {
+    if (d4os_array_search_recursive($online_user->currentRegion, $regions_list)) {
       ++$now_online;
     }
   }

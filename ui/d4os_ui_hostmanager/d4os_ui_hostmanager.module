@@ -31,6 +31,13 @@ function d4os_ui_hostmanager_menu() {
     'access arguments'  => array('access content'),
     'type'              => MENU_CALLBACK,
   );
+  $items['grid/hosts/infos/%/%'] = array(
+    'title'             => 'Host infos',
+    'page callback'     => 'd4os_ui_hostmanager_display_host_infos',
+    'page arguments'    => array(3, 4),
+    'access arguments'  => array('view d4os ui hostmanager'),
+    'type'              => MENU_CALLBACK,
+  );
   
   $items['admin/settings/d4os/ui/hostmanager'] = array(
     'title'             => 'hostmanager',
@@ -260,4 +267,19 @@ function d4os_ui_hostmanager_check_host_status_js($hostname, $port) {
       print '<span style="font-weight:bold;color:orange">'. t('Error'). '</span>';
       break;
   }
+}
+
+function d4os_ui_hostmanager_theme() {
+  return array(
+    'd4os_ui_hostmanager_host_infos' => array(
+      'path'      => drupal_get_path('module', 'd4os_ui_hostmanager').'/theme',
+      'template'  => 'd4os_ui_hostmanager_host_infos',
+      'arguments' => array('host' => new stdClass),
+    ),
+  );
+}
+
+function d4os_ui_hostmanager_display_host_infos($hostname, $port) {
+  $xml = simplexml_load_file('http://eos.francogrid.net:11400/?method=collector');
+  return theme('d4os_ui_hostmanager_host_infos', $xml);
 }
