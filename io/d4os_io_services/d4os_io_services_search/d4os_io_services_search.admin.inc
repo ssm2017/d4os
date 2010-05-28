@@ -30,6 +30,15 @@ function d4os_io_services_search_admin() {
     '#description'    => t("Enter the quantity of hosts to parse on every cron run. (0 means no limit)"),
   );
 
+  $form['d4os_io_services_search_parser_host_unreachable_limit'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Host unreachable limit'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => variable_get('d4os_io_services_search_parser_host_unreachable_limit', 0),
+    '#description'    => t("Limit before the host is deleted if unreachable. (for example, if set to 1, the host will be deleted if it can not been reach one time) (0 for no deletion)"),
+  );
+
   $form['d4os_io_services_search_parser_bypass_expire'] = array(
     '#type'           => 'checkbox',
     '#title'          => t('Bypass sim expiration time'),

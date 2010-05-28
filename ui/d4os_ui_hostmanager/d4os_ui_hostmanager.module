@@ -197,8 +197,9 @@ function theme_d4os_ui_hostmanager_list_table($hosts, $title = NULL, $params, $h
 
 function d4os_ui_hostmanager_parse_form($form_state, $host) {
   $form = array();
-  $form['hostname'] = array('#type' => 'hidden', '#value' => $host->host);
-  $form['hostport'] = array('#type' => 'hidden', '#value' => $host->port);
+  $form['hostname']     = array('#type' => 'hidden', '#value' => $host->host);
+  $form['hostport']     = array('#type' => 'hidden', '#value' => $host->port);
+  $form['failcounter']  = array('#type' => 'hidden', '#value' => $host->failcounter);
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Parse'),
@@ -210,7 +211,11 @@ function d4os_ui_hostmanager_parse_form($form_state, $host) {
 function d4os_ui_hostmanager_parse_submit($form, &$form_state) {
   // TODO : use $form_state['values']
   $values = $form_state['clicked_button']['#post'];
-  module_invoke_all('os_search_services_parser_checkhost', $values['hostname'], $values['hostport']);
+  $host = new stdClass;
+  $host->host = $values['hostname'];
+  $host->port = $values['hostport'];
+  $host->failcounter = $values['failcounter'];
+  module_invoke_all('os_search_services_parser_checkhost', $host);
   drupal_set_message(t('Host !host parsed', array('!host' => $values['hostname']. ':'. $values['hostport'])));
 }
 

@@ -300,7 +300,7 @@ function d4os_io_db_os_search_hosts_list_paged($page = 0, $limit = 5, $headers) 
 function d4os_io_db_os_search_hosts_delete($hostname, $hostport) {
   // get regions
   $regions = array();
-  $url = 'http://'. $hostname. ':'. $port;
+  $url = 'http://'. $hostname. ':'. $hostport;
   d4os_io_db_set_active('os_search');
   $result = pager_query("SELECT * FROM {regions} WHERE url = '%s'", $url);
   while ($region = db_fetch_object($result)) {
@@ -323,6 +323,7 @@ function d4os_io_db_os_search_hosts_delete($hostname, $hostport) {
   d4os_io_db_set_active('os_search');
   db_query("DELETE FROM {hostsregister} WHERE host = '%s' AND port = '%s'", array($hostname, $hostport));
   d4os_io_db_set_active('default');
+  watchdog('d4os_io_services_search_parser', t('Host !host was deleted.'), array('!host' => $hostname. ':'. $hostport), WATCHDOG_WARNING);
 }
 /*
  * search services
@@ -336,25 +337,25 @@ function d4os_io_db_os_search_services_dir_places_query($params) {
   $text     = $params['search'];
   $start    = $params['start'];
   
-  d4os_io_db_set_active('os_search');
   if ($category != -1) {
-    $data = array($category, $text, $text);
-    $result = db_query_range("SELECT * FROM {parcels} WHERE ".
-                             "(searchcategory = -1 or searchcategory = '%s') ".
-                             "AND (parcelname like '%%%s%%' ".
-                             "OR description like '%%%s%%') ".
-                             "ORDER BY dwell desc, parcelname",
-                             $data, 0+$query_start, 100);
+    $values = array($category, $text, $text, $start, 100);
+    $query = "SELECT * FROM {parcels} WHERE ".
+              "(searchcategory = -1 or searchcategory = '%s') ".
+              "AND (parcelname LIKE '%%s%' ".
+              "OR description LIKE '%%s%') ".
+              "ORDER BY dwell DESC, parcelname LIMIT %d, %d";
   }
   else {
-    $data = array($text, $text);
-    $result = db_query_range("SELECT * FROM {parcels} WHERE ".
-                             "parcelname like '%%%s%%' ".
-                             "OR description like '%%%s%%' ".
-                             "ORDER BY dwell desc, parcelname",
-                             $data, 0+$query_start, 100);
+    $values = array($text, $text, $start, 100);
+    $query = "SELECT * FROM {parcels} WHERE ".
+              "parcelname LIKE '%%%s%%' ".
+              "OR description LIKE '%%%s%%' ".
+              "ORDER BY dwell DESC, parcelname LIMIT %d, %d";
   }
   $data = array();
+
+  d4os_io_db_set_active('os_search');
+  $result = db_query($query, $values);
   while ($row = db_fetch_array($result)) {
     $data[] = array(
       "parcel_id" => $row["infouuid"],
@@ -699,7 +700,7 @@ function d4os_io_db_os_search_services_registerhost($params) {
 }
 
 /*
- * search paser
+ * search parser
  */
 function d4os_io_db_os_search_services_parser_run() {
   watchdog('d4os_io_services_search_parser', t('Starting parsing host values.'), array(), WATCHDOG_INFO);
@@ -712,14 +713,14 @@ function d4os_io_db_os_search_services_parser_run() {
   $qty = variable_get('d4os_io_services_search_parser_host_qty', 1);
   $limit = ($qty == 0) ? '' : ' LIMIT 0,'. $qty;
   d4os_io_db_set_active('os_search');
-  $jobsearch = db_query("SELECT host, port FROM {hostsregister} WHERE lastcheck < %d". $limit, $now);
+  $jobsearch = db_query("SELECT * FROM {hostsregister} WHERE lastcheck < %d". $limit, $now);
   while ($host = db_fetch_object($jobsearch)) {
     $hosts[] = $host;
   }
   d4os_io_db_set_active('default');
   if (count($hosts) > 0) {
     foreach($hosts as $host) {
-      d4os_io_db_os_search_services_parser_checkhost($host->host, $host->port);
+      d4os_io_db_os_search_services_parser_checkhost($host);
       watchdog('d4os_io_services_search_parser', t('Host !host was parsed.'), array('!host' => $host->host. ':'. $host->port), WATCHDOG_INFO);
     }
   }
@@ -728,22 +729,28 @@ function d4os_io_db_os_search_services_parser_run() {
   }
 }
 
-function d4os_io_db_os_search_services_parser_checkhost($hostname, $port) {
+function d4os_io_db_os_search_services_parser_checkhost($host) {
   // call the host
-  $response = drupal_http_request('http://'. $hostname. ':'. $port, array(), 'GET', NULL, 1);
+  $response = drupal_http_request('http://'. $host->host. ':'. $host->port, array(), 'GET', NULL, 1);
   if ($response->code != 404) {
-    watchdog('d4os_io_services_search_parser', t('Host !host was unreachable.'), array('!host' => $hostname. ':'. $port), WATCHDOG_ERROR);
-    //Setting a "fake" update time so this host will have timeto get back online, so we don't get stuck
-    $next = time() + (variable_get('d4os_io_services_search_parser_timer', 15) * 60);
-    d4os_io_db_set_active('os_search');
-    db_query("UPDATE {hostsregister} SET lastcheck = %d, failcounter = failcounter + 1 WHERE host = '%s' AND port = '%s'", array($next, $hostname, $port));
-    d4os_io_db_set_active('default');
+    watchdog('d4os_io_services_search_parser', t('Host !host was unreachable.'), array('!host' => $host->host. ':'. $host->port), WATCHDOG_ERROR);
+    $host_unreachable_limit = variable_get('d4os_io_services_search_parser_host_unreachable_limit', 0);
+    if ($host_unreachable_limit > 0 && ($host->failcounter >= $host_unreachable_limit)) {
+      d4os_io_db_os_search_hosts_delete($host->host, $host->port);
+    }
+    else {
+      //Setting a "fake" update time so this host will have timeto get back online, so we don't get stuck
+      $next = time() + (variable_get('d4os_io_services_search_parser_timer', 15) * 60);
+      d4os_io_db_set_active('os_search');
+      db_query("UPDATE {hostsregister} SET lastcheck = %d, failcounter = failcounter + 1 WHERE host = '%s' AND port = '%s'", array($next, $host->host, $host->port));
+      d4os_io_db_set_active('default');
+    }
   }
   else {
     d4os_io_db_set_active('os_search');
-    db_query("UPDATE {hostsregister} set failcounter = 0 WHERE host = '%s' AND port = '%s'", array($hostname, $port));
+    db_query("UPDATE {hostsregister} set failcounter = 0 WHERE host = '%s' AND port = '%s'", array($host->host, $host->port));
     d4os_io_db_set_active('default');
-    d4os_io_db_os_search_services_parser_parse($hostname, $port);
+    d4os_io_db_os_search_services_parser_parse($host->host, $host->port);
   }
 }
 
