@@ -146,7 +146,7 @@ function theme_d4os_ui_hostmanager_list_table($hosts, $title = NULL, $params, $h
   $id = 0;
   foreach ($hosts as $host) {
     if ($items['host']) {
-      $cells[] = $host->host;
+      $cells[] = l($host->host, 'grid/hosts/infos/'. $host->host. '/'. $host->port);
     }
     if ($items['port']) {
       $cells[] = $host->port;
@@ -285,6 +285,14 @@ function d4os_ui_hostmanager_theme() {
 }
 
 function d4os_ui_hostmanager_display_host_infos($hostname, $port) {
-  $xml = simplexml_load_file('http://eos.francogrid.net:11400/?method=collector');
-  return theme('d4os_ui_hostmanager_host_infos', $xml);
+  $response = drupal_http_request('http://'. $hostname. ':'. $port. '/?method=collector', array(), 'GET');
+  if ($response->code == 200) {
+    $xml = simplexml_load_string($response->data);
+    drupal_add_js('misc/collapse.js');
+    return theme('d4os_ui_hostmanager_host_infos', $xml);
+  }
+  else {
+    drupal_set_message('Could not get the host infos.', 'error');
+    return '';
+  }
 }
