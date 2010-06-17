@@ -1,0 +1,6 @@
+; $Id$
+name = "d4os ui grid monitor hosts levels widgets bars"
+description = "Provides tools to display stats for an opensim grid."
+package = "d4os ui grid monitor"
+core = 6.x
+dependencies[] = "d4os_ui_grid_monitor_hosts_levels"

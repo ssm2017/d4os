@@ -270,7 +270,7 @@ function d4os_io_db_os_events_get_parcels_by_owner($ownerid) {
 
 
 /*
- * HostManager tools
+ * Grid Monitor tools
  */
 function d4os_io_db_os_search_hosts_count() {
   d4os_io_db_set_active('os_search');
@@ -278,6 +278,7 @@ function d4os_io_db_os_search_hosts_count() {
   d4os_io_db_set_active('default');
   return $count;
 }
+
 function d4os_io_db_os_search_hosts_list_paged($page = 0, $limit = 5, $headers) {
   if (!isset($_GET['page'])) {
     $_GET['page'] = $page;

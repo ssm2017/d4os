@@ -304,10 +304,11 @@ function d4os_ui_profile_home_region_form($form_state, $profile, $account) {
     '#type'   => 'hidden',
     '#value'  => $account->d4os['grid']['account']['uuid'],
   );
+  $regions_list = module_invoke_all('os_regions_get_regions_array');
   $form['home_region']['form']['home-region-uuid'] = array(
     '#type'          => 'select',
     '#default_value' => $account->d4os['grid']['presence']['home_region'],
-    '#options'       => d4os_ui_regions_get_regions_array()
+    '#options'       => d4os_ui_grid_monitor_regions_get_regions_array()
   );
   $form['home_region']['form']['home-region-save'] = array(
     '#type'   => 'submit',

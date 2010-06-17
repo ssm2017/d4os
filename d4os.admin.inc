@@ -197,3 +197,7 @@ function d4os_admin_services() {
 function d4os_admin_ui() {
   return t('Use these tabs to configure the ui settings');
 }
+
+function d4os_admin_ui_grid_monitor() {
+  return t('Use these tabs to configure the ui grid monitor settings');
+}

@@ -48,6 +48,23 @@ function d4os_io_db_os_regions_list_paged($page = 0, $limit = 5, $headers) {
   return $items;
 }
 
+function d4os_io_db_os_regions_regions_count() {
+  d4os_io_db_set_active('os_grid');
+  $count = db_result(db_query("SELECT COUNT(*) FROM {regions}"));
+  d4os_io_db_set_active('default');
+  return $count;
+}
+
+function d4os_io_db_os_regions_get_regions_array() {
+  $regions = d4os_io_db_os_regions_names();
+  $regions_list = array();
+  foreach ($regions as $region) {
+    $handle = $region->regionHandle;
+    $regions_list[$handle] = $region->regionName;
+  }
+  return $regions_list;
+}
+
 function d4os_io_db_os_regions_names() {
   d4os_io_db_set_active('os_grid');
   $result = db_query('SELECT uuid, regionHandle, regionName FROM {regions} ORDER BY regionName');

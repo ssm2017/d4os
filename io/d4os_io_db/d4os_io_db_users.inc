@@ -268,6 +268,15 @@ function d4os_io_db_os_user_get_uid($uuid) {
   return db_result(db_query("SELECT uid FROM {d4os_ui_users} WHERE UUID = '%s'", array($uuid)));
 }
 
+function d4os_io_db_os_user_get_all_uid() {
+  $list = array();
+  $result = db_query("SELECT * FROM {d4os_ui_users}");
+  while ($user = db_fetch_object($result)) {
+    $list[] = $user;
+  }
+  return $list;
+}
+
 function d4os_io_db_os_user_load_all() {
   $users = array();
   d4os_io_db_set_active('os_users');
@@ -325,4 +334,38 @@ function d4os_io_db_os_users_is_alive() {
   return array(
     'success' => d4os_io_db_mysql_is_alive('os_users', 'os user'),
   );
+}
+
+/* Grid Monitor tools */
+function d4os_io_db_os_users_online_users_list_paged($page = 0, $limit = 5, $headers) {
+  if (!isset($_GET['page'])) {
+    $_GET['page'] = $page;
+  }
+  if (!isset($_GET['order'])) {
+    $_GET['order'] = 'loginTime';
+  }
+  if (!isset($_GET['sort'])) {
+    $_GET['sort'] = 'DESC';
+  }
+  d4os_io_db_set_active('os_users');
+  $result = pager_query("SELECT * FROM {agents}"
+                        . " WHERE agentOnline = 1"
+                        . " AND logintime < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"
+                        . " AND logoutTime < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"
+                        . " %s", $limit, 0, NULL, array(tablesort_sql($headers)));
+  while ($user = db_fetch_object($result)) {
+    $items[] = $user;
+  }
+  d4os_io_db_set_active('default');
+  return $items;
+}
+
+function d4os_io_db_os_users_online_users_count() {
+  d4os_io_db_set_active('os_users');
+  $count = db_result(db_query("SELECT COUNT(*) FROM {agents}"
+                              . " WHERE agentOnline = 1"
+                              . " AND logintime < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"
+                              . " AND logoutTime < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"));
+  d4os_io_db_set_active('default');
+  return $count;
 }

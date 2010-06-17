@@ -1,0 +1,182 @@
+<?php
+/**
+* @package    d4os
+* @copyright  Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+* @license    GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+* D4os is free software. This version may have been modified pursuant
+* to the GNU General Public License, and as distributed it includes or
+* is derivative of works licensed under the GNU General Public License or
+* other free or open source software licenses.
+*/
+
+function d4os_ui_grid_monitor_grid_status_menu() {
+  $items = array();
+  $items['grid/monitor/grid/status'] = array(
+    'title'             => 'Status',
+    'description'       => 'Check if the grid is online.',
+    'page callback'     => 'd4os_ui_grid_monitor_grid_status_js',
+    'access callback'   => TRUE,
+    'type'              => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+function d4os_ui_grid_monitor_grid_status_block($op = 'list', $delta = 0, $edit = array()) {
+  global $grid_url, $base_url;
+  $block = array();
+  switch ($op) {
+
+    case 'list':
+      $block['grid_monitor_grid_status']["info"] = t('Grid status');
+      $block['grid_monitor_grid_infos']["info"] = t('Grid infos');
+      break;
+
+    case 'view':
+      switch ($delta) {
+        case 'grid_monitor_grid_status':
+          $content = d4os_ui_grid_monitor_grid_status_display();
+          $block['subject'] = t('Grid status');
+          $block['content'] = $content;
+          break;
+        case 'grid_monitor_grid_infos':
+          $values = module_invoke_all('os_grid_get_stats');
+          // add the login uri
+          $values['data']->login_uri = variable_get('d4os_default_login_uri', $base_url). ':'. variable_get('d4os_default_login_port', '8002');
+          $content = theme('d4os_ui_grid_monitor_grid_status_infos', $values['data']);
+          $block['subject'] = t('Grid infos');
+          $block['content'] = $content;
+          break;
+      }
+      break;
+
+    case 'configure':
+      switch ($delta) {
+        case 'grid_monitor_grid_status':
+          return d4os_ui_grid_monitor_grid_status_params_form();
+          break;
+        case 'grid_monitor_grid_infos':
+          return d4os_ui_grid_monitor_grid_status_grid_infos_params_form();
+          break;
+      }
+      break;
+      
+    case 'save':
+      switch ($delta) {
+        case 'grid_monitor_grid_status':
+          d4os_ui_grid_monitor_grid_status_params_save($edit);
+          break;
+        case 'grid_monitor_grid_infos':
+          d4os_ui_grid_monitor_grid_status_grid_infos_params_save($edit);
+          break;
+      }
+      return;
+      break;
+  }
+  return $block;
+}
+
+function d4os_ui_grid_monitor_grid_status_params_form() {
+  $form = array();
+  $form['d4os_ui_grid_monitor_grid_status_timer_fieldset'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Timer'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => FALSE,
+  );
+  $form['d4os_ui_grid_monitor_grid_status_timer_fieldset']['d4os_ui_grid_monitor_grid_status_use_timer'] = array(
+    '#type'           => 'checkbox',
+    '#default_value'  => variable_get('d4os_ui_grid_monitor_grid_status_use_timer', 1),
+    '#title'          => t('Use timer.'),
+    '#description'    => t('Check this option if you want to use a timer to refresh automatically the status on the web page.'),
+  );
+  $form['d4os_ui_grid_monitor_grid_status_timer_fieldset']['d4os_ui_grid_monitor_grid_status_timer'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Timer'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => variable_get('d4os_ui_grid_monitor_grid_status_timer', 15),
+    '#description'    => t("Enter the value (in seconds) for the timer to refresh the status."),
+  );
+  return $form;
+}
+
+function d4os_ui_grid_monitor_grid_status_grid_infos_params_form() {
+  $form = array();
+  $form['d4os_ui_grid_monitor_grid_status_show_loginuri'] = array(
+    '#type'           => 'checkbox',
+    '#default_value'  => variable_get('d4os_ui_grid_monitor_grid_status_show_loginuri', 1),
+    '#title'          => t('Show loginuri.'),
+    '#description'    => t('Check this option if you want to show the loginuri.'),
+  );
+  return $form;
+}
+
+function d4os_ui_grid_monitor_grid_status_params_save($edit) {
+  variable_set('d4os_ui_grid_monitor_grid_status_use_timer',       $edit['d4os_ui_grid_monitor_grid_status_use_timer']);
+  variable_set('d4os_ui_grid_monitor_grid_status_timer',           $edit['d4os_ui_grid_monitor_grid_status_timer']);
+}
+
+function d4os_ui_grid_monitor_grid_status_grid_infos_params_save($edit) {
+  variable_set('d4os_ui_grid_monitor_grid_status_show_loginuri',   $edit['d4os_ui_grid_monitor_grid_status_show_loginuri']);
+}
+
+function d4os_ui_grid_monitor_grid_status_display($load_js=TRUE) {
+  // get the grid status
+  $online = d4os_grid_is_online();
+  // build the output
+  $output = theme('d4os_ui_grid_monitor_grid_status', $online);
+  if (variable_get('d4os_ui_grid_monitor_grid_status_use_timer', 1)) {
+    if ($load_js) {
+      drupal_add_js(libraries_get_path('jquery.timer').'/jquery.timer.js');
+      $js_vars = array(
+        'timer'  => variable_get('d4os_ui_grid_monitor_grid_status_timer', 15),
+      );
+      drupal_add_js(array('d4os_ui_grid_monitor_grid_status' => $js_vars), 'setting');
+      drupal_add_js(drupal_get_path('module', 'd4os_ui_grid_monitor_grid_status').'/js/d4os_ui_grid_monitor_grid_status.js', 'module', 'footer');
+    }
+  }
+  return $output;
+}
+
+function d4os_ui_grid_monitor_grid_status_js() {
+  echo d4os_ui_grid_monitor_grid_status_display(FALSE);
+}
+
+function d4os_ui_grid_monitor_grid_status_theme() {
+  return array(
+    // status
+    'd4os_ui_grid_monitor_grid_status' => array(
+      'arguments' => array('online' => FALSE),
+    ),
+    // status
+    'd4os_ui_grid_monitor_grid_status_infos' => array(
+      'arguments' => array('values' => array()),
+    ),
+  );
+}
+
+function theme_d4os_ui_grid_monitor_grid_status($online) {
+  $output = '';
+  if ($online) {
+    $output .= '<div id="grid_status" class="messages status">'. t('Online'). '</div>';
+  }
+  else {
+    $output .= '<div id="grid_status" class="messages error">'. t('Offline'). '</div>';
+  }
+  return $output;
+}
+
+function theme_d4os_ui_grid_monitor_grid_status_infos($values) {
+  $output = '<div id="grid-stats">';
+  $output .= '<ul>';
+  if (variable_get('d4os_ui_grid_monitor_grid_status_show_loginuri', 1)) {
+    $output .= '<li>'. t('Login uri'). ' : '. $values->login_uri. '</li>';
+  }
+  $output .= '<li>'. t('Now online'). ' : '. $values->now_online. '</li>';
+  $output .= '<li>'. t('Last month online'). ' : '. $values->last_month_online. '</li>';
+  $output .= '<li>'. t('Users count'). ' : '. $values->users_count. '</li>';
+  $output .= '<li>'. t('Regions count'). ' : '. $values->regions_count. '</li>';
+  $output .= '</ul>';
+  $output .= '</div>';
+  return $output;
+}
