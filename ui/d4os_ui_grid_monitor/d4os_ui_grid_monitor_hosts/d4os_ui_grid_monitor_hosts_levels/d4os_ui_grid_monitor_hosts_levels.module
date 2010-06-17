@@ -229,6 +229,9 @@ function d4os_ui_grid_monitor_hosts_levels_display($host, $port) {
   }
   // build the answer values
   $data = json_decode($response->data);
+  if (!is_object($data)) {
+    $data = new stdClass;
+  }
   $data->host = $host;
   $data->port = $port;
 

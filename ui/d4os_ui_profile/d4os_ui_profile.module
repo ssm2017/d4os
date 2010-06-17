@@ -308,7 +308,7 @@ function d4os_ui_profile_home_region_form($form_state, $profile, $account) {
   $form['home_region']['form']['home-region-uuid'] = array(
     '#type'          => 'select',
     '#default_value' => $account->d4os['grid']['presence']['home_region'],
-    '#options'       => d4os_ui_grid_monitor_regions_get_regions_array()
+    '#options'       => $regions_list,
   );
   $form['home_region']['form']['home-region-save'] = array(
     '#type'   => 'submit',
