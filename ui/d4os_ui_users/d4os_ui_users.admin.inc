@@ -281,6 +281,21 @@ function d4os_ui_users_admin() {
     '#maxlength'      => 36,
     '#default_value'  => variable_get('d4os_ui_users_default_model_10', UUID_ZERO),
   );
+  // roles
+  $form['region_owners'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Region owners'),
+    '#description'  => t('Role to assign to region owners.'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+  );
+  $form['region_owners']['d4os_ui_users_default_region_owner_role'] = array(
+    '#type'           => 'select',
+    '#title'          => t('Assigned role'),
+    '#default_value'  => variable_get('d4os_ui_users_default_region_owner_role',0),
+    '#options'        => $roles,
+    '#description'    => t('This role is assigned to region owners.'),
+  );
   
   return system_settings_form($form);
 }

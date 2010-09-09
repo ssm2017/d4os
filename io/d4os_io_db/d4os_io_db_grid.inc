@@ -137,3 +137,25 @@ function d4os_io_db_os_grid_is_alive() {
     'success' => d4os_io_db_mysql_is_alive('os_grid', 'os grid')
   );
 }
+
+function d4os_io_db_os_regions_get_owners() {
+  $owners = array();
+
+  d4os_io_db_set_active('os_grid');
+  $result = pager_query('SELECT DISTINCT owner_uuid FROM {regions}');
+  while ($owner = db_fetch_object($result)) {
+    $owners[] = $owner;
+  }
+  d4os_io_db_set_active('default');
+
+  if (count($owners)) {
+    return array(
+      'success'   => TRUE,
+      'data'      => $owners,
+    );
+  }
+  return array(
+    'success'   => FALSE,
+    'data'      => NULL,
+  );
+}

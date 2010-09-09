@@ -782,3 +782,39 @@ function d4os_ui_users_user_autocomplete($string = '') {
 
   drupal_json($matches);
 }
+
+function d4os_ui_users_cron() {
+  // do the job
+  d4os_ui_users_set_region_owner_role();
+}
+
+function d4os_ui_users_set_region_owner_role() {
+  // get the list
+  $owners = module_invoke_all('os_regions_get_owners');
+  if (!is_array($owners) || !$owners['success']) {
+    return FALSE;
+  }
+
+  // get the rid
+  $rid = variable_get('d4os_ui_users_default_region_owner_role',0);
+  if ($rid == 0) return;
+
+  // remove roles
+  db_query('DELETE FROM {users_roles} WHERE rid=%d', $rid);
+
+  // for each owner, assign the role
+  foreach ($owners['data'] as $owner) {
+    // get the uid
+    $uid = module_invoke_all('os_user_get_uid', $owner->owner_uuid);
+    $uid = $uid[0];
+
+    $values = array();
+    if ($uid) {
+      $account = user_load($uid);
+      // assign role
+      $values['roles'] = $account->roles;
+      $values['roles'][$rid] = 'role';
+      $account = user_save($account, $values);
+    }
+  }
+}

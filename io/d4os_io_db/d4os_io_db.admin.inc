@@ -208,7 +208,7 @@ function d4os_io_db_admin() {
   //  '#description'    => t('Password'),
   //);
 // grid
-  if (module_exists('d4os_ui_regions')) {
+  //if (module_exists('d4os_ui_regions')) {
     $form['multiple_base']['grid'] = array(
       '#type'           => 'fieldset',
       '#title'          => t('Grid'),
@@ -254,7 +254,7 @@ function d4os_io_db_admin() {
       '#default_value'  => variable_get('d4os_io_db_multiple_grid_password', 'root'),
       '#description'    => t('Password'),
     );
-  }
+  //}
 // groups
   if (module_exists('d4os_ui_groups') || module_exists('d4os_io_services_groups')) {
     $form['multiple_base']['groups'] = array(
