@@ -335,15 +335,15 @@ function d4os_io_db_os_search_hosts_delete($hostname, $hostport) {
 
 function d4os_io_db_os_search_services_dir_places_query($params) {
   $category = $params['category'];
-  $text     = $params['search'];
+  $text     = $params['text'];
   $start    = $params['start'];
   
   if ($category != -1) {
     $values = array($category, $text, $text, $start, 100);
     $query = "SELECT * FROM {parcels} WHERE ".
               "(searchcategory = -1 or searchcategory = '%s') ".
-              "AND (parcelname LIKE '%%s%' ".
-              "OR description LIKE '%%s%') ".
+              "AND (parcelname LIKE '%%%s%%' ".
+              "OR description LIKE '%%%s%%') ".
               "ORDER BY dwell DESC, parcelname LIMIT %d, %d";
   }
   else {
