@@ -374,8 +374,8 @@ function d4os_ui_events_build_output($node) {
   $parcel_y    = $val_y;//138
   $parcel_z    = $val_z;//20.05
 
-  $region_x    = ($region->locX / 256);
-  $region_y    = ($region->locY / 256);
+  $region_x    = ($region->locX * 256);
+  $region_y    = ($region->locY * 256);
 
   $global_x    = $region_x + $parcel_x;
   $global_y    = $region_y + $parcel_y;
