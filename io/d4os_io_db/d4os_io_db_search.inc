@@ -616,7 +616,7 @@ function d4os_io_db_os_search_services_event_info_query($params) {
       "creator"         => $row["creatoruuid"],
       "name"            => $row["name"],
       "category"        => $category,
-      "description"     => $row["description"],
+      "description"     => drupal_html_to_text($row["description"]),
       "date"            => $date,
       "dateUTC"         => $row["dateUTC"],
       "duration"        => $row["duration"],
@@ -798,7 +798,7 @@ function d4os_io_db_os_search_services_parser_parse($hostname, $port) {
         d4os_io_db_set_active('os_search');
         $check = db_result(db_query("SELECT count(*) FROM {regions} WHERE regionuuid = '%s'", $regionuuid));
         d4os_io_db_set_active('default');
-
+watchdog('d4os_io_svc_search_parser', t('Region exists ? !check.'), array('!check' => $check), WATCHDOG_ERROR);
         if ($check > 0) {
           d4os_io_db_set_active('os_search');
           db_query("DELETE FROM {regions} WHERE regionuuid = '%s'", $regionuuid);
@@ -942,4 +942,102 @@ function d4os_io_db_os_search_is_alive() {
   return array(
     'success' => d4os_io_db_mysql_is_alive('os_search', 'os search'),
   );
+}
+
+/*
+ * search helpers
+ */
+function d4os_io_os_search_helpers_clean_regions() {
+  // get all regions in search base
+  $search_regions = array();
+  d4os_io_db_set_active('os_search');
+  $result = db_query('SELECT regionuuid FROM {regions}');
+  while ($row = db_fetch_object($result)) {
+    $search_regions[] = $row->regionuuid;
+  }
+  d4os_io_db_set_active('default');
+
+  // get all regions in grid base
+  $grid_regions = array();
+  d4os_io_db_set_active('os_grid');
+  $result = db_query('SELECT uuid FROM {regions}');
+  while ($row = db_fetch_object($result)) {
+    $grid_regions[] = $row->uuid;
+  }
+  d4os_io_db_set_active('default');
+
+  // compare
+  $orphan_regions = array_diff($search_regions, $grid_regions);
+
+  if (count($orphan_regions) == 0) {
+    return;
+  }
+
+  // get parcels uuids by regionuuid
+  $parcels = array();
+  $placeholders = implode(', ', array_fill(0, count($orphan_regions), "%s"));
+  d4os_io_db_set_active('os_search');
+  $result = db_query("SELECT parcelUUID FROM {parcels} WHERE regionUUID IN (". $placeholders. ")");
+  while ($row = db_fetch_object($result)) {
+    $parcels[] = $row->parcelUUID;
+  }
+  d4os_io_db_set_active('default');
+/*
+  // delete parcels by regionuuid
+  d4os_io_db_set_active('os_search');
+  $result = db_query("DELETE FROM {parcels} WHERE regionUUID IN (". $placeholders. ")");
+  d4os_io_db_set_active('default');
+
+  // delete allparcels by regionuuid
+  d4os_io_db_set_active('os_search');
+  $result = db_query("DELETE FROM {allparcels} WHERE regionUUID IN (". $placeholders. ")");
+  d4os_io_db_set_active('default');
+
+  // delete parcelsales by regionuuid
+  d4os_io_db_set_active('os_search');
+  $result = db_query("DELETE FROM {parcelsales} WHERE regionUUID IN (". $placeholders. ")");
+  d4os_io_db_set_active('default');
+
+  // delete objects
+  d4os_io_db_set_active('os_search');
+  $result = db_query("DELETE FROM {objects} WHERE regionuuid IN (". $placeholders. ")");
+  d4os_io_db_set_active('default');
+
+  // delete regions
+  d4os_io_db_set_active('os_search');
+  $result = db_query("DELETE FROM {regions} WHERE regionuuid IN (". $placeholders. ")");
+  d4os_io_db_set_active('default');
+
+  // delete classifieds by parcel uuid
+  $placeholders = implode(', ', array_fill(0, count($parcels), "%s"));
+  d4os_io_db_set_active('os_search');
+  $result = db_query("DELETE FROM {classifieds} WHERE parceluuid IN (". $placeholders. ")");
+  d4os_io_db_set_active('default');
+
+  // delete objects by parcel uuid
+  d4os_io_db_set_active('os_search');
+  $result = db_query("DELETE FROM {objects} WHERE parceluuid IN (". $placeholders. ")");
+  d4os_io_db_set_active('default');
+
+  // delete parcels by parcel uuid
+  d4os_io_db_set_active('os_search');
+  $result = db_query("DELETE FROM {parcels} WHERE parcelUUID IN (". $placeholders. ")");
+  d4os_io_db_set_active('default');
+
+  // delete allparcels by parcel uuid
+  d4os_io_db_set_active('os_search');
+  $result = db_query("DELETE FROM {allparcels} WHERE parcelUUID IN (". $placeholders. ")");
+  d4os_io_db_set_active('default');
+
+  // delete popularplaces by parcel uuid
+  d4os_io_db_set_active('os_search');
+  $result = db_query("DELETE FROM {popularplaces} WHERE parcelUUID IN (". $placeholders. ")");
+  d4os_io_db_set_active('default');
+
+  // delete userpicks by parcel uuid
+  d4os_io_db_set_active('os_search');
+  $result = db_query("DELETE FROM {popularplaces} WHERE parcelUUID IN (". $placeholders. ")");
+  d4os_io_db_set_active('default');
+*/
+  watchdog('d4os_search', '!nbr_regions regions and !nbr_parcels parcels were deleted in search.', array('!nbr_regions' => $orphan_regions, '!nbr_parcels' => $parcels), $severity = WATCHDOG_NOTICE, $link = NULL)
 }
