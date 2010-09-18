@@ -1,14 +1,19 @@
 <?php
 /**
-* @package    d4os
-* @copyright  Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
-* @license    GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
-* D4os is free software. This version may have been modified pursuant
-* to the GNU General Public License, and as distributed it includes or
-* is derivative of works licensed under the GNU General Public License or
-* other free or open source software licenses.
-*/
+ * @package    d4os_io_db
+ * @copyright  Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+ * @license    GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+ * D4os is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ */
 
+/**
+ * Save a user account values on the grid
+ * @param Array or Object containing drupal user object + an array containing grid data
+ * @return FALSE if error or an Object containing the saved user object
+ */
 function d4os_io_db_os_user_save($account) {
   // convert array to object
   $account = is_array($account) ? (object)$account : $account;
@@ -151,6 +156,11 @@ function d4os_io_db_os_user_save($account) {
   return $user;
 }
 
+/**
+ * Load a user object
+ * @param Array of search filter like array('name'=>'test'); or an integer 
+ * @return Oject $user or Boolean FALSE if error
+ */
 function d4os_io_db_os_user_load($data = array()) {
 
   if (is_numeric($data)) {
@@ -234,6 +244,10 @@ function d4os_io_db_os_user_load($data = array()) {
   }
 }
 
+/**
+ * Add some extra fields to the user object by reference if needed
+ * @param Object $user object
+ */
 function d4os_io_db_users_add_extra_fields(&$user) {
   if (module_exists('d4os_io_services_profile')) {
     $params = array();
@@ -256,6 +270,11 @@ function d4os_io_db_users_add_extra_fields(&$user) {
   }
 }
 
+/**
+ * Assign a grid uuid to a Drupal user id
+ * @param Integer Drupal user id
+ * @param Integer Grid user uuid
+ */
 function d4os_io_db_os_user_set_uid($uid, $uuid) {
   // check if key already exists
   $exists = db_result(db_query("SELECT count(*) FROM {d4os_ui_users} WHERE uid=%d AND UUID='%s'", array($uid, $uuid)));
@@ -264,10 +283,19 @@ function d4os_io_db_os_user_set_uid($uid, $uuid) {
   }
 }
 
+/**
+ * Get the uid of a Drupal user by the Grid uuid
+ * @param String uuid of the user
+ * @return Integer uid corresponding to the uuid
+ */
 function d4os_io_db_os_user_get_uid($uuid) {
   return db_result(db_query("SELECT uid FROM {d4os_ui_users} WHERE UUID = '%s'", array($uuid)));
 }
 
+/**
+ * Get a list of all the uids mapped to uuids
+ * @return Array of row objects
+ */
 function d4os_io_db_os_user_get_all_uid() {
   $list = array();
   $result = db_query("SELECT * FROM {d4os_ui_users}");
@@ -277,6 +305,10 @@ function d4os_io_db_os_user_get_all_uid() {
   return $list;
 }
 
+/**
+ * Load all the users of the grid
+ * @return Array of user's Obects
+ */
 function d4os_io_db_os_user_load_all() {
   $users = array();
   d4os_io_db_set_active('os_users');
@@ -288,6 +320,10 @@ function d4os_io_db_os_user_load_all() {
   return $users;
 }
 
+/**
+ * Delete a user in the grid and all the mapped items
+ * @param String the uuid of the user to delete
+ */
 function d4os_io_db_os_user_delete($uuid) {
   // TODO : delete all assets (impossible ?)
   // TODO : delete groups
@@ -330,6 +366,10 @@ function d4os_io_db_os_user_delete($uuid) {
   db_query("DELETE FROM {d4os_ui_users} WHERE UUID='%s'", $uuid);
 }
 
+/**
+ * Check if the user database is responding
+ * @return Array like array('success'=>true or false);
+ */
 function d4os_io_db_os_users_is_alive() {
   return array(
     'success' => d4os_io_db_mysql_is_alive('os_users', 'os user'),
@@ -337,6 +377,13 @@ function d4os_io_db_os_users_is_alive() {
 }
 
 /* Grid Monitor tools */
+
+/**
+ * Return a paged list of online users
+ * @param Integer page number start
+ * @param Integer quantity of entries
+ * @param Array a Drupal table headers list
+ */
 function d4os_io_db_os_users_online_users_list_paged($page = 0, $limit = 5, $headers) {
   if (!isset($_GET['page'])) {
     $_GET['page'] = $page;
@@ -360,6 +407,10 @@ function d4os_io_db_os_users_online_users_list_paged($page = 0, $limit = 5, $hea
   return $items;
 }
 
+/**
+ * Return the online users list
+ * @return $count Integer quantity of users actually online
+ */
 function d4os_io_db_os_users_online_users_count() {
   d4os_io_db_set_active('os_users');
   $count = db_result(db_query("SELECT COUNT(*) FROM {agents}"

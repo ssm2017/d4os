@@ -1,14 +1,20 @@
 <?php
 /**
-* @package    d4os
-* @copyright  Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
-* @license    GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
-* D4os is free software. This version may have been modified pursuant
-* to the GNU General Public License, and as distributed it includes or
-* is derivative of works licensed under the GNU General Public License or
-* other free or open source software licenses.
-*/
+ * @package    d4os_io_db
+ * @category   grid
+ * @copyright  Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+ * @license    GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+ * D4os is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ */
 
+/**
+ * Get a region object
+ * @param array containing filters like $array=array("name='test'");
+ * @return Object|bool An object containing region fields or False if error
+ */
 function d4os_io_db_os_region_load($array = array()) {
   // Dynamically compose a SQL query:
   $query = array();
@@ -29,6 +35,13 @@ function d4os_io_db_os_region_load($array = array()) {
   return $region;
 }
 
+/**
+ * Get a list of regions obects with paging
+ * @param int start page
+ * @param int number of entries
+ * @param array of drupal field headers
+ * @return Array An array containing a list of regions
+ */
 function d4os_io_db_os_regions_list_paged($page = 0, $limit = 5, $headers) {
   if (!isset($_GET['page'])) {
     $_GET['page'] = $page;
@@ -48,6 +61,10 @@ function d4os_io_db_os_regions_list_paged($page = 0, $limit = 5, $headers) {
   return $items;
 }
 
+/**
+ * Get the quantity of regions
+ * @return Integer Quantity of regions
+ */
 function d4os_io_db_os_regions_regions_count() {
   d4os_io_db_set_active('os_grid');
   $count = db_result(db_query("SELECT COUNT(*) FROM {regions}"));
@@ -55,6 +72,10 @@ function d4os_io_db_os_regions_regions_count() {
   return $count;
 }
 
+/**
+ * Return a list of regions for a html list in the events module
+ * @return Array An array of regions like $regions_list[$handle] = $region->regionName;
+ */
 function d4os_io_db_os_regions_get_regions_array() {
   $regions = d4os_io_db_os_regions_names();
   $regions_list = array();
@@ -65,6 +86,10 @@ function d4os_io_db_os_regions_get_regions_array() {
   return $regions_list;
 }
 
+/**
+ * Return a list of regions objects ordered by regionName
+ * @return Array An array of regions objects
+ */
 function d4os_io_db_os_regions_names() {
   d4os_io_db_set_active('os_grid');
   $result = db_query('SELECT uuid, regionHandle, regionName FROM {regions} ORDER BY regionName');
@@ -75,6 +100,10 @@ function d4os_io_db_os_regions_names() {
   return $items;
 }
 
+/**
+ * Return an array of stats for the home page
+ * @return Array An array like array('success'=>true, 'data'=>$data);
+ */
 function d4os_io_db_os_grid_get_stats() {
   // who is online now
   $now_online = 0;
@@ -132,12 +161,20 @@ function d4os_io_db_os_grid_get_stats() {
   );
 }
 
+/**
+ * Tell if the grid is responding
+ * @return Bool TRUE if yes and FALSE if not
+ */
 function d4os_io_db_os_grid_is_alive() {
   return array(
     'success' => d4os_io_db_mysql_is_alive('os_grid', 'os grid')
   );
 }
 
+/**
+ * get a list of region owners (used to assign them a role)
+ * @return Array An array like array('success'=>true, 'data'=>$data);
+ */
 function d4os_io_db_os_regions_get_owners() {
   $owners = array();
 

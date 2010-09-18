@@ -1,21 +1,40 @@
 <?php
 /**
-* @package    d4os
-* @copyright  Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
-* @license    GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
-* D4os is free software. This version may have been modified pursuant
-* to the GNU General Public License, and as distributed it includes or
-* is derivative of works licensed under the GNU General Public License or
-* other free or open source software licenses.
-*/
+ * @package     d4os_main
+ * @subpackage  d4os_helpers
+ * @copyright   Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+ * @link        http://www.d4os.org
+ * @license     GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+ * D4os is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ */
 
 define('UUID_ZERO', '00000000-0000-0000-0000-000000000000');
+
+/**
+ * @global test $GLOBALS['grid_url'] 
+ * @name $grid_url
+ */
 global $grid_url;
+
+/**
+ * @global test $GLOBALS['bar'] 
+ * @name $grid_url
+ */
 global $base_url;
+
 $grid_uri   = variable_get('d4os_default_grid_uri', $base_url);
 $grid_port  = variable_get('d4os_default_grid_port', '9000');
 $grid_url   = $grid_uri. ':'. $grid_port;
 
+/**
+ * Helpfull function to search items in an array with a lot of sublevels
+ * @param Mixed The item to search
+ * @param Array The array to crawl
+ * @return Mixed The key of the main array where the item is or nothing
+ */
 function d4os_array_search_recursive($needle, $haystack) {
   foreach ($haystack as $k => $v) {
     foreach($v as $v2) {
@@ -27,6 +46,13 @@ function d4os_array_search_recursive($needle, $haystack) {
   }
 }
 
+/**
+ * Utility used to help the services logs in the watchdog.
+ * @param String The name of the module sending the message
+ * @param Array An array contining infos to send
+ * Like array('type'=>'string', 'name'=>'function call', 'data'=>$data);
+ * @param Int The watchdog severity level
+ */
 function d4os_log($module, $array, $severity = WATCHDOG_DEBUG) {
   $output = '';
   foreach ($array as $value) {
@@ -53,6 +79,10 @@ function d4os_log($module, $array, $severity = WATCHDOG_DEBUG) {
   watchdog($module, $output, array(), $severity);
 }
 
+/**
+ * Generates a uuid
+ * @return String The uuid
+ */
 function d4os_uuid_create() {
   return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
   mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
@@ -61,6 +91,10 @@ function d4os_uuid_create() {
   mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ) );
 }
 
+/**
+ * Check if the grid is online
+ * @return Bool True or False
+ */
 function d4os_grid_is_online() {
   // 8002 = user; 8003 = asset+grid+inventory; 8006 = messaging
   // -111 = connection refused
@@ -87,7 +121,8 @@ function d4os_grid_is_online() {
 }
 
 /**
- * AJAX form handler.
+ * AJAX form handler. Used for the ahah forms
+ * @return Array An array containing the Drupal form
  */
 function d4os_ajax_form_handler() {
   // The form is generated in an include file which we need to include manually.

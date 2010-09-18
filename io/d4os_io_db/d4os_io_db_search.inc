@@ -1,13 +1,13 @@
 <?php
 /**
-* @package    d4os
-* @copyright  Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
-* @license    GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
-* D4os is free software. This version may have been modified pursuant
-* to the GNU General Public License, and as distributed it includes or
-* is derivative of works licensed under the GNU General Public License or
-* other free or open source software licenses.
-*/
+ * @package    d4os_io_db
+ * @copyright  Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+ * @license    GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+ * D4os is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ */
 
 function d4os_io_db_os_search_user_delete($uuid) {
   // get the uid
@@ -150,6 +150,7 @@ function d4os_io_db_os_event_save($event) {
   return $event;
 }
 
+
 function d4os_io_db_os_event_load($data = array()) {
   if (is_numeric($data)) {
     // get event id from node
@@ -265,6 +266,8 @@ function d4os_io_db_os_events_get_parcels_by_owner($ownerid) {
   }
   return FALSE;
 }
+
+
 
 /*
  * Grid Monitor tools
@@ -1005,6 +1008,11 @@ function d4os_io_db_os_search_helpers_clean_regions() {
   $result = db_query("DELETE FROM {regions} WHERE regionuuid IN (". $placeholders. ")");
   d4os_io_db_set_active('default');
 
+  watchdog('d4os_search', '!nbr_regions regions were deleted in search.', array('!nbr_regions' => count($orphan_regions)), WATCHDOG_NOTICE);
+  if (count($parcels) == 0) {
+    return;
+  }
+
   // delete classifieds by parcel uuid
   $placeholders = "'". implode("', '", $parcels). "'";
   d4os_io_db_set_active('os_search');
@@ -1036,5 +1044,5 @@ function d4os_io_db_os_search_helpers_clean_regions() {
   $result = db_query("DELETE FROM {popularplaces} WHERE parcelUUID IN (". $placeholders. ")");
   d4os_io_db_set_active('default');
 
-  watchdog('d4os_search', '!nbr_regions regions and !nbr_parcels parcels were deleted in search.', array('!nbr_regions' => count($orphan_regions), '!nbr_parcels' => count($parcels)), WATCHDOG_NOTICE);
+  watchdog('d4os_search', '!nbr_parcels parcels were deleted in search.', array('!nbr_parcels' => count($parcels)), WATCHDOG_NOTICE);
 }
