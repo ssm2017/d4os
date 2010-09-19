@@ -10,8 +10,8 @@
  */
 
 /**
-* Admin settings
-*/
+ * Admin panel
+ */
 function d4os_ui_auth_settings() {
   $form = array();
 

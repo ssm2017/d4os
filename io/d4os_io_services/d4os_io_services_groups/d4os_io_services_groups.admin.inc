@@ -9,6 +9,9 @@
  * other free or open source software licenses.
  */
 
+/**
+ * Admin panel
+ */
 function d4os_io_services_groups_admin() {
   $form = array();
 

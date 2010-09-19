@@ -11,11 +11,21 @@
 
 // TODO : refine users
 
+/**
+ * Username max length
+ */
 define(USERNAME_MAX_LENGTH, 32);
+
+/**
+ * Lastname max length
+ */
 define(LASTNAME_MAX_LENGTH, 32);
 
 module_load_include('helpers.inc', 'd4os_ui_users');
 
+/**
+ * Implementation of hook_help()
+ */
 function d4os_ui_users_help($path, $arg) {
   switch ($path) {
     case 'admin/help#d4os_ui_users':

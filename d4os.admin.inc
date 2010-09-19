@@ -10,6 +10,9 @@
  * other free or open source software licenses.
  */
 
+/**
+ * Admin panel
+ */
 function d4os_admin() {
   global $base_url;
   $form = array();
@@ -187,18 +190,30 @@ function d4os_admin() {
   return system_settings_form($form);
 }
 
+/**
+ * Io empty tab
+ */
 function d4os_admin_io() {
   return t('Use these tabs to configure the io settings');
 }
 
+/**
+ * Services empty tab
+ */
 function d4os_admin_services() {
   return t('Use these tabs to configure the services settings');
 }
 
+/**
+ * Ui empty tab
+ */
 function d4os_admin_ui() {
   return t('Use these tabs to configure the ui settings');
 }
 
+/**
+ * Grid monitor empty tab
+ */
 function d4os_admin_ui_grid_monitor() {
   return t('Use these tabs to configure the ui grid monitor settings');
 }

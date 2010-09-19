@@ -9,6 +9,9 @@
  * other free or open source software licenses.
  */
 
+/**
+ * Admin panel
+ */
 function d4os_ui_users_admin() {
 
   // get roles

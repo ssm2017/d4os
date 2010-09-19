@@ -12,6 +12,9 @@
 global $base_url, $simian_url;
 $simian_url = variable_get('d4os_io_simian_url', variable_get('d4os_default_grid_uri', $base_url). '/Grid/');
 
+/**
+ * Implementation of hook_menu()
+ */
 function d4os_io_simian_menu() {
   $items = array();
   $items['admin/settings/d4os/io/simian'] = array(

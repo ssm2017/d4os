@@ -10,6 +10,9 @@
  * other free or open source software licenses.
  */
 
+/**
+ * Implementation of hook_menu()
+ */
 function d4os_ui_grid_monitor_grid_status_menu() {
   $items = array();
   $items['grid/monitor/grid/status'] = array(

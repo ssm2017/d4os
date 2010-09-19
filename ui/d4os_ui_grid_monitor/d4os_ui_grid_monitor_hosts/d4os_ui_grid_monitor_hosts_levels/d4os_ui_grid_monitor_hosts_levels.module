@@ -44,6 +44,9 @@ AbnormalClientThreadTerminations
 */
 module_load_include('inc', 'd4os_ui_grid_monitor_hosts_levels', '/widgets/text/d4os_ui_grid_monitor_hosts_levels_widgets_text');
 
+/**
+ * Implementation of hook_init()
+ */
 function d4os_ui_grid_monitor_hosts_levels_init() {
   $widgets = array(
     array(

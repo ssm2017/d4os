@@ -11,6 +11,9 @@
 
 module_load_include('helpers.inc', 'd4os_ui_events');
 
+/**
+ * Implementation of hook_node_info()
+ */
 function d4os_ui_events_node_info() {
   return array(
     'grid_event' => array(

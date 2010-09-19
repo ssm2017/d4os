@@ -12,6 +12,9 @@
 
 // TODO : see what we can do with http://domain.com:9000/admin/regioninfo/
 
+/**
+ * Implementation of hook_help()
+ */
 function d4os_ui_grid_monitor_regions_help($path, $arg) {
   switch ($path) {
     case 'admin/help#d4os_ui_grid_monitor_regions':

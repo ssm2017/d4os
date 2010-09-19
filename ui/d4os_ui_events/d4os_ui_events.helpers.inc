@@ -9,6 +9,9 @@
  * other free or open source software licenses.
  */
 
+/**
+ * Get the UTC time stamp from a date
+ */
 function d4os_ui_events_get_utc_timestamp_from_date($date) {
   // First get the user's (or system default) timezone info
   $user_timezone_name = date_default_timezone_name(TRUE);

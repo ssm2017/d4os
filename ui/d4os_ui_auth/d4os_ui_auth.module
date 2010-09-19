@@ -9,6 +9,9 @@
  * other free or open source software licenses.
  */
 
+/**
+ * Implementation of hook help
+ */
 function d4os_ui_auth_help($path, $arg) {
   switch ($path) {
     case 'admin/help#d4os_ui_auth':

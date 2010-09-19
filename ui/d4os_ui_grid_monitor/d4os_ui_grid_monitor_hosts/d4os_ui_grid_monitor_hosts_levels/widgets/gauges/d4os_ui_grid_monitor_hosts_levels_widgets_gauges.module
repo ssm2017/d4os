@@ -10,6 +10,9 @@
  * other free or open source software licenses.
  */
 
+/**
+ * Add the widget in the list
+ */
 function d4os_ui_grid_monitor_hosts_levels_widgets_gauges_d4os_hosts_levels_widget_add() {
   $widget = array(
     'name'  => 'gauges',

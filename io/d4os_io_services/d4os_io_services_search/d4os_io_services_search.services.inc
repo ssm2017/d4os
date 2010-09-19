@@ -34,6 +34,9 @@
 global $d4os_io_services_search_log_level;
 $d4os_io_services_search_log_level = variable_get('d4os_io_services_search_log_level', 0);
 
+/**
+ * Get the places
+ */
 function d4os_io_services_search_dir_places_query($params) {
   global $d4os_io_services_search_log_level;
 //$text, $category='-1', $sim_name='', $query_start=0, $flags

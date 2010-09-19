@@ -9,6 +9,9 @@
  * other free or open source software licenses.
  */
 
+/**
+ * Implementation of hook_schema()
+ */
 function d4os_ui_groups_schema() {
   $schema['d4os_ui_groups'] = array(
     'description' => t('The single table necessary for groups storage.'),

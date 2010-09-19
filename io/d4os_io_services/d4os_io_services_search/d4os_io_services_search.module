@@ -9,17 +9,17 @@
  * other free or open source software licenses.
  */
 
-/*
-* Implementation of hook_disable()
-* Perform necessary actions before module is disabled. (like clear the services:methods cache)
-*/
+/**
+ * Implementation of hook_disable()
+ * Perform necessary actions before module is disabled. (like clear the services:methods cache)
+ */
 function d4os_io_services_search_disable() {
   cache_clear_all('services:methods', 'cache');
 }
-/*
-* Implementation of hook_disable()
-* Perform necessary actions after module is enabled. (like clear the services:methods cache)
-*/
+/**
+ * Implementation of hook_disable()
+ * Perform necessary actions after module is enabled. (like clear the services:methods cache)
+ */
 function d4os_io_services_search_enable() {
   cache_clear_all('services:methods', 'cache');
 }

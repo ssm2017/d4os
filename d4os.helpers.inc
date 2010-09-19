@@ -11,17 +11,20 @@
  * other free or open source software licenses.
  */
 
+/**
+ * UUID zero
+ */
 define('UUID_ZERO', '00000000-0000-0000-0000-000000000000');
 
 /**
- * @global test $GLOBALS['grid_url'] 
+ * @global String $grid_url
  * @name $grid_url
  */
 global $grid_url;
 
 /**
- * @global test $GLOBALS['bar'] 
- * @name $grid_url
+ * @global String $base_url
+ * @name $base_url
  */
 global $base_url;
 

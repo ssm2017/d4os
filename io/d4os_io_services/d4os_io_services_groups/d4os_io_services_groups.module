@@ -117,17 +117,17 @@ $requestingAgent = UUID_ZERO;
 // Use a common signature for all the group functions  ->  struct foo($struct)
 $common_sig = array(array($xmlrpcStruct, $xmlrpcStruct));
 
-/*
-* Implementation of hook_disable()
-* Perform necessary actions before module is disabled. (like clear the services:methods cache)
-*/
+/**
+ * Implementation of hook_disable()
+ * Perform necessary actions before module is disabled. (like clear the services:methods cache)
+ */
 function d4os_io_services_groups_disable() {
   cache_clear_all('services:methods', 'cache');
 }
-/*
-* Implementation of hook_disable()
-* Perform necessary actions after module is enabled. (like clear the services:methods cache)
-*/
+/**
+ * Implementation of hook_enable()
+ * Perform necessary actions after module is enabled. (like clear the services:methods cache)
+ */
 function d4os_io_services_groups_enable() {
   cache_clear_all('services:methods', 'cache');
 }

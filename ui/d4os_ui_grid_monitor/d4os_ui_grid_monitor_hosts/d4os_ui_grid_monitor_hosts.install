@@ -11,8 +11,8 @@
  */
 
 /**
-* Implementation of hook_uninstall().
-*/
+ * Implementation of hook_uninstall().
+ */
 function d4os_ui_grid_monitor_hosts_uninstall() {
   // Remove variables.
   db_query("DELETE FROM {variable} WHERE name LIKE 'd4os_ui_grid_monitor_hosts%%'");

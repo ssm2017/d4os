@@ -9,6 +9,9 @@
  * other free or open source software licenses.
  */
 
+/**
+ * Hook help
+ */
 function d4os_io_radmin_help($path, $arg) {
   switch ($path) {
     case 'admin/help#d4os':

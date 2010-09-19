@@ -9,6 +9,9 @@
  * other free or open source software licenses.
  */
 
+/**
+ * Test form
+ */
 function d4os_io_simian_test_form() {
   $form = array();
   d4os_io_simian_test_asset($form);

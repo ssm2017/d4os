@@ -1,6 +1,7 @@
 <?php
 /**
  * @package    d4os_io_db
+ * @subpackage groups
  * @copyright  Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
  * @license    GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
  * D4os is free software. This version may have been modified pursuant
@@ -9,6 +10,9 @@
  * other free or open source software licenses.
  */
 
+/**
+ * Save a group
+ */
 function d4os_io_db_os_group_save($params) {
   // include the groups file
   module_load_include('services.inc', 'd4os_io_services_groups');

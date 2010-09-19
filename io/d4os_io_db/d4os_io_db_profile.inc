@@ -1,6 +1,7 @@
 <?php
 /**
  * @package    d4os_io_db
+ * @subpackage profile
  * @copyright  Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
  * @license    GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
  * D4os is free software. This version may have been modified pursuant
@@ -15,6 +16,9 @@
  * Copyright (c)Melanie Thielker (http://opensimulator.org/)
  */
 
+/**
+ * Save the profile infos
+ */
 function d4os_io_db_os_profile_save($params) {
   global $user;
   $success = FALSE;

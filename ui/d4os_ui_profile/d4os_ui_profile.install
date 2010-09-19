@@ -9,13 +9,16 @@
  * other free or open source software licenses.
  */
 
+/**
+ * Implementation of hook_install()
+ */
 function d4os_ui_profile_install() {
   drupal_install_schema('d4os_ui_profile');
 }
 
 /**
-* Implementation of hook_uninstall().
-*/
+ * Implementation of hook_uninstall().
+ */
 function d4os_ui_profile_uninstall() {
   drupal_uninstall_schema('d4os_ui_profile');
   // Remove variables.

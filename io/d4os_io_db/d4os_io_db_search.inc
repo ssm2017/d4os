@@ -1,6 +1,7 @@
 <?php
 /**
  * @package    d4os_io_db
+ * @subpackage search
  * @copyright  Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
  * @license    GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
  * D4os is free software. This version may have been modified pursuant
@@ -9,6 +10,9 @@
  * other free or open source software licenses.
  */
 
+/**
+ * Hook os search user delete
+ */
 function d4os_io_db_os_search_user_delete($uuid) {
   // get the uid
   $uid = d4os_io_db_os_user_get_uid($uuid);

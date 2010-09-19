@@ -9,8 +9,14 @@
  * other free or open source software licenses.
  */
 
+/**
+ * Globals
+ */
 global $db_url, $d4os_db_prefix, $d4os_same_db;
 
+/**
+ * Build a list of needed databases
+ */
 function d4os_io_db_build_bases_list() {
   $bases = array(
     'none'            => t('None'),

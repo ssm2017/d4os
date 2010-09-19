@@ -9,9 +9,9 @@
  * other free or open source software licenses.
  */
 
-/*
+/**
  * The code in this script was inspired and mostly copied from osprofile
- * http://forge.opensimulator.org/gf/project/osprofile
+ * @link http://forge.opensimulator.org/gf/project/osprofile
  * Copyright (c)Melanie Thielker (http://opensimulator.org/)
  */
 

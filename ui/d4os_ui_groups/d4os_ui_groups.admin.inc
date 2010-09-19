@@ -9,6 +9,9 @@
  * other free or open source software licenses.
  */
 
+/**
+ * Admin panel
+ */
 function d4os_ui_groups_admin() {
 	// check if og was configured
 	$types = og_get_types('group');

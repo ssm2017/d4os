@@ -9,6 +9,9 @@
  * other free or open source software licenses.
  */
 
+/**
+ * Implementation of hook_menu()
+ */
 function d4os_ui_groups_menu() {
   $items['admin/settings/d4os/ui/groups'] = array(
     'title'             => 'groups',

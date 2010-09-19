@@ -9,11 +9,14 @@
  * other free or open source software licenses.
  */
 
-/*
+/**
  * The code in this script was inspired and mostly copied from flotsam xmlrpc groups implementation
- * http://code.google.com/p/flotsam/wiki/XmlRpcGroups
+ * @link http://code.google.com/p/flotsam/wiki/XmlRpcGroups
  */
 
+/**
+ * Main
+ */
 function d4os_io_services_groups_run($method, $params, $inworld=TRUE) {
   global $groupPowers, $d4os_io_services_groups_log_level;
 

@@ -9,6 +9,9 @@
  * other free or open source software licenses.
  */
 
+/**
+ * Admin panel
+ */
 function d4os_io_simian_admin() {
   global $base_url;
   $form = array();

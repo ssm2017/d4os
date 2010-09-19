@@ -9,6 +9,9 @@
  * other free or open source software licenses.
  */
 
+/**
+ * Save a user account
+ */
 function d4os_io_simian_os_user_save($account) {
   global $simian_url;
 

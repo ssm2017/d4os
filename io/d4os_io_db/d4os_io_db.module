@@ -12,6 +12,9 @@
 // TODO : separate modules
 // TODO : unify the input/output with inputs = (array)$params and output = array('success'=> true, 'message' => 'message')
 
+/**
+ * Hook init
+ */
 function d4os_io_db_init() {
   module_load_include('settings.inc', 'd4os_io_db');
 }

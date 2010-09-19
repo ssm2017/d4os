@@ -35,6 +35,10 @@ function d4os_offline_message_install() {
   drupal_install_schema('d4os_io_offline_message');
 }
 */
+
+/**
+ * Hook uninstall
+ */
 function d4os_offline_message_uninstall() {
   //drupal_uninstall_schema('d4os_io_offline_message');
   // Remove variables.

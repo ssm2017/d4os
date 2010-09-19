@@ -26,6 +26,10 @@ function d4os_ui_users_requirements($phase) {
   return $requirements;
 }
 */
+
+/**
+ * Implementation of hook_install()
+ */
 function d4os_ui_users_install() {
   drupal_install_schema('d4os_ui_users');
 }

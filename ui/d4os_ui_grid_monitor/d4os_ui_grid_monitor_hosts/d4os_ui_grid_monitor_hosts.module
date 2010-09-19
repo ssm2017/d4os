@@ -10,6 +10,9 @@
  * other free or open source software licenses.
  */
 
+/**
+ * Implementation of hook_help()
+ */
 function d4os_ui_grid_monitor_hosts_help($path, $arg) {
   switch ($path) {
     case 'admin/help#d4os_ui_grid_monitor_hosts':

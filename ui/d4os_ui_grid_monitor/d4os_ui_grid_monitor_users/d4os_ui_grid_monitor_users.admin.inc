@@ -10,6 +10,9 @@
  * other free or open source software licenses.
  */
 
+/**
+ * Admin panel
+ */
 function d4os_ui_grid_monitor_users_admin() {
   $form = array();
 

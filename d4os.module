@@ -12,6 +12,9 @@
 
 module_load_include('helpers.inc', 'd4os');
 
+/**
+ * Help info
+ */
 function d4os_help($path, $arg) {
   switch ($path) {
     case 'admin/help#d4os':
@@ -19,6 +22,9 @@ function d4os_help($path, $arg) {
   }
 }
 
+/**
+ * Hook menu
+ */
 function d4os_menu() {
   $items = array();
   $items['admin/settings/d4os'] = array(
@@ -65,6 +71,9 @@ function d4os_menu() {
   return $items;
 }
 
+/**
+ * Hook perm
+ */
 function d4os_perm() {
   return array(
     'admin d4os',

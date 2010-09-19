@@ -10,6 +10,9 @@
  * other free or open source software licenses.
  */
 
+/**
+ * Display the result
+ */
 function d4os_ui_grid_monitor_hosts_levels_widgets_text_display($data) {
   if (variable_get('d4os_ui_grid_monitor_hosts_levels_use_timer', 1)) {
     drupal_add_js(drupal_get_path('module', 'd4os_ui_grid_monitor_hosts_levels').'/widgets/text/js/d4os_ui_grid_monitor_hosts_levels_widgets_text_values.js');

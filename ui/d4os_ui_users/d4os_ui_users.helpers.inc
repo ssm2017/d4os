@@ -9,6 +9,9 @@
  * other free or open source software licenses.
  */
 
+/**
+ * Generate a user
+ */
 function d4os_ui_users_user_generate($username, $lastname, $password, $mail, $home=0) {
   global $base_url;
 

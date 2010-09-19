@@ -9,6 +9,9 @@
  * other free or open source software licenses.
  */
 
+/**
+ * Admin panel
+ */
 function d4os_io_db_admin() {
   $bases = d4os_io_db_build_bases_list();
 

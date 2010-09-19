@@ -8,6 +8,10 @@
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
  */
+
+/**
+ * Admin panel
+ */
 function d4os_io_services_offline_message_admin() {
   $form = array();
 

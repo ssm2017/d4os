@@ -1,6 +1,7 @@
 <?php
 /**
  * @package    d4os_io_db
+ * @subpackage messages
  * @copyright  Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
  * @license    GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
  * D4os is free software. This version may have been modified pursuant
@@ -11,7 +12,7 @@
 
 /**
  * Save an offline message
- * @params Array of search params
+ * @param Array of search params
  * @return Boolean TRUE if success or FALSE if error
  */
 function d4os_io_db_os_services_offline_message_savemessage($params) {
