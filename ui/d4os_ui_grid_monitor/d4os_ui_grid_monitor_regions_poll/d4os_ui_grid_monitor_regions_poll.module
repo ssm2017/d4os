@@ -19,7 +19,7 @@ function d4os_ui_grid_monitor_regions_poll_menu() {
 
   $items = array();
 
-  $items['admin/settings/d4os/ui/grid/monitor/regions/poll'] = array(
+  $items['admin/settings/d4os/ui/grid/monitor/regions_poll'] = array(
     'title'             => 'regions poll',
     'description'       => 'd4os ui grid monitor regions poll settings',
     'page callback'     => 'drupal_get_form',
@@ -29,7 +29,7 @@ function d4os_ui_grid_monitor_regions_poll_menu() {
     'file'              => 'd4os_ui_grid_monitor_regions_poll.admin.inc'
    );
    $items['grid/monitor/regions/poll/check'] = array(
-    'title'             => 'Check regions start page',
+    'title'             => 'Check regions',
     'description'       => 'Check grid regions vs search regions',
     'page callback'     => 'd4os_ui_grid_monitor_regions_poll',
     'access arguments'  => array('use d4os ui grid monitor regions poll'),
@@ -50,7 +50,7 @@ function d4os_ui_grid_monitor_regions_poll_menu() {
  * Main function
  */
 function d4os_ui_grid_monitor_regions_poll() {
-  unset($_SESSION['regions_poll']);
+  unset($_SESSION['d4os_ui_grid_monitor_regions_poll']);
   d4os_ui_grid_monitor_regions_poll_start();
   batch_set(d4os_ui_grid_monitor_regions_poll_batch());
   batch_process('grid/monitor/regions/poll');
@@ -61,16 +61,17 @@ function d4os_ui_grid_monitor_regions_poll() {
  */
 function d4os_ui_grid_monitor_regions_poll_batch() {
   $operations = array();
-  $data = $_SESSION['regions_poll'];
+  $data = $_SESSION['d4os_ui_grid_monitor_regions_poll'];
   $host_counter = 0;
   $hosts = array();
   $host_by_pass = variable_get('d4os_ui_grid_monitor_regions__poll_bash_hosts_qty', 5);
   for ($i=0; $i<$data['hosts_qty']; $i++) {
     $hosts[$i] = $data['hosts'][$i];
     $host_counter++;
-    if ($host_counter >= ($host_by_pass-1)) {
-      $operations[] = array('d4os_ui_grid_monitor_regions_poll_check_simstatus', array($hosts, $data));
+    if ($host_counter >= ($host_by_pass) || $i==($data['hosts_qty']-1)) {
+      $operations[] = array('d4os_ui_grid_monitor_regions_poll_check_simstatus', array($hosts));
       $host_counter = 0;
+      $hosts = array();
     }
   }
   $batch = array(
@@ -136,16 +137,16 @@ function d4os_ui_grid_monitor_regions_poll_start() {
       break;
   }
   // store data in $_SESSION ( TODO : use cache_set() cache_get() and cache_clear() )
-  $_SESSION['regions_poll'] = $data;
+  $_SESSION['d4os_ui_grid_monitor_regions_poll'] = $data;
 }
 
 /**
  * Loop
  */
-function d4os_ui_grid_monitor_regions_poll_check_simstatus($hosts, $data, &$context) {
+function d4os_ui_grid_monitor_regions_poll_check_simstatus($hosts, &$context) {
   // check if hosts are responding
-  $data['online_hosts'] = array();
-  $data['offline_hosts'] = array();
+  $data = $_SESSION['d4os_ui_grid_monitor_regions_poll'];
+  $data['hosts_parsed'][] = $hosts;
   foreach ($hosts as $host) {
     $response = drupal_http_request($host. '/simstatus/', array(), 'GET');
     if ($response->code == 200) {
@@ -187,13 +188,13 @@ function d4os_ui_grid_monitor_regions_poll_check_simstatus($hosts, $data, &$cont
       $data['online_hosts'][$i]['collector'] = ($response->code == 200) ? TRUE:FALSE;
     }
   }
-  $_SESSION['regions_poll'] = $data;
+  $_SESSION['d4os_ui_grid_monitor_regions_poll'] = $data;
 
   // Store some result for post-processing in the finished callback.
   $context['results'][] = true;
 
   // Optional message displayed under the progressbar.
-  $context['message'] = t('Checking hosts...');
+  $context['message'] = t('Checking hosts...'). '<ul><li>'.implode('</li><li>', $hosts).'</li></ul>';
 }
 
 /**
@@ -218,8 +219,8 @@ function d4os_ui_grid_monitor_regions_poll_batch_finished($success, $results, $o
  * DIsplay the result
  */
 function d4os_ui_grid_monitor_regions_poll_result() {
-  $data = $_SESSION['regions_poll'];
-  unset($_SESSION['regions_poll']);
+  $data = $_SESSION['d4os_ui_grid_monitor_regions_poll'];
+  unset($_SESSION['d4os_ui_grid_monitor_regions_poll']);
   return theme('d4os_ui_grid_monitor_regions_poll', $data);
 }
 

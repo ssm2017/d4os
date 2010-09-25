@@ -387,7 +387,7 @@ function d4os_io_db_os_search_get_regions_uuids() {
   d4os_io_db_set_active('os_search');
   $result = db_query('SELECT regionuuid FROM {regions}');
   while ($search_region = db_fetch_object($result)) {
-    $search_regions = $search_region->uuid;
+    $search_regions[] = $search_region->regionuuid;
   }
   d4os_io_db_set_active('default');
   return $search_regions;

@@ -63,8 +63,11 @@ function d4os_io_db_os_regions_load_by_uuids($uuids = array()) {
   $owners_infos = d4os_io_db_os_users_load_by_uuids($owners);
   $regions_count = count($regions);
   for ($i=0; $i<$regions_count; ++$i) {
-    $id = array_search($region->owner_uuid, $owners);
-    $regions[$i]->owner = $owners[$id]->name;
+    foreach ($owners_infos as $owner) {
+      if ($regions[$i]->owner_uuid == $owner->UUID) {
+        $regions[$i]->owner = $owner->name;
+      }
+    }
   }
   return $regions;
 }
@@ -78,7 +81,7 @@ function d4os_io_db_os_regions_get_regions_uuids() {
   d4os_io_db_set_active('os_grid');
   $result = db_query('SELECT uuid FROM {regions}');
   while ($grid_region = db_fetch_object($result)) {
-    $grid_regions = $grid_region->uuid;
+    $grid_regions[] = $grid_region->uuid;
   }
   d4os_io_db_set_active('default');
   return $grid_regions;

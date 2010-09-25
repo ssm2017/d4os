@@ -29,7 +29,7 @@ function d4os_ui_grid_monitor_regions_poll_admin() {
     '#default_value'  => variable_get('d4os_ui_grid_monitor_regions__poll_bash_hosts_qty', 5),
     '#size'           => 3,
     '#maxlength'      => 3,
-    '#description'    => t("Quantity of hosts to chack in one pass."),
+    '#description'    => t("Quantity of hosts to check in one pass."),
     '#required'       => TRUE,
   );
 
