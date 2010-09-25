@@ -1,0 +1,6 @@
+; $Id$
+name = "d4os ui grid monitor regions poll"
+description = "Provides tools to manage regions in an opensim grid."
+package = "d4os ui grid monitor"
+core = 6.x
+dependencies[] = d4os

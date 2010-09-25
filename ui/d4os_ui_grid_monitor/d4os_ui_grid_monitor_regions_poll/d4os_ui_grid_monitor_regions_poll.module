@@ -1,0 +1,234 @@
+<?php
+/**
+ * @package    d4os_ui_grid_monitor
+ * @subpackage regions_poll
+ * @copyright  Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+ * @license    GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+ * D4os is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ */
+
+// TODO : see what we can do with http://domain.com:9000/admin/regioninfo/ and http://host:port/monitorstats/regionUuid/
+
+/**
+ * Implementation of hook_menu
+ */
+function d4os_ui_grid_monitor_regions_poll_menu() {
+
+  $items = array();
+
+  $items['admin/settings/d4os/ui/grid/monitor/regions/poll'] = array(
+    'title'             => 'regions poll',
+    'description'       => 'd4os ui grid monitor regions poll settings',
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('d4os_ui_grid_monitor_regions_poll_admin'),
+    'access arguments'  => array('admin d4os ui grid monitor regions poll'),
+    'type'              => MENU_LOCAL_TASK,
+    'file'              => 'd4os_ui_grid_monitor_regions_poll.admin.inc'
+   );
+   $items['grid/monitor/regions/poll/check'] = array(
+    'title'             => 'Check regions start page',
+    'description'       => 'Check grid regions vs search regions',
+    'page callback'     => 'd4os_ui_grid_monitor_regions_poll',
+    'access arguments'  => array('use d4os ui grid monitor regions poll'),
+    'type'              => MENU_NORMAL_ITEM,
+   );
+   $items['grid/monitor/regions/poll'] = array(
+    'title'             => 'Check regions',
+    'description'       => 'Check grid regions vs search regions',
+    'page callback'     => 'd4os_ui_grid_monitor_regions_poll_result',
+    'access arguments'  => array('use d4os ui grid monitor regions poll'),
+    'type'              => MENU_CALLBACK,
+   );
+
+  return $items;
+}
+
+/**
+ * Main function
+ */
+function d4os_ui_grid_monitor_regions_poll() {
+  unset($_SESSION['regions_poll']);
+  d4os_ui_grid_monitor_regions_poll_start();
+  batch_set(d4os_ui_grid_monitor_regions_poll_batch());
+  batch_process('grid/monitor/regions/poll');
+}
+
+/**
+ * Implementation of hook_batch
+ */
+function d4os_ui_grid_monitor_regions_poll_batch() {
+  $operations = array();
+  $data = $_SESSION['regions_poll'];
+  $host_counter = 0;
+  $hosts = array();
+  $host_by_pass = variable_get('d4os_ui_grid_monitor_regions__poll_bash_hosts_qty', 5);
+  for ($i=0; $i<$data['hosts_qty']; $i++) {
+    $hosts[$i] = $data['hosts'][$i];
+    $host_counter++;
+    if ($host_counter >= ($host_by_pass-1)) {
+      $operations[] = array('d4os_ui_grid_monitor_regions_poll_check_simstatus', array($hosts, $data));
+      $host_counter = 0;
+    }
+  }
+  $batch = array(
+    'operations' => $operations,
+    'finished' => 'd4os_ui_grid_monitor_regions_poll_batch_finished',
+  );
+  return $batch;
+}
+
+/**
+ * Batch start
+ */
+function d4os_ui_grid_monitor_regions_poll_start() {
+  $data = array();
+  $data['log'] = 'Start<br />';
+
+  // get grid regions
+  $data['grid_regions']     = array();
+  $data['grid_regions']     = module_invoke_all('os_regions_get_regions_uuids');
+  $data['grid_regions_qty'] = count($data['grid_regions']);
+
+  // get search regions
+  $data['search_regions']     = array();
+  $data['search_regions']     = module_invoke_all('os_search_get_regions_uuids');
+  $data['search_regions_qty'] = count($data['search_regions']);
+
+  // compare
+  switch (true) {
+
+    case ($data['grid_regions_qty'] == $data['search_regions_qty']):
+      $data['log'] .= "There is as much regions on the grid than the search. <br />";
+      break;
+
+    case ($data['grid_regions_qty'] > $data['search_regions_qty']):
+      // are there regions on the grid and not on the search ?
+      $data['diff_grid_vs_search'] = array_unique(array_diff($data['grid_regions'], $data['search_regions']));
+      $data['diff_grid_vs_search_qty'] = count($data['diff_grid_vs_search']);
+
+      // are there regions on the search and not on the grid ?
+      $data['diff_search_vs_grid'] = array_unique(array_diff($data['search_regions'], $data['grid_regions']));
+      $data['diff_search_vs_grid_qty'] = count($data['diff_search_vs_grid']);
+
+      // get regions infos
+      $data['regions_diff'] = array();
+      $data['regions_diff'] = module_invoke_all('os_regions_load_by_uuids', $data['diff_grid_vs_search']);
+
+      // get hosts
+      $data['hosts'] = array();
+      foreach ($data['regions_diff'] as $region_diff) {
+        if (!empty($region_diff->Uri)) {
+          $data['hosts'][] = $region_diff->Uri;
+        }
+      }
+      $data['hosts'] = array_unique($data['hosts']);
+      $data['hosts_qty'] = count($data['hosts']);
+      if ($data['hosts_qty'] == 0) {
+        $data['log'] .= "No hosts can be found.<br />";
+      }
+      break;
+
+    case ($data['search_regions_qty'] < $data['grid_regions_qty']):
+      $data['log'] .= "There is as much regions on the search than the grid. <br />";
+      break;
+  }
+  // store data in $_SESSION ( TODO : use cache_set() cache_get() and cache_clear() )
+  $_SESSION['regions_poll'] = $data;
+}
+
+/**
+ * Loop
+ */
+function d4os_ui_grid_monitor_regions_poll_check_simstatus($hosts, $data, &$context) {
+  // check if hosts are responding
+  $data['online_hosts'] = array();
+  $data['offline_hosts'] = array();
+  foreach ($hosts as $host) {
+    $response = drupal_http_request($host. '/simstatus/', array(), 'GET');
+    if ($response->code == 200) {
+      $data['online_hosts'][]['host'] = $host;
+    }
+    else {
+      $data['offline_hosts'][]['host'] = $host;
+    }
+  }
+  $data['offline_hosts_qty'] = count($data['offline_hosts']);
+  if ($data['offline_hosts_qty'] > 0) {
+    // get infos about host region
+    for ($i=0; $i < $data['offline_hosts_qty']; $i++) {
+      $host_regions = array();
+      foreach ($data['regions_diff'] as $region) {
+        if ($region->Uri == $data['offline_hosts'][$i]['host']) {
+          $host_regions[] = $region;
+        }
+      }
+      $data['offline_hosts'][$i]['regions'] = $host_regions;
+    }
+  }
+
+  $data['online_hosts_qty'] = count($data['online_hosts']);
+  if ($data['online_hosts_qty'] > 0) {
+    // get infos about host region
+    for ($i=0; $i < $data['online_hosts_qty']; $i++) {
+      $host_regions = array();
+      foreach ($data['regions_diff'] as $region) {
+        if ($region->Uri == $data['online_hosts'][$i]['host']) {
+          $host_regions[] = $region;
+        }
+      }
+      $data['online_hosts'][$i]['regions'] = $host_regions;
+    }
+    for ($i=0; $i < $data['online_hosts_qty']; $i++) {
+      // check if host is responding to collector
+      $response = drupal_http_request($data['online_hosts'][$i]['host']. '/?method=collector', array(), 'GET');
+      $data['online_hosts'][$i]['collector'] = ($response->code == 200) ? TRUE:FALSE;
+    }
+  }
+  $_SESSION['regions_poll'] = $data;
+
+  // Store some result for post-processing in the finished callback.
+  $context['results'][] = true;
+
+  // Optional message displayed under the progressbar.
+  $context['message'] = t('Checking hosts...');
+}
+
+/**
+ * Last batch operation
+ */
+function d4os_ui_grid_monitor_regions_poll_batch_finished($success, $results, $operations) {
+  if ($success) {
+    // Here we could do something meaningful with the results.
+    // We just display the number of nodes we processed...
+    $message = count($results) . ' processed.';
+  }
+  else {
+    // An error occurred.
+    // $operations contains the operations that remained unprocessed.
+    $error_operation = reset($operations);
+    $message = 'An error occurred while processing ' . $error_operation[0] . ' with arguments :' . print_r($error_operation[0], TRUE);
+  }
+  drupal_set_message($message);
+}
+
+/**
+ * DIsplay the result
+ */
+function d4os_ui_grid_monitor_regions_poll_result() {
+  $data = $_SESSION['regions_poll'];
+  unset($_SESSION['regions_poll']);
+  return theme('d4os_ui_grid_monitor_regions_poll', $data);
+}
+
+function d4os_ui_grid_monitor_regions_poll_theme() {
+  return array(
+    'd4os_ui_grid_monitor_regions_poll' => array(
+      'path'      => drupal_get_path('module', 'd4os_ui_grid_monitor_regions_poll').'/theme',
+      'template'  => 'd4os_ui_grid_monitor_regions_poll',
+      'arguments' => array('data' => array()),
+    ),
+  );
+}

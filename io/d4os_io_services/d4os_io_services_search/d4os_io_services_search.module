@@ -68,7 +68,9 @@ function d4os_io_services_search_perm() {
 
 function d4os_io_services_search_cron() {
   // do the job
-  module_invoke_all('os_search_helpers_clean_regions');
+  if (variable_get('d4os_io_services_search_parser_clean_regions', 0)) {
+    module_invoke_all('os_search_helpers_clean_regions');
+  }
   module_invoke_all('os_search_services_parser_run');
 }
 

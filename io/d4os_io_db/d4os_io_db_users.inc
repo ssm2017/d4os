@@ -12,8 +12,8 @@
 
 /**
  * Save a user account values on the grid
- * @param Array or Object containing drupal user object + an array containing grid data
- * @return FALSE if error or an Object containing the saved user object
+ * @param Mixed An Array or Object containing drupal user object + an array containing grid data
+ * @return Mixed $user object or Boolean FALSE if error
  */
 function d4os_io_db_os_user_save($account) {
   // convert array to object
@@ -159,8 +159,8 @@ function d4os_io_db_os_user_save($account) {
 
 /**
  * Load a user object
- * @param Array of search filter like array('name'=>'test'); or an integer 
- * @return Oject $user or Boolean FALSE if error
+ * @param Array An array of search filter like array('name'=>'test'); or an integer 
+ * @return Mixed $user object or Boolean FALSE if error
  */
 function d4os_io_db_os_user_load($data = array()) {
 
@@ -246,7 +246,7 @@ function d4os_io_db_os_user_load($data = array()) {
 }
 
 /**
- * Add some extra fields to the user object by reference if needed
+ * Add some extra fields to the user object by reference
  * @param Object $user object
  */
 function d4os_io_db_users_add_extra_fields(&$user) {
@@ -295,7 +295,7 @@ function d4os_io_db_os_user_get_uid($uuid) {
 
 /**
  * Get a list of all the uids mapped to uuids
- * @return Array of row objects
+ * @return Array An array of objects
  */
 function d4os_io_db_os_user_get_all_uid() {
   $list = array();
@@ -308,12 +308,31 @@ function d4os_io_db_os_user_get_all_uid() {
 
 /**
  * Load all the users of the grid
- * @return Array of user's Obects
+ * @return Array An array of Obects
  */
 function d4os_io_db_os_user_load_all() {
   $users = array();
   d4os_io_db_set_active('os_users');
-  $result = db_query('SELECT *, CONCAT_WS(\' \', username, lastname) AS name FROM {users}');
+  $result = db_query("SELECT *, CONCAT_WS(' ', username, lastname) AS name FROM {users}");
+  while ($user = db_fetch_object($result)) {
+    $users[] = $user;
+  }
+  d4os_io_db_set_active('default');
+  return $users;
+}
+
+/**
+ * Load all the users of the grid by uuids
+ * @param String (optionnal) A where clause begining by a space
+ * @return Array An array of Obects
+ */
+function d4os_io_db_os_users_load_by_uuids($owners) {
+  if (!is_array($owners)) {
+    return FALSE;
+  }
+  $users = array();
+  d4os_io_db_set_active('os_users');
+  $result = db_query("SELECT *, CONCAT_WS(' ', username, lastname) AS name FROM {users} WHERE UUID IN ('". implode("','", $owners). "')");
   while ($user = db_fetch_object($result)) {
     $users[] = $user;
   }
@@ -323,7 +342,7 @@ function d4os_io_db_os_user_load_all() {
 
 /**
  * Delete a user in the grid and all the mapped items
- * @param String the uuid of the user to delete
+ * @param String The uuid of the user to delete
  */
 function d4os_io_db_os_user_delete($uuid) {
   // TODO : delete all assets (impossible ?)
@@ -369,7 +388,7 @@ function d4os_io_db_os_user_delete($uuid) {
 
 /**
  * Check if the user database is responding
- * @return Array like array('success'=>true or false);
+ * @return Array An array like array('success'=>true or false);
  */
 function d4os_io_db_os_users_is_alive() {
   return array(
@@ -384,6 +403,7 @@ function d4os_io_db_os_users_is_alive() {
  * @param Integer page number start
  * @param Integer quantity of entries
  * @param Array a Drupal table headers list
+ * @return Array An array of objects
  */
 function d4os_io_db_os_users_online_users_list_paged($page = 0, $limit = 5, $headers) {
   if (!isset($_GET['page'])) {
@@ -410,7 +430,7 @@ function d4os_io_db_os_users_online_users_list_paged($page = 0, $limit = 5, $hea
 
 /**
  * Return the online users list
- * @return $count Integer quantity of users actually online
+ * @return Integer quantity of users actually online
  */
 function d4os_io_db_os_users_online_users_count() {
   d4os_io_db_set_active('os_users');

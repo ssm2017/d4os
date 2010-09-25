@@ -49,6 +49,14 @@ function d4os_io_services_search_admin() {
     '#description'    => t("Bypasses the sim recheck expiration time defined in OpenSim.ini."),
   );
 
+  // clean regions
+  $form['d4os_io_services_search_parser_clean_regions'] = array(
+    '#type'           => 'checkbox',
+    '#title'          => t('Clean regions'),
+    '#default_value'  => variable_get('d4os_io_services_search_parser_clean_regions', 0),
+    '#description'    => t("Delete regions that exist in the search and not in the grid."),
+  );
+
   $options = array(
     0 => t('Emergency'),
     1 => t('Alert'),

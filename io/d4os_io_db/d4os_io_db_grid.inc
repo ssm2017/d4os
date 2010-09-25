@@ -12,7 +12,7 @@
 
 /**
  * Get a region object
- * @param array containing filters like $array=array("name='test'");
+ * @param Array An array containing filters like $array=array("name='test'");
  * @return Object|bool An object containing region fields or False if error
  */
 function d4os_io_db_os_region_load($array = array()) {
@@ -36,10 +36,59 @@ function d4os_io_db_os_region_load($array = array()) {
 }
 
 /**
+ * Get a region object by uuid (for the monitoring tools)
+ * @param Array An array of regions uuids
+ * @return Array An array of objects
+ */
+function d4os_io_db_os_regions_load_by_uuids($uuids = array()) {
+  if (!is_array($uuids) || !count($uuids)) {
+    return FALSE;
+  }
+  $regions = array();
+  $owners = array();
+  // get regions infos
+  d4os_io_db_set_active('os_grid');
+  $result = db_query("SELECT *, CONCAT('http://', serverIP, ':', serverPort) AS Uri"
+                  . " FROM {regions}"
+                  . " WHERE uuid IN ('". implode("','", $uuids). "')"
+                  . " ORDER BY Uri");
+  while ($region = db_fetch_object($result)) {
+    $regions[] = $region;
+    $owners[] = $region->owner_uuid;
+  }
+  d4os_io_db_set_active('default');
+
+  // get owners infos
+  $owners = array_unique($owners);
+  $owners_infos = d4os_io_db_os_users_load_by_uuids($owners);
+  $regions_count = count($regions);
+  for ($i=0; $i<$regions_count; ++$i) {
+    $id = array_search($region->owner_uuid, $owners);
+    $regions[$i]->owner = $owners[$id]->name;
+  }
+  return $regions;
+}
+
+/**
+ * Get a list of regions for the stats
+ * @return Array of objects
+ */
+function d4os_io_db_os_regions_get_regions_uuids() {
+  $grid_regions = array();
+  d4os_io_db_set_active('os_grid');
+  $result = db_query('SELECT uuid FROM {regions}');
+  while ($grid_region = db_fetch_object($result)) {
+    $grid_regions = $grid_region->uuid;
+  }
+  d4os_io_db_set_active('default');
+  return $grid_regions;
+}
+
+/**
  * Get a list of regions obects with paging
  * @param int start page
  * @param int number of entries
- * @param array of drupal field headers
+ * @param Array An array of drupal field headers
  * @return Array An array containing a list of regions
  */
 function d4os_io_db_os_regions_list_paged($page = 0, $limit = 5, $headers) {
@@ -63,7 +112,7 @@ function d4os_io_db_os_regions_list_paged($page = 0, $limit = 5, $headers) {
 
 /**
  * Get the quantity of regions
- * @return Integer Quantity of regions
+ * @return Int Quantity of regions
  */
 function d4os_io_db_os_regions_regions_count() {
   d4os_io_db_set_active('os_grid');

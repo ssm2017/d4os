@@ -13,12 +13,15 @@
 // TODO : unify the input/output with inputs = (array)$params and output = array('success'=> true, 'message' => 'message')
 
 /**
- * Hook init
+ * Implementation of hook_init()
  */
 function d4os_io_db_init() {
   module_load_include('settings.inc', 'd4os_io_db');
 }
 
+/**
+ * Implementation of hook_help()
+ */
 function d4os_io_db_help($path, $arg) {
   switch ($path) {
     // Main module help for the block module
@@ -27,6 +30,9 @@ function d4os_io_db_help($path, $arg) {
   }
 }
 
+/**
+ * Implementation of hook_menu()
+ */
 function d4os_io_db_menu() {
   $items = array();
   $items['admin/settings/d4os/io/db'] = array(
@@ -41,12 +47,19 @@ function d4os_io_db_menu() {
   return $items;
 }
 
+/**
+ * Implementation of hook_perm()
+ */
 function d4os_io_db_perm() {
   return array(
     'admin d4os db'
   );
 }
 
+/**
+ * Set the active database
+ * @param String The database config name
+ */
 function d4os_io_db_set_active($name = 'default') {
   global $d4os_same_db, $d4os_db_prefix, $db_prefix;
   static $temp_db_prefix;
@@ -80,6 +93,9 @@ function d4os_io_db_set_active($name = 'default') {
   }
 }
 
+/**
+ * Load includes files
+ */
 function d4os_io_db_load_includes() {
   //module_load_include('inc', 'd4os_io_db', 'd4os_io_db_asset');
   //module_load_include('inc', 'd4os_io_db', 'd4os_io_db_auth');
@@ -98,6 +114,12 @@ function d4os_io_db_load_includes() {
 
 d4os_io_db_load_includes();
 
+/**
+ * Check if a datastore is alive
+ * @param String The database config name
+ * @param String The user readable datastore name
+ * @return Bool True of false
+ */
 function d4os_io_db_mysql_is_alive($name, $datastore) {
   if (variable_get('d4os_check_datastore_health', 1) == 0) {
     return TRUE;
