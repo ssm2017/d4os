@@ -24,6 +24,9 @@ function d4os_io_db_os_services_offline_message_savemessage($params) {
   d4os_io_db_set_active('default');
 
   if ($success) {
+    if (variable_get('d4os_io_services_offline_message_send_mails', 0)) {
+      d4os_io_services_offline_message_mail_send($params);
+    }
     return array(
       'success' => TRUE,
     );
@@ -70,6 +73,7 @@ function d4os_io_db_offline_message_user_delete($uuid) {
   db_query("DELETE FROM {offline_msgs} WHERE uuid = '%s'", array($uuid));
   d4os_io_db_set_active('default');
 }
+
 
 /**
  * Check if the offline_messages database is responding

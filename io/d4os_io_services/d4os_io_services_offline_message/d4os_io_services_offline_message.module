@@ -9,6 +9,27 @@
  * other free or open source software licenses.
  */
 
+/**
+ * [fromAgentID]
+ * [fromAgentName]
+ * [toAgentID]
+ * [dialog]
+ * [fromGroup]
+ * [message]
+ * [imSessionID]
+ * [offline]
+ * [Position] => SimpleXMLElement Object
+ * (
+ *   [X]
+ *   [Y]
+ *   [Z]
+ * )
+ * [binaryBucket]
+ * [ParentEstateID]
+ * [RegionID]
+ * [timestamp]
+ */
+
 global $d4os_io_services_offline_message_log_level;
 $d4os_io_services_offline_message_log_level = variable_get('d4os_io_services_offline_message_log_level', 0);
 
@@ -183,4 +204,60 @@ function d4os_oi_services_offline_message_build_answer($action, $params) {
       break;
   }
   return $output;
+}
+
+/**
+ * Send an e-mail.
+ *
+ * @param $form_values
+ *   An array of values from the contact form fields that were submitted.
+ *   There are just two relevant items: $form_values['email'] and
+ *   $form_values['message'].
+ */
+function d4os_io_services_offline_message_mail_send($form_values) {
+
+  // check if the user allows to receive messages by mail
+  $user_prefs = module_invoke_all('os_profile_services_user_preferences_request',array('avatar_id' => $form_values['toAgentID']));
+
+  if ($user_prefs['data'][0]['imviaemail'] && !empty($user_prefs['data'][0]['email']) && $user_prefs['data'][0]['email'] != 'email') {
+
+    // parse the message
+    $message_obj = simplexml_load_string($form_values['message']);
+
+    $module = 'd4os_oi_services_offline_message';
+    $key = 'offline_message';
+
+    // Specify 'to' and 'from' addresses.
+    $to = $user_prefs['data'][0]['email'];
+    $from = variable_get('site_mail', 'admin@example.com');
+
+    $params = array(
+      'from'    => $message_obj->fromAgentName,
+      'message' => $message_obj->message,
+    );
+    $language = language_default();
+    $send = TRUE;
+
+    $result = drupal_mail($module, $key, $to, $language, $params, $from, $send);
+    if ($result['result'] == TRUE) {
+      watchdog('wao', 'cool');
+    }
+    else {
+      watchdog('mouais', 'pas bon');
+    }
+  }
+}
+
+function d4os_io_services_offline_message_mail($key, &$message, $params) {
+
+  $language = $message['language'];
+
+  switch ($key) {
+    case 'offline_message':
+      $message['subject'] = t('E-mail sent from @site-name', array('@site-name' => variable_get('site_name', 'Drupal')), $language->language);
+      $message['body'][] = t('@name sent you the following message:', array('@name' => $params['from']), $language->language);
+      $message['body'][] = $params['message'];
+      $message['body'][] = t('You need to log in the grid to answer this message.', $language->language);
+      break;
+  }
 }

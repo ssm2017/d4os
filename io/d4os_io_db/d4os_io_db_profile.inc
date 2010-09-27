@@ -204,9 +204,9 @@ function d4os_io_db_os_profile_services_classified_update($params) {
   if (!$exists) {
 
     $query = "INSERT INTO {classifieds} ("
-                . "creator, creationdate, expirationdate, category, name, description, parceluuid, parentestate, snapshotuuid, simname, globalpos, parcelname, classifiedflag, priceforlist, classifieduuid"
+                . "creatoruuid, creationdate, expirationdate, category, name, description, parceluuid, parentestate, snapshotuuid, simname, posglobal, parcelname, classifiedflags, priceforlisting, classifieduuid"
                 . ") VALUES ("
-                . "'%s',"  // 1 creator
+                . "'%s',"  // 1 creatoruuid
                 . "%d,"    // 2 creationdate
                 . "%d,"    // 3 expirationdate
                 . "'%s',"  // 4 category
@@ -216,17 +216,17 @@ function d4os_io_db_os_profile_services_classified_update($params) {
                 . "%d,"    // 8 parentestate
                 . "'%s',"  // 9 snapshotuuid
                 . "'%s',"  // 10 simname
-                . "'%s',"  // 11 globalpos
+                . "'%s',"  // 11 posglobal
                 . "'%s',"  // 12 parcelname
-                . "%d,"    // 13 classifiedflag
-                . "%d,"    // 14 priceforlist
+                . "%d,"    // 13 classifiedflags
+                . "%d,"    // 14 priceforlisting
                 . "'%s'"   // 15 classifieduuid
                 . ")";
   }
   else {
     $query = "UPDATE {classifieds} SET "
                 . "classifieduuid = '%s',"  // 1 
-                . "creator = '%s',"         // 2 
+                . "creatoruuid = '%s',"         // 2 
                 . "creationdate = %d,"      // 3 
                 . "expirationdate = %d,"    // 4 
                 . "category = '%s',"        // 5 
@@ -236,10 +236,10 @@ function d4os_io_db_os_profile_services_classified_update($params) {
                 . "parentestate = %d,"      // 9 
                 . "snapshotuuid = '%s',"    // 10 
                 . "simname = '%s',"         // 11 
-                . "globalpos = '%s',"       // 12 
+                . "posglobal = '%s',"       // 12 
                 . "parcelname = '%s',"      // 13 
-                . "classifiedflag = %d,"    // 14 
-                . "priceforlist = %d"       // 15 
+                . "classifiedflags = %d,"    // 14 
+                . "priceforlisting = %d"       // 15 
                 . " WHERE classifieduuid = '%s'";
   }
   d4os_io_db_set_active('os_profile');
@@ -499,8 +499,8 @@ function d4os_io_db_os_profile_services_avatar_properties_request($params) {
   while ($row = db_fetch_array($result)) {
     $data[] = array(
       'profilePartner'        => $row['profilePartner'], // 1
-      'profileAllowPublish'   => $row['profileAllowPublish'], // 2
-      'profileMaturePublish'  => $row['profileMaturePublish'], // 3
+      //'profileAllowPublish'   => $row['profileAllowPublish'], // 2 // TODO : see why there is a problem with the sim and these lines (maybe use enum('true','false') in the base instead of binary(1) )
+      //'profileMaturePublish'  => $row['profileMaturePublish'], // 3
       'profileURL'            => $row['profileURL'], // 4
       'ProfileUrl'            => $row['profileURL'], // 5
       'profileWantToMask'     => $row['profileWantToMask'], // 6
@@ -515,18 +515,18 @@ function d4os_io_db_os_profile_services_avatar_properties_request($params) {
   d4os_io_db_set_active('default');
 
   if (count($data) == 0) {
-    $data[]["profilePartner"]       = ''; // 1
-    $data[]["profileAllowPublish"]  = 'false'; // 2
-    $data[]["profileMaturePublish"] = 'false'; // 3
-    $data[]["profileURL"]           = ''; // 4
-    $data[]["ProfileUrl"]           = ''; // 5
-    $data[]["profileWantToMask"]    = '0'; // 6
-    $data[]["profileWantToText"]    = ''; // 7
-    $data[]["profileSkillsMask"]    = '0'; // 8
-    $data[]["profileSkillsText"]    = ''; // 9
-    $data[]["profileLanguages"]     = ''; // 10
-    $data[]["profileFirstImage"]    = ''; // 11
-    $data[]["profileFirstText"]     = ''; // 12
+    $data[0]["profilePartner"]       = ''; // 1
+    //$data[0]["profileAllowPublish"]  = 'false'; // 2
+    //$data[0]["profileMaturePublish"] = 'false'; // 3
+    $data[0]["profileURL"]           = ''; // 4
+    $data[0]["ProfileUrl"]           = ''; // 5
+    $data[0]["profileWantToMask"]    = '0'; // 6
+    $data[0]["profileWantToText"]    = ''; // 7
+    $data[0]["profileSkillsMask"]    = '0'; // 8
+    $data[0]["profileSkillsText"]    = ''; // 9
+    $data[0]["profileLanguages"]     = ''; // 10
+    $data[0]["profileFirstImage"]    = ''; // 11
+    $data[0]["profileFirstText"]     = ''; // 12
   }
 
   return array(
@@ -689,9 +689,13 @@ function d4os_io_db_os_profile_services_user_preferences_request($params) {
 }
 
 function d4os_io_db_os_profile_services_user_preferences_update($params) {
+  // get the user email address
+  $account = module_invoke_all('os_user_load', array('UUID' => $params['avatar_id']));
+
   $data = array(
     $params['imViaEmail'],
-    'email',
+    //'email',
+    $account[0]->email,
     $params['visible'],
     $params['avatar_id']
   );

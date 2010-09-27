@@ -15,6 +15,13 @@
 function d4os_io_services_offline_message_admin() {
   $form = array();
 
+  $form['d4os_io_services_offline_message_send_mails'] = array(
+    '#type'           => 'checkbox',
+    '#title'          => t('Send mails'),
+    '#default_value'  => variable_get('d4os_io_services_offline_message_send_mails', 0),
+    '#description'    => t('Select if you allow the users to receive emails for online messages.'),
+  );
+
   $options = array(
     0 => t('Emergency'),
     1 => t('Alert'),
