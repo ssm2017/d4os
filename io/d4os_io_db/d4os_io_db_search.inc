@@ -324,6 +324,7 @@ function d4os_io_db_os_search_hosts_count() {
  * @param Int The start page
  * @param Int The quantity of hosts to display per page
  * @param Array Drupal table headers needed
+ * @return Array An array of objects
  */
 function d4os_io_db_os_search_hosts_list_paged($page = 0, $limit = 5, $headers) {
   if (!isset($_GET['page'])) {
@@ -337,6 +338,20 @@ function d4os_io_db_os_search_hosts_list_paged($page = 0, $limit = 5, $headers) 
   }
   d4os_io_db_set_active('os_search');
   $result = pager_query('SELECT * FROM {hostsregister} %s', $limit, 0, NULL, array(tablesort_sql($headers)));
+  while ($host = db_fetch_object($result)) {
+    $items[] = $host;
+  }
+  d4os_io_db_set_active('default');
+  return $items;
+}
+
+/**
+ * Get a list of all registered hosts
+ */
+function d4os_io_db_os_search_hosts_list() {
+
+  d4os_io_db_set_active('os_search');
+  $result = db_query('SELECT * FROM {hostsregister}');
   while ($host = db_fetch_object($result)) {
     $items[] = $host;
   }
@@ -382,12 +397,12 @@ function d4os_io_db_os_search_hosts_delete($hostname, $hostport) {
  * Get a list of regions for the stats
  * @return Array of objects
  */
-function d4os_io_db_os_search_get_regions_uuids() {
+function d4os_io_db_os_search_get_all_regions() {
   $search_regions = array();
   d4os_io_db_set_active('os_search');
-  $result = db_query('SELECT regionuuid FROM {regions}');
+  $result = db_query('SELECT * FROM {regions}');
   while ($search_region = db_fetch_object($result)) {
-    $search_regions[] = $search_region->regionuuid;
+    $search_regions[] = $search_region;
   }
   d4os_io_db_set_active('default');
   return $search_regions;

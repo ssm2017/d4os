@@ -23,13 +23,22 @@ function d4os_ui_grid_monitor_regions_poll_admin() {
     '#collapsed'    => FALSE,
   );
 
-  $form['poll_bash']['d4os_ui_grid_monitor_regions__poll_bash_hosts_qty'] = array(
+  $form['poll_bash']['d4os_ui_grid_monitor_regions_poll_bash_hosts_qty'] = array(
     '#type'           => 'textfield',
     '#title'          => t('Hosts quantity'),
-    '#default_value'  => variable_get('d4os_ui_grid_monitor_regions__poll_bash_hosts_qty', 5),
+    '#default_value'  => variable_get('d4os_ui_grid_monitor_regions_poll_bash_hosts_qty', 5),
     '#size'           => 3,
     '#maxlength'      => 3,
     '#description'    => t("Quantity of hosts to check in one pass."),
+    '#required'       => TRUE,
+  );
+  $form['poll_bash']['d4os_ui_grid_monitor_regions_poll_bash_page_cache_time'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Cache time'),
+    '#default_value'  => variable_get('d4os_ui_grid_monitor_regions_poll_bash_page_cache_time', 3600),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#description'    => t("Cache time in seconds to keep results in memory."),
     '#required'       => TRUE,
   );
 

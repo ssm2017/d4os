@@ -28,32 +28,193 @@ function d4os_ui_grid_monitor_regions_poll_menu() {
     'type'              => MENU_LOCAL_TASK,
     'file'              => 'd4os_ui_grid_monitor_regions_poll.admin.inc'
    );
-   $items['grid/monitor/regions/poll/check'] = array(
+   $items['grid/monitor/regions/poll/%'] = array(
     'title'             => 'Check regions',
     'description'       => 'Check grid regions vs search regions',
     'page callback'     => 'd4os_ui_grid_monitor_regions_poll',
+    'page_arguments'    => array(4),
     'access arguments'  => array('use d4os ui grid monitor regions poll'),
     'type'              => MENU_NORMAL_ITEM,
-   );
-   $items['grid/monitor/regions/poll'] = array(
-    'title'             => 'Check regions',
-    'description'       => 'Check grid regions vs search regions',
-    'page callback'     => 'd4os_ui_grid_monitor_regions_poll_result',
-    'access arguments'  => array('use d4os ui grid monitor regions poll'),
-    'type'              => MENU_CALLBACK,
    );
 
   return $items;
 }
 
+function d4os_ui_grid_monitor_regions_poll_perm() {
+  return array(
+    'admin d4os ui grid monitor regions poll',
+    'use d4os ui grid monitor regions poll',
+  );
+}
+
 /**
  * Main function
  */
-function d4os_ui_grid_monitor_regions_poll() {
+function d4os_ui_grid_monitor_regions_poll($op = NULL) {
   unset($_SESSION['d4os_ui_grid_monitor_regions_poll']);
-  d4os_ui_grid_monitor_regions_poll_start();
-  batch_set(d4os_ui_grid_monitor_regions_poll_batch());
-  batch_process('grid/monitor/regions/poll');
+  $cache = cache_get('d4os_ui_grid_monitor_regions_poll');
+  if (is_object($cache) && !empty($cache->data) && $op != 'refresh') {
+    drupal_set_message(t('This page is coming form cache. !link', array('!link' => l(t('You can regenerate it by clicking here.'), 'grid/monitor/regions/poll/refresh', array('attributes' => array('class' => 'link', 'title' => t('You can regenerate it by clicking here.')))))), 'warning'); //del
+    return $cache->data;
+  }
+  else {
+    d4os_ui_grid_monitor_regions_poll_start();
+    batch_set(d4os_ui_grid_monitor_regions_poll_batch());
+    batch_process();
+  }
+}
+
+/**
+ * Batch start
+ */
+function d4os_ui_grid_monitor_regions_poll_start() {
+  $data = array();
+  $data['log'] = 'Start<br />';
+  $data['time']['start'] = microtime(true);
+
+  // get grid regions
+  $grid_regions = module_invoke_all('os_regions_get_all_regions');
+  foreach ($grid_regions as $k => $grid_region) {
+    // minimum requirements
+    $item = array();
+    $item['in_grid']    = TRUE;
+    $item['from_grid']  = TRUE;
+    $item['uuid']       = $grid_region->uuid;
+    $item['handle']     = $grid_region->regionHandle;
+    $item['name']       = $grid_region->regionName;
+    $item['owner_uuid'] = $grid_region->owner_uuid;
+    $item['values']     = (array)$grid_region;
+
+    // parse the host
+    $parsed_host = d4os_ui_grid_monitor_regions_poll_parse_host($grid_region->serverURI);
+    $ip = gethostbyname($parsed_host[0]);
+
+    $item['host_domain_url']  = $grid_region->serverURI;
+    $item['host_ip_url']      = 'http://'. $ip. ':'. $parsed_host[1];
+    $item['host_domain']      = $parsed_host[0];
+    $item['host_port']        = $parsed_host[1];
+    $item['host_ip']          = $ip;
+
+    $data['regions']['all']['items'][] = $item;
+
+    $host = array();
+    $host['host_domain_url']  = $grid_region->serverURI;
+    $host['host_ip_url']      = 'http://'. $ip. ':'. $parsed_host[1];
+    $host['host_domain']      = $parsed_host[0];
+    $host['host_port']        = $parsed_host[1];
+    $host['host_ip']          = $ip;
+    $host['in_grid']          = TRUE;
+    $host['from_grid']        = TRUE;
+
+    $exists = FALSE;
+    if (count($data['hosts']['all']['items'])) {
+      foreach ($data['hosts']['all']['items'] as $k => $existing_host) {
+        if ($existing_host['host_ip'] == $host['host_ip'] && $existing_host['host_port'] == $host['host_port']) {
+          $data['hosts']['all']['items'][$k]['in_grid'] = TRUE;
+          $data['hosts']['all']['items'][$k]['from_grid'] = TRUE;
+          $exists = TRUE;
+        }
+      }
+    }
+
+    if (!$exists) {
+      $data['hosts']['all']['items'][] = $host;
+    }
+
+    // parse the owners
+    $data['owners']['all']['uuids'][] = $grid_region->owner_uuid;
+  }
+
+  // get search regions
+  $search_regions = module_invoke_all('os_search_get_all_regions');
+  foreach ($search_regions as $k => $search_region) {
+    // minimum requirements
+    $item = array();
+    $item['in_search']    = TRUE;
+    $item['from_search']  = TRUE;
+    $item['uuid']         = $search_region->regionuuid;
+    $item['handle']       = $search_region->regionhandle;
+    $item['name']         = $search_region->regionname;
+    $item['owner_uuid']   = $search_region->owneruuid;
+    $item['values']       = (array)$search_region;
+
+    // parse the host
+    $parsed_host = d4os_ui_grid_monitor_regions_poll_parse_host($search_region->url);
+    $ip = gethostbyname($parsed_host[0]);
+
+    $item['host_domain_url']  = $search_region->url;
+    $item['host_ip_url']      = 'http://'. $ip. ':'. $parsed_host[1];
+    $item['host_domain']      = $parsed_host[0];
+    $item['host_port']        = $parsed_host[1];
+    $item['host_ip']          = $ip;
+
+    $data['regions']['all']['items'][] = $item;
+
+    $host = array();
+    $host['host_domain_url']  = $search_region->url;
+    $host['host_ip_url']      = 'http://'. $ip. ':'. $parsed_host[1];
+    $host['host_domain']      = $parsed_host[0];
+    $host['host_port']        = $parsed_host[1];
+    $host['host_ip']          = $ip;
+    $host['in_search']        = TRUE;
+    $host['from_search']      = TRUE;
+
+    $exists = FALSE;
+    if (count($data['hosts']['all']['items'])) {
+      foreach ($data['hosts']['all']['items'] as $k => $existing_host) {
+        if ($existing_host['host_ip'] == $host['host_ip'] && $existing_host['host_port'] == $host['host_port']) {
+          $data['hosts']['all']['items'][$k]['in_search'] = TRUE;
+          $data['hosts']['all']['items'][$k]['from_search'] = TRUE;
+          $exists = TRUE;
+        }
+      }
+    }
+
+    if (!$exists) {
+      $data['hosts']['all']['items'][] = $host;
+    }
+
+    // parse the owners
+    $data['owners']['all']['uuids'][] = $search_region->owner_uuid;
+  }
+
+  // registered hosts
+  $registered_hosts = module_invoke_all('os_search_hosts_list');
+  foreach ($registered_hosts as $registered_host) {
+
+    $parsed_host = d4os_ui_grid_monitor_regions_poll_parse_host($registered_host->host);
+    $ip = gethostbyname($parsed_host[0]);
+
+    $host = array();
+    $host['host_domain_url']  = 'http://'. $registered_host->host. ':'. $registered_host->port;
+    $host['host_ip_url']      = 'http://'. $ip. ':'. $registered_host->port;
+    $host['host_domain']      = $registered_host->host;
+    $host['host_port']        = $registered_host->port;
+    $host['host_ip']          = $ip;
+    $host['registered']       = TRUE;
+    $host['from_registered']  = TRUE;
+
+    $exists = FALSE;
+    if (count($data['hosts']['all']['items'])) {
+      foreach ($data['hosts']['all']['items'] as $k => $existing_host) {
+        if ($existing_host['host_ip'] == $host['host_ip'] && $existing_host['host_port'] == $host['host_port']) {
+          $data['hosts']['all']['items'][$k]['registered'] = TRUE;
+          $data['hosts']['all']['items'][$k]['from_registered'] = TRUE;
+          $exists = TRUE;
+        }
+      }
+    }
+
+    if (!$exists) {
+      $data['hosts']['all']['items'][] = $host;
+    }
+  }
+
+  // clean the owners
+  $data['owners']['all']['uuids'] = array_unique($data['owners']['all']['uuids']);
+
+  // store data in $_SESSION ( TODO : use cache_set() cache_get() and cache_clear() )
+  $_SESSION['d4os_ui_grid_monitor_regions_poll'] = $data;
 }
 
 /**
@@ -64,80 +225,25 @@ function d4os_ui_grid_monitor_regions_poll_batch() {
   $data = $_SESSION['d4os_ui_grid_monitor_regions_poll'];
   $host_counter = 0;
   $hosts = array();
-  $host_by_pass = variable_get('d4os_ui_grid_monitor_regions__poll_bash_hosts_qty', 5);
-  for ($i=0; $i<$data['hosts_qty']; $i++) {
-    $hosts[$i] = $data['hosts'][$i];
+  $host_by_pass = variable_get('d4os_ui_grid_monitor_regions_poll_bash_hosts_qty', 5);
+  $hosts_items = $data['hosts']['all']['items'];
+  $hosts_qty = count($hosts_items);
+  for ($i=0; $i<$hosts_qty; $i++) {
+    $hosts[$i] = $hosts_items[$i];
+    $hosts[$i]['id'] = $i;
     $host_counter++;
-    if ($host_counter >= ($host_by_pass) || $i==($data['hosts_qty']-1)) {
+    if ($host_counter >= ($host_by_pass) || $i==($hosts_qty-1)) {
       $operations[] = array('d4os_ui_grid_monitor_regions_poll_check_simstatus', array($hosts));
       $host_counter = 0;
       $hosts = array();
     }
   }
   $batch = array(
-    'operations' => $operations,
-    'finished' => 'd4os_ui_grid_monitor_regions_poll_batch_finished',
+    'operations'    => $operations,
+    'init_message'  => t('Analyze has started, please be patient, this may take few minutes depending on hosts answers...'),
+    'finished'      => 'd4os_ui_grid_monitor_regions_poll_batch_finished',
   );
   return $batch;
-}
-
-/**
- * Batch start
- */
-function d4os_ui_grid_monitor_regions_poll_start() {
-  $data = array();
-  $data['log'] = 'Start<br />';
-
-  // get grid regions
-  $data['grid_regions']     = array();
-  $data['grid_regions']     = module_invoke_all('os_regions_get_regions_uuids');
-  $data['grid_regions_qty'] = count($data['grid_regions']);
-
-  // get search regions
-  $data['search_regions']     = array();
-  $data['search_regions']     = module_invoke_all('os_search_get_regions_uuids');
-  $data['search_regions_qty'] = count($data['search_regions']);
-
-  // compare
-  switch (true) {
-
-    case ($data['grid_regions_qty'] == $data['search_regions_qty']):
-      $data['log'] .= "There is as much regions on the grid than the search. <br />";
-      break;
-
-    case ($data['grid_regions_qty'] > $data['search_regions_qty']):
-      // are there regions on the grid and not on the search ?
-      $data['diff_grid_vs_search'] = array_unique(array_diff($data['grid_regions'], $data['search_regions']));
-      $data['diff_grid_vs_search_qty'] = count($data['diff_grid_vs_search']);
-
-      // are there regions on the search and not on the grid ?
-      $data['diff_search_vs_grid'] = array_unique(array_diff($data['search_regions'], $data['grid_regions']));
-      $data['diff_search_vs_grid_qty'] = count($data['diff_search_vs_grid']);
-
-      // get regions infos
-      $data['regions_diff'] = array();
-      $data['regions_diff'] = module_invoke_all('os_regions_load_by_uuids', $data['diff_grid_vs_search']);
-
-      // get hosts
-      $data['hosts'] = array();
-      foreach ($data['regions_diff'] as $region_diff) {
-        if (!empty($region_diff->Uri)) {
-          $data['hosts'][] = $region_diff->Uri;
-        }
-      }
-      $data['hosts'] = array_unique($data['hosts']);
-      $data['hosts_qty'] = count($data['hosts']);
-      if ($data['hosts_qty'] == 0) {
-        $data['log'] .= "No hosts can be found.<br />";
-      }
-      break;
-
-    case ($data['search_regions_qty'] < $data['grid_regions_qty']):
-      $data['log'] .= "There is as much regions on the search than the grid. <br />";
-      break;
-  }
-  // store data in $_SESSION ( TODO : use cache_set() cache_get() and cache_clear() )
-  $_SESSION['d4os_ui_grid_monitor_regions_poll'] = $data;
 }
 
 /**
@@ -146,55 +252,73 @@ function d4os_ui_grid_monitor_regions_poll_start() {
 function d4os_ui_grid_monitor_regions_poll_check_simstatus($hosts, &$context) {
   // check if hosts are responding
   $data = $_SESSION['d4os_ui_grid_monitor_regions_poll'];
-  $data['hosts_parsed'][] = $hosts;
+  $data['time']['parse']['start'][] = microtime(true);
+  $checked = array();
   foreach ($hosts as $host) {
-    $response = drupal_http_request($host. '/simstatus/', array(), 'GET');
+
+    $checked[] = $host['host_ip_url'];
+    $time = array();
+    $time['simstatus'] = array();
+    $time['simstatus']['request'] = microtime(true);
+
+    $response = drupal_http_request($host['host_ip_url']. '/simstatus/', array(), 'GET');
+
+    $time['simstatus']['response'] = microtime(true);
+    $time['simstatus']['speed'] = $time['simstatus']['response'] - $time['simstatus']['request'];
+    switch (TRUE) {
+      case $time['simstatus']['speed'] > 1:
+        $color = "red";
+        break;
+      case $time['simstatus']['speed'] == 0:
+        $color = "white";
+        break;
+      case $time['simstatus']['speed'] < 1 && $time['simstatus']['speed'] != 0:
+        $color = "green";
+        break;
+    }
+    $time['simstatus']['color'] = $color;
+
     if ($response->code == 200) {
-      $data['online_hosts'][]['host'] = $host;
+      $data['hosts']['all']['items'][$host['id']]['is_online'] = TRUE;
+
+      $time['collector'] = array();
+      $time['collector']['request'] = microtime(true);
+
+      $collector = drupal_http_request($host['host_ip_url']. '/?method=collector', array(), 'GET');
+
+      $time['collector']['response'] = microtime(true);
+      $time['collector']['speed'] = $time['collector']['response'] - $time['collector']['request'];
+      switch (TRUE) {
+        case $time['collector']['speed'] > 1:
+          $color = "red";
+          break;
+        case $time['collector']['speed'] == 0:
+          $color = "white";
+          break;
+        case $time['collector']['speed'] < 1 && $time['collector']['speed'] != 0:
+          $color = "green";
+          break;
+      }
+      $time['collector']['color'] = $color;
+
+      if ($collector->code == 200) {
+        $data['hosts']['all']['items'][$host['id']]['use_collector'] = TRUE;
+      }
     }
     else {
-      $data['offline_hosts'][]['host'] = $host;
+      $data['hosts']['all']['items'][$host['id']]['is_online'] = FALSE;
+      $data['hosts']['all']['items'][$host['id']]['use_collector'] = FALSE;
     }
-  }
-  $data['offline_hosts_qty'] = count($data['offline_hosts']);
-  if ($data['offline_hosts_qty'] > 0) {
-    // get infos about host region
-    for ($i=0; $i < $data['offline_hosts_qty']; $i++) {
-      $host_regions = array();
-      foreach ($data['regions_diff'] as $region) {
-        if ($region->Uri == $data['offline_hosts'][$i]['host']) {
-          $host_regions[] = $region;
-        }
-      }
-      $data['offline_hosts'][$i]['regions'] = $host_regions;
-    }
+    $data['hosts']['all']['items'][$host['id']]['time'] = $time;
   }
 
-  $data['online_hosts_qty'] = count($data['online_hosts']);
-  if ($data['online_hosts_qty'] > 0) {
-    // get infos about host region
-    for ($i=0; $i < $data['online_hosts_qty']; $i++) {
-      $host_regions = array();
-      foreach ($data['regions_diff'] as $region) {
-        if ($region->Uri == $data['online_hosts'][$i]['host']) {
-          $host_regions[] = $region;
-        }
-      }
-      $data['online_hosts'][$i]['regions'] = $host_regions;
-    }
-    for ($i=0; $i < $data['online_hosts_qty']; $i++) {
-      // check if host is responding to collector
-      $response = drupal_http_request($data['online_hosts'][$i]['host']. '/?method=collector', array(), 'GET');
-      $data['online_hosts'][$i]['collector'] = ($response->code == 200) ? TRUE:FALSE;
-    }
-  }
   $_SESSION['d4os_ui_grid_monitor_regions_poll'] = $data;
 
   // Store some result for post-processing in the finished callback.
   $context['results'][] = true;
 
   // Optional message displayed under the progressbar.
-  $context['message'] = t('Checking hosts...'). '<ul><li>'.implode('</li><li>', $hosts).'</li></ul>';
+  $context['message'] = t('Checking hosts...'). '<ul><li>'.implode('</li><li>', $checked).'</li></ul>';
 }
 
 /**
@@ -202,17 +326,14 @@ function d4os_ui_grid_monitor_regions_poll_check_simstatus($hosts, &$context) {
  */
 function d4os_ui_grid_monitor_regions_poll_batch_finished($success, $results, $operations) {
   if ($success) {
-    // Here we could do something meaningful with the results.
-    // We just display the number of nodes we processed...
     $message = count($results) . ' processed.';
   }
   else {
-    // An error occurred.
-    // $operations contains the operations that remained unprocessed.
     $error_operation = reset($operations);
     $message = 'An error occurred while processing ' . $error_operation[0] . ' with arguments :' . print_r($error_operation[0], TRUE);
   }
   drupal_set_message($message);
+  return d4os_ui_grid_monitor_regions_poll_result();
 }
 
 /**
@@ -221,7 +342,66 @@ function d4os_ui_grid_monitor_regions_poll_batch_finished($success, $results, $o
 function d4os_ui_grid_monitor_regions_poll_result() {
   $data = $_SESSION['d4os_ui_grid_monitor_regions_poll'];
   unset($_SESSION['d4os_ui_grid_monitor_regions_poll']);
-  return theme('d4os_ui_grid_monitor_regions_poll', $data);
+
+  // get owners names
+  $owners = module_invoke_all('os_users_load_by_uuids', $data['owners']['all']['uuids']);
+
+  // give owners to regions
+  foreach ($data['regions']['all']['items'] as $k => $region) {
+    foreach ($owners as $owner) {
+      $data['owners']['all']['items'][] = (array)$owner;
+      if ($region['owner_uuid'] == $owner->UUID) {
+        $data['regions']['all']['items'][$k]['owner_name'] = $owner->name;
+      }
+    }
+  }
+
+  // fill the hosts ips table
+  asort($data['hosts']['all']['items']);
+  
+  foreach ($data['hosts']['all']['items'] as $host) {
+    $data['hosts']['all']['ips'][] = $host['host_ip'];
+  }
+  $data['hosts']['all']['ips'] = array_unique($data['hosts']['all']['ips']);
+  sort($data['hosts']['all']['ips']);
+
+  // compute some results
+  $data['results']['hosts']['in_grid'] = array();
+  $data['results']['hosts']['in_search'] = array();
+  $data['results']['hosts']['registered'] = array();
+  $data['results']['hosts']['in_grid_but_not_in_search'] = array();
+  $data['results']['hosts']['in_search_but_not_in_grid'] = array();
+  $data['results']['hosts']['in_search_but_not_registered'] = array();
+  $data['results']['hosts']['in_all'] = 0;
+  $data['results']['hosts']['online'] = array();
+  $data['results']['hosts']['online_in_all'] = array();
+  $data['results']['hosts']['online_in_all_and_collector'] = array();
+  $data['results']['hosts']['collector'] = array();
+  $data['results']['hosts']['slow_items'] = array();
+  foreach ($data['hosts']['all']['items'] as $host) {
+    if ($host['in_grid']) $data['results']['hosts']['in_grid'][] = $host['host_domain_url'];
+    if ($host['in_search']) $data['results']['hosts']['in_search'][] = $host['host_domain_url'];
+    if ($host['registered']) $data['results']['hosts']['registered'][] = $host['host_domain_url'];
+    if ($host['is_online']) $data['results']['hosts']['online'][] = $host['host_domain_url'];
+    if ($host['use_collector']) $data['results']['hosts']['collector'][] = $host['host_domain_url'];
+    if ($host['time']['simstatus']['speed'] > 1) $data['results']['hosts']['slow_items'][] = $host['host_domain_url'];
+  }
+  sort(array_unique($data['results']['hosts']['in_grid']));
+  sort(array_unique($data['results']['hosts']['in_search']));
+  sort(array_unique($data['results']['hosts']['registered']));
+  sort(array_unique($data['results']['hosts']['online']));
+  sort(array_unique($data['results']['hosts']['collector']));
+  sort(array_unique($data['results']['hosts']['slow_items']));
+  $data['results']['hosts']['in_grid_but_not_in_search'] = array_diff($data['results']['hosts']['in_grid'], $data['results']['hosts']['in_search']);
+  $data['results']['hosts']['in_search_but_not_in_grid'] = array_diff($data['results']['hosts']['in_search'], $data['results']['hosts']['in_grid']);
+  $data['results']['hosts']['in_search_but_not_registered'] = array_diff($data['results']['hosts']['in_search'], $data['results']['hosts']['registered']);
+  $data['results']['hosts']['in_all'] = array_intersect($data['results']['hosts']['in_grid'], $data['results']['hosts']['in_search'], $data['results']['hosts']['registered']);
+  $data['results']['hosts']['online_in_all'] = array_intersect($data['results']['hosts']['online'], $data['results']['hosts']['in_all']);
+  $data['results']['hosts']['online_in_all_and_collector'] = array_intersect($data['results']['hosts']['online_in_all'], $data['results']['hosts']['collector']);
+
+  $output = theme('d4os_ui_grid_monitor_regions_poll', $data);
+  cache_set('d4os_ui_grid_monitor_regions_poll', $output, 'cache', time() + variable_get('d4os_ui_grid_monitor_regions_poll_bash_page_cache_time', 3600));
+  return $output;
 }
 
 function d4os_ui_grid_monitor_regions_poll_theme() {
@@ -232,4 +412,25 @@ function d4os_ui_grid_monitor_regions_poll_theme() {
       'arguments' => array('data' => array()),
     ),
   );
+}
+
+function d4os_ui_grid_monitor_regions_poll_get_host($ip) {
+  $ptr= implode(".",array_reverse(explode(".",$ip))).".in-addr.arpa";
+  $host = dns_get_record($ptr,DNS_PTR);
+  if ($host == null) return $ip;
+  else return $host[0]['target'];
+}
+
+function d4os_ui_grid_monitor_regions_poll_parse_host($host_url) {
+  $host_url = strtolower($host_url);
+  if (strpos($host_url, 'http://') !== FALSE) {
+    $host_url = substr($host_url, 7);
+  }
+  return explode(':', $host_url);
+}
+
+function d4os_ui_grid_monitor_regions_poll_resolve_name($host_url) {
+  //return $host_url;
+  $array = d4os_ui_grid_monitor_regions_poll_parse_host($host_url);
+  return 'http://'. gethostbyname($array[0]). ':'. $array[1];
 }
