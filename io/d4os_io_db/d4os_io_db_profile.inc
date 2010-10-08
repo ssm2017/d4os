@@ -225,21 +225,20 @@ function d4os_io_db_os_profile_services_classified_update($params) {
   }
   else {
     $query = "UPDATE {classifieds} SET "
-                . "classifieduuid = '%s',"  // 1 
-                . "creatoruuid = '%s',"         // 2 
-                . "creationdate = %d,"      // 3 
-                . "expirationdate = %d,"    // 4 
-                . "category = '%s',"        // 5 
-                . "name = '%s',"            // 6 
-                . "description = '%s',"     // 7 
-                . "parceluuid = '%s',"      // 8 
-                . "parentestate = %d,"      // 9 
-                . "snapshotuuid = '%s',"    // 10 
-                . "simname = '%s',"         // 11 
-                . "posglobal = '%s',"       // 12 
-                . "parcelname = '%s',"      // 13 
-                . "classifiedflags = %d,"    // 14 
-                . "priceforlisting = %d"       // 15 
+                . "creatoruuid = '%s',"     // 1
+                . "creationdate = %d,"      // 2 
+                . "expirationdate = %d,"    // 3 
+                . "category = '%s',"        // 4 
+                . "name = '%s',"            // 5 
+                . "description = '%s',"     // 6 
+                . "parceluuid = '%s',"      // 7 
+                . "parentestate = %d,"      // 8 
+                . "snapshotuuid = '%s',"    // 9 
+                . "simname = '%s',"         // 10 
+                . "posglobal = '%s',"       // 11 
+                . "parcelname = '%s',"      // 12 
+                . "classifiedflags = %d,"   // 13 
+                . "priceforlisting = %d"    // 14 
                 . " WHERE classifieduuid = '%s'";
   }
   d4os_io_db_set_active('os_profile');

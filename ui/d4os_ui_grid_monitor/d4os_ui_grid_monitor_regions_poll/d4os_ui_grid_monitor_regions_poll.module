@@ -58,6 +58,7 @@ function d4os_ui_grid_monitor_regions_poll($op = NULL) {
     return $cache->data;
   }
   else {
+    cache_clear_all('d4os_ui_grid_monitor_regions_poll', 'cache');
     d4os_ui_grid_monitor_regions_poll_start();
     batch_set(d4os_ui_grid_monitor_regions_poll_batch());
     batch_process();
@@ -333,6 +334,7 @@ function d4os_ui_grid_monitor_regions_poll_batch_finished($success, $results, $o
     $message = 'An error occurred while processing ' . $error_operation[0] . ' with arguments :' . print_r($error_operation[0], TRUE);
   }
   drupal_set_message($message);
+  drupal_add_js('/misc/tableheader.js');
   return d4os_ui_grid_monitor_regions_poll_result();
 }
 

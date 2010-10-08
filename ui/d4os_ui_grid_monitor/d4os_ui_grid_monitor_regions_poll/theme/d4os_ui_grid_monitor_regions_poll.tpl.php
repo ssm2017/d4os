@@ -30,6 +30,7 @@
   }
 
 </style>
+
 <div id="regions_poll">
 <h2><?php print t("Hosts"); ?></h2>
 <h3><?php print t("Numbers"); ?></h3>
@@ -53,9 +54,9 @@
   <?php endforeach; ?>
 </ul>
 <h3><?php print t("All hosts list"); ?></h3>
-<table>
+<table class="sticky-enabled sticky-table">
   <caption><?php print t("Hosts status"); ?></caption>
-  <thead>
+  <thead class="tableHeader-processed">
     <th><?php print t("Machine IP"); ?></th>
     <th><?php print t("Host url"); ?></th>
     <th><?php print t("From grid"); ?></th>

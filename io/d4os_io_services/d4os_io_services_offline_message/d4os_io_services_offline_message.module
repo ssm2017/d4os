@@ -224,7 +224,7 @@ function d4os_io_services_offline_message_mail_send($form_values) {
     // parse the message
     $message_obj = simplexml_load_string($form_values['message']);
 
-    $module = 'd4os_oi_services_offline_message';
+    $module = 'd4os_io_services_offline_message';
     $key = 'offline_message';
 
     // Specify 'to' and 'from' addresses.
@@ -239,12 +239,6 @@ function d4os_io_services_offline_message_mail_send($form_values) {
     $send = TRUE;
 
     $result = drupal_mail($module, $key, $to, $language, $params, $from, $send);
-    if ($result['result'] == TRUE) {
-      watchdog('wao', 'cool');
-    }
-    else {
-      watchdog('mouais', 'pas bon');
-    }
   }
 }
 
