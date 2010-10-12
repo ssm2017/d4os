@@ -32,7 +32,7 @@ function d4os_ui_grid_monitor_regions_poll_menu() {
     'title'             => 'Check regions',
     'description'       => 'Check grid regions vs search regions',
     'page callback'     => 'd4os_ui_grid_monitor_regions_poll',
-    'page_arguments'    => array(4),
+    'page arguments'    => array(4),
     'access arguments'  => array('use d4os ui grid monitor regions poll'),
     'type'              => MENU_NORMAL_ITEM,
    );
@@ -55,7 +55,7 @@ function d4os_ui_grid_monitor_regions_poll($op = NULL) {
   $cache = cache_get('d4os_ui_grid_monitor_regions_poll');
   if (is_object($cache) && !empty($cache->data) && $op != 'refresh') {
     drupal_set_message(t('This page is coming form cache. !link', array('!link' => l(t('You can regenerate it by clicking here.'), 'grid/monitor/regions/poll/refresh', array('attributes' => array('class' => 'link', 'title' => t('You can regenerate it by clicking here.')))))), 'warning'); //del
-    return $cache->data;
+    print $cache->data;
   }
   else {
     cache_clear_all('d4os_ui_grid_monitor_regions_poll', 'cache');
@@ -75,6 +75,7 @@ function d4os_ui_grid_monitor_regions_poll_start() {
 
   // get grid regions
   $grid_regions = module_invoke_all('os_regions_get_all_regions');
+  //for ($i=0;$i<10;$i++) {
   foreach ($grid_regions as $k => $grid_region) {
     // minimum requirements
     $item = array();
@@ -256,67 +257,74 @@ function d4os_ui_grid_monitor_regions_poll_check_simstatus($hosts, &$context) {
   $data['time']['parse']['start'][] = microtime(true);
   $checked = array();
   foreach ($hosts as $host) {
+    //$context['results']['checked'][] = $host;
+    if (!empty($host['host_ip_url'])) {
+      $checked[] = $host['host_ip_url'];
+      $time = array();
+      $time['simstatus'] = array();
+      $time['simstatus']['request'] = microtime(true);
 
-    $checked[] = $host['host_ip_url'];
-    $time = array();
-    $time['simstatus'] = array();
-    $time['simstatus']['request'] = microtime(true);
+      $response = drupal_http_request($host['host_ip_url']. '/simstatus/', array(), 'GET');
+      $context['results']['requests']++;
+      
 
-    $response = drupal_http_request($host['host_ip_url']. '/simstatus/', array(), 'GET');
-
-    $time['simstatus']['response'] = microtime(true);
-    $time['simstatus']['speed'] = $time['simstatus']['response'] - $time['simstatus']['request'];
-    switch (TRUE) {
-      case $time['simstatus']['speed'] > 1:
-        $color = "red";
-        break;
-      case $time['simstatus']['speed'] == 0:
-        $color = "white";
-        break;
-      case $time['simstatus']['speed'] < 1 && $time['simstatus']['speed'] != 0:
-        $color = "green";
-        break;
-    }
-    $time['simstatus']['color'] = $color;
-
-    if ($response->code == 200) {
-      $data['hosts']['all']['items'][$host['id']]['is_online'] = TRUE;
-
-      $time['collector'] = array();
-      $time['collector']['request'] = microtime(true);
-
-      $collector = drupal_http_request($host['host_ip_url']. '/?method=collector', array(), 'GET');
-
-      $time['collector']['response'] = microtime(true);
-      $time['collector']['speed'] = $time['collector']['response'] - $time['collector']['request'];
+      $time['simstatus']['response'] = microtime(true);
+      $time['simstatus']['speed'] = $time['simstatus']['response'] - $time['simstatus']['request'];
       switch (TRUE) {
-        case $time['collector']['speed'] > 1:
+        case $time['simstatus']['speed'] > 1:
           $color = "red";
           break;
-        case $time['collector']['speed'] == 0:
+        case $time['simstatus']['speed'] == 0:
           $color = "white";
           break;
-        case $time['collector']['speed'] < 1 && $time['collector']['speed'] != 0:
+        case $time['simstatus']['speed'] < 1 && $time['simstatus']['speed'] != 0:
           $color = "green";
           break;
       }
-      $time['collector']['color'] = $color;
+      $time['simstatus']['color'] = $color;
 
-      if ($collector->code == 200) {
-        $data['hosts']['all']['items'][$host['id']]['use_collector'] = TRUE;
+      if ($response->code == 200) {
+        $data['hosts']['all']['items'][$host['id']]['is_online'] = TRUE;
+
+        $time['collector'] = array();
+        $time['collector']['request'] = microtime(true);
+
+        $collector = drupal_http_request($host['host_ip_url']. '/?method=collector', array(), 'GET');
+
+        $time['collector']['response'] = microtime(true);
+        $time['collector']['speed'] = $time['collector']['response'] - $time['collector']['request'];
+        switch (TRUE) {
+          case $time['collector']['speed'] > 1:
+            $color = "red";
+            break;
+          case $time['collector']['speed'] == 0:
+            $color = "white";
+            break;
+          case $time['collector']['speed'] < 1 && $time['collector']['speed'] != 0:
+            $color = "green";
+            break;
+        }
+        $time['collector']['color'] = $color;
+
+        if ($collector->code == 200) {
+          $data['hosts']['all']['items'][$host['id']]['use_collector'] = TRUE;
+        }
       }
+      else {
+        $data['hosts']['all']['items'][$host['id']]['is_online'] = FALSE;
+        $data['hosts']['all']['items'][$host['id']]['use_collector'] = FALSE;
+      }
+      $data['hosts']['all']['items'][$host['id']]['time'] = $time;
     }
     else {
-      $data['hosts']['all']['items'][$host['id']]['is_online'] = FALSE;
-      $data['hosts']['all']['items'][$host['id']]['use_collector'] = FALSE;
+      $context['results']['errors'][] = $host;
     }
-    $data['hosts']['all']['items'][$host['id']]['time'] = $time;
   }
 
   $_SESSION['d4os_ui_grid_monitor_regions_poll'] = $data;
 
   // Store some result for post-processing in the finished callback.
-  $context['results'][] = true;
+  $context['results']['passes']++;
 
   // Optional message displayed under the progressbar.
   $context['message'] = t('Checking hosts...'). '<ul><li>'.implode('</li><li>', $checked).'</li></ul>';
@@ -327,7 +335,8 @@ function d4os_ui_grid_monitor_regions_poll_check_simstatus($hosts, &$context) {
  */
 function d4os_ui_grid_monitor_regions_poll_batch_finished($success, $results, $operations) {
   if ($success) {
-    $message = count($results) . ' processed.';
+    $message = $results['passes'] . ' processed.';
+    drupal_set_message('<pre>'. print_r($results, TRUE). '</pre>'); // del
   }
   else {
     $error_operation = reset($operations);
@@ -335,7 +344,7 @@ function d4os_ui_grid_monitor_regions_poll_batch_finished($success, $results, $o
   }
   drupal_set_message($message);
   drupal_add_js('/misc/tableheader.js');
-  return d4os_ui_grid_monitor_regions_poll_result();
+  print d4os_ui_grid_monitor_regions_poll_result();
 }
 
 /**
@@ -349,11 +358,12 @@ function d4os_ui_grid_monitor_regions_poll_result() {
   $owners = module_invoke_all('os_users_load_by_uuids', $data['owners']['all']['uuids']);
 
   // give owners to regions
-  foreach ($data['regions']['all']['items'] as $k => $region) {
+  $regions_count = count($data['regions']['all']['items']);
+  for ($i=0; $i<$regions_count;$i++) {
     foreach ($owners as $owner) {
-      $data['owners']['all']['items'][] = (array)$owner;
-      if ($region['owner_uuid'] == $owner->UUID) {
-        $data['regions']['all']['items'][$k]['owner_name'] = $owner->name;
+      //$data['owners']['all']['items'][] = (array)$owner;
+      if ($data['regions']['all']['items'][$i]['owner_uuid'] == $owner->UUID) {
+          $data['regions']['all']['items'][$i]['owner_name'] = $owner->name;
       }
     }
   }

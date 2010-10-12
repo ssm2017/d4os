@@ -36,6 +36,9 @@ function d4os_io_db_os_profile_save($params) {
     case 'image':
     case 'first-image':
     case 'home-region':
+      if ($params['op'] == 'home-region') {
+        $params['d4os']['grid']['presence']['home_region'] = substr($params['d4os']['grid']['presence']['home_region'], 1);
+      }
       $data = array();
       $data['d4os']['grid'] = d4os_array_merge_recursive_distinct($account->d4os['grid'], $params['d4os']['grid']);
       $saved = user_save($account, $data);

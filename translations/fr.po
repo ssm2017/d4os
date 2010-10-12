@@ -322,7 +322,7 @@ msgstr ""
 
 #: io/d4os_io_db/d4os_io_db_inventory.inc:852
 msgid "Inventory folders created and default items added."
-msgstr "Les dossiers de l'invetaire ont été créés et les éléments par défaut ont été ajoutés."
+msgstr "Les dossiers de l'inventaire ont été créés et les éléments par défaut ont été ajoutés."
 
 #: io/d4os_io_db/d4os_io_db_inventory.inc:854
 msgid "Appearance added."

@@ -38,13 +38,13 @@ function d4os_ui_users_user_generate($username, $lastname, $password, $mail, $ho
       ),
 
       'presence' => array(
-        'home_region'     => $home,
-        'home_location_x' => 128,
-        'home_location_y' => 128,
-        'home_location_z' => 128,
-        'home_look_at_x'  => 100,
-        'home_look_at_y'  => 100,
-        'home_look_at_z'  => 100,
+        'home_region'     => ($home) ? $home : substr(variable_get('d4os_ui_users_default_home_region',0), 1),
+        'home_location_x' => variable_get('d4os_ui_users_default_home_location_x', 128),
+        'home_location_y' => variable_get('d4os_ui_users_default_home_location_y', 128),
+        'home_location_z' => variable_get('d4os_ui_users_default_home_location_z', 128),
+        'home_look_at_x'  => variable_get('d4os_ui_users_default_home_look_at_x', 100),
+        'home_look_at_y'  => variable_get('d4os_ui_users_default_home_look_at_y', 100),
+        'home_look_at_z'  => variable_get('d4os_ui_users_default_home_look_at_z', 100),
         'last_login'      => 0,
       ),
 

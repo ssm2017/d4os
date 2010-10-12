@@ -30,7 +30,7 @@
   }
 
 </style>
-
+<a href="/"><?php print t("Go back to the home page"); ?></a>
 <div id="regions_poll">
 <h2><?php print t("Hosts"); ?></h2>
 <h3><?php print t("Numbers"); ?></h3>

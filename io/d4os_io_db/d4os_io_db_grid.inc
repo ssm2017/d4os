@@ -132,7 +132,7 @@ function d4os_io_db_os_regions_get_regions_array() {
   $regions = d4os_io_db_os_regions_names();
   $regions_list = array();
   foreach ($regions as $region) {
-    $handle = $region->regionHandle;
+    $handle = '_'. $region->regionHandle;
     $regions_list[$handle] = $region->regionName;
   }
   return $regions_list;

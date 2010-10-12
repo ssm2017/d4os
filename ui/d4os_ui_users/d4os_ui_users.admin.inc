@@ -299,7 +299,65 @@ function d4os_ui_users_admin() {
     '#options'        => $roles,
     '#description'    => t('This role is assigned to region owners.'),
   );
-  
+  // home
+  $form['home'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Default Home'),
+    '#description'  => t('Define a home place for new users.'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+  );
+  // default home
+  $regions_list = module_invoke_all('os_regions_get_regions_array');
+  $form['home']['d4os_ui_users_default_home_region'] = array(
+    '#type'          => 'select',
+    '#default_value' => variable_get('d4os_ui_users_default_home_region',0),
+    '#options'       => $regions_list,
+    '#description'    => t('Define a home place for new users.'),
+  );
+  $form['home']['d4os_ui_users_default_home_location_x'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Home location X'),
+    '#size'           => 6,
+    '#maxlength'      => 6,
+    '#default_value'  => variable_get('d4os_ui_users_default_home_location_x', 128),
+  );
+  $form['home']['d4os_ui_users_default_home_location_y'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Home location Y'),
+    '#size'           => 6,
+    '#maxlength'      => 6,
+    '#default_value'  => variable_get('d4os_ui_users_default_home_location_y', 128),
+  );
+  $form['home']['d4os_ui_users_default_home_location_z'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Home location Z'),
+    '#size'           => 6,
+    '#maxlength'      => 6,
+    '#default_value'  => variable_get('d4os_ui_users_default_home_location_z', 128),
+  );
+  $form['home']['d4os_ui_users_default_home_look_at_x'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Home look at X'),
+    '#size'           => 6,
+    '#maxlength'      => 6,
+    '#default_value'  => variable_get('d4os_ui_users_default_home_look_at_x', 100),
+  );
+  $form['home']['d4os_ui_users_default_home_look_at_y'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Home look at Y'),
+    '#size'           => 6,
+    '#maxlength'      => 6,
+    '#default_value'  => variable_get('d4os_ui_users_default_home_look_at_y', 100),
+  );
+  $form['home']['d4os_ui_users_default_home_look_at_z'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Home look at Z'),
+    '#size'           => 6,
+    '#maxlength'      => 6,
+    '#default_value'  => variable_get('d4os_ui_users_default_home_look_at_z', 100),
+  );
+
   return system_settings_form($form);
 }
 
