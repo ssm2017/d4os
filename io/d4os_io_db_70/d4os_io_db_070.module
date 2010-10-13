@@ -99,7 +99,7 @@ function d4os_io_db_070_set_active($name = 'default') {
 function d4os_io_db_070_load_includes() {
   //module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_asset');
   //module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_auth');
-  //module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_grid');
+  module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_grid');
   module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_inventory');
   //module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_messaging');
   //module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_account');

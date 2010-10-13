@@ -870,19 +870,20 @@ drupal_set_message(t('Appearance added.'));
 function d4os_io_db_070_os_inventory_user_delete($uuid) {
   $values = array($uuid);
   // delete attachments and appearance
-  d4os_io_db_070_set_active('os_users');
-  db_query("DELETE FROM {avatarattachments} WHERE UUID = '%s'", $values);
-  db_query("DELETE FROM {avatarappearance} WHERE Owner = '%s'", $values);
+  d4os_io_db_070_set_active('os_robust');
+  db_query("DELETE FROM {Avatars} WHERE PrincipalID = '%s'", $values);
   d4os_io_db_070_set_active('default');
   // delete folders and items
-  d4os_io_db_070_set_active('os_inventory');
+  d4os_io_db_070_set_active('os_robust');
   db_query("DELETE FROM {inventoryfolders} WHERE agentID = '%s'", $values);
+  d4os_io_db_070_set_active('default');
+  d4os_io_db_070_set_active('os_robust');
   db_query("DELETE FROM {inventoryitems} WHERE avatarID = '%s'", $values);
   d4os_io_db_070_set_active('default');
 }
 
 function d4os_io_db_070_os_inventory_is_alive() {
   return array(
-    'success' => d4os_io_db_070_mysql_is_alive('os_inventory', 'os inventory'),
+    'success' => d4os_io_db_070_mysql_is_alive('os_robust', 'os robust'),
   );
 }

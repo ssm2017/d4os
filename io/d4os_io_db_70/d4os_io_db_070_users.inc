@@ -358,6 +358,9 @@ function d4os_io_db_070_os_user_save($account) {
             $queries[] = $value;
             $values[] = $fields['GridUser']['submitted_values'][$key];
             $s[] = "'%s'";
+            $queries[] = 'LastRegionID';
+            $values[] = $fields['GridUser']['submitted_values'][$key];
+            $s[] = "'%s'";
             break;
           case 'Login':
             $queries[] = $value;
@@ -601,11 +604,11 @@ function d4os_io_db_070_os_user_delete($uuid) {
   // delete profile
   drupal_set_message(t('Deleting profile info.'));
   d4os_io_db_070_os_profile_user_delete($uuid);
-
+*/
   // delete attachments and inventory
   drupal_set_message(t('Deleting inventory.'));
   d4os_io_db_070_os_inventory_user_delete($uuid);
-
+/*
   // delete sessions
   drupal_set_message(t('Deleting sessions.'));
   d4os_io_db_070_set_active('os_users');
@@ -617,15 +620,21 @@ function d4os_io_db_070_os_user_delete($uuid) {
   d4os_io_db_070_set_active('os_users');
   db_query("DELETE FROM {userfriends} WHERE ownerID='%s' OR friendID = '%s'", array($uuid, $uuid));
   d4os_io_db_070_set_active('default');
-
+*/
   // delete user entry in the grid
   drupal_set_message(t('Deleting user.'));
-  d4os_io_db_070_set_active('os_users');
-  db_query("DELETE FROM {users} WHERE UUID='%s'", $uuid);
+  d4os_io_db_070_set_active('os_robust');
+  db_query("DELETE FROM {UserAccounts} WHERE PrincipalID='%s'", $uuid);
+  d4os_io_db_070_set_active('default');
+  d4os_io_db_070_set_active('os_robust');
+  db_query("DELETE FROM {auth} WHERE UUID='%s'", $uuid);
+  d4os_io_db_070_set_active('default');
+  d4os_io_db_070_set_active('os_robust');
+  db_query("DELETE FROM {GridUser} WHERE UserID='%s'", $uuid);
   d4os_io_db_070_set_active('default');
 
   // delete the user drupal link  
-  db_query("DELETE FROM {d4os_ui_users} WHERE UUID='%s'", $uuid);*/
+  db_query("DELETE FROM {d4os_ui_users} WHERE UUID='%s'", $uuid);
 }
 
 /**
