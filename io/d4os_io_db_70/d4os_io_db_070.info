@@ -1,0 +1,6 @@
+; $Id$
+name = "d4os io db 70"
+description = "Provides tools to manage an opensim grid saving to the database."
+package = d4os io
+core = 6.x
+dependencies[] = d4os

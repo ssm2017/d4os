@@ -725,6 +725,9 @@ function d4os_ui_users_user_register_submit($form, &$form_state) {
     );
     module_invoke_all('os_inventory_clone_model', $params);
   }
+  else {
+    module_invoke_all('os_inventory_create_new_user_inventory', array('user_uuid' => $account->d4os['grid']['account']['uuid']));
+  }
 
   $form_state['user'] = $account;
   watchdog('user', 'New user: %name (%email).', array('%name' => $name, '%email' => $mail), WATCHDOG_NOTICE, l(t('edit'), 'user/'. $account->uid .'/edit'));
