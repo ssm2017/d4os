@@ -156,45 +156,20 @@ function d4os_io_db_070_os_regions_names() {
  * Return an array of stats for the home page
  * @return Array An array like array('success'=>true, 'data'=>$data);
  */
-function d4os_io_db_070_os_robust_get_stats() {
+function d4os_io_db_070_os_grid_get_stats() {
   // who is online now
-  $now_online = 0;
-  $online_users = array();
-  d4os_io_db_070_set_active('os_users');
-  $users = db_query("SELECT UUID, currentRegion FROM {agents}"
-                            . " WHERE agentOnline = 1"
-                            . " AND logintime < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"
-                            . " AND logoutTime < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"
-                            . " ORDER BY logintime DESC");
-  while($online_user = db_fetch_object($users)) {
-    $online_users[] = $online_user;
-  }
-  d4os_io_db_070_set_active('default');
-
-  // get the regions
-  $regions_list = array();
   d4os_io_db_070_set_active('os_robust');
-  $regions = db_query("SELECT regionName, UUID FROM {regions}");
-  while ($region = db_fetch_object($regions)) {
-    $regions_list[] = $region;
-  }
+  $now_online = db_result(db_query("SELECT count(*) FROM {Presence}"));
   d4os_io_db_070_set_active('default');
-
-  // check if the user is in a valid region
-  foreach ($online_users as $online_user) {
-    if (d4os_array_search_recursive($online_user->currentRegion, $regions_list)) {
-      ++$now_online;
-    }
-  }
 
   // last month online
   d4os_io_db_070_set_active('os_robust');
-  $last_month_online = db_result(db_query("SELECT count(*) FROM {agents} WHERE logintime > UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()) - 2419200))"));
+  $last_month_online = db_result(db_query("SELECT count(*) FROM {GridUser} WHERE login > UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()) - 2419200))"));
   d4os_io_db_070_set_active('default');
 
   // users count
   d4os_io_db_070_set_active('os_robust');
-  $users_count = db_result(db_query("SELECT count(*) FROM users"));
+  $users_count = db_result(db_query("SELECT count(*) FROM UserAccounts"));
   d4os_io_db_070_set_active('default');
 
   // regions count
@@ -217,9 +192,9 @@ function d4os_io_db_070_os_robust_get_stats() {
  * Tell if the grid is responding
  * @return Bool TRUE if yes and FALSE if not
  */
-function d4os_io_db_070_os_robust_is_alive() {
+function d4os_io_db_070_os_grid_is_alive() {
   return array(
-    'success' => d4os_io_db_070_mysql_is_alive('os_robust', 'os grid')
+    'success' => d4os_io_db_070_mysql_is_alive('os_robust', 'os robust')
   );
 }
 

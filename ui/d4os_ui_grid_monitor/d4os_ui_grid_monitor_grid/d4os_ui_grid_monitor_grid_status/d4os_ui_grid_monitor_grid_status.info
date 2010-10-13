@@ -4,3 +4,4 @@ description = "Provides tools to display online status for an opensim grid."
 package = "d4os ui grid monitor"
 core = 6.x
 dependencies[] = d4os
+dependencies[] = libraries

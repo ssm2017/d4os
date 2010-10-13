@@ -666,12 +666,11 @@ function d4os_io_db_070_os_users_online_users_list_paged($page = 0, $limit = 5, 
   if (!isset($_GET['sort'])) {
     $_GET['sort'] = 'DESC';
   }
-  d4os_io_db_070_set_active('os_users');
-  $result = pager_query("SELECT * FROM {agents}"
-                        . " WHERE agentOnline = 1"
-                        . " AND logintime < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"
-                        . " AND logoutTime < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"
-                        . " %s", $limit, 0, NULL, array(tablesort_sql($headers)));
+  d4os_io_db_070_set_active('os_robust');
+  $result = pager_query("SELECT * FROM {Presence} AS p"
+                        . " LEFT JOIN {UserAccounts} AS ua ON ua.PrincipalID=p.UserID"
+                        . " LEFT JOIN {GridUser} AS gu ON gu.UserID=p.UserID"
+                        . " WHERE p.UserID = '%s'", $limit, 0, NULL, array(tablesort_sql($headers)));
   while ($user = db_fetch_object($result)) {
     $items[] = $user;
   }
@@ -684,18 +683,15 @@ function d4os_io_db_070_os_users_online_users_list_paged($page = 0, $limit = 5, 
  * @return Integer quantity of users actually online
  */
 function d4os_io_db_070_os_users_online_users_count() {
-  d4os_io_db_070_set_active('os_users');
-  $count = db_result(db_query("SELECT COUNT(*) FROM {agents}"
-                              . " WHERE agentOnline = 1"
-                              . " AND logintime < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"
-                              . " AND logoutTime < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"));
+  d4os_io_db_070_set_active('os_robust');
+  $count = db_result(db_query("SELECT COUNT(*) FROM {Presence}"));
   d4os_io_db_070_set_active('default');
   return $count;
 }
 
 /**
  * Transforms the database fields in d4os account
- * TODO : this has to be changed to something else even for 69
+ * @todo : this has to be changed to something else even for 69
  */
 function _d4os_io_db_070_os_070_to_grid($params) {
   $user = new stdClass;
