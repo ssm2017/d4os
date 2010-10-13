@@ -192,7 +192,7 @@ function d4os_io_db_070_os_inventory_create_inventory_item($params) {
         . "'%s', " // 19 parentFolderID
         . ");";
 
-  d4os_io_db_070_set_active('os_inventory');
+  d4os_io_db_070_set_active('os_robust');
   db_query($query, $values);
   d4os_io_db_070_set_active('default');
 }
@@ -322,7 +322,7 @@ function d4os_io_db_070_os_inventory_get_inventory_folder_by_path($params) {
   $query = "SELECT * FROM {inventoryfolders} WHERE agentID = '%s'";
 
   // request the data
-  d4os_io_db_070_set_active('os_inventory');
+  d4os_io_db_070_set_active('os_robust');
   $result = db_query($query, $values);
   $user_folders = array();
   while ($folder = db_fetch_array($result)) {
@@ -466,21 +466,20 @@ function d4os_io_db_070_inventory_clone_items($params) {
   );
 }
 
+/**
+ * @todo : pass by reference
+ */
 function d4os_io_db_070_os_inventory_clone_inventory($params) {
   // delete actual folders and items
-  d4os_io_db_070_set_active('os_inventory');
+  d4os_io_db_070_set_active('os_robust');
   db_query("DELETE FROM {inventoryfolders} WHERE agentID = '%s'", array($params['avatar_dest_uuid']));
   db_query("DELETE FROM {inventoryitems} WHERE avatarID = '%s'", array($params['avatar_dest_uuid']));
   d4os_io_db_070_set_active('default');
 
   // get the folders
-  $values = array($params['avatar_src_uuid']);
-  $query = "SELECT * FROM {inventoryfolders} WHERE agentID = '%s'";
-
-  // request the data
-  d4os_io_db_070_set_active('os_inventory');
-  $result = db_query($query, $values);
   $user_folders = array();
+  d4os_io_db_070_set_active('os_robust');
+  $result = db_query("SELECT * FROM {inventoryfolders} WHERE agentID = '%s'", $params['avatar_src_uuid']);
   while ($folder = db_fetch_array($result)) {
     $user_folders[] = $folder;
   }
@@ -499,12 +498,9 @@ function d4os_io_db_070_os_inventory_clone_inventory($params) {
   $new_folders = d4os_io_db_070_inventory_clone_folders($params);
 
   // get the items
-  $query = "SELECT * FROM {inventoryitems} WHERE avatarID = '%s'";
-
-  // request the data
-  d4os_io_db_070_set_active('os_inventory');
-  $result = db_query($query, $values);
   $user_items = array();
+  d4os_io_db_070_set_active('os_robust');
+  $result = db_query("SELECT * FROM {inventoryitems} WHERE avatarID = '%s'", $params['avatar_src_uuid']);
   while ($item = db_fetch_array($result)) {
     $user_items[] = $item;
   }
@@ -548,7 +544,7 @@ function d4os_io_db_070_os_inventory_clone_inventory($params) {
           . "agentID,"
           . "parentFolderID"
           . ") VALUES ". $folders_list_vars;
-  d4os_io_db_070_set_active('os_inventory');
+  d4os_io_db_070_set_active('os_robust');
   db_query($query, $folders_list_values);
   d4os_io_db_070_set_active('default');
 
@@ -625,7 +621,7 @@ function d4os_io_db_070_os_inventory_clone_inventory($params) {
           . "parentFolderID," // 19
           . "inventoryGroupPermissions" // 20
           . ") VALUES ". $items_list_vars;
-  d4os_io_db_070_set_active('os_inventory');
+  d4os_io_db_070_set_active('os_robust');
   db_query($query, $items_list_values);
   d4os_io_db_070_set_active('default');
 
@@ -636,164 +632,63 @@ function d4os_io_db_070_os_inventory_clone_inventory($params) {
   );
 }
 
+/**
+ * @todo : pass by reference
+ */
 function d4os_io_db_070_os_inventory_clone_appearance($params) {
   // delete actual appearance
-  d4os_io_db_070_set_active('os_users');
-  db_query("DELETE FROM {avatarappearance} WHERE Owner = '%s'", array($params['avatar_dest_uuid']));
+  d4os_io_db_070_set_active('os_robust');
+  db_query("DELETE FROM {Avatars} WHERE PrincipalID = '%s'", array($params['avatar_dest_uuid']));
   d4os_io_db_070_set_active('default');
 
   // get the folders
-  $values = array($params['avatar_src_uuid']);
-  $query = "SELECT * FROM {avatarappearance} WHERE Owner = '%s'";
-
-  // request the data
-  d4os_io_db_070_set_active('os_users');
-  $appearance = db_fetch_array(db_query($query, $values));
+  $appearance = array();
+  d4os_io_db_070_set_active('os_robust');
+  $result = db_query("SELECT * FROM {Avatars} WHERE PrincipalID = '%s'", $params['avatar_src_uuid']);
+  while ($item = db_fetch_array($result)) {
+    $appearance[] = $item;
+  }
   d4os_io_db_070_set_active('default');
 
-  // get the new uuids for items
-  $old_items_uuids = $params['old_items_uuids'];
-  $new_items_uuids = $params['new_items_uuids'];
-  $new_uuid_id                = array_search($item['Body_Item'],        $old_items_uuids);
-  $appearance['Body_Item']        = $new_items_uuids[$new_uuid_id];
-  $new_uuid_id                = array_search($item['Skin_Item'],        $old_items_uuids);
-  $appearance['Skin_Item']        = $new_items_uuids[$new_uuid_id];
-  $new_uuid_id                = array_search($item['Hair_Item'],        $old_items_uuids);
-  $appearance['Hair_Item']        = $new_items_uuids[$new_uuid_id];
-  $new_uuid_id                = array_search($item['Eyes_Item'],        $old_items_uuids);
-  $appearance['Eyes_Item']        = $new_items_uuids[$new_uuid_id];
-  $new_uuid_id                = array_search($item['Shirt_Item'],       $old_items_uuids);
-  $appearance['Shirt_Item']       = $new_items_uuids[$new_uuid_id];
-  $new_uuid_id                = array_search($item['Pants_Item'],       $old_items_uuids);
-  $appearance['Pants_Item']       = $new_items_uuids[$new_uuid_id];
-  $new_uuid_id                = array_search($item['Shoes_Item'],       $old_items_uuids);
-  $appearance['Shoes_Item']       = $new_items_uuids[$new_uuid_id];
-  $new_uuid_id                = array_search($item['Socks_Item'],       $old_items_uuids);
-  $appearance['Socks_Item']       = $new_items_uuids[$new_uuid_id];
-  $new_uuid_id                = array_search($item['Jacket_Item'],      $old_items_uuids);
-  $appearance['Jacket_Item']      = $new_items_uuids[$new_uuid_id];
-  $new_uuid_id                = array_search($item['Gloves_Item'],      $old_items_uuids);
-  $appearance['Gloves_Item']      = $new_items_uuids[$new_uuid_id];
-  $new_uuid_id                = array_search($item['Undershirt_Item'],  $old_items_uuids);
-  $appearance['Undershirt_Item']  = $new_items_uuids[$new_uuid_id];
-  $new_uuid_id                = array_search($item['Underpants_Item'],  $old_items_uuids);
-  $appearance['Underpants_Item']  = $new_items_uuids[$new_uuid_id];
-  $new_uuid_id                = array_search($item['Skirt_Item'],       $old_items_uuids);
-  $appearance['Skirt_Item']       = $new_items_uuids[$new_uuid_id];
+  // no items for the user, return an error
+  if (count($appearance) == 0) {
+    return array(
+      'success' => FALSE,
+      'message' => t('Could not find appearance for this user.')
+    );
+  }
 
   // fill the base with all this data
-  $values = array(
-    $params['avatar_dest_uuid'], // 1
-    $appearance['Serial'], // 2
-    $appearance['Visual_Params'], // 3
-    $appearance['Texture'], // 4
-    $appearance['Avatar_Height'], // 5
-    $appearance['Body_Item'], // 6
-    $appearance['Body_Asset'], // 7
-    $appearance['Skin_Item'], // 8
-    $appearance['Skin_Asset'], // 9
-    $appearance['Hair_Item'], // 10
-    $appearance['Hair_Asset'], // 11
-    $appearance['Eyes_Item'], // 12
-    $appearance['Eyes_Asset'], // 13
-    $appearance['Shirt_Item'], // 14
-    $appearance['Shirt_Asset'], // 15
-    $appearance['Pants_Item'], // 16
-    $appearance['Pants_Asset'], // 17
-    $appearance['Shoes_Item'], // 18
-    $appearance['Shoes_Asset'], // 19
-    $appearance['Socks_Item'], // 20
-    $appearance['Socks_Asset'], // 21
-    $appearance['Jacket_Item'], // 22
-    $appearance['Jacket_Asset'], // 23
-    $appearance['Gloves_Item'], // 24
-    $appearance['Gloves_Asset'], // 25
-    $appearance['Undershirt_Item'], // 26
-    $appearance['Undershirt_Asset'], // 27
-    $appearance['Underpants_Item'], // 28
-    $appearance['Underpants_Asset'], // 29
-    $appearance['Skirt_Item'], // 30
-    $appearance['Skirt_Asset'], // 31
-  );
-  $query = "INSERT INTO {avatarappearance} ("
-          . "Owner," // 1
-          . "Serial," // 2 int
-          . "Visual_Params," // 3 blob
-          . "Texture," // 4 blob
-          . "Avatar_Height," // 5 float
-          . "Body_Item," // 6
-          . "Body_Asset," // 7
-          . "Skin_Item," // 8
-          . "Skin_Asset," // 9
-          . "Hair_Item," // 10
-          . "Hair_Asset," // 11
-          . "Eyes_Item," // 12
-          . "Eyes_Asset," // 13
-          . "Shirt_Item," // 14
-          . "Shirt_Asset," // 15
-          . "Pants_Item," // 16
-          . "Pants_Asset," // 17
-          . "Shoes_Item," // 18
-          . "Shoes_Asset," // 19
-          . "Socks_Item," // 20
-          . "Socks_Asset," // 21
-          . "Jacket_Item," // 22
-          . "Jacket_Asset," // 23
-          . "Gloves_Item," // 24
-          . "Gloves_Asset," // 25
-          . "Undershirt_Item," // 26
-          . "Undershirt_Asset," // 27
-          . "Underpants_Item," // 28
-          . "Underpants_Asset," // 29
-          . "Skirt_Item," // 30
-          . "Skirt_Asset" // 31
-          . ") VALUES ("
-          . "'%s'," // 1
-          . "%d," // 2
-          . "%b," // 3
-          . "%b," // 4
-          . "%f," // 5
-          . "'%s'," // 6
-          . "'%s'," // 7
-          . "'%s'," // 8
-          . "'%s'," // 9
-          . "'%s'," // 10
-          . "'%s'," // 11
-          . "'%s'," // 12
-          . "'%s'," // 13
-          . "'%s'," // 14
-          . "'%s'," // 15
-          . "'%s'," // 16
-          . "'%s'," // 17
-          . "'%s'," // 18
-          . "'%s'," // 19
-          . "'%s'," // 20
-          . "'%s'," // 21
-          . "'%s'," // 22
-          . "'%s'," // 23
-          . "'%s'," // 24
-          . "'%s'," // 25
-          . "'%s'," // 26
-          . "'%s'," // 27
-          . "'%s'," // 28
-          . "'%s'," // 29
-          . "'%s'," // 30
-          . "'%s'" // 31
-          . ")";
-  d4os_io_db_070_set_active('os_users');
+  $queries  = array();
+  $values   = array();
+  foreach ($appearance as $item) {
+    $queries[] = "('%s', '%s', '%s')";
+    $values[] = $params['avatar_dest_uuid'];
+    $values[] = $item['Name'];
+    $values[] = $item['Value'];
+  }
+  $query = "INSERT INTO {Avatars} ("
+          . "PrincipalID," // 1 str
+          . "Name," // 2 str
+          . "Value" // 3 str
+          . ") VALUES ". implode(',', $queries);
+  d4os_io_db_070_set_active('os_robust');
   db_query($query, $values);
   d4os_io_db_070_set_active('default');
 
   return array(
     'success' => TRUE,
     'message' => '',
-    'data' => $params
+    'data'    => $params
   );
 }
 
+/**
+ * @todo : pass by reference
+ */
 function d4os_io_db_070_os_inventory_clone_attachments($params) {
   // delete actual attachments
-  d4os_io_db_070_set_active('os_users');
+  d4os_io_db_070_set_active('os_robust');
   db_query("DELETE FROM {avatarattachments} WHERE UUID = '%s'", array($params['avatar_dest_uuid']));
   d4os_io_db_070_set_active('default');
 
@@ -860,11 +755,15 @@ function d4os_io_db_070_os_inventory_clone_attachments($params) {
 }
 
 function d4os_io_db_070_os_inventory_clone_model($params) {
+
   $params = d4os_io_db_070_os_inventory_clone_inventory($params);
-drupal_set_message(t('Inventory folders created and default items added.'));
+  drupal_set_message(t('Inventory folders created and default items added.'));
+
   $params = d4os_io_db_070_os_inventory_clone_appearance($params['data']);
-drupal_set_message(t('Appearance added.'));
-  $params = d4os_io_db_070_os_inventory_clone_attachments($params['data']);
+  drupal_set_message(t('Appearance added.'));
+
+  //$params = d4os_io_db_070_os_inventory_clone_attachments($params['data']);
+  //drupal_set_message(t('Outfit attached.'));
 }
 
 function d4os_io_db_070_os_inventory_user_delete($uuid) {
