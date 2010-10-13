@@ -54,6 +54,7 @@
   <?php endforeach; ?>
 </ul>
 <h3><?php print t("All hosts list"); ?></h3>
+<?php foreach ($data['hosts']['all']['ips'] as $machine): ?>
 <table class="sticky-enabled sticky-table">
   <caption><?php print t("Hosts status"); ?></caption>
   <thead class="tableHeader-processed">
@@ -70,18 +71,13 @@
     <th><?php print t("Use collector"); ?></th>
     <th><?php print t("Speed"); ?></th>
     <th><?php print t("Region name"); ?></th>
+    <th><?php print t("Region owner"); ?></th>
     <th><?php print t("Region uuid"); ?></th>
     <th><?php print t("Region handle"); ?></th>
-    <th><?php print t("Region owner"); ?></th>
-    <th><?php print t("In grid"); ?></th>
-    <th><?php print t("In search"); ?></th>
   </thead>
   <tbody>
-    <?php foreach ($data['hosts']['all']['ips'] as $machine): ?>
     <tr>
       <td><?php print $machine; ?></td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
       <td>&nbsp;</td>
       <td>&nbsp;</td>
       <td>&nbsp;</td>
@@ -117,8 +113,6 @@
       <td>&nbsp;</td>
       <td>&nbsp;</td>
       <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
     </tr>
     <?php foreach ($data['regions']['all']['items'] as $region): ?>
     <?php if ($region['host_domain_url'] == $host['host_domain_url']): ?>
@@ -126,9 +120,9 @@
       <td>&nbsp;</td>
       <td>&nbsp;</td>
       <td>&nbsp;</td>
+      <td class="<?php print ($region['in_grid']) ? 'green': 'white';?>"><?php print ($region['in_grid']) ? t('Yes'): t('No');?></td>
       <td>&nbsp;</td>
-      <td>&nbsp;</td>
-      <td>&nbsp;</td>
+      <td class="<?php print ($region['in_search']) ? 'green': 'white';?>"><?php print ($region['in_search']) ? t('Yes'): t('No');?></td>
       <td>&nbsp;</td>
       <td>&nbsp;</td>
       <td>&nbsp;</td>
@@ -136,17 +130,15 @@
       <td>&nbsp;</td>
       <td>&nbsp;</td>
       <td><?php print $region['name']; ?></td>
+      <td><?php print $region['owner_name']; ?></td>
       <td><?php print $region['uuid']; ?></td>
       <td><?php print $region['handle']; ?></td>
-      <td><?php print $region['owner_name']; ?></td>
-      <td class="<?php print ($region['in_grid']) ? 'green': 'white';?>"><?php print ($region['in_grid']) ? t('Yes'): t('No');?></td>
-      <td class="<?php print ($region['in_search']) ? 'green': 'white';?>"><?php print ($region['in_search']) ? t('Yes'): t('No');?></td>
     </tr>
     <?php endif; // if ($region['host_domain_url'] == $host['host_domain_url']): ?>
     <?php endforeach; // region ?>
     <?php endif; // if ($host->host_ip == $machine): ?>
     <?php endforeach; // host ?>
-    <?php endforeach; // machine ?>
-  </tbody>
-</table>
+    </tbody>
+  </table>
+  <?php endforeach; // machine ?>
 </div>
