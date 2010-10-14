@@ -597,11 +597,11 @@ function d4os_io_db_070_os_user_delete($uuid) {
   // delete search
   drupal_set_message(t('Deleting search info.'));
   d4os_io_db_070_os_search_user_delete($uuid);
-
+*/
   // delete profile
   drupal_set_message(t('Deleting profile info.'));
   d4os_io_db_070_os_profile_user_delete($uuid);
-*/
+
   // delete attachments and inventory
   drupal_set_message(t('Deleting inventory.'));
   d4os_io_db_070_os_inventory_user_delete($uuid);

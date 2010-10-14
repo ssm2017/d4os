@@ -108,7 +108,7 @@ function d4os_io_db_070_load_includes() {
   //module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_search');
   //module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_search_parser');
   //module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_groups');
-  //module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_profile');
+  module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_profile');
   //module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_messages');
 }
 

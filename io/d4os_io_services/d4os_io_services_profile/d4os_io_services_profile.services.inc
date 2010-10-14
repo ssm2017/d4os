@@ -417,7 +417,7 @@ function d4os_io_services_profile_avatar_properties_request($params) {
   // do the job
   $return = module_invoke_all('os_profile_services_avatar_properties_request', $params);
 
-  if ($d4os_io_services_profile_log_level > 6) {
+  //if ($d4os_io_services_profile_log_level > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -430,7 +430,7 @@ function d4os_io_services_profile_avatar_properties_request($params) {
       'data' => $return,
     );
     d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
-  }
+  //}
   return $return;
 }
 

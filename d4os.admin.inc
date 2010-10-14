@@ -187,6 +187,13 @@ function d4os_admin() {
     '#description'    => t("Default asset server URL"),
     '#required'       => TRUE,
   );
+// logging
+  $form['other']['debug']['d4os_default_debug_file_path'] = array(
+    '#type'          => 'textfield',
+    '#title'         => t('Debugging enabled ?'),
+    '#default_value' => variable_get('d4os_default_debug_file_path', ''),
+    '#description'   => t('Enable debugging output of server/client interactions. Enter the full path name of the file to write the debugging output to, such as /tmp/d4os.debug. It must be writable to the user who runs your web server. Leave blank for no debugging'),
+  );
   return system_settings_form($form);
 }
 

@@ -19,13 +19,13 @@
 /**
  * Save the profile infos
  */
-function d4os_io_db_os_profile_save($params) {
+function d4os_io_db_070_os_profile_save($params) {
   global $user;
   $success = FALSE;
   $user->uuid = $user->uid == 1 ? UUID_ZERO : $user->d4os['grid']['account']['uuid'];
 
   // get the uuid
-  $uid = d4os_io_db_os_user_get_uid($params['d4os']['grid']['account']['uuid']);
+  $uid = d4os_io_db_070_os_user_get_uid($params['d4os']['grid']['account']['uuid']);
   // load the account
   $account = user_load($uid);
 
@@ -47,9 +47,9 @@ function d4os_io_db_os_profile_save($params) {
     case 'partner':
       // get the accounts
       $names    = explode(' ', $params['d4os']['grid']['profile']['partner']['name']);
-      $partner  = d4os_io_db_os_user_load(array('username' => $names[0], 'lastname' => $names[1]));
+      $partner  = d4os_io_db_070_os_user_load(array('username' => $names[0], 'lastname' => $names[1]));
       if (is_object($partner)) {
-        $partner_uid            = d4os_io_db_os_user_get_uid($partner->UUID);
+        $partner_uid            = d4os_io_db_070_os_user_get_uid($partner->UUID);
         $partner_account        = user_load($partner_uid);
         $params['source']       = $account;
         $params['destination']  = $partner_account;
@@ -66,14 +66,14 @@ function d4os_io_db_os_profile_save($params) {
       $params['avatar_id']  = $user->uuid;
       $params['target_id']  = $params['d4os']['grid']['account']['uuid'];
       $params['notes']      = $params['d4os']['grid']['profile']['notes'];
-      $result = d4os_io_db_os_profile_services_avatar_notes_update($params);
+      $result = d4os_io_db_070_os_profile_services_avatar_notes_update($params);
       if ($result['success'] == TRUE) $success = TRUE;
       break;
 
     case 'url':
       $params['avatarID']   = $user->uuid;
       $params['profileURL'] = $params['d4os']['grid']['profile']['url'];
-      $result = d4os_io_db_os_profile_services_update_avatar_properties($params);
+      $result = d4os_io_db_070_os_profile_services_update_avatar_properties($params);
       if ($result['success'] == TRUE) $success = TRUE;
       break;
 
@@ -95,8 +95,8 @@ function d4os_io_db_os_profile_save($params) {
   }
 }
 
-function d4os_io_db_os_profile_user_delete($uuid) {
-  d4os_io_db_set_active('os_profile');
+function d4os_io_db_070_os_profile_user_delete($uuid) {
+  d4os_io_db_070_set_active('os_profile');
   // delete all classifieds
   db_query("DELETE FROM {classifieds} WHERE creatoruuid = '%s'", array($uuid));
   // delete all usernotes
@@ -109,17 +109,17 @@ function d4os_io_db_os_profile_user_delete($uuid) {
   db_query("UPDATE {userprofile} SET profilePartner= '' WHERE profilePartner = '%s'", array($uuid));
   // delete settings
   db_query("DELETE FROM {usersettings} WHERE useruuid = '%s'", array($uuid));
-  d4os_io_db_set_active('default');
+  d4os_io_db_070_set_active('default');
 }
 
 /*
  * Profile services
  */
-function d4os_io_db_os_profile_services_avatarclassifiedsrequest($params) {
+function d4os_io_db_070_os_profile_services_avatarclassifiedsrequest($params) {
   $uuid = $params['uuid'];
   $data = array();
 
-  d4os_io_db_set_active('os_profile');
+  d4os_io_db_070_set_active('os_profile');
   $result = db_query("SELECT * FROM {classifieds} WHERE creatoruuid = '%s'", array($uuid));
 
   while (($row = db_fetch_array($result))) {
@@ -128,7 +128,7 @@ function d4os_io_db_os_profile_services_avatarclassifiedsrequest($params) {
       "name"          => $row["name"]
     );
   }
-  d4os_io_db_set_active('default');
+  d4os_io_db_070_set_active('default');
 
   return array(
     'success'       => TRUE,
@@ -137,7 +137,7 @@ function d4os_io_db_os_profile_services_avatarclassifiedsrequest($params) {
   );
 }
 
-function d4os_io_db_os_profile_services_classified_update($params) {
+function d4os_io_db_070_os_profile_services_classified_update($params) {
   $classifieduuid = $params['classifiedUUID'];
   $creator        = $params['creatorUUID'];
   $category       = $params['category'];
@@ -153,9 +153,9 @@ function d4os_io_db_os_profile_services_classified_update($params) {
   $priceforlist   = $params['classifiedPrice'];
 
   // Check if we already have this one in the database
-  d4os_io_db_set_active('os_profile');
+  d4os_io_db_070_set_active('os_profile');
   $exists = db_result(db_query("SELECT count(*) FROM {classifieds} WHERE classifieduuid = '%s'", array($classifieduuid)));
-  d4os_io_db_set_active('default');
+  d4os_io_db_070_set_active('default');
 
   // Doing some late checking
   // Should be done by the module but let's see what happens when
@@ -241,9 +241,9 @@ function d4os_io_db_os_profile_services_classified_update($params) {
                 . "priceforlisting = %d"    // 14 
                 . " WHERE classifieduuid = '%s'";
   }
-  d4os_io_db_set_active('os_profile');
+  d4os_io_db_070_set_active('os_profile');
   db_query($query, $values);
-  d4os_io_db_set_active('default');
+  d4os_io_db_070_set_active('default');
   
   return array(
     'success'       => TRUE,
@@ -251,12 +251,12 @@ function d4os_io_db_os_profile_services_classified_update($params) {
   );
 }
 
-function d4os_io_db_os_profile_services_classified_delete($params) {
+function d4os_io_db_070_os_profile_services_classified_delete($params) {
   $classifieduuid = $params['classifiedID'];
 
-  d4os_io_db_set_active('os_profile');
+  d4os_io_db_070_set_active('os_profile');
   db_query("DELETE FROM {classifieds} WHERE classifieduuid = '%s'", array($classifieduuid));
-  d4os_io_db_set_active('default');
+  d4os_io_db_070_set_active('default');
 
   return array(
     'success'       => TRUE,
@@ -265,11 +265,11 @@ function d4os_io_db_os_profile_services_classified_delete($params) {
   );
 }
 
-function d4os_io_db_os_profile_services_avatarpicksrequest($params) {
+function d4os_io_db_070_os_profile_services_avatarpicksrequest($params) {
   $uuid = $params['uuid'];
   $data = array();
 
-  d4os_io_db_set_active('os_profile');
+  d4os_io_db_070_set_active('os_profile');
   $result = db_query("SELECT * FROM {userpicks} WHERE creatoruuid = '%s'", array($uuid));
 
   while (($row = db_fetch_array($result))) {
@@ -278,7 +278,7 @@ function d4os_io_db_os_profile_services_avatarpicksrequest($params) {
       "name"    => $row["name"]
     );
   }
-  d4os_io_db_set_active('default');
+  d4os_io_db_070_set_active('default');
 
   return array(
     'success'       => TRUE,
@@ -287,13 +287,13 @@ function d4os_io_db_os_profile_services_avatarpicksrequest($params) {
   );
 }
 
-function d4os_io_db_os_profile_services_pickinforequest($params) {
+function d4os_io_db_070_os_profile_services_pickinforequest($params) {
   $uuid = $params['avatar_id'];
   $pick = $params['pick_id'];
   $data = array();
 
   $values = array($uuid, $pick);
-  d4os_io_db_set_active('os_profile');
+  d4os_io_db_070_set_active('os_profile');
   $result = db_query("SELECT * FROM {userpicks} WHERE creatoruuid = '%s' AND pickuuid = '%s'", $values);
   while (($row = db_fetch_array($result))) {
     if ($row["description"] == "") {
@@ -301,7 +301,7 @@ function d4os_io_db_os_profile_services_pickinforequest($params) {
     }
     $data[] = $row;
   }
-  d4os_io_db_set_active('default');
+  d4os_io_db_070_set_active('default');
 
   return array(
     'success'       => TRUE,
@@ -310,7 +310,7 @@ function d4os_io_db_os_profile_services_pickinforequest($params) {
   );
 }
 
-function d4os_io_db_os_profile_services_picks_update($params) {
+function d4os_io_db_070_os_profile_services_picks_update($params) {
   $pickuuid     = $params['pick_id'];
   $creator      = $params['creator_id'];
   $toppick      = $params['top_pick'];
@@ -326,9 +326,9 @@ function d4os_io_db_os_profile_services_picks_update($params) {
   $enabled      = $params['enabled'];
 
   // Check if we already have this one in the database
-  d4os_io_db_set_active('os_profile');
+  d4os_io_db_070_set_active('os_profile');
   $exists = db_result(db_query("SELECT COUNT(*) FROM {userpicks} WHERE pickuuid = '%s'", array($pickuuid)));
-  d4os_io_db_set_active('default');
+  d4os_io_db_070_set_active('default');
 
   // Doing some late checking
   // Should be done by the module but let's see what happens when
@@ -384,9 +384,9 @@ function d4os_io_db_os_profile_services_picks_update($params) {
     );
 
     // Create a new record for this avatar note
-    d4os_io_db_set_active('os_profile');
+    d4os_io_db_070_set_active('os_profile');
     db_query($insertquery, $values);
-    d4os_io_db_set_active('default');
+    d4os_io_db_070_set_active('default');
   }
   else {
     $values = array(
@@ -403,9 +403,9 @@ function d4os_io_db_os_profile_services_picks_update($params) {
             . "snapshotuuid = '%s'"
             . " WHERE pickuuid = '%s'";
     // Update the existing record
-    d4os_io_db_set_active('os_profile');
+    d4os_io_db_070_set_active('os_profile');
     db_query($query, array($parceluuid, $name, $description, $snapshotuuid, $pickuuid));
-    d4os_io_db_set_active('default');
+    d4os_io_db_070_set_active('default');
   }
 
   return array(
@@ -414,11 +414,11 @@ function d4os_io_db_os_profile_services_picks_update($params) {
   );
 }
 
-function d4os_io_db_os_profile_services_picks_delete($params) {
+function d4os_io_db_070_os_profile_services_picks_delete($params) {
   $pickuuid = $params['pick_id'];
-  d4os_io_db_set_active('os_profile');
+  d4os_io_db_070_set_active('os_profile');
   db_query("DELETE FROM {userpicks} WHERE pickuuid = '%s'", array($pickuuid));
-  d4os_io_db_set_active('default');
+  d4os_io_db_070_set_active('default');
 
   return array(
     'success'       => TRUE,
@@ -426,12 +426,12 @@ function d4os_io_db_os_profile_services_picks_delete($params) {
   );
 }
 
-function d4os_io_db_os_profile_services_avatarnotesrequest($params) {
+function d4os_io_db_070_os_profile_services_avatarnotesrequest($params) {
   $uuid       = $params['avatar_id'];
   $targetuuid = $params['uuid'];
   $data = array();
 
-  d4os_io_db_set_active('os_profile');
+  d4os_io_db_070_set_active('os_profile');
   $result = db_query("SELECT * FROM {usernotes} WHERE useruuid = '%s' AND targetuuid = '%s'", array($uuid, $targetuuid));
   
   while ($row = db_fetch_array($result)) {
@@ -441,7 +441,7 @@ function d4os_io_db_os_profile_services_avatarnotesrequest($params) {
       "notes"     => $row["notes"],
     );
   }
-  d4os_io_db_set_active('default');
+  d4os_io_db_070_set_active('default');
 
   if (count($data) == 0) {
     $data[] = NULL;
@@ -454,33 +454,33 @@ function d4os_io_db_os_profile_services_avatarnotesrequest($params) {
   );
 }
 
-function d4os_io_db_os_profile_services_avatar_notes_update($params) {
+function d4os_io_db_070_os_profile_services_avatar_notes_update($params) {
   $uuid       = $params['avatar_id'];
   $targetuuid = $params['target_id'];
   $notes      = $params['notes'];
 
   // Check if we already have this one in the database
-  d4os_io_db_set_active('os_profile');
+  d4os_io_db_070_set_active('os_profile');
   $ready = db_result(db_query("SELECT COUNT(*) FROM {usernotes} WHERE useruuid = '%s' AND targetuuid = '%s'", array($uuid, $targetuuid)));
-  d4os_io_db_set_active('default');
+  d4os_io_db_070_set_active('default');
 
   if ($ready == 0) {
     // Create a new record for this avatar note
-    d4os_io_db_set_active('os_profile');
+    d4os_io_db_070_set_active('os_profile');
     db_query("INSERT INTO {usernotes} (useruuid, targetuuid, notes) VALUES  ('%s', '%s', '%s')", array($uuid, $targetuuid, $notes));
-    d4os_io_db_set_active('default');
+    d4os_io_db_070_set_active('default');
   }
   else if ($notes == "") {
     // Delete the record for this avatar note
-    d4os_io_db_set_active('os_profile');
+    d4os_io_db_070_set_active('os_profile');
     db_query("DELETE FROM {usernotes} WHERE useruuid = '%s' AND targetuuid = '%s'", array($uuid, $targetuuid));
-    d4os_io_db_set_active('default');
+    d4os_io_db_070_set_active('default');
   }
   else {
     // Update the existing record
-    d4os_io_db_set_active('os_profile');
+    d4os_io_db_070_set_active('os_profile');
     db_query("UPDATE {usernotes} SET notes = '%s' WHERE useruuid = '%s' AND targetuuid = '%s'", array($notes, $uuid, $targetuuid));
-    d4os_io_db_set_active('default');
+    d4os_io_db_070_set_active('default');
   }
 
   return array(
@@ -489,43 +489,44 @@ function d4os_io_db_os_profile_services_avatar_notes_update($params) {
   );
 }
 
-function d4os_io_db_os_profile_services_avatar_properties_request($params) {
+function d4os_io_db_070_os_profile_services_avatar_properties_request($params) {
   $uuid = $params['avatar_id'];
   $data = array();
 
-  d4os_io_db_set_active('os_profile');
-  $result = db_query("SELECT * FROM {userprofile} WHERE useruuid = '%s'", array($uuid));
+  d4os_io_db_070_set_active('os_profile');
+  $result = db_query("SELECT * FROM {userprofile} WHERE useruuid = '%s'", $uuid);
   while ($row = db_fetch_array($result)) {
     $data[] = array(
-      'profilePartner'        => $row['profilePartner'], // 1
-      //'profileAllowPublish'   => $row['profileAllowPublish'], // 2 // TODO : see why there is a problem with the sim and these lines (maybe use enum('true','false') in the base instead of binary(1) )
-      //'profileMaturePublish'  => $row['profileMaturePublish'], // 3
-      'profileURL'            => $row['profileURL'], // 4
-      'ProfileUrl'            => $row['profileURL'], // 5
-      'profileWantToMask'     => $row['profileWantToMask'], // 6
-      'profileWantToText'     => $row['profileWantToText'], // 7
-      'profileSkillsMask'     => $row['profileSkillsMask'], // 8
-      'profileSkillsText'     => $row['profileSkillsText'], // 9
-      'profileLanguages'      => $row['profileLanguages'], // 10
-      'profileFirstImage'     => $row['profileFirstImage'], // 11
-      'profileFirstText'      => $row['profileFirstText'], // 12
+      "ProfileUrl"          => $row["profileURL"], // 1
+      "Image"               => $row["profileImage"], // 2
+      "AboutText"           => $row["profileAboutText"], // 3
+      "FirstLifeImage"      => $row["profileFirstImage"], // 4
+      "FirstLifeAboutText"  => $row["profileFirstText"], // 5
+      "Partner"             => $row["profilePartner"], // 6
+
+      //Return interest data along with avatar properties
+      "wantmask"   => $row["profileWantToMask"], // 7
+      "wanttext"   => $row["profileWantToText"], // 8
+      "skillsmask" => $row["profileSkillsMask"], // 9
+      "skillstext" => $row["profileSkillsText"], // 10
+      "languages"  => $row["profileLanguages"]// 11
     );
   }
-  d4os_io_db_set_active('default');
+  d4os_io_db_070_set_active('default');
 
   if (count($data) == 0) {
-    $data[0]["profilePartner"]       = ''; // 1
-    //$data[0]["profileAllowPublish"]  = 'false'; // 2
-    //$data[0]["profileMaturePublish"] = 'false'; // 3
-    $data[0]["profileURL"]           = ''; // 4
-    $data[0]["ProfileUrl"]           = ''; // 5
-    $data[0]["profileWantToMask"]    = '0'; // 6
-    $data[0]["profileWantToText"]    = ''; // 7
-    $data[0]["profileSkillsMask"]    = '0'; // 8
-    $data[0]["profileSkillsText"]    = ''; // 9
-    $data[0]["profileLanguages"]     = ''; // 10
-    $data[0]["profileFirstImage"]    = ''; // 11
-    $data[0]["profileFirstText"]     = ''; // 12
+    $data[0]["ProfileUrl"]          = "";
+    $data[0]["Image"]               = UUID_ZERO;
+    $data[0]["AboutText"]           = "";
+    $data[0]["FirstLifeImage"]      = UUID_ZERO;
+    $data[0]["FirstLifeAboutText"]  = "";
+    $data[0]["Partner"]             = UUID_ZERO;
+
+    $data[0]["wantmask"]   = 0;
+    $data[0]["wanttext"]   = "";
+    $data[0]["skillsmask"] = 0;
+    $data[0]["skillstext"] = "";
+    $data[0]["languages"]  = "";
   }
 
   return array(
@@ -535,13 +536,13 @@ function d4os_io_db_os_profile_services_avatar_properties_request($params) {
   );
 }
 
-function d4os_io_db_os_profile_services_update_avatar_properties($params) {
+function d4os_io_db_070_os_profile_services_update_avatar_properties($params) {
   $avatarID = $params['avatarID'];
 
   // check if the user has a profile
-  d4os_io_db_set_active('os_profile');
+  d4os_io_db_070_set_active('os_profile');
   $profile = db_result(db_query("SELECT useruuid FROM {userprofile} WHERE useruuid = '%s'", array($avatarID)));
-  d4os_io_db_set_active('default');
+  d4os_io_db_070_set_active('default');
 
   if (!$profile) {
     $f = array();
@@ -563,9 +564,9 @@ function d4os_io_db_os_profile_services_update_avatar_properties($params) {
     $s[] = "'%s'";
     $v[] = $avatarID;
 
-    d4os_io_db_set_active('os_profile');
+    d4os_io_db_070_set_active('os_profile');
     $result = db_query("INSERT INTO {userprofile} (". implode(',', $f). ") VALUES (". implode(',', $s). ")", $v);
-    d4os_io_db_set_active('default');
+    d4os_io_db_070_set_active('default');
   }
   else {
     $f = array();
@@ -583,9 +584,9 @@ function d4os_io_db_os_profile_services_update_avatar_properties($params) {
     }
     $v[] = $avatarID;
 
-    d4os_io_db_set_active('os_profile');
+    d4os_io_db_070_set_active('os_profile');
     $result = db_query("UPDATE {userprofile} SET ". implode(',', $f). " WHERE useruuid = '%s'", $v);
-    d4os_io_db_set_active('default');
+    d4os_io_db_070_set_active('default');
   }
 
   return array(
@@ -594,18 +595,18 @@ function d4os_io_db_os_profile_services_update_avatar_properties($params) {
   );
 }
 
-function d4os_io_db_os_profile_services_avatar_interests_request($params) {
+function d4os_io_db_070_os_profile_services_avatar_interests_request($params) {
   $uuid = $params['avatar_id'];
   $data = array();
 
-  d4os_io_db_set_active('os_profile');
+  d4os_io_db_070_set_active('os_profile');
   $result = db_query("SELECT * FROM {userprofile} WHERE useruuid = '%s'", array($uuid));
   while ($row = db_fetch_array($result)) {
     $data[] = array(
       "ProfileUrl" => $row["profileURL"]
     );
   }
-  d4os_io_db_set_active('default');
+  d4os_io_db_070_set_active('default');
 
   return array(
     'success'       => TRUE,
@@ -614,7 +615,7 @@ function d4os_io_db_os_profile_services_avatar_interests_request($params) {
   );
 }
 
-function d4os_io_db_os_profile_services_avatar_interests_update($params) {
+function d4os_io_db_070_os_profile_services_avatar_interests_update($params) {
   $values = array(
     $params['skillsmask'],
     $params['skillstext'],
@@ -625,13 +626,13 @@ function d4os_io_db_os_profile_services_avatar_interests_update($params) {
   );
 
   // check if the user has a profile
-  d4os_io_db_set_active('os_profile');
+  d4os_io_db_070_set_active('os_profile');
   $profile = db_result(db_query("SELECT useruuid FROM {userprofile} WHERE useruuid = '%s'", array($params['avatar_id'])));
-  d4os_io_db_set_active('default');
+  d4os_io_db_070_set_active('default');
 
   if (!$profile) {
     // create the profile
-    d4os_io_db_set_active('os_profile');
+    d4os_io_db_070_set_active('os_profile');
     $result = db_query("INSERT INTO {userprofile} (profileSkillsMask, profileSkillsText, profileWantToMask, profileWantToText, profileLanguages, useruuid) VALUES ("
                     . "%d,"     // profileSkillsMask
                     . "'%s',"   // profileSkillsText
@@ -640,10 +641,10 @@ function d4os_io_db_os_profile_services_avatar_interests_update($params) {
                     . "'%s', "  // profileLanguages
                     . "'%s' "   // useruuid
                     . ")", $values);
-    d4os_io_db_set_active('default');
+    d4os_io_db_070_set_active('default');
   }
   else {
-    d4os_io_db_set_active('os_profile');
+    d4os_io_db_070_set_active('os_profile');
     $result = db_query("UPDATE {userprofile} SET "
                     . "profileSkillsMask = %d,"
                     . "profileSkillsText = '%s',"
@@ -651,7 +652,7 @@ function d4os_io_db_os_profile_services_avatar_interests_update($params) {
                     . "profileWantToText = '%s',"
                     . "profileLanguages = '%s' "
                     . "where useruuid = '%s'", $values);
-    d4os_io_db_set_active('default');
+    d4os_io_db_070_set_active('default');
   }
 
   return array(
@@ -660,17 +661,17 @@ function d4os_io_db_os_profile_services_avatar_interests_update($params) {
   );
 }
 
-function d4os_io_db_os_profile_services_user_preferences_request($params) {
+function d4os_io_db_070_os_profile_services_user_preferences_request($params) {
   $uuid = $params['avatar_id'];
   $data = array();
 
-  d4os_io_db_set_active('os_profile');
+  d4os_io_db_070_set_active('os_profile');
   $result = db_query("SELECT * FROM {usersettings} WHERE useruuid = '%s'", array($uuid));
 
   while ($row = db_fetch_array($result)) {
     $data[] = $row;
   }
-  d4os_io_db_set_active('default');
+  d4os_io_db_070_set_active('default');
 
   if (count($data) == 0) {
     $data[] = array(
@@ -687,7 +688,7 @@ function d4os_io_db_os_profile_services_user_preferences_request($params) {
   );
 }
 
-function d4os_io_db_os_profile_services_user_preferences_update($params) {
+function d4os_io_db_070_os_profile_services_user_preferences_update($params) {
   // get the user email address
   $account = module_invoke_all('os_user_load', array('UUID' => $params['avatar_id']));
 
@@ -700,9 +701,9 @@ function d4os_io_db_os_profile_services_user_preferences_update($params) {
   );
 
   // Check if we already have this one in the database
-  d4os_io_db_set_active('os_profile');
+  d4os_io_db_070_set_active('os_profile');
   $exists = db_result(db_query("SELECT count(*) FROM {usersettings} WHERE useruuid = '%s'", array($params['avatar_id'])));
-  d4os_io_db_set_active('default');
+  d4os_io_db_070_set_active('default');
 
   if (!$exists) {
     $query = "INSERT INTO {usersettings} (imviaemail, email, visible, useruuid) VALUES ('%s', '%s', '%s', '%s')";
@@ -711,9 +712,9 @@ function d4os_io_db_os_profile_services_user_preferences_update($params) {
     $query = "UPDATE {usersettings} SET imviaemail = '%s', email = '%s', visible = '%s' where useruuid = '%s'";
   }
 
-  d4os_io_db_set_active('os_profile');
+  d4os_io_db_070_set_active('os_profile');
   db_query($query, $data);
-  d4os_io_db_set_active('default');
+  d4os_io_db_070_set_active('default');
 
   return array(
     'success'       => TRUE,
@@ -721,8 +722,8 @@ function d4os_io_db_os_profile_services_user_preferences_update($params) {
   );
 }
 
-function d4os_io_db_os_profile_is_alive() {
+function d4os_io_db_070_os_profile_is_alive() {
   return array(
-    'success' => d4os_io_db_mysql_is_alive('os_profile', 'os profile'),
+    'success' => d4os_io_db_070_mysql_is_alive('os_profile', 'os profile'),
   );
 }

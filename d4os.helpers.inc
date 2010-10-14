@@ -58,28 +58,34 @@ function d4os_array_search_recursive($needle, $haystack) {
  */
 function d4os_log($module, $array, $severity = WATCHDOG_DEBUG) {
   $output = '';
+  $output .= "\n*************************************************************\n";
+  $output .= format_date(time(), 'custom', 'Y-m-d G:i:s'). "\n";
   foreach ($array as $value) {
     switch ($value['type']) {
       case 'string':
         switch ($value['name']) {
           case 'function call':
           case 'function output':
-            $output .= ' '. $value['name']. ' = <strong>'. $value['data']. '</strong><br/>';
+            $output .= ' '. $value['name']. ' = '. $value['data']. "\n-------------------------------------------------------------\n";
             break;
           default:
-            $output .= ' '. $value['name']. ' = '. $value['data']. '<br/>';
+            $output .= ' '. $value['name']. ' = '. $value['data']. "\n";
             break;
         }
         break;
       case 'var':
-        $output .= var_export($value['data'], TRUE). '<br />';
+        $output .= var_export($value['data'], TRUE). "\n";
         break;
       case 'array':
-        $output .= '<pre>'. print_r($value['data'], true). '</pre>';
+        $output .= print_r($value['data'], true);
         break;
     }
   }
-  watchdog($module, $output, array(), $severity);
+
+  $path = variable_get('d4os_default_debug_file_path', '');
+  if (!empty($path)) {
+    file_put_contents($path, $output, FILE_APPEND);
+  }
 }
 
 /**
