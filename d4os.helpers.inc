@@ -110,12 +110,22 @@ function d4os_grid_is_online() {
   global $base_url;
   $online = FALSE;
 // TODO : why not use loginuri ?
+  // remove http://
+  $url = variable_get('d4os_default_user_server_uri', $base_url);
+  if (strpos($url, 'http://') !== FALSE) {
+    $url = substr($url, 7);
+  }
+  $port = variable_get('d4os_default_user_server_port', '8002');
+  $fp = @fsockopen($url, $port, $errno, $errstr, 1.0);
+  if ($fp) {
+    $online = TRUE;
+  }
   // check if the user server is online
-  $user_server_uri = variable_get('d4os_default_user_server_uri', $base_url). ':'. variable_get('d4os_default_user_server_port', '8002');
+  /*$user_server_uri = variable_get('d4os_default_user_server_uri', $base_url). ':'. variable_get('d4os_default_user_server_port', '8002');
   $response = drupal_http_request($user_server_uri);
   if ($response->code == 404 && $response->headers['Server'] == 'Tiny WebServer') {
     $online = TRUE;
-  }
+  }*/
   /*global $grid_url;
   $url = $grid_url. '/simstatus/';
   $response = drupal_http_request(variable_get('d4os_ui_stats_status_url',  $url));

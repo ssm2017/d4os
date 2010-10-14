@@ -240,6 +240,24 @@ function d4os_io_services_profile_service() {
       '#help'             => t('Return avatar properties.')
     ),
 
+    // avatar_properties_update
+    array(
+      '#method'           => 'avatar_properties_update',
+      '#callback'         => 'd4os_io_services_profile_avatar_properties_update',
+      '#access callback'  => 'd4os_io_services_profile_avatar_properties_update_access',
+      '#file'             => array('file' => 'services.inc', 'module' => 'd4os_io_services_profile'),
+      '#args'             => array(
+        array(
+          '#name'           => 'params',
+          '#type'           => 'array',
+          '#description'    => t('Params.'),
+          '#optional'       => TRUE,
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Update avatar properties.')
+    ),
+
     // avatar_interests_request
     array(
       '#method'           => 'avatar_interests_request',

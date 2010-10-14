@@ -438,6 +438,48 @@ function d4os_io_services_profile_avatar_properties_request_access() {
   return TRUE;
 }
 
+function d4os_io_services_profile_avatar_properties_update($params) {
+  global $d4os_io_services_profile_log_level;
+  // log
+  if ($d4os_io_services_profile_log_level > 6) {
+    $log = array();
+    $log[] = array(
+      'name' => 'function call',
+      'type' => 'string',
+      'data' => 'avatar_properties_update',
+    );
+    $log[] = array(
+      'name' => 'input params',
+      'type' => 'array',
+      'data' => $params,
+    );
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
+  }
+
+  // do the job
+  $return = module_invoke_all('os_profile_services_avatar_properties_update', $params);
+
+  //if ($d4os_io_services_profile_log_level > 6) {
+    $log = array();
+    $log[] = array(
+      'name' => 'function output',
+      'type' => 'string',
+      'data' => 'avatar_properties_update',
+    );
+    $log[] = array(
+      'name' => 'output values',
+      'type' => 'array',
+      'data' => $return,
+    );
+    d4os_log('d4os_io_svc_prof', $log, WATCHDOG_DEBUG);
+  //}
+  return $return;
+}
+
+function d4os_io_services_profile_avatar_properties_update_access() {
+  return TRUE;
+}
+
 function d4os_io_services_profile_avatar_interests_request($params) {
   global $d4os_io_services_profile_log_level;
   // log
