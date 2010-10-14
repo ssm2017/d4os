@@ -109,7 +109,7 @@ function d4os_grid_is_online() {
   // -111 = connection refused
   global $base_url;
   $online = FALSE;
-
+// TODO : why not use loginuri ?
   // check if the user server is online
   $user_server_uri = variable_get('d4os_default_user_server_uri', $base_url). ':'. variable_get('d4os_default_user_server_port', '8002');
   $response = drupal_http_request($user_server_uri);

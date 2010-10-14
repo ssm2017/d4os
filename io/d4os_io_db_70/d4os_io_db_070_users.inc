@@ -405,7 +405,7 @@ function d4os_io_db_070_os_user_load($data = array()) {
       return FALSE;
     }
 
-    $query = "SELECT * FROM {UserAccounts} AS ua"
+    $query = "SELECT *, ua.Email AS email FROM {UserAccounts} AS ua"
           . " LEFT JOIN {auth} AS a ON a.UUID=ua.PrincipalID"
           . " LEFT JOIN {GridUser} AS gu ON gu.UserID=ua.PrincipalID"
           . " WHERE ua.PrincipalID='%s'";
@@ -461,7 +461,7 @@ function d4os_io_db_070_os_user_load($data = array()) {
       }
     }
   }
-  $sql = "SELECT * FROM {UserAccounts} AS ua"
+  $sql = "SELECT *, ua.Email AS email FROM {UserAccounts} AS ua"
           . " LEFT JOIN {auth} AS a ON a.UUID=ua.PrincipalID"
           . " LEFT JOIN {GridUser} AS gu ON gu.UserID=ua.PrincipalID"
           . " WHERE ". implode(' AND ', $query);

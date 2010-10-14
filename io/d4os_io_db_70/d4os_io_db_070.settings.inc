@@ -22,8 +22,10 @@ function d4os_io_db_070_build_bases_list() {
     'none'            => t('None'),
     'default'         => t('Website'),
     'os_robust'       => t('Robust'),
-    'os_profile'      => t('Profile'),
   );
+  if (module_exists('d4os_io_services_profile')) {
+    $bases['os_profile'] = t('Profile');
+  }
   return $bases;
 }
 
