@@ -649,9 +649,9 @@ function d4os_ui_users_check_users_add_user($values) {
   $data['mail']                         = $values['mail'];
   $data['status']                       = $values['status'];
   $data['pass']                         = user_password();
-  $data['grid']['account']['uuid']      = $values['UUID'];
-  $data['grid']['account']['username']  = $values['username'];
-  $data['grid']['account']['lastname']  = $values['lastname'];
+  $data['d4os']['grid']['account']['uuid']      = $values['UUID'];
+  $data['d4os']['grid']['account']['username']  = $values['username'];
+  $data['d4os']['grid']['account']['lastname']  = $values['lastname'];
 
   $account = user_save(NULL, $data);
   drupal_set_message(t('User !name added on the website.', array('!name' => $values['name'])));

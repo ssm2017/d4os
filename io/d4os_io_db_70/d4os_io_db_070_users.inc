@@ -548,11 +548,8 @@ function d4os_io_db_070_os_user_get_all_uid() {
  */
 function d4os_io_db_070_os_user_load_all() {
   $users = array();
-  $query = "SELECT *, CONCAT_WS(' ', FirstName, LastName) AS name FROM {UserAccounts} AS ua"
-        . " LEFT JOIN {auth} AS a ON a.UUID=ua.PrincipalID"
-        . " LEFT JOIN {GridUser} AS gu ON gu.UserID=ua.PrincipalID";
   d4os_io_db_070_set_active('os_robust');
-  $result = db_query($query);
+  $result = db_query("SELECT *, ua.FirstName AS username, ua.LastName AS lastname, ua.PrincipalID AS UUID, ua.Email AS email, CONCAT_WS(' ', FirstName, LastName) AS name FROM {UserAccounts} AS ua");
   while ($user = db_fetch_object($result)) {
     $users[] = $user;
   }

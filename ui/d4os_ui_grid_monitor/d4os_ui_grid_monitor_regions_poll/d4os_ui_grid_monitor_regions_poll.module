@@ -336,7 +336,6 @@ function d4os_ui_grid_monitor_regions_poll_check_simstatus($hosts, &$context) {
 function d4os_ui_grid_monitor_regions_poll_batch_finished($success, $results, $operations) {
   if ($success) {
     $message = $results['passes'] . ' processed.';
-    drupal_set_message('<pre>'. print_r($results, TRUE). '</pre>'); // del
   }
   else {
     $error_operation = reset($operations);
