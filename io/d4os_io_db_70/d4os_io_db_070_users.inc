@@ -487,22 +487,24 @@ function d4os_io_db_070_os_user_load($data = array()) {
  */
 function d4os_io_db_070_users_add_extra_fields(&$user) {
   if (module_exists('d4os_io_services_profile')) {
-    $params = array();
-    $params['avatar_id'] = $user->UUID;
-    $properties = d4os_io_db_070_os_profile_services_avatar_properties_request($params);
+    $properties = d4os_io_db_070_os_profile_services_avatar_properties_request(array('avatar_id' => $user->UUID));
     if (isset($properties['data'][0])) {
-      $user->profilePartner        = $properties['data'][0]['profilePartner']; // 1
-      $user->profileAllowPublish   = $properties['data'][0]['profileAllowPublish']; // 2
-      $user->profileMaturePublish  = $properties['data'][0]['profileMaturePublish']; // 3
-      $user->profileURL            = $properties['data'][0]['profileURL']; // 4
-      $user->ProfileUrl            = $properties['data'][0]['profileURL']; // 5
-      $user->profileWantToMask     = $properties['data'][0]['profileWantToMask']; // 6
-      $user->profileWantToText     = $properties['data'][0]['profileWantToText']; // 7
-      $user->profileSkillsMask     = $properties['data'][0]['profileSkillsMask']; // 8
-      $user->profileSkillsText     = $properties['data'][0]['profileSkillsText']; // 9
-      $user->profileLanguages      = $properties['data'][0]['profileLanguages']; // 10
-      //$user->profileFirstImage     = $properties['data'][0]['profileFirstImage']; // 11
-      //$user->profileFirstText      = $properties['data'][0]['profileFirstText']; // 12
+      $user->profileURL         = $properties['data'][0]['ProfileUrl'];
+      $user->profileImage       = $properties['data'][0]['Image'];
+      $user->profileAboutText   = $properties['data'][0]['AboutText'];
+      $user->profileFirstImage  = $properties['data'][0]['FirstLifeImage'];
+      $user->profileFirstText   = $properties['data'][0]['FirstLifeAboutText'];
+      $user->profilePartner     = $properties['data'][0]['Partner'];
+
+      //$user->profileAllowPublish  = $properties['data'][0]['profileAllowPublish'];
+      //$user->profileMaturePublish = $properties['data'][0]['profileMaturePublish'];
+
+      // interests
+      $user->profileWantDoMask  = $properties['data'][0]['wantmask'];
+      $user->profileWantToText  = $properties['data'][0]['wanttext'];
+      $user->profileSkillsMask  = $properties['data'][0]['skillsmask'];
+      $user->profileSkillsText  = $properties['data'][0]['skillstext'];
+      $user->profileLanguages   = $properties['data'][0]['languages'];
     }
   }
 }

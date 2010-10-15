@@ -131,9 +131,11 @@ function d4os_io_db_070_os_regions_regions_count() {
 function d4os_io_db_070_os_regions_get_regions_array() {
   $regions = d4os_io_db_070_os_regions_names();
   $regions_list = array();
-  foreach ($regions as $region) {
-    $handle = '_'. $region->uuid;
-    $regions_list[$handle] = $region->regionName;
+  if (count($regions)) {
+    foreach ($regions as $region) {
+      $handle = '_'. $region->uuid;
+      $regions_list[$handle] = $region->regionName;
+    }
   }
   return $regions_list;
 }

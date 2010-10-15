@@ -31,10 +31,6 @@ function d4os_io_db_070_os_profile_save($params) {
 
   switch ($params['op']) {
 
-    case 'about-text':
-    case 'first-text':
-    case 'image':
-    case 'first-image':
     case 'home-region':
       $data = array();
       $data['d4os']['grid'] = d4os_array_merge_recursive_distinct($account->d4os['grid'], $params['d4os']['grid']);
@@ -71,9 +67,19 @@ function d4os_io_db_070_os_profile_save($params) {
       break;
 
     case 'url':
-      $params['avatarID']   = $user->uuid;
-      $params['profileURL'] = $params['d4os']['grid']['profile']['url'];
-      $result = d4os_io_db_070_os_profile_services_update_avatar_properties($params);
+    case 'about-text':
+    case 'first-text':
+    case 'image':
+    case 'first-image':
+      $params['avatarID']           = $params['d4os']['grid']['account']['uuid'];
+      $params['profileAboutText']   = $params['d4os']['grid']['profile']['about_text'];
+      $params['profileFirstImage']  = $params['d4os']['grid']['profile']['first_image'];
+      $params['profileImage']       = $params['d4os']['grid']['profile']['image'];
+      $params['profileImage']       = $params['d4os']['grid']['profile']['image'];
+      $params['profileURL']         = $params['d4os']['grid']['profile']['url'];
+      $params['profileFirstText']   = $params['d4os']['grid']['profile']['first_text'];
+      //$params['profilePartner']   = $params['d4os']['grid']['profile']['partner'];
+      $result = d4os_io_db_070_os_profile_services_avatar_properties_update($params);
       if ($result['success'] == TRUE) $success = TRUE;
       break;
 
@@ -491,11 +497,10 @@ function d4os_io_db_070_os_profile_services_avatar_notes_update($params) {
 }
 
 function d4os_io_db_070_os_profile_services_avatar_properties_request($params) {
-  $uuid = $params['avatar_id'];
   $data = array();
 
   d4os_io_db_070_set_active('os_profile');
-  $result = db_query("SELECT * FROM {userprofile} WHERE useruuid = '%s'", $uuid);
+  $result = db_query("SELECT * FROM {userprofile} WHERE useruuid = '%s'", $params['avatar_id']);
   while ($row = db_fetch_array($result)) {
     $data[] = array(
       "ProfileUrl"          => $row["profileURL"], // 1
