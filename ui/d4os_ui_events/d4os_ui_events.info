@@ -1,5 +1,5 @@
 name = d4os ui events
-description = Links the event module with opensimulator.
+description = Allow the users to create inworld events available in inworld search if the user owns a parcel.
 package = d4os ui
 dependencies[] = d4os
 dependencies[] = date_api

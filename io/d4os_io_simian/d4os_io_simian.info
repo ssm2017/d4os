@@ -1,5 +1,5 @@
 ; $Id$
 name = "d4os io simian"
-description = "Provides tools to manage an opensim grid. (be carefull !!! this module can not be used with d4os_io_db this is only a test to use simiangrid with opensimulator 0.7 version)"
+description = "Allow the website to use a webservices link to store informations for SimianGrid. DONT ENABLE AT THE SAME TIME THIS MODULE WITH THE d4os_io_db OR d4os_io_db_070 MODULE"
 package = d4os io
 core = 6.x

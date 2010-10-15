@@ -1,6 +1,6 @@
 ; $Id$
 name = "d4os ui grid monitor regions"
-description = "Provides tools to manage regions in an opensim grid."
+description = "Provides a page to list grid regions infos."
 package = "d4os ui grid monitor"
 core = 6.x
 dependencies[] = d4os

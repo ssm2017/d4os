@@ -1,5 +1,5 @@
 name = d4os io services groups
-description = Provides a group service.
+description = Provides a group service. THIS IS ACTUALLY BROKEN, I LEFT IT FOR EXPERIMENTS.
 package = d4os io
 dependencies[] = services
 dependencies[] = xmlrpc_server

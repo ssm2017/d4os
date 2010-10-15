@@ -1,6 +1,6 @@
 ; $Id$
 name = "d4os ui profile"
-description = "Provides tools to manage profiles in an opensim grid."
+description = "User interface to manage users profiles. The module is allowing the display of a new tab in the user profile to view and edit inworld profile."
 package = d4os ui
 core = 6.x
 dependencies[] = d4os

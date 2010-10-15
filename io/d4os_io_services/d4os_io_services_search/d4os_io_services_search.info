@@ -1,5 +1,5 @@
 name = d4os io services search
-description = Provides a service for searching events.
+description = Provides a service for search.
 package = d4os io
 dependencies[] = services
 dependencies[] = xmlrpc_server

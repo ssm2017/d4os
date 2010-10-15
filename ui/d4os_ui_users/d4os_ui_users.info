@@ -1,6 +1,6 @@
 ; $Id$
 name = "d4os ui users"
-description = "Provides tools to manage users in an opensim grid."
+description = "User interface to manage users. This module is adding registration and user account modification on the grid ."
 package = d4os ui
 core = 6.x
 dependencies[] = d4os
