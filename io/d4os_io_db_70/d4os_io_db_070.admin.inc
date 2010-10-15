@@ -168,5 +168,53 @@ function d4os_io_db_070_admin() {
     );
   }
 
+// offline_message
+  if (module_exists('d4os_io_services_offline_message')) {
+    $form['multiple_base']['offline_message'] = array(
+      '#type'           => 'fieldset',
+      '#title'          => t('offline_message'),
+      '#collapsible'    => TRUE,
+      '#collapsed'      => TRUE,
+    );
+    $options = $bases;
+    unset($options['os_offline_message']);
+    $form['multiple_base']['offline_message']['d4os_io_db_070_multiple_offline_message_same'] = array(
+      '#type'           => 'select',
+      '#title'          => t('Same as'),
+      '#default_value'  => variable_get('d4os_io_db_070_multiple_offline_message_same', 'none'),
+      '#options'        => $options,
+      '#description'    => t('Select if this database is the same as another one.'),
+    );
+    $form['multiple_base']['offline_message']['d4os_io_db_070_multiple_offline_message_host'] = array(
+      '#type'           => 'textfield',
+      '#title'          => t('Host'),
+      '#default_value'  => variable_get('d4os_io_db_070_multiple_offline_message_host', 'localhost'),
+      '#description'    => t('Host'),
+    );
+    $form['multiple_base']['offline_message']['d4os_io_db_070_multiple_offline_message_db'] = array(
+      '#type'           => 'textfield',
+      '#title'          => t('Database'),
+      '#default_value'  => variable_get('d4os_io_db_070_multiple_offline_message_db', 'offline_message'),
+      '#description'    => t('Database'),
+    );
+    $form['multiple_base']['offline_message']['d4os_io_db_070_multiple_offline_message_prefix'] = array(
+      '#type'           => 'textfield',
+      '#title'          => t('Prefix'),
+      '#default_value'  => variable_get('d4os_io_db_070_multiple_offline_message_prefix', ''),
+      '#description'    => t('Prefix'),
+    );
+    $form['multiple_base']['offline_message']['d4os_io_db_070_multiple_offline_message_username'] = array(
+      '#type'           => 'textfield',
+      '#title'          => t('Username'),
+      '#default_value'  => variable_get('d4os_io_db_070_multiple_offline_message_username', 'root'),
+      '#description'    => t('Username'),
+    );
+    $form['multiple_base']['offline_message']['d4os_io_db_070_multiple_offline_message_password'] = array(
+      '#type'           => 'textfield',
+      '#title'          => t('Password'),
+      '#default_value'  => variable_get('d4os_io_db_070_multiple_offline_message_password', 'root'),
+      '#description'    => t('Password'),
+    );
+  }
   return system_settings_form($form);
 }

@@ -139,7 +139,7 @@ function d4os_io_services_offline_message_savemessage($params) {
     $log[] = array(
       'name' => 'output xml',
       'type' => 'string',
-      'data' => htmlentities($return),
+      'data' => $return,
     );
     d4os_log('d4os_io_srv_omsg', $log, WATCHDOG_DEBUG);
   }
@@ -182,7 +182,7 @@ function d4os_io_services_offline_message_retrievemessages($params) {
     $log[] = array(
       'name' => 'output xml',
       'type' => 'string',
-      'data' => htmlentities($return),
+      'data' => $return,
     );
     d4os_log('d4os_io_srv_omsg', $log, WATCHDOG_DEBUG);
   }

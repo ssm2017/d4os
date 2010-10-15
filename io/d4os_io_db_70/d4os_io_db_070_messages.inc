@@ -15,13 +15,13 @@
  * @param Array of search params
  * @return Boolean TRUE if success or FALSE if error
  */
-function d4os_io_db_os_services_offline_message_savemessage($params) {
+function d4os_io_db_070_os_services_offline_message_savemessage($params) {
   $uuid     = $params['toAgentID'];
   $message  = $params['message'];
 
-  d4os_io_db_set_active('os_offline_message');
-  $success = db_query("INSERT INTO {offline_msgs} (uuid, message) VALUES ('%s', '%s')", array($uuid, $message));
-  d4os_io_db_set_active('default');
+  d4os_io_db_070_set_active('os_offline_message');
+  $success = db_query("INSERT INTO {offline_msgs} (uuid, message) VALUES ('%s', '%s')", $uuid, $message);
+  d4os_io_db_070_set_active('default');
 
   if ($success) {
     if (variable_get('d4os_io_services_offline_message_send_mails', 0)) {
@@ -41,22 +41,22 @@ function d4os_io_db_os_services_offline_message_savemessage($params) {
  * @param Array of search params
  * @return Array like array('success'=>true, 'data'=>$data);
  */
-function d4os_io_db_os_services_offline_message_retrievemessages($params) {
+function d4os_io_db_070_os_services_offline_message_retrievemessages($params) {
   $uuid = $params['Guid'];
 
   // get the messages
   $messages_list = array();
-  d4os_io_db_set_active('os_offline_message');
+  d4os_io_db_070_set_active('os_offline_message');
   $messages = db_query("SELECT * FROM {offline_msgs} WHERE uuid = '%s'", array($uuid));
   while ($message = db_fetch_object($messages)) {
     $messages_list[] = $message->message;
   }
-  d4os_io_db_set_active('default');
+  d4os_io_db_070_set_active('default');
 
   // delete the messages
-  d4os_io_db_set_active('os_offline_message');
+  d4os_io_db_070_set_active('os_offline_message');
   db_query("DELETE FROM {offline_msgs} WHERE uuid = '%s'", array($uuid));
-  d4os_io_db_set_active('default');
+  d4os_io_db_070_set_active('default');
 
   return array(
     'success' => TRUE,
@@ -68,10 +68,10 @@ function d4os_io_db_os_services_offline_message_retrievemessages($params) {
  * Delete messages for a user by uuid
  * @param uuid of the user to delete messages
  */
-function d4os_io_db_offline_message_user_delete($uuid) {
-  d4os_io_db_set_active('os_offline_message');
+function d4os_io_db_070_offline_message_user_delete($uuid) {
+  d4os_io_db_070_set_active('os_offline_message');
   db_query("DELETE FROM {offline_msgs} WHERE uuid = '%s'", array($uuid));
-  d4os_io_db_set_active('default');
+  d4os_io_db_070_set_active('default');
 }
 
 
@@ -79,8 +79,8 @@ function d4os_io_db_offline_message_user_delete($uuid) {
  * Check if the offline_messages database is responding
  * @return Array like array('success'=>true or false);
  */
-function d4os_io_db_os_offline_messages_is_alive() {
+function d4os_io_db_070_os_offline_messages_is_alive() {
   return array(
-    'success' => d4os_io_db_mysql_is_alive('os_offline_messages', 'os offline messages'),
+    'success' => d4os_io_db_070_mysql_is_alive('os_offline_messages', 'os offline messages'),
   );
 }
