@@ -43,7 +43,7 @@ function d4os_io_db_070_os_search_user_delete($uuid) {
  */
 function d4os_io_db_070_os_event_save($event) {
 // TODO : check if success before saving the node itself
-drupal_set_message('<pre>'. print_r($event, TRUE). '</pre>'); // del
+
   // convert array to object
   $event = is_array($event) ? (object)$event : $event;
   // get inworld fields
