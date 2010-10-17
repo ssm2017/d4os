@@ -21,7 +21,7 @@ function d4os_ui_users_admin() {
   $roles += user_roles(TRUE);
 
   $form = array();
-
+/*
   $form['reg_flow'] = array(
     '#type'         => 'fieldset',
     '#title'        => t('Grid registration flow'),
@@ -38,7 +38,7 @@ function d4os_ui_users_admin() {
     '#default_value'  => variable_get('d4os_ui_users_grid_user_create_flow', 0),
     '#description'    => t('Select when the grid account is created in the grid database.'),
   );
-
+*/
   $form['profile_texts'] = array(
     '#type'         => 'fieldset',
     '#title'        => t('Profile texts'),
@@ -90,7 +90,7 @@ function d4os_ui_users_admin() {
 
   $form['god_level'] = array(
     '#type'         => 'fieldset',
-    '#title'        => t('God level'),
+    '#title'        => t('User level'),
     '#description'  => '<div class="message error">'. t('that usage is NOT supported by OpenSim devs. Use at your own risk. Side effects unknown'). '</div>',
     '#collapsible'  => TRUE,
     '#collapsed'    => TRUE,
@@ -98,11 +98,11 @@ function d4os_ui_users_admin() {
 // TODO : show a message to the users if they are not allowed to log in the grid
   $form['god_level']['d4os_ui_users_default_god_level'] = array(
     '#type'           => 'textfield',
-    '#title'          => t('Default god level'),
+    '#title'          => t('Default user level'),
     '#default_value'  => variable_get('d4os_ui_users_default_god_level', 10),
     '#size'           => 3,
     '#maxlength'      => 3,
-    '#description'    => t("The default god level for new users."),
+    '#description'    => t("The default user level for new users."),
     '#required'       => TRUE,
   );
 
