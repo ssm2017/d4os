@@ -29,6 +29,9 @@ function d4os_io_db_070_build_bases_list() {
   if (module_exists('d4os_io_services_offline_message')) {
     $bases['os_offline_message'] = t('offline_message');
   }
+  if (module_exists('d4os_io_services_search')) {
+    $bases['os_search'] = t('Search');
+  }
   return $bases;
 }
 
@@ -85,3 +88,15 @@ $db_url['os_offline_message'] = 'mysqli://'
 . variable_get('d4os_io_db_070_multiple_offline_message_db', 'profile');
 $d4os_db_prefix['os_offline_message'] = variable_get('d4os_io_db_070_multiple_offline_message_prefix', '');
 $d4os_same_db['os_offline_message'] = variable_get('d4os_io_db_070_multiple_offline_message_same', 'none');
+
+// search
+$db_url['os_search'] = 'mysqli://'
+. variable_get('d4os_io_db_070_multiple_search_username', 'root')
+.':'
+. variable_get('d4os_io_db_070_multiple_search_password', 'root')
+. '@'
+. variable_get('d4os_io_db_070_multiple_search_host', 'localhost')
+. '/'
+. variable_get('d4os_io_db_070_multiple_search_db', 'search');
+$d4os_db_prefix['os_search'] = variable_get('d4os_io_db_070_multiple_search_prefix', '');
+$d4os_same_db['os_search'] = variable_get('d4os_io_db_070_multiple_search_same', 'none');

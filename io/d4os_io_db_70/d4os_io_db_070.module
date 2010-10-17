@@ -97,17 +97,11 @@ function d4os_io_db_070_set_active($name = 'default') {
  * Load includes files
  */
 function d4os_io_db_070_load_includes() {
-  //module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_asset');
-  //module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_auth');
   module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_grid');
   module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_inventory');
-  //module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_messaging');
-  //module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_account');
   module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_users');
   module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_friends');
-  //module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_opensim');
-  //module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_search');
-  //module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_search_parser');
+  module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_search');
   //module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_groups');
   module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_profile');
   module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_messages');

@@ -216,5 +216,54 @@ function d4os_io_db_070_admin() {
       '#description'    => t('Password'),
     );
   }
+
+  // search
+  if (module_exists('d4os_io_services_search')) {
+    $form['multiple_base']['search'] = array(
+      '#type'           => 'fieldset',
+      '#title'          => t('search'),
+      '#collapsible'    => TRUE,
+      '#collapsed'      => TRUE,
+    );
+    $options = $bases;
+    unset($options['os_search']);
+    $form['multiple_base']['search']['d4os_io_db_070_multiple_search_same'] = array(
+      '#type'           => 'select',
+      '#title'          => t('Same as'),
+      '#default_value'  => variable_get('d4os_io_db_070_multiple_search_same', 'none'),
+      '#options'        => $options,
+      '#description'    => t('Select if this database is the same as another one.'),
+    );
+    $form['multiple_base']['search']['d4os_io_db_070_multiple_search_host'] = array(
+      '#type'           => 'textfield',
+      '#title'          => t('Host'),
+      '#default_value'  => variable_get('d4os_io_db_070_multiple_search_host', 'localhost'),
+      '#description'    => t('Host'),
+    );
+    $form['multiple_base']['search']['d4os_io_db_070_multiple_search_db'] = array(
+      '#type'           => 'textfield',
+      '#title'          => t('Database'),
+      '#default_value'  => variable_get('d4os_io_db_070_multiple_search_db', 'search'),
+      '#description'    => t('Database'),
+    );
+    $form['multiple_base']['search']['d4os_io_db_070_multiple_search_prefix'] = array(
+      '#type'           => 'textfield',
+      '#title'          => t('Prefix'),
+      '#default_value'  => variable_get('d4os_io_db_070_multiple_search_prefix', ''),
+      '#description'    => t('Prefix'),
+    );
+    $form['multiple_base']['search']['d4os_io_db_070_multiple_search_username'] = array(
+      '#type'           => 'textfield',
+      '#title'          => t('Username'),
+      '#default_value'  => variable_get('d4os_io_db_070_multiple_search_username', 'root'),
+      '#description'    => t('Username'),
+    );
+    $form['multiple_base']['search']['d4os_io_db_070_multiple_search_password'] = array(
+      '#type'           => 'textfield',
+      '#title'          => t('Password'),
+      '#default_value'  => variable_get('d4os_io_db_070_multiple_search_password', 'root'),
+      '#description'    => t('Password'),
+    );
+  }
   return system_settings_form($form);
 }

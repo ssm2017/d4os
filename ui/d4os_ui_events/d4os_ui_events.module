@@ -360,9 +360,7 @@ function d4os_ui_events_build_output($node) {
   }
 
   // The hard part, getting the region and converting that to a GlobalPosition
-  // TODO : check location
-//116/138/20.05
-//256000
+
   $position = $node->location;
   list($location, $regionUUID)  = explode("|", $position);
   list($val_x, $val_y, $val_z)     = explode("/", $location);

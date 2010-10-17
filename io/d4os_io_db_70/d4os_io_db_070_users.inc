@@ -180,6 +180,7 @@ function d4os_io_db_070_os_user_save($account) {
       }
     }
   }
+
   // check if the user already exists
   $user_exists = d4os_io_db_070_os_user_load(array('UUID' => $grid_user['UUID']));
   if (is_object($user_exists)) {
@@ -187,11 +188,13 @@ function d4os_io_db_070_os_user_save($account) {
   // update the UserAccounts table
     $items_count = count($fields['UserAccounts']['submitted_fields']);
     if ($items_count) {
+      // parse
       $queries = '';
       $values = array();
       foreach ($fields['UserAccounts']['submitted_fields'] as $key => $value) {
         switch ($value) {
           case 'PrincipalID':
+          case 'ScopeID':
           case 'FirstName':
           case 'LastName':
           case 'Email':
@@ -290,9 +293,14 @@ function d4os_io_db_070_os_user_save($account) {
       $queries  = array();
       $values   = array();
       $s        = array();
+      // add blank value to "ScopeID"
+      $fields['UserAccounts']['submitted_fields'][] = 'ScopeID';
+      $fields['UserAccounts']['submitted_values'][] = UUID_ZERO;
+      // parse values
       foreach ($fields['UserAccounts']['submitted_fields'] as $key => $value) {
         switch ($value) {
           case 'PrincipalID':
+          case 'ScopeID':
           case 'FirstName':
           case 'LastName':
           case 'Email':

@@ -31,14 +31,13 @@
 //    );
 //    d4os_log('d4os_io_services_search', $log, WATCHDOG_DEBUG);
 
-global $d4os_io_services_search_log_level;
-$d4os_io_services_search_log_level = variable_get('d4os_io_services_search_log_level', 0);
+define('D4OS_IO_SERVICES_SEARCH_LOG_LEVEL', variable_get('d4os_io_services_search_log_level', 0));
 
 /**
  * Get the places
  */
 function d4os_io_services_search_dir_places_query($params) {
-  global $d4os_io_services_search_log_level;
+
 //$text, $category='-1', $sim_name='', $query_start=0, $flags
 
   $pieces = split(" ", $params['text']);
@@ -52,7 +51,7 @@ function d4os_io_services_search_dir_places_query($params) {
   }
 
   // log
-  if ($d4os_io_services_search_log_level > 6) {
+  if (D4OS_IO_SERVICES_SEARCH_LOG_LEVEL > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -70,7 +69,7 @@ function d4os_io_services_search_dir_places_query($params) {
   // do the job
   $return = module_invoke_all('os_search_services_dir_places_query', $params);
 
-  if ($d4os_io_services_search_log_level > 6) {
+  if (D4OS_IO_SERVICES_SEARCH_LOG_LEVEL > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -92,10 +91,10 @@ function d4os_io_services_search_dir_places_query_access() {
 }
 
 function d4os_io_services_search_dir_popular_query($params) {
-  global $d4os_io_services_search_log_level;
+
 
   // log
-  if ($d4os_io_services_search_log_level > 6) {
+  if (D4OS_IO_SERVICES_SEARCH_LOG_LEVEL > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -113,7 +112,7 @@ function d4os_io_services_search_dir_popular_query($params) {
   // do the job
   $return = module_invoke_all('os_search_services_dir_popular_query', $params);
 
-  if ($d4os_io_services_search_log_level > 6) {
+  if (D4OS_IO_SERVICES_SEARCH_LOG_LEVEL > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -135,10 +134,10 @@ function d4os_io_services_search_dir_popular_query_access() {
 }
 
 function d4os_io_services_search_dir_land_query($params) {
-  global $d4os_io_services_search_log_level;
+
 
   // log
-  if ($d4os_io_services_search_log_level > 6) {
+  if (D4OS_IO_SERVICES_SEARCH_LOG_LEVEL > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -156,7 +155,7 @@ function d4os_io_services_search_dir_land_query($params) {
   // do the job
   $return = module_invoke_all('os_search_services_dir_land_query', $params);
 
-  if ($d4os_io_services_search_log_level > 6) {
+  if (D4OS_IO_SERVICES_SEARCH_LOG_LEVEL > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -178,7 +177,7 @@ function d4os_io_services_search_dir_land_query_access() {
 }
 
 function d4os_io_services_search_dir_events_query($params) {
-  global $d4os_io_services_search_log_level;
+
   
   if ($params['text'] == "%%%") {
     return array(
@@ -188,7 +187,7 @@ function d4os_io_services_search_dir_events_query($params) {
   }
 
   // log
-  if ($d4os_io_services_search_log_level > 6) {
+  if (D4OS_IO_SERVICES_SEARCH_LOG_LEVEL > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -206,7 +205,7 @@ function d4os_io_services_search_dir_events_query($params) {
   // do the job
   $return = module_invoke_all('os_search_services_dir_events_query', $params);
 
-  if ($d4os_io_services_search_log_level > 6) {
+  if (D4OS_IO_SERVICES_SEARCH_LOG_LEVEL > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -228,7 +227,7 @@ function d4os_io_services_search_dir_events_query_access() {
 }
 
 function d4os_io_services_search_dir_classified_query($params) {
-  global $d4os_io_services_search_log_level;
+
 
   if ($params['text'] == "%%%") {
     return array(
@@ -238,7 +237,7 @@ function d4os_io_services_search_dir_classified_query($params) {
   }
 
   // log
-  if ($d4os_io_services_search_log_level > 6) {
+  if (D4OS_IO_SERVICES_SEARCH_LOG_LEVEL > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -256,7 +255,7 @@ function d4os_io_services_search_dir_classified_query($params) {
   // do the job
   $return = module_invoke_all('os_search_services_dir_classified_query', $params);
 
-  if ($d4os_io_services_search_log_level > 6) {
+  if (D4OS_IO_SERVICES_SEARCH_LOG_LEVEL > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -278,10 +277,10 @@ function d4os_io_services_search_dir_classified_query_access() {
 }
 
 function d4os_io_services_search_event_info_query($params) {
-  global $d4os_io_services_search_log_level;
+
 
   // log
-  if ($d4os_io_services_search_log_level > 6) {
+  if (D4OS_IO_SERVICES_SEARCH_LOG_LEVEL > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -299,7 +298,7 @@ function d4os_io_services_search_event_info_query($params) {
   // do the job
   $return = module_invoke_all('os_search_services_event_info_query', $params);
 
-  if ($d4os_io_services_search_log_level > 6) {
+  if (D4OS_IO_SERVICES_SEARCH_LOG_LEVEL > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
@@ -321,10 +320,10 @@ function d4os_io_services_search_event_info_query_access() {
 }
 
 function d4os_io_services_search_classifieds_info_query($params) {
-  global $d4os_io_services_search_log_level;
+
 
   // log
-  if ($d4os_io_services_search_log_level > 6) {
+  if (D4OS_IO_SERVICES_SEARCH_LOG_LEVEL > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function call',
@@ -342,7 +341,7 @@ function d4os_io_services_search_classifieds_info_query($params) {
   // do the job
   $return = module_invoke_all('os_search_services_classifieds_info_query', $params);
 
-  if ($d4os_io_services_search_log_level > 6) {
+  if (D4OS_IO_SERVICES_SEARCH_LOG_LEVEL > 6) {
     $log = array();
     $log[] = array(
       'name' => 'function output',
