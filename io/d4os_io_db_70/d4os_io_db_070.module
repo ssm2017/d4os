@@ -104,6 +104,7 @@ function d4os_io_db_070_load_includes() {
   //module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_messaging');
   //module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_account');
   module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_users');
+  module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_friends');
   //module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_opensim');
   //module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_search');
   //module_load_include('inc', 'd4os_io_db_070', 'd4os_io_db_070_search_parser');

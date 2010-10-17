@@ -405,7 +405,7 @@ function d4os_io_db_070_os_user_load($data = array()) {
       return FALSE;
     }
 
-    $query = "SELECT *, ua.Email AS email FROM {UserAccounts} AS ua"
+    $query = "SELECT * FROM {UserAccounts} AS ua"
           . " LEFT JOIN {auth} AS a ON a.UUID=ua.PrincipalID"
           . " LEFT JOIN {GridUser} AS gu ON gu.UserID=ua.PrincipalID"
           . " WHERE ua.PrincipalID='%s'";
@@ -415,6 +415,7 @@ function d4os_io_db_070_os_user_load($data = array()) {
     d4os_io_db_070_set_active('default');
     
     if ($user) {
+      $user = _d4os_io_db_070_os_070_to_grid($user);
       d4os_io_db_070_users_add_extra_fields($user);
       return $user;
     }
@@ -461,7 +462,7 @@ function d4os_io_db_070_os_user_load($data = array()) {
       }
     }
   }
-  $sql = "SELECT *, ua.Email AS email FROM {UserAccounts} AS ua"
+  $sql = "SELECT * FROM {UserAccounts} AS ua"
           . " LEFT JOIN {auth} AS a ON a.UUID=ua.PrincipalID"
           . " LEFT JOIN {GridUser} AS gu ON gu.UserID=ua.PrincipalID"
           . " WHERE ". implode(' AND ', $query);
@@ -473,6 +474,7 @@ function d4os_io_db_070_os_user_load($data = array()) {
   if ($user) {
     $uid = db_result(db_query("SELECT uid FROM {d4os_ui_users} WHERE UUID = '%s'", array($user->PrincipalID)));
     $user->uid = $uid;
+    $user = _d4os_io_db_070_os_070_to_grid($user);
     d4os_io_db_070_users_add_extra_fields($user);
     return $user;
   }
@@ -564,15 +566,15 @@ function d4os_io_db_070_os_user_load_all() {
  * @param String (optionnal) A where clause begining by a space
  * @return Array An array of Obects
  */
-function d4os_io_db_070_os_users_load_by_uuids($owners) {
-  if (!is_array($owners)) {
+function d4os_io_db_070_os_users_load_by_uuids($uuids) {
+  if (!is_array($uuids)) {
     return FALSE;
   }
   $users = array();
   $query = "SELECT *, CONCAT_WS(' ', FirstName, LastName) AS name FROM {UserAccounts} AS ua"
         . " LEFT JOIN {auth} AS a ON a.UUID=ua.PrincipalID"
         . " LEFT JOIN {GridUser} AS gu ON gu.UserID=ua.PrincipalID"
-        . " WHERE ua.PrincipalID IN (". implode("','", $owners). "')";
+        . " WHERE ua.PrincipalID IN (". implode("','", $uuids). "')";
 
   d4os_io_db_070_set_active('os_users');
   $result = db_query($query);
@@ -593,9 +595,9 @@ function d4os_io_db_070_os_user_delete($uuid) {
   // TODO : delete groups
 
   // delete offline messages
- /* drupal_set_message(t('Deleting offline messages.'));
+  drupal_set_message(t('Deleting offline messages.'));
   d4os_io_db_070_offline_message_user_delete($uuid);
-
+/*
   // delete search
   drupal_set_message(t('Deleting search info.'));
   d4os_io_db_070_os_search_user_delete($uuid);
@@ -607,13 +609,13 @@ function d4os_io_db_070_os_user_delete($uuid) {
   // delete attachments and inventory
   drupal_set_message(t('Deleting inventory.'));
   d4os_io_db_070_os_inventory_user_delete($uuid);
-/*
+
   // delete sessions
   drupal_set_message(t('Deleting sessions.'));
-  d4os_io_db_070_set_active('os_users');
-  db_query("DELETE FROM {agents} WHERE UUID='%s'", $uuid);
+  d4os_io_db_070_set_active('os_robust');
+  db_query("DELETE FROM {Presence} WHERE UserID='%s'", $uuid);
   d4os_io_db_070_set_active('default');
-
+/*
   // delete friends
   drupal_set_message(t('Deleting friends.'));
   d4os_io_db_070_set_active('os_users');

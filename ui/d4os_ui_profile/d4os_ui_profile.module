@@ -101,6 +101,14 @@ function d4os_ui_profile_display_public_profile($account) {
 
   $user->d4os['grid']['account']['uuid'] = $user->uid == 1 ? UUID_ZERO : $user->d4os['grid']['account']['uuid'];
 
+  // check if user is in the grid
+  $grid_user = module_invoke_all('os_user_load', array('UUID' => $account->d4os['grid']['account']['uuid']));
+  if (!is_object($grid_user[0])) {
+    drupal_set_message(t('The user is not registered on the grid'), 'error');
+    drupal_goto('user/'. $account->uid);
+  }
+  
+
   $profile = new stdClass;
   $profile->messages = '';
   $profile->can_edit = user_access('administer users') || ($user->uid == $account->uid);

@@ -9,6 +9,7 @@
  * other free or open source software licenses.
  */
 ?>
+
 <?php print $profile->text; ?>
 <style>
   .profile_block {

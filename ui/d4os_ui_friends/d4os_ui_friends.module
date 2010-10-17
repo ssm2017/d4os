@@ -1,0 +1,152 @@
+<?php
+/**
+ * @package    d4os_ui_friends
+ * @copyright  Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+ * @license    GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+ * D4os is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ */
+
+function d4os_ui_friends_block($op = 'list', $delta = 0, $edit = array()) {
+  global $grid_url, $base_url;
+  $block = array();
+  switch ($op) {
+
+    case 'list':
+      $block['friends_list']["info"]    = t('Friends list');
+      $block['online_friends']["info"]  = t('Online friends');
+      break;
+
+    case 'view':
+      switch ($delta) {
+        case 'friends_list':
+          $block['subject'] = t('Friends list');
+          $block['content'] = d4os_ui_friends_display_friends();
+          break;
+        case 'online_friends':
+          $block['subject'] = t('Online friends list');
+          $block['content'] = d4os_ui_friends_display_online_friends();
+          break;
+      }
+      break;
+/*
+    case 'configure':
+      switch ($delta) {
+        case 'friends_list':
+          return d4os_ui_friends_list_params_form();
+          break;
+        case 'online_friends':
+          return d4os_ui_friends_online_params_form();
+          break;
+      }
+      break;
+      
+    case 'save':
+      switch ($delta) {
+        case 'friends_list':
+          d4os_ui_friends_list_params_save($edit);
+          break;
+        case 'online_friends':
+          d4os_ui_friends_online_params_save($edit);
+          break;
+      }
+      return;
+      break;*/
+  }
+  return $block;
+}
+
+function d4os_ui_friends_list_params_form() {
+  $form = array();
+  $form['d4os_ui_friends_list_quantity'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Quantity'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => variable_get('d4os_ui_friends_list_quantity', 5),
+    '#description'    => t("Quantity of users to display."),
+  );
+  return $form;
+}
+
+function d4os_ui_friends_online_params_form() {
+  $form = array();
+  $form['d4os_ui_friends_online_quantity'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Quantity'),
+    '#size'           => 5,
+    '#maxlength'      => 5,
+    '#default_value'  => variable_get('d4os_ui_friends_online_quantity', 5),
+    '#description'    => t("Quantity of users to display."),
+  );
+  return $form;
+}
+
+function d4os_ui_friends_list_params_save($edit) {
+  variable_set('d4os_ui_friends_list_quantity',       $edit['d4os_ui_friends_list_quantity']);
+}
+
+function d4os_ui_friends_online_params_save($edit) {
+  variable_set('d4os_ui_friends_online_quantity',   $edit['d4os_ui_friends_online_quantity']);
+}
+
+function d4os_ui_friends_display_friends() {
+  // get the friends list
+  $friends = module_invoke_all('os_friends_get_friends', $GLOBALS['user']->d4os['grid']['account']['uuid']);
+  // build the output
+  if ($friends['success'] && count($friends['data'])) {
+    $output = theme('d4os_ui_friends_display_friends', $friends['data']);
+  }
+  else {
+    $output = t('No friends');
+  }
+  return $output;
+}
+
+function d4os_ui_friends_display_online_friends() {
+  // get the friends list
+  $online_friends = module_invoke_all('os_friends_get_online_friends', $GLOBALS['user']->d4os['grid']['account']['uuid']);
+  // build the output
+  if ($online_friends['success'] && count($online_friends['data'])) {
+    $output = theme('d4os_ui_friends_display_online_friends', $online_friends['data']);
+  }
+  else {
+    $output = t('No friends online.');
+  }
+  return $output;
+}
+
+function d4os_ui_friends_theme() {
+  return array(
+    'd4os_ui_friends_display_friends' => array(
+      'arguments' => array('friends' => array()),
+    ),
+    'd4os_ui_friends_display_online_friends' => array(
+      'arguments' => array('friends' => array()),
+    ),
+  );
+}
+
+function theme_d4os_ui_friends_display_friends($friends) {
+  $output = '<div id="friends-list">';
+  $output .= '<ul>';
+  foreach ($friends as $friend) {
+    $output .= '<li>'. $friend->name. '</li>';
+  }
+  $output .= '</ul>';
+  $output .= '</div>';
+  return $output;
+}
+
+function theme_d4os_ui_friends_display_online_friends($friends) {
+  $output = '<div id="online-friends-list">';
+  $output .= '<ul>';
+  foreach ($friends as $friend) {
+    $output .= '<li>'. $friend->name. '</li>';
+  }
+  $output .= '</ul>';
+  $output .= '</div>';
+  return $output;
+}
