@@ -1,6 +1,6 @@
 <?php
 /**
- * @package    d4os_io_db_070_070
+ * @package    d4os_io_db_070
  * @subpackage inventory
  * @copyright  Copyright (C) 2010 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
  * @license    GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
