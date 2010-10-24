@@ -675,11 +675,27 @@ function d4os_io_db_070_os_users_online_users_list_paged($page = 0, $limit = 5, 
   if (!isset($_GET['sort'])) {
     $_GET['sort'] = 'DESC';
   }
+  /*
+   * uuid
+   * agentIP
+   * agentPort
+   * loginTime
+   * logoutTime
+   * currentRegion
+   * currentRegionName
+   * currentHandle
+   * currentPos
+   * currentLookAt
+   */
   d4os_io_db_070_set_active('os_robust');
   $result = pager_query("SELECT * FROM {Presence} AS p"
                         . " LEFT JOIN {UserAccounts} AS ua ON ua.PrincipalID=p.UserID"
+                        . " LEFT JOIN {Regions} AS r ON r.uuid=p.RegionID"
                         . " LEFT JOIN {GridUser} AS gu ON gu.UserID=p.UserID"
-                        . " WHERE p.UserID = '%s'", $limit, 0, NULL, array(tablesort_sql($headers)));
+                        . " WHERE gu.Online = 'true'"
+                        . " AND gu.Login < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"
+                        . " AND gu.Logout < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"
+                        . " %s", $limit, 0, NULL, array(tablesort_sql($headers)));
   while ($user = db_fetch_object($result)) {
     $items[] = $user;
   }
@@ -693,9 +709,12 @@ function d4os_io_db_070_os_users_online_users_list_paged($page = 0, $limit = 5, 
  */
 function d4os_io_db_070_os_users_online_users_count() {
   d4os_io_db_070_set_active('os_robust');
-  $count = db_result(db_query("SELECT COUNT(*) FROM {Presence}"));
+  $now_online = db_result(db_query("SELECT COUNT(*) FROM {GridUser}"
+                        . " WHERE Online = 'true'"
+                        . " AND Login < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"
+                        . " AND Logout < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"));
   d4os_io_db_070_set_active('default');
-  return $count;
+  return $now_online;
 }
 
 /**

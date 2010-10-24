@@ -160,12 +160,7 @@ function d4os_io_db_070_os_regions_names() {
  */
 function d4os_io_db_070_os_grid_get_stats() {
   // who is online now
-  d4os_io_db_070_set_active('os_robust');
-  $now_online = db_result(db_query("SELECT COUNT(*) FROM {GridUser}"
-                        . " WHERE Online = 'true'"
-                        . " AND Login < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"
-                        . " AND Logout < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"));
-  d4os_io_db_070_set_active('default');
+  $now_online = d4os_io_db_070_os_users_online_users_count();
 
   // last month online
   d4os_io_db_070_set_active('os_robust');
