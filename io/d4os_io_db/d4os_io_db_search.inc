@@ -826,7 +826,9 @@ function d4os_io_db_os_search_services_registerhost($params) {
  * Search parser pre-run
  */
 function d4os_io_db_os_search_services_parser_run() {
-  watchdog('d4os_io_services_search_parser', t('Starting parsing host values.'), array(), WATCHDOG_INFO);
+  if (variable_get('d4os_io_services_search_trace_cron_events', 1)) {
+    watchdog('d4os_io_services_search_parser', t('Starting parsing host values.'), array(), WATCHDOG_INFO);
+  }
   global $now;
   // get time
   $now = time();
@@ -844,11 +846,15 @@ function d4os_io_db_os_search_services_parser_run() {
   if (count($hosts) > 0) {
     foreach($hosts as $host) {
       d4os_io_db_os_search_services_parser_checkhost($host);
-      watchdog('d4os_io_services_search_parser', t('Host !host was parsed.'), array('!host' => $host->host. ':'. $host->port), WATCHDOG_INFO);
+      if (variable_get('d4os_io_services_search_trace_cron_events', 1)) {
+        watchdog('d4os_io_services_search_parser', t('Host !host was parsed.'), array('!host' => $host->host. ':'. $host->port), WATCHDOG_INFO);
+      }
     }
   }
   else {
-    watchdog('d4os_io_services_search_parser', t('No host found.'), array(), WATCHDOG_WARNING);
+    if (variable_get('d4os_io_services_search_trace_cron_events', 1)) {
+      watchdog('d4os_io_services_search_parser', t('No host found.'), array(), WATCHDOG_WARNING);
+    }
   }
 }
 

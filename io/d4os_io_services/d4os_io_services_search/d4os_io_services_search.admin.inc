@@ -57,6 +57,14 @@ function d4os_io_services_search_admin() {
     '#description'    => t("Delete regions that exist in the search and not in the grid."),
   );
 
+  // trace cron events
+  $form['d4os_io_services_search_trace_cron_events'] = array(
+    '#type'           => 'checkbox',
+    '#title'          => t('Clean regions'),
+    '#default_value'  => variable_get('d4os_io_services_search_trace_cron_events', 1),
+    '#description'    => t("Select if you want to keep the cron events in the watchdog table."),
+  );
+
   $options = array(
     0 => t('Emergency'),
     1 => t('Alert'),
@@ -72,7 +80,7 @@ function d4os_io_services_search_admin() {
     '#title'          => t('Log level'),
     '#options'        => $options,
     '#default_value'  => variable_get('d4os_io_services_search_log_level', 0),
-    '#description'    => t('Define the log level'),
+    '#description'    => t('Define the log level when exchanging informations between the website and the grid'),
   );
 
   return system_settings_form($form);
