@@ -99,9 +99,12 @@ function d4os_ui_grid_monitor_users_display_users_list() {
     return '';
   }
   $output = '<div id="online-users-count"><p>';
-  $output .= t('There %users online.', array(
+  $output .= t('There %users in the agents table.', array(
               '%users' => format_plural($count, 'is 1 user', 'are @count users')));
   $output .= '</p></div>';
+  $output .= '<p>'. t('Limit list by'). ' <a href="'. $_SERVER["REQUEST_URI"]. '&limit=10">10</a> / <a href="'. $_SERVER["REQUEST_URI"]. '&limit=20">20</a> / <a href="'. $_SERVER["REQUEST_URI"]. '&limit=50">50</a> / <a href="'. $_SERVER["REQUEST_URI"]. '&limit=100">100</a></p>';
+  $output .= '<p><a href="/grid/monitor/users/online/list&online">'. t('See only online users'). '</a></p>';
+  $output .= '<p><a href="/grid/monitor/users/online/list&online&logged_since=24">'. t('See only online users since 24 hours'). '</a></p>';
   $output .= theme_d4os_ui_grid_monitor_users_list_table($online_users, $title = NULL, $params, $headers);
   $output .= theme('pager');
   return $output;

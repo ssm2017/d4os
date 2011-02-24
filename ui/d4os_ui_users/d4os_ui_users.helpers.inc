@@ -38,7 +38,8 @@ function d4os_ui_users_user_generate($username, $lastname, $password, $mail, $ho
       ),
 
       'presence' => array(
-        'home_region'     => ($home) ? $home : substr(variable_get('d4os_ui_users_default_home_region','_0'), 1),
+        'home_region'     => ($home) ? $home : substr(variable_get('d4os_ui_users_default_home_region',0), 1),
+        // TODO : make admin field to set this option 'home_region_id'  => '4daa1240-d522-11df-937b-0800200c9a66',
         'home_location_x' => variable_get('d4os_ui_users_default_home_location_x', 128),
         'home_location_y' => variable_get('d4os_ui_users_default_home_location_y', 128),
         'home_location_z' => variable_get('d4os_ui_users_default_home_location_z', 128),
@@ -141,6 +142,7 @@ function d4os_ui_users_get_grid_fields() {
 
     // presence
     'homeRegion',
+    'homeRegionID',
     'homeLocationX',
     'homeLocationY',
     'homeLocationZ',
@@ -218,6 +220,7 @@ function d4os_ui_users_account_to_grid($account) {
   
   // presence
   if (isset($account['d4os']['grid']['presence']['home_region']))     $grid_account['homeRegion']     = $account['d4os']['grid']['presence']['home_region'];
+  if (isset($account['d4os']['grid']['presence']['home_region_id']))  $grid_account['homeRegionID']   = $account['d4os']['grid']['presence']['home_region_id'];
   if (isset($account['d4os']['grid']['presence']['home_location_x'])) $grid_account['homeLocationX']  = $account['d4os']['grid']['presence']['home_location_x'];
   if (isset($account['d4os']['grid']['presence']['home_location_y'])) $grid_account['homeLocationY']  = $account['d4os']['grid']['presence']['home_location_y'];
   if (isset($account['d4os']['grid']['presence']['home_location_z'])) $grid_account['homeLocationZ']  = $account['d4os']['grid']['presence']['home_location_z'];
@@ -260,6 +263,7 @@ function d4os_ui_users_grid_to_account($grid_account) {
 
   // presence
   if (isset($grid_account['homeRegion']))    $account['grid']['presence']['home_region']     = $grid_account['homeRegion'];
+  if (isset($grid_account['homeRegionID']))  $account['grid']['presence']['home_region_id']  = $grid_account['homeRegionID'];
   if (isset($grid_account['homeLocationX'])) $account['grid']['presence']['home_location_x'] = $grid_account['homeLocationX'];
   if (isset($grid_account['homeLocationY'])) $account['grid']['presence']['home_location_y'] = $grid_account['homeLocationY'];
   if (isset($grid_account['homeLocationZ'])) $account['grid']['presence']['home_location_z'] = $grid_account['homeLocationZ'];

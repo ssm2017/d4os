@@ -264,7 +264,7 @@ function d4os_ui_grid_monitor_regions_poll_check_simstatus($hosts, &$context) {
       $time['simstatus'] = array();
       $time['simstatus']['request'] = microtime(true);
 
-      $response = drupal_http_request($host['host_ip_url']. '/simstatus/', array(), 'GET');
+      $response = d4os_http_request($host['host_ip_url']. '/simstatus/', array(), 'GET');
       $context['results']['requests']++;
       
 
@@ -289,7 +289,7 @@ function d4os_ui_grid_monitor_regions_poll_check_simstatus($hosts, &$context) {
         $time['collector'] = array();
         $time['collector']['request'] = microtime(true);
 
-        $collector = drupal_http_request($host['host_ip_url']. '/?method=collector', array(), 'GET');
+        $collector = d4os_http_request($host['host_ip_url']. '/?method=collector', array(), 'GET');
 
         $time['collector']['response'] = microtime(true);
         $time['collector']['speed'] = $time['collector']['response'] - $time['collector']['request'];

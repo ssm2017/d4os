@@ -50,6 +50,7 @@ function d4os_io_db_os_user_save($account) {
           case 'profileImage':
           case 'profileFirstImage':
           case 'email':
+          case 'homeRegionID':
             $query .= "$key = '%s', ";
             $v[] = $value;
             break;
@@ -110,6 +111,7 @@ function d4os_io_db_os_user_save($account) {
           case 'profileImage':
           case 'profileFirstImage':
           case 'email':
+          case 'homeRegionID':
             $fields[] = $key;
             $values[] = $value;
             $s[] = "'%s'";
@@ -406,21 +408,34 @@ function d4os_io_db_os_users_is_alive() {
  * @return Array An array of objects
  */
 function d4os_io_db_os_users_online_users_list_paged($page = 0, $limit = 5, $headers) {
+  $where = array();
   if (!isset($_GET['page'])) {
     $_GET['page'] = $page;
   }
   if (!isset($_GET['order'])) {
     $_GET['order'] = 'loginTime';
   }
+  if (isset($_GET['limit'])) {
+    $limit = $_GET['limit'];
+  }
   if (!isset($_GET['sort'])) {
     $_GET['sort'] = 'DESC';
   }
+  if (isset($_GET['online'])) {
+    $where[] = 'agentOnline = 1';
+  }
+  if (isset($_GET['logged_since'])) {
+    $where[] = "logintime > (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()) - ". ($_GET['logged_since'] * 3600). ")))";
+  }
+  //$where[] = "logintime < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"; // TODO : modif Romain du 110214-1909
+  //$where[] = "logoutTime < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))";
+  $query = "SELECT * FROM {agents}";
+  if (count($where)) {
+    $query .= ' WHERE '. implode(' AND ', $where);
+  }
+  $query .= " %s";
   d4os_io_db_set_active('os_users');
-  $result = pager_query("SELECT * FROM {agents}"
-                        . " WHERE agentOnline = 1"
-                        . " AND logintime < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"
-                        . " AND logoutTime < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"
-                        . " %s", $limit, 0, NULL, array(tablesort_sql($headers)));
+  $result = pager_query($query, $limit, 0, NULL, array(tablesort_sql($headers)));
   while ($user = db_fetch_object($result)) {
     $items[] = $user;
   }
@@ -434,10 +449,10 @@ function d4os_io_db_os_users_online_users_list_paged($page = 0, $limit = 5, $hea
  */
 function d4os_io_db_os_users_online_users_count() {
   d4os_io_db_set_active('os_users');
-  $count = db_result(db_query("SELECT COUNT(*) FROM {agents}"
-                              . " WHERE agentOnline = 1"
-                              . " AND logintime < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"
-                              . " AND logoutTime < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"));
+  $count = db_result(db_query("SELECT COUNT(*) FROM {agents}"));
+                              //. " WHERE agentOnline = 1"
+                              //. " AND logintime < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))")); // TODO : modif Romain du 110214-1909
+                              //. " AND logoutTime < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"));
   d4os_io_db_set_active('default');
   return $count;
 }
