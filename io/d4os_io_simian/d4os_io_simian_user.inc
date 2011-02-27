@@ -95,7 +95,7 @@ function d4os_io_simian_os_user_load($data = array()) {
       )
     );
 
-    $http_answer = drupal_http_request($simian_url, array('Content-Type' => 'application/json'), 'POST', $values);
+    $http_answer = d4os_http_request($simian_url, array('Content-Type' => 'application/json'), 'POST', $values);
     if ($http_answer->code == 200) {
       $result = json_decode($http_answer->data);
       if ($result->Success == 'true') {
@@ -128,7 +128,7 @@ function d4os_io_simian_os_user_load($data = array()) {
   }
   $values = drupal_to_js($params);
 
-  $http_answer = drupal_http_request($simian_url, array('Content-Type' => 'application/json'), 'POST', $values);
+  $http_answer = d4os_http_request($simian_url, array('Content-Type' => 'application/json'), 'POST', $values);
 
   if ($http_answer->code == 200) {
     $result = json_decode($http_answer->data);
@@ -216,7 +216,7 @@ function _d4os_io_simian_add_user($params) {
     )
   );
 
-  $http_answer = drupal_http_request($simian_url, array('Content-Type' => 'application/json'), 'POST', $values);
+  $http_answer = d4os_http_request($simian_url, array('Content-Type' => 'application/json'), 'POST', $values);
   if ($http_answer->code == 200) {
     $result = json_decode($http_answer->data);
     if ($result->Success == 'true') {
@@ -243,7 +243,7 @@ function _d4os_io_simian_add_identity($params) {
     )
   );
 
-  $http_answer = drupal_http_request($simian_url, array('Content-Type' => 'application/json'), 'POST', $values);
+  $http_answer = d4os_http_request($simian_url, array('Content-Type' => 'application/json'), 'POST', $values);
   if ($http_answer->code == 200) {
     $result = json_decode($http_answer->data);
     if ($result->Success == 'true') {
@@ -267,7 +267,7 @@ function _d4os_io_simian_add_inventory($params) {
     )
   );
 
-  $http_answer = drupal_http_request($simian_url, array('Content-Type' => 'application/json'), 'POST', $values);
+  $http_answer = d4os_http_request($simian_url, array('Content-Type' => 'application/json'), 'POST', $values);
   if ($http_answer->code == 200) {
     $result = json_decode($http_answer->data);
     if ($result->Success == 'true') {
@@ -291,7 +291,7 @@ function _d4os_io_simian_remove_user($params) {
     )
   );
 
-  $http_answer = drupal_http_request($simian_url, array('Content-Type' => 'application/json'), 'POST', $values);
+  $http_answer = d4os_http_request($simian_url, array('Content-Type' => 'application/json'), 'POST', $values);
   if ($http_answer->code == 200) {
     $result = json_decode($http_answer->data);
     if ($result->Success == 'true') {
@@ -316,7 +316,7 @@ function _d4os_io_simian_remove_identity($params) {
     )
   );
 
-  $http_answer = drupal_http_request($simian_url, array('Content-Type' => 'application/json'), 'POST', $values);
+  $http_answer = d4os_http_request($simian_url, array('Content-Type' => 'application/json'), 'POST', $values);
   if ($http_answer->code == 200) {
     $result = json_decode($http_answer->data);
     if ($result->Success == 'true') {

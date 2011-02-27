@@ -28,7 +28,7 @@ function d4os_io_simian_admin() {
 function d4os_io_simian_admin_validate($form, &$form_state) {
   // check the url
   $valid = FALSE;
-  $http_answer = drupal_http_request($form_state['values']['d4os_io_simian_url'], array(), 'GET');
+  $http_answer = d4os_http_request($form_state['values']['d4os_io_simian_url'], array(), 'GET');
   if ($http_answer->code == 200) {
     if ($http_answer->data == 'SimianGrid') $valid = TRUE;
   }

@@ -262,7 +262,7 @@ function d4os_ui_grid_monitor_hosts_delete_submit($form, &$form_state) {
 
 function d4os_ui_grid_monitor_hosts_host_is_online($hostname, $port) {
   // TODO : why not use simstatus ?
-  $response = drupal_http_request('http://'. $hostname. ':'. $port, array(), 'GET');
+  $response = d4os_http_request('http://'. $hostname. ':'. $port, array(), 'GET');
 
   if ($response->code == 404 && $response->headers['Server'] == 'Tiny WebServer') {
     return TRUE;
@@ -309,7 +309,7 @@ function d4os_ui_grid_monitor_hosts_theme() {
 }
 
 function d4os_ui_grid_monitor_hosts_display_host_infos($hostname, $port) {
-  $response = drupal_http_request('http://'. $hostname. ':'. $port. '/?method=collector', array(), 'GET');
+  $response = d4os_http_request('http://'. $hostname. ':'. $port. '/?method=collector', array(), 'GET');
   if ($response->code == 200) {
     $xml = simplexml_load_string($response->data);
     drupal_add_js('misc/collapse.js');

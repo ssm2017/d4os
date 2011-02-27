@@ -122,13 +122,13 @@ function d4os_grid_is_online() {
   }
   // check if the user server is online
   /*$user_server_uri = variable_get('d4os_default_user_server_uri', $base_url). ':'. variable_get('d4os_default_user_server_port', '8002');
-  $response = drupal_http_request($user_server_uri);
+  $response = d4os_http_request($user_server_uri);
   if ($response->code == 404 && $response->headers['Server'] == 'Tiny WebServer') {
     $online = TRUE;
   }*/
   /*global $grid_url;
   $url = $grid_url. '/simstatus/';
-  $response = drupal_http_request(variable_get('d4os_ui_stats_status_url',  $url));
+  $response = d4os_http_request(variable_get('d4os_ui_stats_status_url',  $url));
   $online = FALSE;
   if ($response->code != 200) {
     $online = FALSE;
@@ -256,7 +256,7 @@ function d4os_http_request($url, $headers = array(), $method = 'GET', $data = NU
     // server's ability to make outgoing HTTP requests the next time that
     // requirements checking is performed.
     // @see system_requirements()
-    variable_set('drupal_http_request_fails', TRUE);
+    variable_set('d4os_http_request_fails', TRUE);
 
     return $result;
   }

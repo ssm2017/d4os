@@ -864,7 +864,7 @@ function d4os_io_db_os_search_services_parser_run() {
  */
 function d4os_io_db_os_search_services_parser_checkhost($host) {
   // call the host
-  $response = drupal_http_request('http://'. $host->host. ':'. $host->port, array(), 'GET', NULL, 1);
+  $response = d4os_http_request('http://'. $host->host. ':'. $host->port, array(), 'GET', NULL, 1);
   if ($response->code != 404) {
     watchdog('d4os_io_services_search_parser', t('Host !host was unreachable.'), array('!host' => $host->host. ':'. $host->port), WATCHDOG_ERROR);
     $host_unreachable_limit = variable_get('d4os_io_services_search_parser_host_unreachable_limit', 0);
@@ -904,7 +904,7 @@ function d4os_io_db_os_search_services_parser_parse($hostname, $port) {
     // Load XML doc from URL
     $objDOM = new DOMDocument();
     $objDOM->resolveExternals = false;
-    $response = drupal_http_request('http://'. $hostname. ':'. $port. '?method=collector');
+    $response = d4os_http_request('http://'. $hostname. ':'. $port. '?method=collector');
     if ($response->code == 200) {
       $objDOM->loadXML($response->data);
 

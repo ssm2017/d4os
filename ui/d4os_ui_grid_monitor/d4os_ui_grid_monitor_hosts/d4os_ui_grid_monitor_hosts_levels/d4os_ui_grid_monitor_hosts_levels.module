@@ -224,7 +224,7 @@ function d4os_ui_grid_monitor_hosts_levels_display($host, $port) {
       ),
   );
   // get the values from the grid
-  $response = drupal_http_request($url);
+  $response = d4os_http_request($url);
   if ($response->code != 200) {
     $display_attributes['levels']['class'] = 'js-hide';
     $display_attributes['levels']['style'] = 'display:none;';
@@ -258,7 +258,7 @@ function d4os_ui_grid_monitor_hosts_levels_display($host, $port) {
 
 function d4os_ui_grid_monitor_hosts_levels_js($host, $port) {
   $url = 'http://'. $host. ':'. $port. '/jsonSimStats/';
-  $response = drupal_http_request($url);
+  $response = d4os_http_request($url);
   if ($response->code != 200) {
     echo drupal_json('error');
   }
