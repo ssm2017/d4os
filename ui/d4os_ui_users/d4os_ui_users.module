@@ -408,6 +408,26 @@ function d4os_ui_users_user($op, &$edit, &$account, $category = NULL) {
         drupal_set_message(l(t('Please update your email address.'), 'user/'. $account->uid. '/edit'), 'error');
       }
       break;
+
+    case 'view':
+      // check if user is registered inworld
+      if (!isset($account->d4os['grid']['account']['uuid'])) {
+        drupal_set_message(t('User not registered InWorld.'));
+      }
+      else {
+        $account->content['grid']['account'] = array(
+          '#type'   => 'user_profile_category',
+          '#title'  => t('InWorld'),
+        );
+        $account->content['grid']['account']['uuid'] = array(
+          '#type'   => 'user_profile_item',
+          '#title'  => t('Uuid'),
+          '#value'  => $account->d4os['grid']['account']['uuid'],
+          '#weight' => 0,
+        );
+      }
+      break;
+
   }
 }
 
