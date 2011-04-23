@@ -277,12 +277,6 @@ function d4os_io_db_070_os_user_save($account) {
         return FALSE;
       }
     }
-
-    // check if the account is linked
-    $uid = db_result(db_query("SELECT count(uid) FROM {d4os_ui_users} WHERE UUID = '%s'", array($grid_user['UUID'])));
-    if (!$uid) {
-      db_query("INSERT INTO {d4os_ui_users} (uid, UUID) VALUES (%d, '%s')", array($account->uid, $grid_user['UUID']));
-    }
   }
   else {
     // create the new user
@@ -387,9 +381,14 @@ function d4os_io_db_070_os_user_save($account) {
         return FALSE;
       }
     }
-
-    db_query("INSERT INTO {d4os_ui_users} (uid, UUID) VALUES (%d, '%s')", array($account->uid, $grid_user['UUID']));
   }
+
+  // check the link between drupal and the grid
+  $uid = db_result(db_query("SELECT count(uid) FROM {d4os_ui_users} WHERE UUID = '%s' OR uid = %d", array($grid_user['UUID'], $account->uid)));
+  if ($uid) {
+    db_query("DELETE FROM {d4os_ui_users} WHERE UUID = '%s' OR uid = %d", array($grid_user['UUID'], $account->uid));
+  }
+  db_query("INSERT INTO {d4os_ui_users} (UUID, uid) VALUES ('%s', %d)", array($grid_user['UUID'], $account->uid));
 
   // Refresh user object.
   $user = d4os_io_db_070_os_user_load($grid_user);

@@ -439,6 +439,7 @@ function d4os_ui_users_update(&$edit, &$account) {
 
   // check if the user has an account on the grid and if not create one
   $user_exists = module_invoke_all('os_user_load', array('UUID' => $edit['d4os']['grid']['account']['uuid']));
+  $edit['uid'] = $account->uid;
 
   if (!is_object($user_exists[0])) {
     unset($edit['d4os']['grid']['account']['uuid']);
@@ -483,7 +484,7 @@ function d4os_ui_users_update(&$edit, &$account) {
     // TODO : why home region ?
     $edit['d4os']['grid']['presence']['home_region'] = empty($edit['d4os']['grid']['presence']['home_region']) ? $account->d4os['grid']['presence']['home_region'] : $edit['d4os']['grid']['presence']['home_region'];
     $edit['d4os']['grid']['account']['uuid'] = $account->d4os['grid']['account']['uuid'];
-    $edit['uid'] = $account->uid;
+
     module_invoke_all('os_user_save', $edit);
   }
 }

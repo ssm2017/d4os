@@ -41,7 +41,7 @@ function d4os_menu() {
     'description'       => 'IO settings',
     'page callback'     => 'd4os_admin_io',
     'access arguments'  => array('admin d4os'),
-    'type'              => MENU_NORMAL_ITEM,
+    'type'              => MENU_LOCAL_TASK,
     'file'              => 'd4os.admin.inc'
   );
   $items['admin/settings/d4os/io/services'] = array(
@@ -57,7 +57,7 @@ function d4os_menu() {
     'description'       => 'UI settings',
     'page callback'     => 'd4os_admin_ui',
     'access arguments'  => array('admin d4os'),
-    'type'              => MENU_NORMAL_ITEM,
+    'type'              => MENU_LOCAL_TASK,
     'file'              => 'd4os.admin.inc'
   );
   $items['admin/settings/d4os/ui/grid/monitor'] = array(
@@ -65,7 +65,7 @@ function d4os_menu() {
     'description'       => 'UI grid monitor settings',
     'page callback'     => 'd4os_admin_ui_grid_monitor',
     'access arguments'  => array('admin d4os'),
-    'type'              => MENU_NORMAL_ITEM,
+    'type'              => MENU_LOCAL_TASK,
     'file'              => 'd4os.admin.inc'
   );
   return $items;
