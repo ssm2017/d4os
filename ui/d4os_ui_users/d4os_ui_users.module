@@ -443,6 +443,7 @@ function d4os_ui_users_update(&$edit, &$account) {
   if (!is_object($user_exists[0])) {
     unset($edit['d4os']['grid']['account']['uuid']);
     $edit['d4os'] = array_merge($edit, d4os_ui_users_user_generate($edit['d4os']['grid']['account']['username'],$edit['d4os']['grid']['account']['lastname'],$edit['pass'], $edit['mail']));
+
     module_invoke_all('os_user_save', $edit);
     drupal_set_message(t('User added to the grid.'));
 
@@ -453,6 +454,9 @@ function d4os_ui_users_update(&$edit, &$account) {
         'avatar_dest_uuid'  => $account->d4os['grid']['account']['uuid'],
       );
       module_invoke_all('os_inventory_clone_model', $params);
+    }
+    else {
+      module_invoke_all('os_inventory_create_new_user_inventory', array('user_uuid' => $account->d4os['grid']['account']['uuid']));
     }
     // TODO : change user password and send an email
     return;
@@ -479,7 +483,7 @@ function d4os_ui_users_update(&$edit, &$account) {
     // TODO : why home region ?
     $edit['d4os']['grid']['presence']['home_region'] = empty($edit['d4os']['grid']['presence']['home_region']) ? $account->d4os['grid']['presence']['home_region'] : $edit['d4os']['grid']['presence']['home_region'];
     $edit['d4os']['grid']['account']['uuid'] = $account->d4os['grid']['account']['uuid'];
-
+    $edit['uid'] = $account->uid;
     module_invoke_all('os_user_save', $edit);
   }
 }
@@ -755,9 +759,9 @@ function d4os_ui_users_user_register_submit($form, &$form_state) {
     );
     module_invoke_all('os_inventory_clone_model', $params);
   }
-  //else {
-  //  module_invoke_all('os_inventory_create_new_user_inventory', array('user_uuid' => $account->d4os['grid']['account']['uuid']));
-  //}
+  else {
+    module_invoke_all('os_inventory_create_new_user_inventory', array('user_uuid' => $account->d4os['grid']['account']['uuid']));
+  }
 
   $form_state['user'] = $account;
   watchdog('user', 'New user: %name (%email).', array('%name' => $name, '%email' => $mail), WATCHDOG_NOTICE, l(t('edit'), 'user/'. $account->uid .'/edit'));
