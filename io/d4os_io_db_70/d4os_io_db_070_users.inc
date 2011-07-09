@@ -290,6 +290,8 @@ function d4os_io_db_070_os_user_save($account) {
       // add blank value to "ScopeID"
       $fields['UserAccounts']['submitted_fields'][] = 'ScopeID';
       $fields['UserAccounts']['submitted_values'][] = UUID_ZERO;
+      $fields['UserAccounts']['submitted_fields'][] = 'ServiceURLs';
+      $fields['UserAccounts']['submitted_values'][] = "HomeURI= GatekeeperURI= InventoryServerURI= AssetServerURI=";
       // parse values
       foreach ($fields['UserAccounts']['submitted_fields'] as $key => $value) {
         switch ($value) {
@@ -298,6 +300,7 @@ function d4os_io_db_070_os_user_save($account) {
           case 'FirstName':
           case 'LastName':
           case 'Email':
+          case 'ServiceURLs':
             $queries[] = $value;
             $values[] = $fields['UserAccounts']['submitted_values'][$key];
             $s[] = "'%s'";
@@ -371,7 +374,20 @@ function d4os_io_db_070_os_user_save($account) {
             break;
         }
       }
-
+      $pos = "<". variable_get("d4os_ui_users_default_home_location_x", 0). ",". variable_get("d4os_ui_users_default_home_location_y", 0). ",". variable_get("d4os_ui_users_default_home_location_z", 0). ">";
+      $look_at = "<". variable_get("d4os_ui_users_default_home_look_at_x", 0). ",". variable_get("d4os_ui_users_default_home_look_at_y", 0). ",". variable_get("d4os_ui_users_default_home_look_at_z", 0). ">";
+      $queries[] = "HomePosition";
+      $values[] = $pos;
+      $s[] = "'%s'";
+      $queries[] = "HomeLookAt";
+      $values[] = $look_at;
+      $s[] = "'%s'";
+      $queries[] = "LastPosition";
+      $values[] = $pos;
+      $s[] = "'%s'";
+      $queries[] = "LastLookAt";
+      $values[] = $look_at;
+      $s[] = "'%s'";
       d4os_io_db_070_set_active('os_robust');
       $success = db_query('INSERT INTO {GridUser} ('. implode(', ', $queries) .') VALUES ('. implode(', ', $s) .')', $values);
       d4os_io_db_070_set_active('default');
@@ -602,16 +618,16 @@ function d4os_io_db_070_os_user_delete($uuid) {
   // TODO : delete groups
 
   // delete offline messages
-  drupal_set_message(t('Deleting offline messages.'));
-  d4os_io_db_070_offline_message_user_delete($uuid);
+/*  drupal_set_message(t('Deleting offline messages.'));
+  d4os_io_db_070_offline_message_user_delete($uuid);*/
 /*
   // delete search
   drupal_set_message(t('Deleting search info.'));
   d4os_io_db_070_os_search_user_delete($uuid);
 */
   // delete profile
-  drupal_set_message(t('Deleting profile info.'));
-  d4os_io_db_070_os_profile_user_delete($uuid);
+/*  drupal_set_message(t('Deleting profile info.'));
+  d4os_io_db_070_os_profile_user_delete($uuid);*/
 
   // delete attachments and inventory
   drupal_set_message(t('Deleting inventory.'));
@@ -665,37 +681,72 @@ function d4os_io_db_070_os_users_is_alive() {
  * @return Array An array of objects
  */
 function d4os_io_db_070_os_users_online_users_list_paged($page = 0, $limit = 5, $headers) {
+  $where = array();
   if (!isset($_GET['page'])) {
     $_GET['page'] = $page;
   }
   if (!isset($_GET['order'])) {
-    $_GET['order'] = 'loginTime';
+    $_GET['order'] = 'gu.Login';
+  }
+  if (isset($_GET['limit'])) {
+    $limit = $_GET['limit'];
   }
   if (!isset($_GET['sort'])) {
     $_GET['sort'] = 'DESC';
   }
-  /*
-   * uuid
+  if (isset($_GET['online'])) {
+    $where[] = "gu.Online = 'True'";
+  }
+  if (isset($_GET['logged_since'])) {
+    $where[] = "gu.Login > (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()) - ". ($_GET['logged_since'] * 3600). ")))";
+  }
+  //$where[] = "gu.Login < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"; // TODO : modif Romain du 110214-1909
+  //$where[] = "gu.Logout < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))";
+
+  $query = "SELECT"
+          . " p.UserID,"
+          . " ua.FirstName,"
+          . " ua.LastName,"
+          . " r.regionName,"
+          . " r.regionHandle,"
+          . " gu.Login,"
+          . " gu.Logout,"
+          . " gu.LastRegionID,"
+          . " gu.LastPosition,"
+          . " gu.LastLookAt"
+          . " FROM {Presence}    AS p"
+          . " LEFT JOIN {UserAccounts}  AS ua ON ua.PrincipalID = p.UserID"
+          . " LEFT JOIN {regions}       AS r  ON r.uuid         = p.RegionID"
+          . " LEFT JOIN {GridUser}      AS gu ON gu.UserID      = p.UserID";
+
+  if (count($where)) {
+    $query .= ' WHERE '. implode(' AND ', $where);
+  }
+  $query .= " %s";
+
+  /* ==== 069 ====        ==== 071 ====
+   * uuid                 p.UserID
    * agentIP
    * agentPort
-   * loginTime
-   * logoutTime
-   * currentRegion
-   * currentRegionName
-   * currentHandle
-   * currentPos
-   * currentLookAt
+   * loginTime            gu.Login
+   * logoutTime           gu.Logout
+   * currentRegion        gu.LastRegionID
+   * currentRegionName    r.regionName
+   * currentHandle        r.regionHandle
+   * currentPos           gu.LastPosition
+   * currentLookAt        gu.LastLookAt
+   * 
+   * agentUuid            p.UserID
+   * agentName            ua.FirstName. " ". ua.LastName
    */
   d4os_io_db_070_set_active('os_robust');
-  $result = pager_query("SELECT * FROM {Presence} AS p"
-                        . " LEFT JOIN {UserAccounts} AS ua ON ua.PrincipalID=p.UserID"
-                        . " LEFT JOIN {Regions} AS r ON r.uuid=p.RegionID"
-                        . " LEFT JOIN {GridUser} AS gu ON gu.UserID=p.UserID"
-                        . " WHERE gu.Online = 'true'"
-                        . " AND gu.Login < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"
-                        . " AND gu.Logout < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"
-                        . " %s", $limit, 0, NULL, array(tablesort_sql($headers)));
+  $result = pager_query($query, $limit, 0, NULL, array(tablesort_sql($headers)));
   while ($user = db_fetch_object($result)) {
+    $user->agentUuid = $user->UserID;
+    $user->agentName = $user->FirstName. " ". $user->LastName;
+    $user->currentRegionName = $user->regionName;
+    $user->loginTime = $user->Login;
+    $user->logoutTime = $user->Logout;
     $items[] = $user;
   }
   d4os_io_db_070_set_active('default');
@@ -709,9 +760,9 @@ function d4os_io_db_070_os_users_online_users_list_paged($page = 0, $limit = 5, 
 function d4os_io_db_070_os_users_online_users_count() {
   d4os_io_db_070_set_active('os_robust');
   $now_online = db_result(db_query("SELECT COUNT(*) FROM {GridUser}"
-                        . " WHERE Online = 'true'"
-                        . " AND Login < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"
-                        . " AND Logout < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"));
+                        . " WHERE Online = 'True'"));
+                        //. " AND Login < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"
+                        //. " AND Logout < (UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()))))"));
   d4os_io_db_070_set_active('default');
   return $now_online;
 }

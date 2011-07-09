@@ -662,7 +662,7 @@ function d4os_ui_profile_profile_submit($form, &$form_state) {
       $params['d4os']['grid']['profile']['first_image'] = $form_state['values']['first-image-uuid'];
       break;
     case 'home-region':
-      $params['d4os']['grid']['presence']['home_region'] = $form_state['values']['home-region-uuid'];
+      $params['d4os']['grid']['presence']['home_region'] = substr($form_state['values']['home-region-uuid'], 1);
       break;
     case 'url':
       $params['d4os']['grid']['profile']['url'] = $form_state['values']['url-url'];

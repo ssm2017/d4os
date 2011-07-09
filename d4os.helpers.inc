@@ -112,6 +112,7 @@ function d4os_grid_is_online() {
 // TODO : why not use loginuri ?
   // remove http://
   $url = variable_get('d4os_default_user_server_uri', $base_url);
+
   if (strpos($url, 'http://') !== FALSE) {
     $url = substr($url, 7);
   }

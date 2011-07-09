@@ -644,7 +644,7 @@ function d4os_io_db_070_os_inventory_clone_appearance($params) {
   // get the folders
   $appearance = array();
   d4os_io_db_070_set_active('os_robust');
-  $result = db_query("SELECT * FROM {Avatars} WHERE PrincipalID = '%s'", $params['avatar_src_uuid']);
+  $result = db_query("SELECT Name, Value FROM {Avatars} WHERE PrincipalID = '%s'", $params['avatar_src_uuid']);
   while ($item = db_fetch_array($result)) {
     $appearance[] = $item;
   }
@@ -658,14 +658,76 @@ function d4os_io_db_070_os_inventory_clone_appearance($params) {
     );
   }
 
+  // take values
+/*
+INSERT INTO `Avatars` (`PrincipalID`, `Name`, `Value`) VALUES
+('f775ad73-cb26-4d76-ac1c-58d8593b54d1', 'AvatarHeight', '1.990715'),
+('f775ad73-cb26-4d76-ac1c-58d8593b54d1', 'AvatarType', '1'),
+('f775ad73-cb26-4d76-ac1c-58d8593b54d1', 'METHOD', 'setavatar'),
+('f775ad73-cb26-4d76-ac1c-58d8593b54d1', 'Serial', '0'),
+('f775ad73-cb26-4d76-ac1c-58d8593b54d1', 'UserID', 'f775ad73-cb26-4d76-ac1c-58d8593b54d1'),
+('f775ad73-cb26-4d76-ac1c-58d8593b54d1', 'VERSIONMAX', '0'),
+('f775ad73-cb26-4d76-ac1c-58d8593b54d1', 'VERSIONMIN', '0'),
+('f775ad73-cb26-4d76-ac1c-58d8593b54d1', 'VisualParams', '17,15,85,0,58,188,35,150,25,0,0,71,63,36,85,58,153,51,134,0,73,61,88,132,63,255,55,0,86,136,33,255,255,255,0,127,0,0,127,0,0,127,0,0,0,127,114,127,99,63,127,140,127,127,0,0,0,191,0,104,0,0,0,0,0,0,0,0,0,145,216,133,0,53,0,155,130,0,0,127,127,109,0,0,0,63,56,0,150,150,150,150,150,150,150,61,150,150,150,45,119,0,0,153,152,127,181,127,122,0,127,127,127,127,127,132,59,68,22,96,124,118,47,127,137,127,63,63,0,0,0,0,127,127,0,0,0,0,127,0,159,0,0,178,127,36,85,131,56,127,127,153,165,0,0,74,0,76,127,0,150,150,255,0,0,107,30,127,255,255,255,255,255,255,255,255,255,0,0,255,255,79,0,150,150,150,150,150,150,150,150,150,0,0,0,0,150,150,150,42,127,127,213,150,150,150,150,150,150,150,0,0,150,51,50,150,150,150'),
+('f775ad73-cb26-4d76-ac1c-58d8593b54d1', 'Wearable 0:0', '49901b4c-64d5-4aee-b21c-5675026cf2b0:ea295fb0-ee17-405a-96ee-11e76b4c6568'),
+('f775ad73-cb26-4d76-ac1c-58d8593b54d1', 'Wearable 1:0', '9bc3742a-662b-46e9-a407-e29344a62eee:0f3d20c7-9487-4604-b4b6-89808539de88'),
+('f775ad73-cb26-4d76-ac1c-58d8593b54d1', 'Wearable 2:0', 'e1d5c309-a2f8-4f64-86e4-8acfbcd9bc3c:e75fab8a-16aa-4c42-8fa5-6e961053a5c0'),
+('f775ad73-cb26-4d76-ac1c-58d8593b54d1', 'Wearable 3:0', 'a1aefbac-5f9a-4f94-b51f-0368defbce8e:3bdf0ce3-c7ba-4569-b951-bf0db63c94d0'),
+('f775ad73-cb26-4d76-ac1c-58d8593b54d1', 'Wearable 4:0', 'd2bd636d-70ec-40da-aa54-b5589845d55f:d188e0eb-43b2-4df0-803b-221b485eaecb'),
+('f775ad73-cb26-4d76-ac1c-58d8593b54d1', 'Wearable 5:0', 'a2669522-c2fa-4344-a1d7-4b0444b2f16c:d6439e46-44ae-420b-a34b-bb0061c0b949'),
+('f775ad73-cb26-4d76-ac1c-58d8593b54d1', 'Wearable 6:0', '97ba86ad-94c5-4915-9257-255e09b6b140:094c171c-f423-40a6-9c6b-8be7b9d18514'),
+('f775ad73-cb26-4d76-ac1c-58d8593b54d1', 'Wearable 9:0', '2ff12cd5-ec1d-4096-8f80-170f6c91bb26:6ebee605-b2c9-4475-970f-11c08e48c979'),
+('f775ad73-cb26-4d76-ac1c-58d8593b54d1', '_ap_2', '0645e5ad-6ae4-4e3f-a976-7c2e0e76660c'),
+('f775ad73-cb26-4d76-ac1c-58d8593b54d1', '_ap_7', 'e8394d4f-a1c3-481c-b2e2-6609307c17c0'),
+('f775ad73-cb26-4d76-ac1c-58d8593b54d1', '_ap_8', '73915a4e-9743-4897-aa66-f10fee793b25');
+UUID_INVENTORY_ITEM:UUID_ASSET
+*/
   // fill the base with all this data
   $queries  = array();
   $values   = array();
-  foreach ($appearance as $item) {
+
+  for ($i=0; $i < count($appearance); $i++) {
+    if (strpos($appearance[$i]['Name'], 'Wearable') !== FALSE) {
+      $uuids = explode(":", $appearance[$i]['Value']);
+      $item = $uuids[0];
+      $asset = $uuids[1];
+      $query = "SELECT inventoryID FROM {inventoryitems} WHERE assetID='%s' AND avatarID='%s'";
+ 
+      d4os_io_db_070_set_active('os_robust');
+      $result = db_fetch_object(db_query($query, $asset, $params['avatar_dest_uuid']));
+      d4os_io_db_070_set_active('default');
+      if (!$result) {
+        return;
+      }
+      $appearance[$i]['Value'] = $result->inventoryID. ":". $asset;
+    }
+    else if (strpos($appearance[$i]['Name'], '_ap_') !== FALSE) {
+      $query = "SELECT assetID FROM {inventoryitems} WHERE inventoryID='%s'";
+ 
+      d4os_io_db_070_set_active('os_robust');
+      $result = db_fetch_object(db_query($query, $appearance[$i]['Value']));
+      d4os_io_db_070_set_active('default');
+      if (!$result) {
+        return;
+      }
+
+      $query = "SELECT inventoryID FROM {inventoryitems} WHERE assetID='%s' AND avatarID='%s'";
+ 
+      d4os_io_db_070_set_active('os_robust');
+      $result = db_fetch_object(db_query($query, $result->assetID, $params['avatar_dest_uuid']));
+      d4os_io_db_070_set_active('default');
+      if (!$result) {
+        return;
+      }
+      $appearance[$i]['Value'] = $result->inventoryID;
+    }
+    if ($appearance[$i]['Name'] == "UserID") {
+      $appearance[$i]['Value'] = $params['avatar_dest_uuid'];
+    }
     $queries[] = "('%s', '%s', '%s')";
     $values[] = $params['avatar_dest_uuid'];
-    $values[] = $item['Name'];
-    $values[] = $item['Value'];
+    $values[] = $appearance[$i]['Name'];
+    $values[] = $appearance[$i]['Value'];
   }
   $query = "INSERT INTO {Avatars} ("
           . "PrincipalID," // 1 str
