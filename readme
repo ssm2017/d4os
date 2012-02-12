@@ -5,6 +5,7 @@ D4os is a set of modules to manage an OpenSim grid using drupal.
 I recommend you to not use d4os profiles, search and group modules (except the ui ones) because if your website is down, the profiles / search and groups will not be available inworld !!!
 
 actually (feb 2012) im rewriting all the module and i have removed all of them to focus on user registration and management so please be patient.
+the next release will not be compatible with simiangrid (for the moment) and will not be compatible with opensim < 0.7.1 (it will be a big cleaning)
 
 ****************
 Installation :
