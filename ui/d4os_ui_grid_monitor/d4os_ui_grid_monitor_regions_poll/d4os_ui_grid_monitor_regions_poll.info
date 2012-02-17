@@ -1,6 +1,0 @@
-; $Id$
-name = "d4os ui grid monitor regions poll"
-description = Experimental gaz-machine to check differences between "search" regions and "grid" regions
-package = "d4os ui grid monitor"
-core = 6.x
-dependencies[] = d4os

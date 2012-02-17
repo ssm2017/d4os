@@ -1,6 +1,0 @@
-; $Id$
-name = "d4os ui friends"
-description = "Some blocks to display friends list. NOT AVAILABLE FOR 0.6.8/9 BECAUSE USER ONLINE STATUS IS NOT WELL DEFINED"
-package = "d4os ui"
-core = 6.x
-dependencies[] = d4os

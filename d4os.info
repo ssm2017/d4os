@@ -1,5 +1,0 @@
-; $Id$
-name = "d4os"
-description = "Main module to manage other ones. This module only have some tools used by the other modules."
-package = d4os core
-core = 6.x

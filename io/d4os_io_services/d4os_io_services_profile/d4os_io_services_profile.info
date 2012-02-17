@@ -1,6 +1,0 @@
-name = d4os io services profile
-description = Provides a service for persistent profile.
-package = d4os io
-dependencies[] = services
-dependencies[] = xmlrpc_server
-core = 6.x

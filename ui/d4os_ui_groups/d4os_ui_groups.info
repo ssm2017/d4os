@@ -1,6 +1,0 @@
-name = d4os ui groups
-description = Provides a link between inworld groups and og. ATTENTION : THIS IS ACTUALLY BROKEN, I LEFT IT FOR EXPERIMENTS.
-package = d4os ui
-dependencies[] = d4os
-dependencies[] = og
-core = 6.x

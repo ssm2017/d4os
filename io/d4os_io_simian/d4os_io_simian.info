@@ -1,5 +1,0 @@
-; $Id$
-name = "d4os io simian"
-description = "Allow the website to use a webservices link to store informations for SimianGrid. DONT ENABLE AT THE SAME TIME THIS MODULE WITH THE d4os_io_db OR d4os_io_db_070 MODULE"
-package = d4os io
-core = 6.x

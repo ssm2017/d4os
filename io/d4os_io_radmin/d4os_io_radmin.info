@@ -1,5 +1,0 @@
-; $Id$
-name = "d4os io radmin"
-description = "Ajax interface to control a sim using RADMIN. THIS IS NOT TESTED SINCE LONG TIME. USE IT AT YOUR OWN RISK."
-package = d4os io
-core = 6.x

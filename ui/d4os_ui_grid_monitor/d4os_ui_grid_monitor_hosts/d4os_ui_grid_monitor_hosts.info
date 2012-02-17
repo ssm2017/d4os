@@ -1,6 +1,0 @@
-; $Id$
-name = "d4os ui grid monitor hosts"
-description = Display host info if the parameter "index_sims" is set to "true" for [DataSnapshot] in OpenSim.ini
-package = "d4os ui grid monitor"
-core = 6.x
-dependencies[] = d4os

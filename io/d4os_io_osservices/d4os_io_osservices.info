@@ -1,5 +1,0 @@
-; $Id$
-name = "d4os io osservices"
-description = "Ajax interface to control the grid using the osservices system. THIS MODULE IS OBSOLETE IT WAS WORKING WITH THE FIRST VERSION OF OSSERVICES BUT THE NEW SYSTEM IS NOT COMPATIBLE"
-package = d4os io
-core = 6.x

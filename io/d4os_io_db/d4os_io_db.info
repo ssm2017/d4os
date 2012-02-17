@@ -1,6 +1,0 @@
-; $Id$
-name = "d4os io db"
-description = "Allow the website to use a direct database link to store informations for 0.6.8/9. DONT ENABLE AT THE SAME TIME THIS MODULE WITH THE d4os_io_db_070 OR d4os_io_simian MODULE"
-package = d4os io
-core = 6.x
-dependencies[] = d4os
