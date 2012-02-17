@@ -68,7 +68,7 @@ function d4os_ui_users_perm() {
 
 function d4os_ui_users_cron() {
   // do the job
-  //d4os_ui_users_set_region_owner_role();
+  d4os_ui_users_set_region_owner_role();
 }
 
 function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
@@ -612,7 +612,7 @@ function d4os_ui_users_set_region_owner_role() {
   // for each owner, assign the role
   foreach ($owners as $owner) {
     // get the owner uid
-    $uid = db_result(db_query("SELECT uid FROM {d4os_ui_users} WHERE UUID='%s'", $owner));
+    $uid = db_result(db_query("SELECT uid FROM {d4os_ui_users} WHERE UUID='%s'", $owner->owner_uuid));
     // assign the role
     if (is_numeric($uid)) {
       db_query("INSERT INTO {users_roles} (rid, uid) VALUES (%d, %d)", array($rid, $uid));

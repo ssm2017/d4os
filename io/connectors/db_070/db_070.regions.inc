@@ -26,7 +26,7 @@ class D4OS_IO_db_070_Regions implements D4OS_IO_regions_Interface {
 	function get_regions_owners() {
     $owners = array();
     d4os_io_db_070_set_active('os_robust');
-    $result = pager_query('SELECT DISTINCT owner_uuid FROM {regions}');
+    $result = db_query('SELECT DISTINCT owner_uuid FROM {regions}');
     while ($owner = db_fetch_object($result)) {
       $owners[] = $owner;
     }
