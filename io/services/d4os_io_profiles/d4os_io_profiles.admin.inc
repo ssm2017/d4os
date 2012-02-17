@@ -41,7 +41,7 @@ function d4os_io_profiles_admin() {
   );
   $form['user_registration']['profile_texts']['d4os_io_profiles_default_profile_first_text'] = array(
     '#type'           => 'textarea',
-    '#title'          => t('Profile first text'),
+    '#title'          => t('Profile first life tab text'),
     '#default_value'  => variable_get('d4os_io_profiles_default_profile_first_text', 'I am as real as you are'),
     '#required'       => TRUE
   );
@@ -61,7 +61,7 @@ function d4os_io_profiles_admin() {
   );
   $form['user_registration']['profile_images']['d4os_io_profiles_default_profile_first_image'] = array(
     '#type'           => 'textfield',
-    '#title'          => t('Default first life image profile uuid'),
+    '#title'          => t('Default first life tab image profile uuid'),
     '#size'           => 36,
     '#maxlength'      => 36,
     '#default_value'  => variable_get('d4os_io_profiles_default_profile_first_image',UUID_ZERO),

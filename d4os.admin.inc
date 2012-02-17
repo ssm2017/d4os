@@ -26,24 +26,24 @@ function d4os_admin() {
 // user
   $form['ugaim']['user'] = array(
     '#type'         => 'fieldset',
-    '#title'        => t('User'),
+    '#title'        => t('Users'),
     '#collapsible'  => TRUE,
     '#collapsed'    => FALSE,
   );
-  $form['ugaim']['user']['d4os_default_user_server_uri'] = array(
+  $form['ugaim']['user']['d4os_default_users_server_uri'] = array(
     '#type'           => 'textfield',
-    '#title'          => t('Default user URI'),
-    '#default_value'  => variable_get('d4os_default_user_server_uri', $base_url),
-    '#description'    => t("Default user URI"),
+    '#title'          => t('Default users server URI'),
+    '#default_value'  => variable_get('d4os_default_users_server_uri', $base_url),
+    '#description'    => t("Default users server URI"),
     '#required'       => TRUE,
   );
-  $form['ugaim']['user']['d4os_default_user_server_port'] = array(
+  $form['ugaim']['user']['d4os_default_users_server_port'] = array(
     '#type'           => 'textfield',
-    '#title'          => t('Default user port'),
+    '#title'          => t('Default users server port'),
     '#size'           => 5,
     '#maxlength'      => 5,
-    '#default_value'  => variable_get('d4os_default_user_server_port', '8002'),
-    '#description'    => t("Default user port"),
+    '#default_value'  => variable_get('d4os_default_users_server_port', '8002'),
+    '#description'    => t("Default users server port"),
     '#required'       => TRUE,
   );
 // grid
@@ -55,94 +55,19 @@ function d4os_admin() {
   ); // TODO :maybe remove this default grid uri and port
   $form['ugaim']['grid']['d4os_default_grid_uri'] = array(
     '#type'           => 'textfield',
-    '#title'          => t('Default grid URI'),
+    '#title'          => t('Default grid server URI'),
     '#default_value'  => variable_get('d4os_default_grid_uri', $base_url),
-    '#description'    => t("Default grid URI"),
+    '#description'    => t("Default grid server URI"),
     '#required'       => TRUE,
   );
   $form['ugaim']['grid']['d4os_default_grid_port'] = array(
     '#type'           => 'textfield',
-    '#title'          => t('Default grid port'),
+    '#title'          => t('Default grid server port'),
     '#size'           => 5,
     '#maxlength'      => 5,
     '#default_value'  => variable_get('d4os_default_grid_port', '9000'),
-    '#description'    => t("Default grid port"),
+    '#description'    => t("Default grid server port"),
     '#required'       => TRUE,
-  );
-// asset
-  $form['ugaim']['asset'] = array(
-    '#type'         => 'fieldset',
-    '#title'        => t('Asset'),
-    '#collapsible'  => TRUE,
-    '#collapsed'    => FALSE,
-  );
-  $form['ugaim']['asset']['d4os_default_asset_server_uri'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Default asset URI'),
-    '#default_value'  => variable_get('d4os_default_asset_server_uri', $base_url),
-    '#description'    => t("Default asset URI"),
-    '#required'       => TRUE,
-  );
-  $form['ugaim']['asset']['d4os_default_asset_server_port'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Default asset port'),
-    '#size'           => 5,
-    '#maxlength'      => 5,
-    '#default_value'  => variable_get('d4os_default_asset_server_port', '8003'),
-    '#description'    => t("Default asset port"),
-    '#required'       => TRUE,
-  );
-// inventory
-  $form['ugaim']['inventory'] = array(
-    '#type'         => 'fieldset',
-    '#title'        => t('Inventory'),
-    '#collapsible'  => TRUE,
-    '#collapsed'    => FALSE,
-  );
-  $form['ugaim']['inventory']['d4os_default_inventory_server_uri'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Default inventory URI'),
-    '#default_value'  => variable_get('d4os_default_inventory_server_uri', $base_url),
-    '#description'    => t("Default inventory URI"),
-    '#required'       => TRUE,
-  );
-  $form['ugaim']['inventory']['d4os_default_inventory_server_port'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Default inventory port'),
-    '#size'           => 5,
-    '#maxlength'      => 5,
-    '#default_value'  => variable_get('d4os_default_inventory_server_port', '8003'),
-    '#description'    => t("Default inventory port"),
-    '#required'       => TRUE,
-  );
-// messaging
-  $form['ugaim']['messaging'] = array(
-    '#type'         => 'fieldset',
-    '#title'        => t('Messaging'),
-    '#collapsible'  => TRUE,
-    '#collapsed'    => FALSE,
-  );
-  $form['ugaim']['messaging']['d4os_default_messaging_server_uri'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Default messaging URI'),
-    '#default_value'  => variable_get('d4os_default_messaging_server_uri', $base_url),
-    '#description'    => t("Default messaging URI"),
-    '#required'       => TRUE,
-  );
-  $form['ugaim']['messaging']['d4os_default_messaging_server_port'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Default messaging port'),
-    '#size'           => 5,
-    '#maxlength'      => 5,
-    '#default_value'  => variable_get('d4os_default_messaging_server_port', '8006'),
-    '#description'    => t("Default messaging port"),
-    '#required'       => TRUE,
-  );
-  $form['other'] = array(
-    '#type'         => 'fieldset',
-    '#title'        => t('Other'),
-    '#collapsible'  => TRUE,
-    '#collapsed'    => FALSE,
   );
 // loginuri
   $form['other']['loginuri'] = array(
@@ -176,9 +101,9 @@ function d4os_admin() {
   );
   $form['other']['pictures']['d4os_default_asset_pictures_server_url'] = array(
     '#type'           => 'textfield',
-    '#title'          => t('Default asset server URL'),
+    '#title'          => t('Default asset pictures server URL'),
     '#default_value'  => variable_get('d4os_default_asset_pictures_server_url', $base_url. '/asset.php?id='),
-    '#description'    => t("Default asset server URL"),
+    '#description'    => t("Default asset pictures server URL. This server is rendering assets to images."),
     '#required'       => TRUE,
   );
 // logging
@@ -186,7 +111,7 @@ function d4os_admin() {
     '#type'          => 'textfield',
     '#title'         => t('Debugging enabled ?'),
     '#default_value' => variable_get('d4os_default_debug_file_path', ''),
-    '#description'   => t('Enable debugging output of server/client interactions. Enter the full path name of the file to write the debugging output to, such as /tmp/d4os.debug. It must be writable to the user who runs your web server. Leave blank for no debugging'),
+    '#description'   => t('Enable debugging output of server/client interactions. Enter the full absolute path name of the file to write the debugging output to, such as /tmp/d4os.log. It must be writable to the user who runs your web server. Leave blank for no debugging'),
   );
   return system_settings_form($form);
 }
@@ -213,7 +138,7 @@ function d4os_io_settings() {
     '#title'          => t('Select io system'),
     '#default_value'  => variable_get('d4os_io_system', 'none'),
     '#options'        => $options,
-    '#description'    => t('Select io system.'),
+    '#description'    => t('Select what system you would like to use for input/output.'),
   );
   if (variable_get('d4os_io_system', 'none') != 'none') {
   	module_load_include('admin.inc', 'd4os', '/io/connectors/'. D4OS_IO_SYSTEM. '/'. D4OS_IO_SYSTEM);

@@ -102,7 +102,7 @@ class D4OS_IO {
 }
 
 interface D4OS_IO_Users_Interface {
-	public function ping();
+  public function ping();
   public function load_user($values);
   public function save_user($account);
   public function delete_user($uuid);
@@ -111,7 +111,7 @@ interface D4OS_IO_Users_Interface {
 }
 
 interface D4OS_IO_Profiles_Interface {
-	public function ping();
+  public function ping();
   public function load_profile($values);
   public function save_profile($values);
   public function delete_profile($useruuid);
@@ -133,7 +133,7 @@ interface D4OS_IO_Profiles_Interface {
 }
 
 interface D4OS_IO_Regions_Interface {
-	public function ping();
+  public function ping();
   public function get_regions_owners();
   public function region_exists($uuid);
   public function get_regions_count();
@@ -142,16 +142,16 @@ interface D4OS_IO_Regions_Interface {
 }
 
 interface D4OS_IO_Grid_Interface {
-	public function ping();
+  public function ping();
   public function get_grid_infos();
 }
 
 interface D4OS_IO_Inventory_Interface {
-	public function ping();
+  public function ping();
 }
 
 interface D4OS_IO_Groups_Interface {
-	public function ping();
+  public function ping();
   public function group_exists($uuid);
   public function add_user_to_group($user_uuid, $group_uuid);
   public function delete_user($uuid);

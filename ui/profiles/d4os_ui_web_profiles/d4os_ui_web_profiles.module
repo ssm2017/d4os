@@ -31,7 +31,7 @@ function d4os_ui_web_profiles_menu_alter(&$items) {
 function d4os_ui_web_profiles_menu() {
   $items['user/%user/profile/inworld'] = array(
     'title'             => 'Inworld profile',
-    'description'       => 'Inworld profile.',
+    'description'       => "Shows the user's inworld profile.",
     'page callback'     => 'd4os_ui_web_profiles_display_public_profile',
     'page arguments'    => array(1),
     'access callback'   => 'd4os_ui_web_profiles_display_public_profile_access',

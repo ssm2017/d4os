@@ -25,7 +25,7 @@ function d4os_ui_monitor_users_help($path, $arg) {
 function d4os_ui_monitor_users_menu() {
   $items['grid/monitor/users/online/list'] = array(
     'title'             => 'Online Users',
-    'description'       => 'Online users.',
+    'description'       => 'Shows a list of online users.',
     'page callback'     => 'd4os_ui_monitor_show_online_users_list',
     'access arguments'  => array('view d4os ui grid monitor online users list'),
     'type'              => MENU_NORMAL_ITEM,
@@ -108,7 +108,7 @@ function d4os_ui_monitor_show_online_users_list() {
   }
   $online_users = $d4os_users->get_online_users_list($params);
   if ($online_users->count_presence == 0) {
-    drupal_set_message('There are no users currently logged in the grid.');
+    drupal_set_message(t('There are no users currently logged in the grid.'));
     return '';
   }
 

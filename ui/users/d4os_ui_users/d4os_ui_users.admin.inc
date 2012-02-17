@@ -30,7 +30,7 @@ function d4os_ui_users_admin() {
   $form['user_level'] = array(
     '#type'         => 'fieldset',
     '#title'        => t('User level'),
-    '#description'  => '<div class="message error">'. t('that usage is NOT supported by OpenSim devs. Use at your own risk. Side effects unknown. More infos can be found here !link', array('!link' => l('http://opensimulator.org/wiki/Userlevel', 'http://opensimulator.org/wiki/Userlevel'))). '</div>',
+    '#description'  => '<div class="message error">'. t('That usage is NOT supported by OpenSim devs. Use at your own risk. Side effects unknown. More infos can be found here !link', array('!link' => l('http://opensimulator.org/wiki/Userlevel', 'http://opensimulator.org/wiki/Userlevel'))). '</div>',
     '#collapsible'  => TRUE,
     '#collapsed'    => TRUE,
   );
@@ -221,7 +221,7 @@ function d4os_ui_users_admin() {
   $form['default_roles'] = array(
     '#type'         => 'fieldset',
     '#title'        => t('Default roles'),
-    '#description'  => t('Assign Drupal roles depending on special actions.'),
+    '#description'  => t('Assign website roles depending on special actions.'),
     '#collapsible'  => TRUE,
     '#collapsed'    => TRUE,
   );
@@ -230,7 +230,7 @@ function d4os_ui_users_admin() {
     '#title'          => t('Grid user role'),
     '#default_value'  => variable_get('d4os_ui_users_default_grid_user_role',0),
     '#options'        => $roles,
-    '#description'    => t('This role is assigned to user when they register on the grid or when a new Drupal account is created from the grid auth.'),
+    '#description'    => t('This role is assigned to user when they register on the grid or when a new website account is created from the grid auth.'),
   );
   $form['default_roles']['d4os_ui_users_default_region_owner_role'] = array(
     '#type'           => 'select',

@@ -48,7 +48,7 @@ function d4os_io_offline_messages_help($path, $arg) {
 
 function d4os_io_offline_messages_menu() {
   $items['admin/settings/d4os/io/services/offline_messages'] = array(
-    'title'             => 'offline_message',
+    'title'             => 'Offline messages',
     'description'       => 'd4os io services offline_messages settings',
     'page callback'     => 'drupal_get_form',
     'page arguments'    => array('d4os_io_offline_messages_admin'),
@@ -57,14 +57,14 @@ function d4os_io_offline_messages_menu() {
     'file'              => 'd4os_io_offline_messages.admin.inc'
   );
   $items['grid/services/offline-messages'] = array(
-    'title'             => 'offline_message',
+    'title'             => 'Offline messages',
     'description'       => 'd4os io services offline_message',
     'page callback'     => 'd4os_io_offline_messages_confirm',
     'access callback'   => TRUE,
     'type'              => MENU_CALLBACK,
   );
   $items['grid/services/offline-messages/%'] = array(
-    'title'             => 'offline_message',
+    'title'             => 'Offline messages',
     'description'       => 'd4os io services offline_message',
     'page callback'     => 'd4os_io_offline_messages_query',
     'page arguments'    => array(3),

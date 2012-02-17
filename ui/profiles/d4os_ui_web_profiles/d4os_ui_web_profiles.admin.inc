@@ -28,12 +28,12 @@ function d4os_ui_web_profiles_admin() {
     '#default_value'  => variable_get('d4os_ui_web_profiles_disable_drupal_user_view_tab', 0),
     '#description'    => t('Select if you want to disable the Drupal user view tab. You need to flush caches after changing this option.'),
   );
-  $form['d4os_ui_web_profiles_url_iframe_attributes'] = array(
+  /*$form['d4os_ui_web_profiles_url_iframe_attributes'] = array(
     '#type'           => 'textfield',
     '#title'          => t('URL iframe attributes'),
     '#default_value'  => variable_get('d4os_ui_web_profiles_url_iframe_attributes', 'width="600px" height="400px"'),
     '#description'    => t('Define some optional attributes for the profile URL iframe.'),
-  );
+  );*/
   $form['d4os_ui_web_profiles_images_width'] = array(
     '#type'           => 'textfield',
     '#title'          => t('Images width'),
