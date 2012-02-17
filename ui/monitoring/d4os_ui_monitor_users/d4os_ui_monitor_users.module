@@ -1,0 +1,223 @@
+<?php
+/**
+ * @package    d4os_ui_monitor
+ * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+ * @link      http://www.d4os.org
+ * @license   GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+ * D4os is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ */
+
+// TODO : see what we can do with http://domain.com:9000/admin/regioninfo/
+
+/**
+ * Implementation of hook_help()
+ */
+function d4os_ui_monitor_users_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#d4os_ui_monitor_users':
+      return '<p>' . t('OpenSim grid users monitoring') . '</p>';
+  }
+}
+
+function d4os_ui_monitor_users_menu() {
+  $items['grid/monitor/users/online/list'] = array(
+    'title'             => 'Online Users',
+    'description'       => 'Online users.',
+    'page callback'     => 'd4os_ui_monitor_show_online_users_list',
+    'access arguments'  => array('view d4os ui grid monitor online users list'),
+    'type'              => MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+function d4os_ui_monitor_users_perm() {
+  return array(
+    'view d4os ui monitor online users list',
+  );
+}
+
+function d4os_ui_monitor_show_online_users_list() {
+  global $pager_page_array, $pager_total, $pager_total_items;
+  // check if the datastore is alive
+  $d4os_user = D4OS_IO::create('Users');
+  $d4os_user->ping();
+  if ($d4os_user->response->success !== TRUE) {
+    drupal_set_message(t('You can not see the users list.'), 'error');
+    drupal_set_message(t('Please try again later.'), 'error');
+    drupal_goto();
+  }
+
+  // format the headers
+  $headers = array(
+    array(
+      'data'  => t('UserID'), // 1
+      'field' => 'p.UserID',
+    ),
+    array(
+      'data'  => t('FirstName'), // 2
+      'field' => 'ua.FirstName',
+    ),
+      array(
+      'data'  => t('LastName'), // 3
+      'field' => 'ua.LastName',
+    ),
+      array(
+      'data'  => t('loginTime'), // 4
+      'field' => 'gu.Login',
+    ),
+      array(
+      'data'  => t('logoutTime'), // 5
+      'field' => 'gu.Logout',
+    ),
+      array(
+      'data'  => t('RegionName'), // 6
+      'field' => 'r.regionName',
+    ),
+      array(
+      'data'  => t('LastPosition'), // 7
+      'field' => 'gu.LastPosition',
+    )
+  );
+
+  // get the order fields
+  $page = isset($_GET['page']) ? $_GET['page'] : '';
+  $order_way = isset($_GET['sort']) ? $_GET['sort'] : 'DESC';
+  $order_by = isset($_GET['order']) ? $_GET['order'] : t('loginTime');
+  $order_field = 'gu.Login';
+  foreach ($headers as $header) {
+    $order_field = ($header['data'] == $order_by) ? $header['field'] : $order_field;
+  }
+
+  // get the data
+  $limit = isset($_GET['limit']) ? $_GET['limit'] : 5;
+  $d4os_users = D4OS_IO::create('Users');
+  $params = array(
+    'offset' => $page * $limit,
+    'limit' => $limit,
+    'order_by' => $order_field,
+    'order_way' => $order_way
+  );
+  if (isset($_GET['online'])) {
+    $params['online'] = TRUE;
+  }
+  if (isset($_GET['range'])) {
+    $params['range'] = $_GET['range'];
+  }
+  $online_users = $d4os_users->get_online_users_list($params);
+  if ($online_users->count_presence == 0) {
+    drupal_set_message('There are no users currently logged in the grid.');
+    return '';
+  }
+
+  // format the pager
+  $pager_page_array = explode(',', $page);
+  $element = 0;
+  $pager_total_items[$element] = $online_users->count_presence;
+  $pager_total[$element] = ceil($pager_total_items[$element] / $limit);
+  $pager_page_array[$element] = max(0, min((int)$pager_page_array[$element], ((int)$pager_total[$element]) - 1));
+
+  // format the quantity info
+  $output = '<div id="online-users-count">';
+  $output .= '<p>'. t('There %users in the Presence table.', array(
+              '%users' => format_plural($online_users->count_presence, 'is 1 user', 'are @count users'))). '</p>';
+  $output .= '<p>'. t('There %users Online users in the GridUser table.', array(
+              '%users' => format_plural($online_users->count_griduser, 'is 1 user', 'are @count users'))). '</p>';
+  $output .= '</div>';
+
+  // format some usefull links
+  $paramseters = array();
+  $limit_array = array(
+    5 => 5,
+    10 => 10,
+    20 => 20,
+    50 => 50,
+    100 => 100
+  );
+  unset($limit_array[$limit]);
+  if (isset($_GET['sort'])) {
+    $paramseters[0] = 'sort='. $_GET['sort'];
+  }
+  if (isset($_GET['order'])) {
+    $paramseters[1] = 'order='. $_GET['order'];
+  }
+  if (isset($_GET['online'])) {
+    $paramseters[2] = 'online='. $_GET['online'];
+  }
+  if (isset($_GET['range'])) {
+    $paramseters[3] = 'range='. $_GET['range'];
+  }
+
+  $qty_filter = '<div class="item-list"><span>'. t('Limit list by'). '</span><ul class="pager">';
+  foreach ($limit_array as $k => $limit_qty) {
+    $paramseters[4] = 'limit='. $limit_qty;
+    $redirect_url = $_SERVER['REDIRECT_URL']. '?'. implode('&', $paramseters);
+    $qty_filter .= '<li class="pager-item"><a href="'. $redirect_url. '">'. $limit_qty. '</a></li>';
+  }
+  $qty_filter .= '</ul></div>';
+
+  $usefull_links = '<div><ul>';
+  $usefull_links .= '<li><a href="'. $_SERVER['REDIRECT_URL']. '?online">'. t('See only online users ("Online" set in "GridUser" table)'). '</a></li>';
+  $usefull_links .= '<li><a href="'. $_SERVER['REDIRECT_URL']. '?online&range=86400">'. t('See only online users since 24 hours'). '</a></li>';
+  $usefull_links .= '</ul></div>';
+
+  // build a form to display links in a fieldset
+  $form = array(
+    'filter_links' => array(
+      '#type' => 'fieldset',
+      '#title' => t('Filters'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+    )
+  );
+  $form['filter_links']['usefull_links'] = array(
+    '#type' => 'item',
+    '#value' => $usefull_links
+  );
+  $form['filter_links']['qty'] = array(
+    '#type' => 'item',
+    '#value' => $qty_filter
+  );
+
+  $output .= drupal_render($form);
+
+  // format the table
+  $output .= theme_d4os_ui_monitor_users_list_table($online_users->users, $params, $headers, $title);
+  $output .= theme('pager');
+  return $output;
+}
+
+function theme_d4os_ui_monitor_users_list_table($online_users, $params, $headers, $title = NULL) {
+  global $user;
+
+  // build the table
+  $rows = array();
+  $params['cols'] = $params['cols'] ? $params['cols'] : 1;
+  $col = 0;
+  $cells = array();
+  foreach ($online_users as $online_user) {
+    $cells[] = $online_user->UserID; // 1
+    $cells[] = $online_user->FirstName; // 2
+    $cells[] = $online_user->LastName; // 3
+    $cells[] = date(variable_get('date_format_short', 'm/d/Y H:i'), $online_user->Login); // 4
+    if ($online_user->Login == 0) {
+      $cells[] = t('Never logged out'); // 5
+    }
+    else {
+      $cells[] = date(variable_get('date_format_short', 'm/d/Y H:i'), $online_user->Logout);
+    }
+    $cells[] = $online_user->regionName; // 6
+    $cells[] = $online_user->LastPosition; // 7
+
+    ++$col;
+    if ($col >= $params['cols']) {
+      $rows[] = $cells;
+      $cells  = array();
+      $col    = 0;
+    }
+  }
+  $output = theme_table($headers, $rows);
+  return $output;
+}

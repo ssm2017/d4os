@@ -1,0 +1,6 @@
+; $Id$
+name = "d4os ui monitor users"
+description = "Provides a page to display currently online users"
+package = "d4os ui monitoring"
+core = 6.x
+dependencies[] = d4os

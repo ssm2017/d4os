@@ -1,0 +1,7 @@
+; $Id$
+name = "d4os ui auth"
+description = "This module is managing user authentication by the website only, the grid only, or both. It is allowing you to synchronize users between grid and Drupal website. If a user is on the grid and not registered on the website, when the user tries to log in the website, his website account is created and vice versa."
+package = d4os ui
+core = 6.x
+dependencies[] = d4os
+dependencies[] = d4os_ui_users

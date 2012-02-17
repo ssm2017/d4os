@@ -1,0 +1,903 @@
+<?php
+/**
+ * @package   d4os_ui_web_profiles
+ * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+ * @link      http://www.d4os.org
+ * @license   GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+ * D4os is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ */
+
+// TODO : see what we can do with http://domain.com:9000/admin/profileinfo/
+
+/**
+ * Implementation of hook_help()
+ */
+function d4os_ui_web_profiles_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#d4os_ui_web_profiless':
+      return '<p>' . t('OpenSim grid profiles management') . '</p>';
+  }
+}
+
+function d4os_ui_web_profiles_menu_alter(&$items) {
+  if (variable_get('d4os_ui_web_profiles_disable_drupal_user_view_tab', 0)) {
+    unset($items['user/%user/view']);
+  }
+}
+
+function d4os_ui_web_profiles_menu() {
+  $items['user/%user/profile/inworld'] = array(
+    'title'             => 'Inworld profile',
+    'description'       => 'Inworld profile.',
+    'page callback'     => 'd4os_ui_web_profiles_display_public_profile',
+    'page arguments'    => array(1),
+    'access callback'   => 'd4os_ui_web_profiles_display_public_profile_access',
+    'access arguments'  => array(1),
+    'type'              => MENU_LOCAL_TASK,
+  );
+  $items['user/%user/profile/inworld/js/%'] = array(
+    'page callback'     => 'd4os_ui_web_profiles_save_profile_js',
+    'page arguments'    => array(1, 5),
+    'access callback'   => TRUE,
+    'access arguments'  => array(1),
+    'type'              => MENU_CALLBACK,
+  );
+  $items['admin/settings/d4os/ui/profiles/inworld'] = array(
+    'title'             => 'Web profile',
+    'description'       => 'd4os ui profile settings',
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('d4os_ui_web_profiles_admin'),
+    'access arguments'  => array('admin d4os ui web profile'),
+    'type'              => MENU_LOCAL_TASK,
+    'file'              => 'd4os_ui_web_profiles.admin.inc'
+  );
+  $items['grid/profile/partner/validate/%'] = array(
+    'page callback'     => 'd4os_ui_web_profiles_partner_validate',
+    'page arguments'    => array(4),
+    'access callback'   => TRUE,
+    'access arguments'  => array(1),
+    'type'              => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+function d4os_ui_web_profiles_perm() {
+  return array(
+    'admin d4os ui web profile',
+    'access d4os ui web profile'
+  );
+}
+
+function d4os_ui_web_profiles_display_public_profile_access($account) {
+  // check if the user has a grid account
+  $allowed = FALSE;
+  $uuid = db_result(db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=%d", $account->uid));
+  if ($uuid !== FALSE) {
+    $allowed = TRUE;
+  }
+  return variable_get('d4os_ui_web_profiles_enable_profile_tab', 0) && $allowed;
+  // TODO : refactor perms
+  //return TRUE;
+  //return
+  //  (($GLOBALS['user']->uid == $account->uid) || user_access('administer users'))
+  //  && (user_access('access d4os ui web profile'));
+  //return (($GLOBALS['user']->uid == $account->uid) || user_access('administer users')) && (user_access('access d4os ui web profile') && $account->allow_profile_view);
+}
+
+function d4os_ui_web_profiles_display_public_profile($account) {
+  global $base_url, $user;
+
+  // check if the datastore is alive
+  $d4os_profiles = D4OS_IO::create('Profiles');
+  $d4os_profiles->ping();
+  if ($d4os_profiles->response->success !== TRUE) {
+    drupal_set_message(t('You can not see user profiles.'), 'error');
+    drupal_set_message(t('Please try again later.'), 'error');
+    drupal_goto();
+  }
+
+  // check if the datastore is alive
+  $d4os_user = D4OS_IO::create('Users');
+  $d4os_user->ping();
+  if ($d4os_user->response->success !== TRUE) {
+    drupal_set_message(t('You can not see user profiles.'), 'error');
+    drupal_set_message(t('Please try again later.'), 'error');
+    drupal_goto();
+  }
+
+  //$user->d4os['grid']['account']['uuid'] = $user->uid == 1 ? UUID_ZERO : $user->d4os['grid']['account']['uuid'];
+
+  // check if the user exists in the grid
+  $uuid = db_result(db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=%d", $account->uid));
+  if ($uuid === FALSE) {
+    drupal_set_message(t('User not registered InWorld.'), 'error');
+    drupal_goto('user/'. $account->uid);
+  }
+
+  // load the user profile
+  $profile = $d4os_profiles->load_profile(array('useruuid' => $uuid));
+  // load the grid user
+  $profile->grid_user = $d4os_user->load_user(array('PrincipalID' => $uuid));
+  $profile->grid_user = $profile->grid_user[0];
+
+  $profile->messages = '';
+  $profile->can_edit = user_access('administer users') || ($user->uid == $account->uid);
+
+  // build some usefull pictures links
+  $asset_pictures_server_url = variable_get('d4os_default_asset_pictures_server_url', $base_url. '/asset.php?id=');
+
+  $profile->profileFirstImage_img  = theme_image(
+    $asset_pictures_server_url. $profile->profileFirstImage,
+    t('No picture available'),
+    t("!user's profile picture", array('!user'=>$account->name)),
+    array("width" => variable_get('d4os_ui_web_profiles_images_width', '150'). 'px'),
+    FALSE
+  );
+
+  $profile->profileImage_img  = theme_image(
+    $asset_pictures_server_url. $profile->profileImage,
+    t('No picture available'),
+    t("!user's first life picture", array('!user'=>$account->name)),
+    array("width" => variable_get('d4os_ui_web_profiles_images_width', '150'). 'px'),
+    FALSE
+  );
+
+  if (variable_get('d4os_ui_web_profiles_images_use_lightbox2', 0) == 1) {
+    $profile->profileFirstImage_img = l($profile->profileFirstImage_img,
+                                  $asset_pictures_server_url. $profile->profileFirstImage,
+                                  array('html' => TRUE, 'attributes'=> array('rel' => 'lightbox')));
+    $profile->profileImage_img = l($profile->profileImage_img,
+                            $asset_pictures_server_url. $profile->profileImage,
+                            array('html' => TRUE, 'attributes'=> array('rel' => 'lightbox')));
+  }
+  // *****************
+  // inworld
+  // *****************
+  $profile->show_inworld = TRUE;
+
+  // convert the dates
+  $format = variable_get('date_format_medium', 'm/d/Y H:i');
+  $profile->created_date = format_date($profile->grid_user->Created, $format);
+
+  // get the partner infos
+  $profile->profilePartner_name = t('No partner');
+  if ($profile->profilePartner != '' || $profile->profilePartner != UUID_ZERO) {
+    $profile->partner_user = $d4os_user->load_user(array('PrincipalID' => $profile->profilePartner));
+    $profile->partner_user = $profile->partner_user[0];
+    $profile->profilePartner_name = $profile->partner_user->FirstName. ' '. $profile->partner_user->LastName;
+  }
+
+  if ($profile->can_edit) {
+    $profile->login_date  = $profile->grid_user->Login > 0 ? format_date($profile->grid_user->Login, $format) : t('Never connected to the grid');
+
+    // build the forms
+    $profile->home_region_form = drupal_get_form('d4os_ui_web_profiles_home_region_form', $profile, $account);
+    $profile->image_form       = drupal_get_form('d4os_ui_web_profiles_image_form', $profile, $account, $asset_pictures_server_url);
+    $profile->about_text_form  = drupal_get_form('d4os_ui_web_profiles_about_text_form', $profile, $account);
+    $profile->partner_form     = drupal_get_form('d4os_ui_web_profiles_partner_form', $profile, $account);
+  }
+  else {
+    $profile->image_form       = $profile->profileImage_img;
+    $profile->about_text_form  = $profile->profileAboutText;
+    $profile->partner_form     = $profile->profilePartner_name;
+  }
+// TODO : enable disabled tabs again
+  // *****************
+  // web
+  // *****************
+  $profile->show_web = FALSE;
+  if ($profile->can_edit) {
+    $profile->web = drupal_get_form('d4os_ui_web_profiles_url_form', $profile, $account);
+  }
+  else {
+    $profile->web = drupal_get_form('d4os_ui_web_profiles_url_iframe_form', $profile, $account);
+  }
+
+  // *****************
+  // interests
+  // *****************
+  $profile->show_interests = FALSE;
+
+  // *****************
+  // picks
+  // *****************
+  $profile->show_picks = FALSE;
+
+  // *****************
+  // classifieds
+  // *****************
+  $profile->show_classifieds = FALSE;
+
+  // *****************
+  // first life
+  // *****************
+  $profile->show_firstlife = TRUE;
+  if ($profile->can_edit) {
+    $profile->first_image_form = drupal_get_form('d4os_ui_web_profiles_first_image_form', $profile, $account, $asset_pictures_server_url);
+    $profile->first_text_form  = drupal_get_form('d4os_ui_web_profiles_first_text_form', $profile, $account);
+  }
+  else {
+    $profile->first_image_form = $profile->profileFirstImage_img;
+    $profile->first_text_form = $profile->profileFirstText;
+  }
+
+  // *****************
+  // notes
+  // *****************
+  $profile->show_my_notes = $user->uid > 0 ? TRUE : FALSE;
+  $profile->show_my_notes = FALSE;
+  if ($profile->show_my_notes) {
+    $profile->my_notes_form = drupal_get_form('d4os_ui_web_profiles_notes_form', $profile, $account);
+  }
+
+  // *****************
+  // options
+  // *****************
+  //$profile->show_options = $profile->can_edit;
+  $profile->show_options = FALSE;
+  if ($profile->show_options) {
+    $profile->options_form = drupal_get_form('d4os_ui_web_profiles_options_form', $profile, $account);
+  }
+
+  return theme('d4os_ui_web_profiles_display', $profile);
+}
+
+function d4os_ui_web_profiles_image_form($form_state, $profile, $account, $asset_pictures_server_url) {
+  // get values
+  if (isset($form_state['values']['image-uuid'])) {
+    $picture = theme_image(
+      $asset_pictures_server_url. $form_state['values']['image-uuid'],
+      t('No picture available'),
+      t("!user's profile picture", array('!user'=>$account->name)),
+      array("width" => variable_get('d4os_ui_web_profiles_images_width', '150'). 'px'),
+      FALSE
+    );
+    if (variable_get('d4os_ui_web_profiles_images_use_lightbox2', 0) == 1) {
+      $picture = l($picture,
+                   $asset_pictures_server_url. $form_state['values']['image-uuid'],
+                   array('html' => TRUE, 'attributes'=> array('rel' => 'lightbox')));
+    }
+  }
+  else {
+    $picture = $profile->profileImage_img;
+  }
+  $image_uuid = isset($form_state['values']['image-uuid']) ? $form_state['values']['image-uuid'] : $profile->profileImage;
+
+  // build the form
+  $form = array();
+  $form['image']['wrapper'] = array(
+    '#type'   => 'item',
+    '#prefix' => '<div class="clear-block" id="image-answer">',
+    '#suffix' => '</div>',
+  );
+  $form['image']['wrapper']['uuid'] = array(
+    '#type'   => 'hidden',
+    '#value'  => $profile->grid_user->PrincipalID,
+  );
+  $form['image']['wrapper']['image-picture'] = array(
+    '#type'   => 'item',
+    '#value'  => $picture,
+  );
+  $form['image']['wrapper']['form'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Change image'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+  );
+  $form['image']['wrapper']['form']['image-uuid'] = array(
+    '#type'          => 'textfield',
+    '#size'          => 36,
+    '#maxlength'     => 36,
+    '#default_value' => $image_uuid,
+  );
+  $form['image']['wrapper']['form']['image-save'] = array(
+    '#type'   => 'submit',
+    '#value'  => t('Save'),
+    '#submit' => array('d4os_ui_web_profiles_profile_submit'),
+    '#ahah'   => array(
+      'path'    => 'user/'. $account->uid. '/profile/inworld/js/image',
+      'wrapper' => 'image-answer',
+      'method'  => 'replace',
+      'effect'  => 'fade',
+    ),
+  );
+  return $form;
+}
+
+function d4os_ui_web_profiles_home_region_form($form_state, $profile, $account) {
+  $form = array();
+  $form['home_region']['form'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Change region'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+  );
+  $form['home_region']['form']['home-region-answer'] = array(
+    '#type'   => 'item',
+    '#prefix' => '<div class="clear-block" id="home-region-answer">',
+    '#suffix' => '</div>',
+  );
+  $form['home_region']['form']['uuid'] = array(
+    '#type'   => 'hidden',
+    '#value'  => $profile->grid_user->PrincipalID,
+  );
+
+  $d4os_regions = D4OS_IO::create('Regions');
+  $regions_list = $d4os_regions->get_regions_array();
+
+  $form['home_region']['form']['home-region-uuid'] = array(
+    '#type'          => 'select',
+    '#default_value' => '_'. $profile->grid_user->HomeRegionID,
+    '#options'       => $regions_list,
+  );
+  $form['home_region']['form']['home-region-save'] = array(
+    '#type'   => 'submit',
+    '#value'  => t('Save'),
+    '#weight' => 1,
+    '#submit' => array('d4os_ui_web_profiles_profile_submit'),
+    '#ahah'   => array(
+      'path'    => 'user/'. $account->uid. '/profile/inworld/js/home-region',
+      'wrapper' => 'home-region-answer',
+      'method'  => 'replace',
+      'effect'  => 'fade',
+    ),
+  );
+  return $form;
+}
+
+function d4os_ui_web_profiles_about_text_form($form_state, $profile, $account) {
+  $text = isset($form_state['values']['about-text-text']) ? $form_state['values']['about-text-text'] : $profile->profileAboutText;
+  $form = array();
+  $form['about-text']['wrapper'] = array(
+    '#type'   => 'item',
+    '#prefix' => '<div class="clear-block" id="about-text-answer">',
+    '#suffix' => '</div>',
+  );
+  $form['about-text']['wrapper']['uuid'] = array(
+    '#type'   => 'hidden',
+    '#value'  => $profile->grid_user->PrincipalID,
+  );
+  $form['about-text']['wrapper']['about-text-text'] = array(
+    '#type'          => 'textarea',
+    '#default_value' => $text,
+  );
+  $form['about-text']['form']['about-text-save'] = array(
+    '#type'   => 'submit',
+    '#value'  => t('Save'),
+    '#weight' => 1,
+    '#submit' => array('d4os_ui_web_profiles_profile_submit'),
+    '#ahah'   => array(
+      'path'    => 'user/'. $account->uid. '/profile/inworld/js/about-text',
+      'wrapper' => 'about-text-answer',
+      'method'  => 'replace',
+      'effect'  => 'fade',
+    ),
+  );
+  return $form;
+}
+
+function d4os_ui_web_profiles_partner_form($form_state, $profile, $account) {
+  $partner_name = isset($form_state['values']['partner-name']) ? $form_state['values']['partner-name'] : $profile->profilePartner_name;
+  $form = array();
+  $form['partner'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Change partner'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+  );
+  $form['partner']['wrapper'] = array(
+    '#type'   => 'item',
+    '#prefix' => '<div class="clear-block" id="partner-answer">',
+    '#suffix' => '</div>',
+  );
+  $form['partner']['wrapper']['partner-name'] = array(
+    '#type'               => 'textfield',
+    '#title'              => t('Name'),
+    '#maxlength'          => 60,
+    '#autocomplete_path'  => 'grid/users/autocomplete',
+    '#default_value'      => $partner_name,
+  );
+  $form['partner']['wrapper']['uuid'] = array(
+    '#type'   => 'hidden',
+    '#value'  => $profile->grid_user->PrincipalID,
+  );
+  $form['partner']['wrapper']['partner-save'] = array(
+    '#type'   => 'submit',
+    '#value'  => t('Save'),
+    '#weight' => 1,
+    '#submit' => array('d4os_ui_web_profiles_profile_submit'),
+    '#ahah'   => array(
+      'path'    => 'user/'. $account->uid. '/profile/inworld/js/partner',
+      'wrapper' => 'partner-answer',
+      'method'  => 'replace',
+      'effect'  => 'fade',
+    ),
+  );
+
+  return $form;
+}
+
+function d4os_ui_web_profiles_url_iframe_form($form_state, $profile, $account) {
+  $url = isset($form_state['values']['url-url']) ? $form_state['values']['url-url'] : $profile->profileURL;
+  $value = '';
+  if ($url != '') {
+    $value = '<iframe '. variable_get('d4os_ui_web_profiles_url_iframe_attributes', 'width="600px" height="400px"'). ' src="'. $url. '"></iframe>';
+  }
+  else {
+    $value = t('No website defined');
+  }
+  $form = array();
+  $form['iframe'] = array(
+    '#type'   => 'item',
+    '#value'  => $value,
+  );
+  return $form;
+}
+
+function d4os_ui_web_profiles_url_form($form_state, $profile, $account) {
+  $url = isset($form_state['values']['url-url']) ? $form_state['values']['url-url'] : $profile->profileURL;
+  $form = array();
+  $form['url'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Change url'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => FALSE,
+  );
+  $form['url']['wrapper'] = array(
+    '#type'   => 'item',
+    '#prefix' => '<div class="clear-block" id="url-answer">',
+    '#suffix' => '</div>',
+  );
+  $form['url']['wrapper']['uuid'] = array(
+    '#type'   => 'hidden',
+    '#value'  => $profile->grid_user->PrincipalID,
+  );
+  $form['url']['wrapper']['url-url'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Url'),
+    '#default_value'  => $url,
+  );
+  $form['url']['wrapper']['url-save'] = array(
+    '#type'   => 'submit',
+    '#value'  => t('Save'),
+    '#weight' => 1,
+    '#submit' => array('d4os_ui_web_profiles_profile_submit'),
+    '#ahah'   => array(
+      'path'    => 'user/'. $account->uid. '/profile/inworld/js/url',
+      'wrapper' => 'url-answer',
+      'method'  => 'replace',
+      'effect'  => 'fade',
+    ),
+  );
+  $form['url']['wrapper'] += d4os_ui_web_profiles_url_iframe_form($form_state, $profile, $account);
+  return $form;
+}
+
+function d4os_ui_web_profiles_first_image_form($form_state, $profile, $account, $asset_pictures_server_url) {
+  // get values
+  if (isset($form_state['values']['first-image-uuid'])) {
+    $picture = theme_image(
+      $asset_pictures_server_url. $form_state['values']['first-image-uuid'],
+      t('No picture available'),
+      t("!user's profile picture", array('!user'=>$account->name)),
+      array("width" => variable_get('d4os_ui_web_profiles_images_width', '150'). 'px'),
+      FALSE
+    );
+    if (variable_get('d4os_ui_web_profiles_images_use_lightbox2', 0) == 1) {
+      $picture = l($picture,
+                   $asset_pictures_server_url. $form_state['values']['first-image-uuid'],
+                   array('html' => TRUE, 'attributes'=> array('rel' => 'lightbox')));
+    }
+  }
+  else {
+    $picture = $profile->profileFirstImage_img;
+  }
+  $first_image_uuid = isset($form_state['values']['first-image-uuid']) ? $form_state['values']['first-image-uuid'] : $profile->profileFirstImage;
+
+  // build the form
+  $form = array();
+  $form['first-image']['wrapper'] = array(
+    '#type'   => 'item',
+    '#prefix' => '<div class="clear-block" id="first-image-answer">',
+    '#suffix' => '</div>',
+  );
+  $form['first-image']['wrapper']['uuid'] = array(
+    '#type'   => 'hidden',
+    '#value'  => $profile->grid_user->PrincipalID,
+  );
+  $form['first-image']['wrapper']['first-image-picture'] = array(
+    '#type'   => 'item',
+    '#value'  => $picture,
+  );
+  $form['first-image']['wrapper']['form'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Change image'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+  );
+  $form['first-image']['wrapper']['form']['first-image-uuid'] = array(
+    '#type'          => 'textfield',
+    '#size'          => 36,
+    '#maxlength'     => 36,
+    '#default_value' => $first_image_uuid,
+  );
+  $form['first-image']['wrapper']['form']['first-image-save'] = array(
+    '#type'   => 'submit',
+    '#value'  => t('Save'),
+    '#submit' => array('d4os_ui_web_profiles_profile_submit'),
+    '#ahah'   => array(
+      'path'    => 'user/'. $account->uid. '/profile/inworld/js/first-image',
+      'wrapper' => 'first-image-answer',
+      'method'  => 'replace',
+      'effect'  => 'fade',
+    ),
+  );
+  return $form;
+}
+
+function d4os_ui_web_profiles_first_text_form($form_state, $profile, $account) {
+  $text = isset($form_state['values']['first-text-text']) ? $form_state['values']['first-text-text'] : $profile->profileFirstText;
+  $form = array();
+  $form['first-text']['wrapper'] = array(
+    '#type'   => 'item',
+    '#prefix' => '<div class="clear-block" id="first-text-answer">',
+    '#suffix' => '</div>',
+  );
+  $form['first-text']['wrapper']['uuid'] = array(
+    '#type'   => 'hidden',
+    '#value'  => $profile->grid_user->PrincipalID,
+  );
+  $form['first-text']['wrapper']['first-text-text'] = array(
+    '#type'          => 'textarea',
+    '#default_value' => $text,
+  );
+  $form['first-text']['form']['first-text-save'] = array(
+    '#type'   => 'submit',
+    '#value'  => t('Save'),
+    '#weight' => 1,
+    '#submit' => array('d4os_ui_web_profiles_profile_submit'),
+    '#ahah'   => array(
+      'path'    => 'user/'. $account->uid. '/profile/inworld/js/first-text',
+      'wrapper' => 'first-text-answer',
+      'method'  => 'replace',
+      'effect'  => 'fade',
+    ),
+  );
+  return $form;
+}
+
+function d4os_ui_web_profiles_notes_form($form_state, $profile, $account) {
+  // get the user
+  global $user;
+  // get the notes
+  $params['useruuid']  = $profile->grid_user->PrincipalID;
+  $params['uuid']      = $profile->grid_user->PrincipalID;
+  $notes = module_invoke_all('os_profile_services_avatarnotesrequest', $params);
+  $text = isset($form_state['values']['notes-text']) ? $form_state['values']['notes-text'] : $notes['data'][0]['notes'];
+
+  $form = array();
+  $form['notes']['wrapper'] = array(
+    '#type'   => 'item',
+    '#prefix' => '<div class="clear-block" id="notes-answer">',
+    '#suffix' => '</div>',
+  );
+  $form['notes']['wrapper']['uuid'] = array(
+    '#type'   => 'hidden',
+    '#value'  => $profile->grid_user->PrincipalID,
+  );
+  $form['notes']['wrapper']['notes-text'] = array(
+    '#type'          => 'textarea',
+    '#default_value' => $text,
+  );
+  $form['notes']['form']['notes-save'] = array(
+    '#type'   => 'submit',
+    '#value'  => t('Save'),
+    '#weight' => 1,
+    '#submit' => array('d4os_ui_web_profiles_profile_submit'),
+    '#ahah'   => array(
+      'path'    => 'user/'. $account->uid. '/profile/inworld/js/notes',
+      'wrapper' => 'notes-answer',
+      'method'  => 'replace',
+      'effect'  => 'fade',
+    ),
+  );
+  return $form;
+}
+
+function d4os_ui_web_profiles_options_form($form_state, $profile, $account) {
+  $account->d4os['params']['profile']['website']['display'] = isset($account->d4os['params']['profile']['website']['display']) ? $account->d4os['params']['profile']['website']['display'] : array();
+  $default = isset($form_state['values']['options-options']) ? $form_state['values']['options-options'] : $account->d4os['params']['profile']['website']['display'];
+  $form = array();
+  $form['options']['wrapper'] = array(
+    '#type'   => 'item',
+    '#prefix' => '<div class="clear-block" id="options-answer">',
+    '#suffix' => '</div>',
+  );
+  $form['options']['wrapper']['uuid'] = array(
+    '#type'   => 'hidden',
+    '#value'  => $profile->grid_user->PrincipalID,
+  );
+  $form['options']['wrapper']['options-options'] = array(
+    '#type'           => 'checkboxes',
+    '#title'          => t('Profile options'),
+    '#default_value'  => $default,
+    '#options'        => array(
+      'show_profile'      => t('Show profile'),
+      //'show_inworld'      => t('Show inworld'),
+      //'show_web'          => t('Show web'),
+      //'show_interests'    => t('Show interests'),
+      //'show_picks'        => t('Show picks'),
+      //'show_classifieds'  => t('Show classifieds'),
+    ),
+    '#description' => t('Check the options to allow profile access to other users.'),
+  );
+  $form['options']['options-save'] = array(
+    '#type'   => 'submit',
+    '#value'  => t('Save'),
+    '#weight' => 1,
+    '#submit' => array('d4os_ui_web_profiles_profile_submit'),
+    '#ahah'   => array(
+      'path'    => 'user/'. $account->uid. '/profile/inworld/js/options',
+      'wrapper' => 'options-answer',
+      'method'  => 'replace',
+      'effect'  => 'fade',
+    ),
+  );
+  return $form;
+}
+
+function d4os_ui_web_profiles_profile_submit($form, &$form_state) {
+  $params = array();
+  $params['op'] = arg(5);
+  $params['d4os']['grid']['account']['uuid'] = $form_state['values']['uuid'];
+  $passed = TRUE;
+
+  switch ($params['op']) {
+    case 'about-text':
+      $params['d4os']['grid']['profile']['about_text'] = $form_state['values']['about-text-text'];
+      break;
+    case 'first-text':
+      $params['d4os']['grid']['profile']['first_text'] = $form_state['values']['first-text-text'];
+      break;
+    case 'partner':
+      $params['d4os']['grid']['profile']['partner']['name'] = $form_state['values']['partner-name'];
+      break;
+    case 'notes':
+      $params['d4os']['grid']['profile']['notes']      = $form_state['values']['notes-text'];
+      break;
+    case 'image':
+      $params['d4os']['grid']['profile']['image'] = $form_state['values']['image-uuid'];
+      break;
+    case 'first-image':
+      $params['d4os']['grid']['profile']['first_image'] = $form_state['values']['first-image-uuid'];
+      break;
+    case 'home-region':
+      $params['d4os']['grid']['presence']['home_region'] = substr($form_state['values']['home-region-uuid'], 1);
+      break;
+    case 'url':
+      $params['d4os']['grid']['profile']['url'] = $form_state['values']['url-url'];
+      break;
+    case 'options':
+      $params['d4os']['params']['profile']['website']['display'] = $form_state['values']['options-options'];
+      break;
+    case 'default':
+      $passed = FALSE;
+      break;
+  }
+
+  if ($passed) {
+    d4os_ui_web_profiles_save_web_profile_form($params);
+  }
+}
+
+function d4os_ui_web_profiles_save_profile_js($uid, $item) {
+  $form = d4os_ajax_form_handler();
+
+  // Render the new output.
+  $track_form = $form[$item]['wrapper'];
+  // Prevent duplicate wrappers.
+  unset($track_form['#prefix'], $track_form['#suffix']);
+
+  $output = theme('status_messages') . drupal_render($track_form);
+  $javascript = drupal_add_js(NULL, NULL);
+  if (isset($javascript['setting'])) {
+    $output .= '<script type="text/javascript">jQuery.extend(Drupal.settings, '. drupal_to_js(call_user_func_array('array_merge_recursive', $javascript['setting'])) .');</script>';
+  }
+
+  // Final rendering callback.
+  drupal_json(array('status' => TRUE, 'data' => $output));
+}
+
+function d4os_ui_web_profiles_partner_validate($token) {
+  // check the token
+  $values = db_fetch_object(db_query("SELECT * FROM {d4os_ui_web_profiles_partners} WHERE token='%s'", array($token)));
+  if (is_object($values)) {
+    $src  = $values->source_uuid;
+    $dest = $values->destination_uuid;
+    // assign the partners
+    $params = array(
+      'avatarID'        => $src,
+      'profilePartner'  => $dest,
+    );
+    module_invoke_all('os_profile_services_update_avatar_properties', $params);
+    $params = array(
+      'avatarID'        => $dest,
+      'profilePartner'  => $src,
+    );
+    module_invoke_all('os_profile_services_update_avatar_properties', $params);
+    // delete the entries
+    $data = array(
+      $src,
+      $dest,
+    );
+    db_query("DELETE FROM {d4os_ui_web_profiles_partners} WHERE source_uuid IN (". db_placeholders($data, 'varchar'). ") OR destination_uuid IN (". db_placeholders($data, 'varchar'). ")", array($src, $dest));
+    // return the answer
+    drupal_set_message('Your partnership is validated.');
+    drupal_goto();
+  }
+  else {
+    drupal_set_message('Unable to find entries for this partnership.');
+    drupal_goto();
+  }
+}
+
+function d4os_ui_web_profiles_send_partner_request($params) {
+  $source           = $params['source'];
+  $destination      = $params['destination'];
+
+  // check for the email
+  if ($destination->mail == d4os_ui_auth_generate_mail($destination->useruuid)) {
+    drupal_set_message(t('Unable to send the partner request. The email address is not valid.'), 'error');
+    return array(
+      'success' => FALSE,
+      'message' => 'wrong email',
+    );
+  }
+  // delete previous entries
+  db_query("DELETE FROM {d4os_ui_web_profiles_partners} WHERE source_uuid='%s'", array($source->useruuid));
+  // build the token
+  $params['token'] = d4os_uuid_create();
+  db_query("INSERT INTO {d4os_ui_web_profiles_partners} (source_uuid, destination_uuid, token) VALUES ('%s', '%s', '%s')", array($source->useruuid, $destination->useruuid, $params['token']));
+  // send the email
+  drupal_mail('d4os_ui_web_profiles', 'partner_request', $destination->mail, user_preferred_language($destination), $params);
+  drupal_set_message(t('A request was sent to the avatar.'));
+  return array(
+    'success' => TRUE,
+    'message' => '',
+  );
+}
+
+function d4os_ui_web_profiles_mail($key, &$message, $params) {
+  $language   = $message['language'];
+  $variables  = user_mail_tokens($params['destination'], $language);
+  $variables['!source_name'] = $params['source']->name;
+  $variables['!request_url'] = url('grid/profile/partner/validate/'. $params['token'], array('absolute' => TRUE, 'language' => $language));
+  switch($key) {
+    case 'partner_request':
+      $message['subject'] = t('Partner request from !site', $variables, $language->language);
+      $message['body'][] = t("Dear !username\n\nThe user called !source_name would like you to accept his partnership request.\n\nYou may accept it by clicking on this link or copying and pasting it in your browser:\n\n!request_url!", $variables, $language->language);
+    break;
+  }
+}
+
+function d4os_ui_web_profiles_theme() {
+  return array(
+    'd4os_ui_web_profiles_display' => array(
+      'path'      => drupal_get_path('module', 'd4os_ui_web_profiles').'/theme',
+      'template'  => 'd4os_ui_web_profiles_display',
+      'arguments' => array('profile' => new stdClass),
+    ),
+  );
+}
+
+/**
+* Save the profile infos
+*/
+function d4os_ui_web_profiles_save_web_profile_form($params) {
+  $success = FALSE;
+
+  // get the profile
+  $d4os_users = D4OS_IO::create('Users');
+  $d4os_profiles = D4OS_IO::create('Profiles');
+  $d4os_profile = $d4os_profiles->load_profile(array('useruuid' => $params['d4os']['grid']['account']['uuid']));
+  if (is_object($d4os_profile)) {
+    $new_profile_values = (array)$d4os_profile;
+  }
+  else {
+    $new_profile_values = (array)d4os_ui_profiles_create_profile($params['d4os']['grid']['account']['uuid']);
+  }
+
+  // get the profile user values
+  $query = "SELECT u.uid, u.name, u.pass, u.login, u.mail, u.language, du.UUID AS useruuid FROM {users} AS u LEFT JOIN {d4os_ui_users} AS du ON du.uid=u.uid WHERE du.UUID='%s'";
+  $profile_user_values = db_fetch_object(db_query($query, $params['d4os']['grid']['account']['uuid']));
+  if (!is_object($profile_user_values)) {
+    drupal_set_message(t('Could not find the user in the grid.'), 'error');
+    return;
+  }
+  switch ($params['op']) {
+
+    case 'home-region':
+      $account_values = new stdClass();
+      $account_values->HomeRegionID = $params['d4os']['grid']['presence']['home_region'];
+      $account_values->PrincipalID = $params['d4os']['grid']['account']['uuid'];
+      $result = $d4os_users->save_user($account_values);
+      if (is_object($result[0])) {
+        $success = TRUE;
+      }
+      break;
+
+    case 'partner':
+      // get the accounts
+      $query = "SELECT u.uid, u.name, u.pass, u.login, u.mail, u.language, du.UUID AS useruuid FROM {users} AS u LEFT JOIN {d4os_ui_users} AS du ON du.uid=u.uid WHERE u.name='%s'";
+      $partner_user_values = db_fetch_object(db_query($query, $params['d4os']['grid']['profile']['partner']['name']));
+      if (is_object($partner_user_values)) {
+        // get the requester values
+        $params['source']       = $profile_user_values;
+        $params['destination']  = $partner_user_values;
+        $result = d4os_ui_web_profiles_send_partner_request($params);
+        if ($result['success'] == TRUE) $success = TRUE;
+      }
+      else {
+        drupal_set_message(t('Could not find the user in the grid.'), 'error');
+        $success = FALSE;
+      }
+      break;
+
+    case 'notes':
+      $params['useruuid']  = $user->uuid;
+      $params['target_id']  = $params['d4os']['grid']['account']['uuid'];
+      $params['notes']      = $params['d4os']['grid']['profile']['notes'];
+      $result = $d4os_profiles->avatar_notes_update($params);
+      if ($result['success'] == TRUE) $success = TRUE;
+      break;
+
+    case 'url':
+      $new_profile_values['profileURL'] = $params['d4os']['grid']['profile']['url'];
+      $result = $d4os_profiles->avatar_properties_update($new_profile_values);
+      if ($result['success'] == TRUE) $success = TRUE;
+      break;
+
+    case 'about-text':
+      $new_profile_values['profileAboutText']   = $params['d4os']['grid']['profile']['about_text'];
+      $result = $d4os_profiles->avatar_properties_update($new_profile_values);
+      if ($result['success'] == TRUE) $success = TRUE;
+      break;
+
+    case 'first-text':
+      $new_profile_values['profileFirstText']   = $params['d4os']['grid']['profile']['first_text'];
+      $result = $d4os_profiles->avatar_properties_update($new_profile_values);
+      if ($result['success'] == TRUE) $success = TRUE;
+      break;
+
+    case 'image':
+      $new_profile_values['profileImage']       = $params['d4os']['grid']['profile']['image'];
+      $result = $d4os_profiles->avatar_properties_update($new_profile_values);
+      if ($result['success'] == TRUE) $success = TRUE;
+      break;
+
+    case 'first-image':
+      $new_profile_values['profileFirstImage']  = $params['d4os']['grid']['profile']['first_image'];
+      $result = $d4os_profiles->avatar_properties_update($new_profile_values);
+      if ($result['success'] == TRUE) $success = TRUE;
+      break;
+
+    case 'options':
+      // save the account
+      $data = array();
+      $data['d4os']['params']['profile']['website']['display'] = $params['d4os']['params']['profile']['website']['display'];
+      $saved = user_save($account, $data);
+      if ($saved->uid) {
+        $success = TRUE;
+      }
+      break;
+  }
+  if ($success) {
+    drupal_set_message(t('Saved'));
+  }
+  else {
+    drupal_set_message(t('An error occured during saving'), 'error');
+  }
+}

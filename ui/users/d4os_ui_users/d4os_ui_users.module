@@ -1,0 +1,633 @@
+<?php
+/**
+ * @package   d4os_ui_users
+ * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+ * @link      http://www.d4os.org
+ * @license   GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+ * D4os is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ */
+
+define(FIRSTNAME_MAX_LENGTH, 32);
+define(LASTNAME_MAX_LENGTH, 32);
+
+module_load_include('helpers.inc', 'd4os_ui_users');
+
+function d4os_ui_users_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#d4os_ui_users':
+      return '<p>' . t('OpenSim grid users management') . '</p>';
+  }
+}
+
+function d4os_ui_users_menu() {
+  $items = array();
+  $items['grid/users/autocomplete'] = array(
+    'title'             => 'User autocomplete',
+    'page callback'     => 'd4os_ui_users_user_autocomplete',
+    'access arguments'  => array('access user profiles'),
+    'type'              => MENU_CALLBACK,
+  );
+  $items['admin/settings/d4os/ui/users'] = array(
+    'title'             => 'users',
+    'description'       => 'd4os ui users settings',
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('d4os_ui_users_admin'),
+    'access arguments'  => array('admin d4os ui users'),
+    'type'              => MENU_LOCAL_TASK,
+    'file'              => 'd4os_ui_users.admin.inc'
+  );
+  $items['user/%user/grid/register'] = array(
+    'title'             => 'Grid registration',
+    'description'       => 'Registers the user on the grid.',
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('d4os_ui_users_grid_registration_form'),
+    'access callback'   => 'd4os_ui_users_can_register_on_grid',
+    'access arguments'  => array(1),
+    'type'              => MENU_LOCAL_TASK,
+  );
+  return $items;
+}
+
+function d4os_ui_users_theme() {
+  return array(
+    'd4os_ui_users_models_select_form' => array(
+      'arguments' => array('form'),
+    ),
+  );
+}
+
+function d4os_ui_users_perm() {
+  return array(
+    'admin d4os ui users',
+    'search d4os ui users',
+  );
+}
+
+function d4os_ui_users_cron() {
+  // do the job
+  //d4os_ui_users_set_region_owner_role();
+}
+
+function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
+  switch ($form_id) {
+
+    // login
+    case 'user_login_block':
+    case 'user_login':
+      d4os_ui_users_login_form($form);
+      // remove required (to use openid module)
+      if (!empty($form_state['post']['openid_identifier'])) {
+        $form['firstname']['#required'] = FALSE;
+        $form['lastname']['#required'] = FALSE;
+      }
+      break;
+
+    // registration
+    case 'user_register':
+      // check if the datastore is alive
+      $d4os_user = D4OS_IO::create('Users');
+      $d4os_user->ping();
+      if ($d4os_user->response->success !== TRUE) {
+        drupal_set_message(t('You can not register an account.'), 'error');
+        drupal_set_message(t('Please try again later.'), 'error');
+        drupal_goto();
+      }
+      d4os_ui_users_register_form($form);
+      break;
+
+    // profile edition
+    case 'user_profile_form':
+      // check if the datastore is alive
+      $d4os_user = D4OS_IO::create('Users');
+      $d4os_user->ping();
+      if ($d4os_user->response->success !== TRUE) {
+        drupal_set_message(t('You can not edit an account.'), 'error');
+        drupal_set_message(t('Please try again later.'), 'error');
+        drupal_goto();
+      }
+      d4os_ui_users_profile_form($form);
+      break;
+  }
+}
+
+function d4os_ui_users_login_form(&$form) {
+  unset($form['name']);
+  $form['firstname'] = array(
+    '#type'         => 'textfield',
+    '#title'        => t('First Name'),
+    '#size'         => 15,
+    '#maxlength'    => 32,
+    '#weight'       => -2,
+  );
+  $form['lastname'] = array(
+    '#type'         => 'textfield',
+    '#title'        => t('Last Name'),
+    '#size'         => 15,
+    '#maxlength'    => 32,
+    '#required'     => TRUE,
+    '#weight'       => -1,
+  );
+  $form['#after_build'][] = 'd4os_ui_users_openid_form_alter';
+  array_unshift($form['#validate'], 'd4os_ui_users_login_authenticate_validate');
+}
+
+function d4os_ui_users_register_form(&$form) {
+  $firstname_field = array(
+    '#type'         => 'textfield',
+    '#title'        => t('First Name'),
+    '#size'         => 32,
+    '#maxlength'    => 32,
+    '#description'  => t('Enter the first name for the avatar. Spaces are NOT allowed; Punctuation is not allowed except for periods, hyphens, and underscores.'),
+    '#weight'       => -4,
+  );
+  $lastname_field = array(
+    '#type'         => 'textfield',
+    '#title'        => t('Last Name'),
+    '#size'         => 32,
+    '#maxlength'    => 32,
+    '#required'     => TRUE,
+    '#description'  => t('Enter the last name for the avatar. Spaces are NOT allowed; Punctuation is not allowed except for periods, hyphens, and underscores.'),
+    '#weight'       => -3,
+  );
+  // workaround for this bug : http://drupal.org/node/760838
+  if (isset($form['account'])) {
+    $form['account']['mail']['#weight'] = -2;
+    unset($form['account']['name']);
+    $form['account']['firstname'] = $firstname_field;
+    $form['account']['lastname'] = $lastname_field;
+  }
+  else {
+    $form['mail']['#weight'] = -2;
+    unset($form['name']);
+    $form['firstname'] = $firstname_field;
+    $form['lastname'] = $lastname_field;
+  }
+  $form['account']['mail2'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('E-mail address confirmation'),
+    '#default_value'  => '',
+    '#maxlength'      => EMAIL_MAX_LENGTH,
+    '#description'    => t('Confirm your email address please.'),
+    '#required'       => TRUE,
+    '#weight'         => -1,
+  );
+  array_unshift($form['#validate'], 'd4os_ui_users_account_validate');
+}
+
+function d4os_ui_users_openid_form_alter($form_element, &$form_state) {
+  drupal_add_js(drupal_get_path('module', 'd4os_ui_users').'/d4os_ui_users.js', 'module');
+  return $form_element;
+}
+
+function d4os_ui_users_profile_form(&$form) {
+  $account = $form['_account']['#value'];
+  if ($account->uid > 1 && $form['_category']['#value'] == 'account') {
+    if (user_access('administer users') || user_access('change own username')) {
+      $names = explode(' ', $account->name);
+      unset($form['account']['name']);
+      $form['account']['firstname'] = array(
+        '#type'           => 'textfield',
+        '#title'          => t('First Name'),
+        '#default_value'  => $names[0],
+        '#size'           => 32,
+        '#maxlength'      => 32,
+        '#required'       => TRUE,
+        '#description'    => t('Enter the first name for the avatar. Spaces are not allowed. Punctuation is not allowed except for periods, hyphens, and underscores.'),
+        '#weight'         => -2,
+      );
+      $form['account']['lastname'] = array(
+        '#type'           => 'textfield',
+        '#title'          => t('Last Name'),
+        '#default_value'  => $names[1],
+        '#size'           => 32,
+        '#maxlength'      => 32,
+        '#required'       => TRUE,
+        '#description'    => t('Enter the last name for the avatar. Spaces are not allowed. Punctuation is not allowed except for periods, hyphens, and underscores.'),
+        '#weight'         => -1,
+      );
+    }
+  }
+  array_unshift($form['#validate'], 'd4os_ui_users_account_validate');
+}
+
+function d4os_ui_users_user($op, &$edit, &$account, $category = NULL) {
+  switch ($op) {
+
+    case 'update':
+      d4os_ui_users_update_user($edit, $account);
+      break;
+
+    case 'delete':
+      d4os_ui_users_delete_user($account);
+      break;
+
+    case 'view':
+      d4os_ui_users_view_user($account);
+      break;
+
+  }
+}
+
+function d4os_ui_users_view_user(&$account) {
+  // check if the user exists in the grid
+  $uuid = db_result(db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=%d", $account->uid));
+  if ($uuid === FALSE) {
+    drupal_set_message(t('User not registered InWorld.'));
+  }
+  else {
+    $account->content['grid']['account'] = array(
+      '#type'   => 'user_profile_category',
+      '#title'  => t('InWorld'),
+    );
+    $account->content['grid']['account']['uuid'] = array(
+      '#type'   => 'user_profile_item',
+      '#title'  => t('Uuid'),
+      '#value'  => $uuid,
+      '#weight' => 0,
+    );
+  }
+}
+
+function d4os_ui_users_delete_user($account) {
+  // check if the user exists in the grid
+  $uuid = db_result(db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=%d", $account->uid));
+  if ($uuid !== FALSE) {
+    // delete the user in the grid
+    $d4os_user = D4OS_IO::create('Users');
+    $d4os_user->delete_user($uuid);
+    // delete drupal link
+    db_query("DELETE FROM {d4os_ui_users} WHERE UUID = '%s' OR uid = %d", array($uuid, $account->uid));
+  }
+}
+
+function d4os_ui_users_update_user(&$edit, &$account) {
+  // check if the user is admin
+  if ($account->uid < 2) return;
+
+  // check if the user is registered on the grid
+  $uuid = db_result(db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=%d", $account->uid));
+  if ($uuid === FALSE) return;
+
+  // load the grid user
+  $d4os_users = D4OS_IO::create('Users');
+  $grid_user = $d4os_users->load_user(array('PrincipalID' => $uuid));
+  $grid_user = $grid_user[0];
+
+  // check if username has changed
+  $grid_user->FirstName = ($grid_user->FirstName != $edit['firstname']) ? $edit['firstname'] : $grid_user->FirstName;
+  $grid_user->LasttName = ($grid_user->LasttName != $edit['lastname']) ? $edit['lastname'] : $grid_user->LasttName;
+
+  // check if email has changed
+  $grid_user->Email = empty($edit['mail']) ? $grid_user->Email : $edit['mail'];
+  $grid_user->Email = ($grid_user->Email != $edit['mail']) ? $edit['mail'] : $grid_user->Email;
+
+  // check if password has changed
+  if (!empty($edit['pass']) && md5($edit['pass']) != $account->pass) {
+    $grid_user->passwordSalt = md5(microtime() . mt_rand(0,0xffff));
+    $grid_user->passwordHash = md5(md5($edit['pass']) . ":" . $grid_user->passwordSalt);
+  }
+
+  // set user level
+  $grid_user->UserLevel = d4os_ui_users_get_user_level($edit['roles']);
+
+  // save the grid user
+  $d4os_users->set_uuid($account->uid, $grid_user->PrincipalID);
+  $d4os_users->save_user($grid_user);
+}
+
+function d4os_ui_users_login_authenticate_validate($form, &$form_state) {
+  // check for the openid module
+  if (module_exists('openid')) {
+    if (!empty($form_state['values']['openid_identifier'])) {
+      drupal_set_message(t('Using openid.'), 'warning');
+      return;
+    }
+  }
+  // TODO : show a message to the users if they are not allowed to log in the grid
+  $admin = user_load(1);
+  if ($form_state['values']['firstname'] == $admin->name) {
+    $form_state['values']['name'] = $admin->name;
+  }
+  else {
+    $form_state['values']['name'] = $form_state['values']['firstname']. ' '. $form_state['values']['lastname'];
+  }
+}
+
+function d4os_ui_users_can_register_on_grid($account) {
+  // check the datastore
+  $d4os_user = D4OS_IO::create('Users');
+  $d4os_user->ping();
+  if ($d4os_user->response->success !== TRUE) {
+    drupal_set_message(t('You can not register an account.'), 'error');
+    drupal_set_message(t('Please try again later.'), 'error');
+    return FALSE;
+  }
+
+  // check if the account is admin
+  if ($account->uid == 1) return FALSE;
+
+  // check if the account is already registered on the grid
+  $uuid = db_result(db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=%d", $account->uid));
+  if ($uuid !== FALSE) return FALSE;
+
+  // else
+  return TRUE;
+}
+
+function d4os_ui_users_grid_registration_form($form_state) {
+  $form = array();
+  $form['notice'] = array(
+    '#type' => 'item',
+    '#value' => t('This form will allow you to create an account on the grid.')
+  );
+  $form['password_validation'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Password check'),
+    '#collapsible'  => FALSE,
+    '#collapsed'    => FALSE,
+    '#description'  => t('You need to enter your password for validation.'),
+  );
+  $form['password_validation']['pass'] = array(
+    '#type' => 'password',
+    '#title' => t('Password'),
+    '#maxlength' => 64,
+    '#size' => 15,
+  );
+  d4os_ui_users_avatars_models_select_form($form);
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Create avatar'),
+    '#weight' => 99
+  );
+  return $form;
+}
+
+function d4os_ui_users_grid_registration_form_validate($form, &$form_state) {
+  // check the datastore
+  $d4os_user = D4OS_IO::create('Users');
+  $d4os_user->ping();
+  if ($d4os_user->response->success !== TRUE) {
+    drupal_set_message(t('You can not edit an account.'), 'error');
+    drupal_set_message(t('Please try again later.'), 'error');
+    form_set_error();
+  }
+
+  // get the account
+  $account = user_load(arg(1));
+
+  // check the password
+  if (md5($form_state['values']['pass']) != $account->pass) {
+    form_set_error('pass', t('Wrong password.'));
+  }
+
+  // check for the model
+  if (isset($form_state['values']['model_uuid']) && $form_state['values']['model_uuid'] == '') {
+    form_set_error('model', t('Please select a model.'));
+  }
+}
+
+function d4os_ui_users_grid_registration_form_submit($form, &$form_state) {
+  // get the account
+  $account = user_load(arg(1));
+
+  // get names
+  $names = explode(' ', $account->name);
+
+  // build the grid account
+  $grid_user = d4os_ui_users_generate_user($names[0], $names[1], $form_state['values']['pass'], $account->mail, UUID_ZERO, $form_state['values']['model_uuid']);
+  $d4os_user = D4OS_IO::create('Users');
+  $d4os_user->set_uuid($account->uid, $grid_user->PrincipalID);
+  $d4os_user->save_user($grid_user);
+
+  // redirect
+  $form_state['redirect'] = 'user/'. arg(1);
+}
+
+function d4os_ui_users_account_validate($form, &$form_state) {
+	$values = &$form_state['values'];
+
+  // check if email address matches
+  if ($values['form_id'] != 'user_profile_form') {
+    if ($values['mail'] != $values['mail2']) {
+      form_set_error('mail2', t('The email address does not match.'));
+    }
+  }
+
+  // check for the model
+  if (isset($values['model_uuid']) && $values['model_uuid'] == '') {
+    form_set_error('model', t('Please select a model.'));
+  }
+
+  // get username and lastname
+  if (isset($values['_account']->name)) {
+    $names = explode(' ', $values['_account']->name);
+  }
+  $firstname = isset($values['firstname']) ? $values['firstname'] : $names[0];
+  $lastname = isset($values['lastname']) ? $values['lastname'] : $names[1];
+  $name     = $firstname. ' '. $lastname;
+
+  // check if the lastname is the same one as admin account
+  $admin = user_load(1);
+  if ($firstname == $admin->name) {
+    form_set_error('lastname', t('Please use another last name.'));
+  }
+
+  // rebuild the "name" for drupal account
+  $values['name'] = $name;
+
+  // check the username
+  $firstname_validate = d4os_ui_users_validate_name($firstname, 'firstname', t('first name'));
+  if ($firstname_validate) {
+    form_set_error('firstname', $firstname_validate);
+  }
+  // check the lastname
+  $lastname_validate = d4os_ui_users_validate_name($lastname, 'lastname', t('last name'));
+  if ($lastname_validate) {
+    form_set_error('lastname', $lastname_validate);
+  }
+  // check the password length
+  if (isset($values['pass']) && !empty($values['pass']) && strlen($values['pass']) < 6) {
+    form_set_error('pass', t('The Password field must be at least 6 characters in length.'));
+  }
+  // check the email address to fit new opensim rules
+  if (!d4os_ui_users_validate_email($values['mail'])) {
+    form_set_error('pass', t('The Email field must contain a valid email address.'));
+  }
+
+  // get the inworld user
+  $d4os_user = D4OS_IO::create('Users');
+  $grid_user = $d4os_user->load_user(array('name' => $firstname. ' '. $lastname));
+  $grid_user = $grid_user[0];
+
+  switch ($values['form_id']){
+    case 'user_register':
+      // check if user already exists when registering
+      if (is_object($grid_user)) {
+        form_set_error('firstname', t('This name already exists'));
+        return;
+      }
+      break;
+    case 'user_profile_form':
+      // get the user uuid
+      $uuid = db_result(db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=%d", $values['_account']->uid));
+      if ($uuid === FALSE) return;
+      // check if the user already exists after changing username
+      if (is_object($grid_user) && $grid_user->PrincipalID != $uuid) {
+        form_set_error('name', t('This name already exists'));
+        return;
+      }
+      break;
+  }
+}
+
+function d4os_ui_users_search($op = 'search', $keys = NULL, $skip_access_check = FALSE) {
+  switch ($op) {
+    case 'name':
+      if ($skip_access_check || user_access('search d4os ui users')) {
+        return 'Avatars par uuid';
+      }
+    case 'search':
+      if (user_access('search d4os ui users')) {
+        $find = array();
+        // Replace wildcards with MySQL/PostgreSQL wildcards.
+        $keys = preg_replace('!\*+!', '%', $keys);
+        $query = "SELECT u.name, u.uid FROM {users} AS u"
+              . " LEFT JOIN {d4os_ui_users} AS du ON du.UUID='%s'"
+              . " WHERE u.uid=du.uid";
+        $result = pager_query($query, 15, 0, NULL, $keys);
+        while ($account = db_fetch_object($result)) {
+          $find[] = array(
+            'title' => $account->name,
+            'link'  => url('user/'. $account->uid, array('absolute' => TRUE))
+          );
+        }
+        return $find;
+      }
+  }
+}
+
+function d4os_ui_users_avatars_models_select_form(&$form) {
+  global $base_url;
+// TODO : use caching
+  // get the list of models
+  $available_models = array();
+  for ($i=1; $i<11; ++$i) {
+    $model_uuid_nbr = 'd4os_ui_users_default_model_uuid_'. $i;
+    $model_uuid = variable_get($model_uuid_nbr, UUID_ZERO);
+    if ($model_uuid != UUID_ZERO && $model_uuid != '') {
+      $model_name_nbr = 'd4os_ui_users_default_model_name_'. $i;
+      $model_picture_url_nbr = 'd4os_ui_users_default_model_picture_url_'. $i;
+      $model = new stdClass();
+      $model->uuid = $model_uuid;
+      $model->name = variable_get($model_name_nbr, 'model');
+      $model->picture_url = variable_get($model_picture_url_nbr, '');
+      $available_models[] = $model;
+    }
+  }
+  if (count($available_models) == 0) {
+    return;
+  }
+
+  // build the form fieldset
+  $form['models'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Models'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => FALSE,
+    '#description'  => t('Please select an avatar to use. You will be able to change it later.'),
+    '#theme'        => 'd4os_ui_users_models_select_form',
+  );
+
+  $options = array();
+  $i = 1;
+  $image_width = variable_get('d4os_ui_users_models_image_width', '150');
+  $use_lightbox2 = variable_get('d4os_ui_users_models_image_use_lightbox2', 0);
+  foreach ($available_models as $model) {
+    // build the form
+    $form['models'][$model->uuid]['name'] = array(
+      '#value' => $model->name,
+    );
+    $picture = theme_image(
+      $model->picture_url,
+      t('No picture available'),
+      t("!user's picture", array('!user'=>$model->name)),
+      array("width" => $image_width. 'px'),
+      FALSE
+    );
+    if ($use_lightbox2 == 1) {
+      $picture = l($picture,
+                   $model->picture_url,
+                   array('html' => TRUE, 'attributes'=> array('rel' => 'lightbox[models]')));
+    }
+    $form['models'][$model->uuid]['picture'] = array(
+      '#value' => $picture,
+    );
+    $options[$model->uuid] = '';
+    ++$i;
+  }
+  $form['models']['model_uuid'] = array(
+    '#type'     => 'radios',
+    '#title'    => t('Models'),
+    '#options'  => $options,
+  );
+}
+
+function theme_d4os_ui_users_models_select_form($form) {
+  $rows = array();
+  foreach (element_children($form) as $key) {
+    $row = array();
+    if (isset($form[$key]['picture']) && is_array($form[$key]['picture'])) {
+      $row[] = drupal_render($form['model_uuid'][$key]);
+      $row[] = drupal_render($form[$key]['name']);
+      $row[] = drupal_render($form[$key]['picture']);
+    }
+    $rows[] = $row;
+  }
+
+  $header = array(t('Selected'), t('Name'), t('Picture'));
+
+  $output = theme('table', $header, $rows);
+  return $output;
+}
+
+function d4os_ui_users_set_region_owner_role() {
+  // get the list
+  $d4os_regions = D4OS_IO::create('Regions');
+  $owners = $d4os_regions->get_regions_owners();
+
+  if (!is_array($owners)) {
+    return FALSE;
+  }
+
+  // get the owner rid
+  $rid = variable_get('d4os_ui_users_default_region_owner_role',0);
+  if ($rid == 0) return;
+
+  // remove owner roles
+  db_query('DELETE FROM {users_roles} WHERE rid=%d', $rid);
+
+  // for each owner, assign the role
+  foreach ($owners as $owner) {
+    // get the owner uid
+    $uid = db_result(db_query("SELECT uid FROM {d4os_ui_users} WHERE UUID='%s'", $owner));
+    // assign the role
+    if (is_numeric($uid)) {
+      db_query("INSERT INTO {users_roles} (rid, uid) VALUES (%d, %d)", array($rid, $uid));
+    }
+  }
+}
+
+function d4os_ui_users_user_autocomplete($string = '') {
+  $matches = array();
+  if ($string) {
+    $result = db_query_range("SELECT name FROM {users} WHERE LOWER(name) LIKE LOWER('%s%%')", $string, 0, 10);
+    while ($user = db_fetch_object($result)) {
+      $matches[$user->name] = check_plain($user->name);
+    }
+  }
+
+  drupal_json($matches);
+}

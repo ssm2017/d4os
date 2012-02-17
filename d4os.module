@@ -1,0 +1,158 @@
+<?php
+/**
+ * @package   d4os_main
+ * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+ * @link      http://www.d4os.org
+ * @license   GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+ * D4os is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ */
+
+module_load_include('helpers.inc', 'd4os');
+
+function d4os_init() {
+	define('D4OS_IO_SYSTEM', variable_get('d4os_io_system', 0));
+	d4os_io_load();
+}
+
+/**
+ * Help info
+ */
+function d4os_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#d4os':
+      return '<p>' . t('OpenSim grid management') . '</p>';
+  }
+}
+
+/**
+ * Hook menu
+ */
+function d4os_menu() {
+  $items = array();
+  $items['admin/settings/d4os'] = array(
+    'title'             => 'd4os settings',
+    'description'       => 'd4os settings',
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('d4os_admin'),
+    'access arguments'  => array('admin d4os'),
+    'type'              => MENU_NORMAL_ITEM,
+    'file'              => 'd4os.admin.inc'
+  );
+  $items['admin/settings/d4os/io'] = array(
+    'title'             => 'IO',
+    'description'       => 'IO settings',
+    'page callback'     => 'd4os_admin_io',
+    'access arguments'  => array('admin d4os'),
+    'type'              => MENU_DEFAULT_LOCAL_TASK,
+    'file'              => 'd4os.admin.inc'
+  );
+  $items['admin/settings/d4os/io/connectors'] = array(
+    'title'             => 'Connectors',
+    'description'       => 'd4os io settings',
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('d4os_io_settings'),
+    'access arguments'  => array('admin d4os'),
+    'type'              => MENU_LOCAL_TASK,
+    'file'              => 'd4os.admin.inc'
+  );
+  $items['admin/settings/d4os/ui'] = array(
+    'title'             => 'UI',
+    'description'       => 'UI settings',
+    'page callback'     => 'd4os_admin_ui',
+    'access arguments'  => array('admin d4os'),
+    'type'              => MENU_LOCAL_TASK,
+    'file'              => 'd4os.admin.inc'
+  );
+  return $items;
+}
+
+
+/**
+ * Hook perm
+ */
+function d4os_perm() {
+  return array(
+    'admin d4os',
+  );
+}
+
+function d4os_io_load() {
+  module_load_include('plugin.inc', 'd4os', 'io/connectors/'. D4OS_IO_SYSTEM. '/'. D4OS_IO_SYSTEM);
+	module_load_include('users.inc', 'd4os', 'io/connectors/'. D4OS_IO_SYSTEM. '/'. D4OS_IO_SYSTEM);
+  module_load_include('profiles.inc', 'd4os', 'io/connectors/'. D4OS_IO_SYSTEM. '/'. D4OS_IO_SYSTEM);
+  module_load_include('regions.inc', 'd4os', 'io/connectors/'. D4OS_IO_SYSTEM. '/'. D4OS_IO_SYSTEM);
+  module_load_include('grid.inc', 'd4os', 'io/connectors/'. D4OS_IO_SYSTEM. '/'. D4OS_IO_SYSTEM);
+  module_load_include('inventory.inc', 'd4os', 'io/connectors/'. D4OS_IO_SYSTEM. '/'. D4OS_IO_SYSTEM);
+  module_load_include('groups.inc', 'd4os', 'io/connectors/'. D4OS_IO_SYSTEM. '/'. D4OS_IO_SYSTEM);
+}
+
+class D4OS_IO {
+  public static $type;
+
+  public static function &create($name) {
+    $d4os_io_system = 'D4OS_IO_'. D4OS_IO_SYSTEM. '_'. $name;
+    if(!is_object(self::$type) || get_class(self::$type) != $d4os_io_system) {
+      self::$type = new $d4os_io_system;
+    }
+    return self::$type;
+  }
+}
+
+interface D4OS_IO_Users_Interface {
+	public function ping();
+  public function load_user($values);
+  public function save_user($account);
+  public function delete_user($uuid);
+  public function get_online_users_list($values);
+  public function set_uuid($uid, $uuid);
+}
+
+interface D4OS_IO_Profiles_Interface {
+	public function ping();
+  public function load_profile($values);
+  public function save_profile($values);
+  public function delete_profile($useruuid);
+  public function avatarclassifiedsrequest($values);
+  public function classified_update($values);
+  public function classified_delete($values);
+  public function avatarpicksrequest($values);
+  public function pickinforequest($values);
+  public function picks_update($values);
+  public function picks_delete($values);
+  public function avatarnotesrequest($values);
+  public function avatar_notes_update($values);
+  public function avatar_properties_request($values);
+  public function avatar_properties_update($values);
+  public function avatar_interests_request($values);
+  public function avatar_interests_update($values);
+  public function user_preferences_request($values);
+  public function user_preferences_update($values);
+}
+
+interface D4OS_IO_Regions_Interface {
+	public function ping();
+  public function get_regions_owners();
+  public function region_exists($uuid);
+  public function get_regions_count();
+  public function get_regions_array();
+  public function get_regions_names();
+}
+
+interface D4OS_IO_Grid_Interface {
+	public function ping();
+  public function get_grid_infos();
+}
+
+interface D4OS_IO_Inventory_Interface {
+	public function ping();
+}
+
+interface D4OS_IO_Groups_Interface {
+	public function ping();
+  public function group_exists($uuid);
+  public function add_user_to_group($user_uuid, $group_uuid);
+  public function delete_user($uuid);
+}

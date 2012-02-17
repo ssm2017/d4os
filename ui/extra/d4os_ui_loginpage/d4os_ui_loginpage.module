@@ -1,0 +1,76 @@
+<?php
+
+/**
+ * @package    d4os_ui_loginpage
+ * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+ * @link      http://www.d4os.org
+ * @license   GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+ * D4os is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ */
+
+/**
+ * Implementation of hook help
+ */
+function d4os_ui_loginpage_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#d4os_ui_loginpage':
+      return '<p>' . t('OpenSim grid loginpage management') . '</p>';
+  }
+}
+
+function d4os_ui_loginpage_menu() {
+  $items = array();
+  $items['loginpage'] = array(
+    'title' => 'Loginpage',
+    'description' => 'Viewer login page',
+    'page callback' => 'd4os_ui_loginpage_render',
+    'access callback' => true,
+    'type' => MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+function d4os_ui_loginpage_perm() {
+  return array(
+    'admin d4os ui loginpage'
+  );
+}
+
+function d4os_ui_loginpage_theme() {
+  return array(
+    'd4os_ui_loginpage' => array(
+      'arguments' => array(
+        'site_name' => '',
+        'site_slogan' => '',
+        'site_mission' => '',
+        'site_footer' => '',
+        'grid_info_block' => '',
+        'grid_status_bloc' => ''
+      ),
+      'template' => 'd4os-ui-loginpage',
+    ),
+  );
+}
+
+function d4os_ui_loginpage_render() {
+  // get grid infos blocks
+  $block = (object) module_invoke('d4os_ui_monitor_grid_status', 'block', 'view', 'd4os_ui_monitor_grid_infos');
+  $block->module = 'd4os_ui_monitor_grid_infos';
+  $block->delta = 'd4os_ui_monitor_grid_infos';
+  $grid_info_block = theme('block', $block);
+  $block = (object) module_invoke('d4os_ui_monitor_grid_status', 'block', 'view', 'd4os_ui_monitor_grid_status');
+  $block->module = 'd4os_ui_monitor_grid_status';
+  $block->delta = 'd4os_ui_monitor_grid_status';
+  $grid_status_bloc = theme('block', $block);
+  // get some vars
+  $site_name = variable_get('site_name', '');
+  $site_slogan = variable_get('site_slogan', '');
+  $site_mission = variable_get('site_mission', '');
+  $site_footer = variable_get('site_footer', '');
+
+  // render the output
+  echo theme('d4os_ui_loginpage', $site_name, $site_slogan, $site_mission, $site_footer, $grid_info_block, $grid_status_bloc);
+}
