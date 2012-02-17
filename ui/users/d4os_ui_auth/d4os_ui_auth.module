@@ -176,6 +176,9 @@ function d4os_ui_auth_grid_login(&$form_state) {
     $data['status'] = 1;
     $account = user_save(NULL, $data);
 
+    // assign the default grid user role
+    d4os_ui_users_set_grid_user_role($account->uid);
+
     // warn the user about email
     if ($email_error_msg) {
       drupal_set_message(t('A new email address was generated. You will need to update it to be able to recover your password if needed.'), 'warning');

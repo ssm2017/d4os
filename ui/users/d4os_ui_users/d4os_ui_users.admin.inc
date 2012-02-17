@@ -218,19 +218,26 @@ function d4os_ui_users_admin() {
   /*
    * Grid region owners role
    */
-  $form['region_owners'] = array(
+  $form['default_roles'] = array(
     '#type'         => 'fieldset',
-    '#title'        => t('Region owners'),
-    '#description'  => t('Role to assign to region owners.'),
+    '#title'        => t('Default roles'),
+    '#description'  => t('Assign Drupal roles depending on special actions.'),
     '#collapsible'  => TRUE,
     '#collapsed'    => TRUE,
   );
-  $form['region_owners']['d4os_ui_users_default_region_owner_role'] = array(
+  $form['default_roles']['d4os_ui_users_default_grid_user_role'] = array(
     '#type'           => 'select',
-    '#title'          => t('Assigned role'),
+    '#title'          => t('Grid user role'),
+    '#default_value'  => variable_get('d4os_ui_users_default_grid_user_role',0),
+    '#options'        => $roles,
+    '#description'    => t('This role is assigned to user when they register on the grid or when a new Drupal account is created from the grid auth.'),
+  );
+  $form['default_roles']['d4os_ui_users_default_region_owner_role'] = array(
+    '#type'           => 'select',
+    '#title'          => t('Region owner role'),
     '#default_value'  => variable_get('d4os_ui_users_default_region_owner_role',0),
     '#options'        => $roles,
-    '#description'    => t('This role is assigned to region owners.'),
+    '#description'    => t('This role is assigned to region owners when running cron.'),
   );
 
   /*

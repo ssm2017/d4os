@@ -402,8 +402,25 @@ function d4os_ui_users_grid_registration_form_submit($form, &$form_state) {
   $d4os_user->set_uuid($account->uid, $grid_user->PrincipalID);
   $d4os_user->save_user($grid_user);
 
+  // assign the default grid user role
+  d4os_ui_users_set_grid_user_role($account->uid);
+
   // redirect
   $form_state['redirect'] = 'user/'. arg(1);
+}
+
+function d4os_ui_users_set_grid_user_role($uid) {
+  if (!is_numeric($uid)) return;
+
+  // get the grid user rid
+  $rid = variable_get('d4os_ui_users_default_grid_user_role',0);
+  if ($rid == 0) return;
+
+  // remove assigned roles
+  db_query("DELETE FROM {users_roles} WHERE rid=%d AND uid=%d", array($rid, $uid));
+
+  // assign the role
+  db_query("INSERT INTO {users_roles} (rid, uid) VALUES (%d, %d)", array($rid, $uid));
 }
 
 function d4os_ui_users_account_validate($form, &$form_state) {
