@@ -807,7 +807,7 @@ function d4os_ui_web_profiles_save_web_profile_form($params) {
     $new_profile_values = (array)$d4os_profile;
   }
   else {
-    $new_profile_values = (array)d4os_ui_profiles_create_profile($params['d4os']['grid']['account']['uuid']);
+    $new_profile_values = (array)d4os_io_profiles_create_profile($params['d4os']['grid']['account']['uuid']);
   }
 
   // get the profile user values
