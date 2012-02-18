@@ -2,4 +2,4 @@ Nothing will be commited to master branch anymore.
 You can checkout other branches like :
 git checkout 2010
 or
-git checkout 2012
+git checkout 2012-d6
