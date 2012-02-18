@@ -54,7 +54,7 @@ $text_shadow = $GLOBALS['grid_is_online'] ? '#0f0' : '#f00';
         </div><!-- right -->
         <div id="content">
           <p>main content rendering the node 1 by default: </p>
-          <p>To change this content, you need to copy the files ui/extra/d4os_loginpage/d4os-ui-loginpage.tpl.php and ui/extra/d4os_loginpage/d4os-ui-loginpage.tpl.php to your main site theme folder and edit them.</p>
+          <p>To change this content, you need to copy the files ui/extra/d4os_loginpage/d4os-ui-loginpage.tpl.php and ui/extra/d4os_loginpage/d4os-ui-loginpage.css to your main site theme folder and edit them.</p>
           <?php print node_view(node_load(1), FALSE, TRUE, FALSE); ?>
         </div><!-- content -->
       </div><!-- wrapper -->
