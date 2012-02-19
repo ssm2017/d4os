@@ -36,7 +36,6 @@ function d4os_io_groups_admin() {
 }
 
 function d4os_io_groups_admin_validate($form, &$form_state) {
-  d4os_io_offline_messages_mail_send(array('toAgentID'=>'9a9984f1-1cb5-441c-a537-d3fa7a749c14'));
   // check the default group
   $default_group_uuid = $form_state['values']['d4os_io_groups_default_group'];
   if ($default_group_uuid != UUID_ZERO && $default_group_uuid != '') {
