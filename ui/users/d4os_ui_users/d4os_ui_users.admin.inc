@@ -280,7 +280,7 @@ function d4os_ui_users_admin() {
 function d4os_ui_users_admin_validate($form, &$form_state) {
   // check the list of models
   for ($i=1; $i<11; ++$i) {
-    $model_nbr = 'd4os_ui_users_default_model_'. $i;
+    $model_nbr = 'd4os_ui_users_default_model_uuid_'. $i;
     $model_uuid = $form_state['values'][$model_nbr];
     if ($model_uuid != UUID_ZERO && $model_uuid != '') {
       // check if the uuid is valid
