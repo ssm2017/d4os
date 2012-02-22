@@ -285,7 +285,7 @@ function d4os_ui_users_admin_validate($form, &$form_state) {
     if ($model_uuid != UUID_ZERO && $model_uuid != '') {
       // check if the uuid is valid
       $d4os_user = D4OS_IO::create('Users');
-      $grid_user = $d4os_user->load_user(array('uuid' => $model_uuid));
+      $grid_user = $d4os_user->load_user(array('PrincipalID' => $model_uuid));
       $grid_user = $grid_user[0];
       if (!is_object($grid_user)) {
         form_set_error($model_nbr, t('This uuid for model !id is not registered on the grid.', array('!id' => $i)));
