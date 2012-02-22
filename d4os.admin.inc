@@ -145,6 +145,9 @@ function d4os_io_settings() {
   	$plugin_form = 'd4os_io_'. D4OS_IO_SYSTEM. '_admin';
   	$plugin_form($form);
   }
+  else {
+    drupal_set_message(t("You need to select an io system other than 'None'"), 'error');
+  }
   return system_settings_form($form);
 }
 

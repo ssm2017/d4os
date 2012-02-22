@@ -22,6 +22,7 @@ class D4OS_IO_rest_Inventory_Model extends CI_Model {
 
 	function create_new_inventory($params) {
 		$this->config->load('d4os_io_rest');
+    $this->load->helper('d4os_io_rest_helper');
 		if (!isset($params['user_uuid'])) return FALSE;
 
 		$user_uuid      = $params['user_uuid'];

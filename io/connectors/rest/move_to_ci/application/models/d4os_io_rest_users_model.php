@@ -285,29 +285,28 @@ class D4OS_IO_rest_Users_Model extends CI_Model {
         }
       }
 
-			// generate the inventory folders
+      // create new inventory or clone a model
+      $this->load->model('d4os_io_rest_inventory_model');
       if (isset($grid_user->defaultModel)) {
         if ($grid_user->defaultModel != UUID_ZERO) {
           $avatar_src_uuid = $grid_user->defaultModel;
           $this->response->messages[] = 'Creating avatar using model : '. $avatar_src_uuid;
+          $params = array(
+            'avatar_src_uuid' => $avatar_src_uuid,
+            'avatar_dest_uuid' => $grid_user->PrincipalID,
+          );
+          $cloned_inventory = $this->d4os_io_rest_inventory_model->clone_inventory($params);
+          $this->response->messages[] = $cloned_inventory['message'];
+          $cloned_appearance = $this->d4os_io_rest_inventory_model->clone_appearance($params);
+          $this->response->messages[] = $cloned_appearance['message'];
+        }
+        else {
+          $this->d4os_io_rest_inventory_model->create_new_inventory(array('user_uuid' => $grid_user->PrincipalID));
         }
       }
       else {
-        $this->config->load('d4os_io_rest');
-        $avatar_src_uuid = $this->config->item('d4os_io_rest_user_default_model');
-        //$this->d4os_io_rest_inventory_model->create_new_inventory(array('user_uuid' => $grid_user->PrincipalID));
+        $this->d4os_io_rest_inventory_model->create_new_inventory(array('user_uuid' => $grid_user->PrincipalID));
       }
-
-      // create new inventory or clone a model
-      $this->load->model('d4os_io_rest_inventory_model');
-			$params = array(
-				'avatar_src_uuid' => $avatar_src_uuid,
-				'avatar_dest_uuid' => $grid_user->PrincipalID,
-			);
-			$cloned_inventory = $this->d4os_io_rest_inventory_model->clone_inventory($params);
-      $this->response->messages[] = $cloned_inventory['message'];
-      $cloned_appearance = $this->d4os_io_rest_inventory_model->clone_appearance($params);
-      $this->response->messages[] = $cloned_appearance['message'];
 		}
 
 		// Refresh user object.
