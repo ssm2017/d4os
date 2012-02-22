@@ -278,7 +278,7 @@ function d4os_ui_users_update_user(&$edit, &$account) {
 
   // check if username has changed
   $grid_user->FirstName = ($grid_user->FirstName != $edit['firstname']) ? $edit['firstname'] : $grid_user->FirstName;
-  $grid_user->LasttName = ($grid_user->LasttName != $edit['lastname']) ? $edit['lastname'] : $grid_user->LasttName;
+  $grid_user->LastName = ($grid_user->LastName != $edit['lastname']) ? $edit['lastname'] : $grid_user->LastName;
 
   // check if email has changed
   $grid_user->Email = empty($edit['mail']) ? $grid_user->Email : $edit['mail'];
