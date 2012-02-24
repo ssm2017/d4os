@@ -277,8 +277,8 @@ function d4os_ui_users_update_user(&$edit, &$account) {
   $grid_user = $grid_user[0];
 
   // check if username has changed
-  $grid_user->FirstName = ($grid_user->FirstName != $edit['firstname']) ? $edit['firstname'] : $grid_user->FirstName;
-  $grid_user->LastName = ($grid_user->LastName != $edit['lastname']) ? $edit['lastname'] : $grid_user->LastName;
+  $grid_user->FirstName = (isset($edit['firstname']) && $grid_user->FirstName != $edit['firstname']) ? $edit['firstname'] : $grid_user->FirstName;
+  $grid_user->LastName = (isset($edit['lastname']) && $grid_user->LastName != $edit['lastname']) ? $edit['lastname'] : $grid_user->LastName;
 
   // check if email has changed
   $grid_user->Email = empty($edit['mail']) ? $grid_user->Email : $edit['mail'];
@@ -295,6 +295,10 @@ function d4os_ui_users_update_user(&$edit, &$account) {
 
   // save the grid user
   $d4os_users->set_uuid($account->uid, $grid_user->PrincipalID);
+  if (!variable_get('d4os_ui_users_save_email_in_grid', 1)) {
+    $grid_user->Email = '';
+  }
+
   $d4os_users->save_user($grid_user);
 }
 
@@ -400,6 +404,9 @@ function d4os_ui_users_grid_registration_form_submit($form, &$form_state) {
   $grid_user = d4os_ui_users_generate_user($names[0], $names[1], $form_state['values']['pass'], $account->mail, UUID_ZERO, $form_state['values']['model_uuid']);
   $d4os_user = D4OS_IO::create('Users');
   $d4os_user->set_uuid($account->uid, $grid_user->PrincipalID);
+  if (!variable_get('d4os_ui_users_save_email_in_grid', 1)) {
+    $grid_user->Email = '';
+  }
   $d4os_user->save_user($grid_user);
 
   // assign the default grid user role

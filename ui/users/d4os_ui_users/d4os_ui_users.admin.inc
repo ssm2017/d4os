@@ -273,6 +273,21 @@ function d4os_ui_users_admin() {
     '#description'    => t('Default value'). ' <100,100,100>',
     '#default_value'  => variable_get('d4os_ui_users_default_home_look_at', '<100,100,100>'),
   );
+  /*
+   * Other
+   */
+  $form['other'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('Other'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+  );
+  $form['other']['d4os_ui_users_save_email_in_grid'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Save user email addresses in the grid database'),
+    '#default_value' => variable_get('d4os_ui_users_save_email_in_grid', 1),
+    '#description' => t('If you uncheck this option, the users email addresses will not be stored in the grid database.')
+  );
 
   return system_settings_form($form);
 }

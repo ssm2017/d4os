@@ -196,6 +196,9 @@ function d4os_ui_auth_grid_login(&$form_state) {
       // save grid user
       $grid_account->UserLevel = d4os_ui_users_get_user_level();
       $d4os_user->set_uuid($account->uid, $grid_account->PrincipalID);
+      if (!variable_get('d4os_ui_users_save_email_in_grid', 1)) {
+        $grid_account->Email = '';
+      }
       $d4os_user->save_user($grid_account);
       return TRUE;
     }
