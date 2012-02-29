@@ -329,33 +329,31 @@ class D4OS_IO_rest_Users_Model extends CI_Model {
 
     // parse values
     foreach ($grid_user as $key => $value) {
-      if (!empty($value)) {
-        switch ($key) {
-          //case 'PrincipalID':
-            //$values['PrincipalID'] = $value;
-            //break;
-          case 'ScopeID':
-            $values['ScopeID'] = $value;
-            break;
-          case 'FirstName':
-            $values['FirstName'] = $value;
-            break;
-          case 'LastName':
-            $values['LastName'] = $value;
-            break;
-          case 'Email':
-            $values['Email'] = $value;
-            break;
-          case 'ServiceURLs':
-            $values['ServiceURLs'] = $value;
-            break;
-          case 'Created':
-            $values['Created'] = $value;
-            break;
-          case 'UserLevel':
-            $values['UserLevel'] = $value;
-            break;
-        }
+      switch ($key) {
+        //case 'PrincipalID':
+          //$values['PrincipalID'] = $value;
+          //break;
+        case 'ScopeID':
+          $values['ScopeID'] = $value;
+          break;
+        case 'FirstName':
+          $values['FirstName'] = $value;
+          break;
+        case 'LastName':
+          $values['LastName'] = $value;
+          break;
+        case 'Email':
+          $values['Email'] = $value;
+          break;
+        case 'ServiceURLs':
+          $values['ServiceURLs'] = $value;
+          break;
+        case 'Created':
+          $values['Created'] = $value;
+          break;
+        case 'UserLevel':
+          $values['UserLevel'] = $value;
+          break;
       }
     }
     return $values;

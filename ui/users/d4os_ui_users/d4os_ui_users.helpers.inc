@@ -110,7 +110,7 @@ function d4os_ui_users_get_user_level_role_by_role($role) {
   $levels = array_keys(d4os_ui_users_get_user_level_roles(), $role);
   // get the higher level
   rsort($levels);
-  return isset($levels[0]) ? $levels[0] : FALSE;
+  return isset($levels[0]) ? $levels[0] : 0;
 }
 
 function d4os_ui_users_get_user_level($roles = array()) {
@@ -122,7 +122,7 @@ function d4os_ui_users_get_user_level($roles = array()) {
     if ($level === -1) return -1;
   }
   rsort($levels);
-  return isset($levels[0]) ? $levels[0] : FALSE;
+  return isset($levels[0]) ? $levels[0] : 0;
 }
 
 function d4os_ui_users_validate_email($address) {
