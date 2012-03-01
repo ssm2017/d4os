@@ -58,7 +58,6 @@ function d4os_ui_web_profiles_menu() {
     'page callback'     => 'd4os_ui_web_profiles_partner_validate',
     'page arguments'    => array(4),
     'access callback'   => TRUE,
-    'access arguments'  => array(1),
     'type'              => MENU_CALLBACK,
   );
   return $items;
@@ -713,21 +712,22 @@ function d4os_ui_web_profiles_save_profile_js($uid, $item) {
 
 function d4os_ui_web_profiles_partner_validate($token) {
   // check the token
-  $values = db_fetch_object(db_query("SELECT * FROM {d4os_ui_web_profiles_partners} WHERE token='%s'", array($token)));
+  $values = db_fetch_object(db_query("SELECT * FROM {d4os_ui_web_profiles_partners} WHERE token='%s'", $token));
   if (is_object($values)) {
     $src  = $values->source_uuid;
     $dest = $values->destination_uuid;
+    $d4os_profiles = D4OS_IO::create('Profiles');
     // assign the partners
     $params = array(
-      'avatarID'        => $src,
+      'useruuid'        => $src,
       'profilePartner'  => $dest,
     );
-    module_invoke_all('os_profile_services_update_avatar_properties', $params);
+    $d4os_profiles->avatar_properties_update($params);
     $params = array(
-      'avatarID'        => $dest,
+      'useruuid'        => $dest,
       'profilePartner'  => $src,
     );
-    module_invoke_all('os_profile_services_update_avatar_properties', $params);
+    $d4os_profiles->avatar_properties_update($params);
     // delete the entries
     $data = array(
       $src,
@@ -739,7 +739,7 @@ function d4os_ui_web_profiles_partner_validate($token) {
     drupal_goto();
   }
   else {
-    drupal_set_message('Unable to find entries for this partnership.');
+    drupal_set_message('Unable to find entries for this partnership.', 'error');
     drupal_goto();
   }
 }
