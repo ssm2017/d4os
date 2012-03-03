@@ -647,7 +647,8 @@ function d4os_ui_users_set_region_owner_role() {
 function d4os_ui_users_user_autocomplete($string = '') {
   $matches = array();
   if ($string) {
-    $result = db_query_range("SELECT name FROM {users} WHERE LOWER(name) LIKE LOWER('%s%%')", $string, 0, 10);
+    $query = "SELECT u.name AS name FROM {users} u LEFT JOIN {d4os_ui_users} du ON du.uid=u.uid WHERE (du.uid IS NOT NULL ) AND (u.name LIKE LOWER('%s%%'))";
+    $result = db_query_range($query, $string, 0, 10);
     while ($user = db_fetch_object($result)) {
       $matches[$user->name] = check_plain($user->name);
     }
