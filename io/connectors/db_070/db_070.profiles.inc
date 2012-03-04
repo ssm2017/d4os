@@ -159,23 +159,23 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
     d4os_io_db_070_set_active('os_profile');
     // delete classifieds
     db_query("DELETE FROM {classifieds} WHERE creatoruuid = '%s'", $uuid);
-    drupal_set_message(t('Classifieds deleted.'));
     // delete usernotes
     db_query("DELETE FROM {usernotes} WHERE useruuid = '%s' OR targetuuid = '%s'", $uuid, $uuid);
-    drupal_set_message(t('User notes deleted.'));
     // delete userpicks
     db_query("DELETE FROM {userpicks} WHERE creatoruuid = '%s'", $uuid);
-    drupal_set_message(t('User picks deleted.'));
     // delete userprofile
     db_query("DELETE FROM {userprofile} WHERE useruuid = '%s'", $uuid);
-    drupal_set_message(t('User profile deleted.'));
     // delete partner
     db_query("UPDATE {userprofile} SET profilePartner= '' WHERE profilePartner = '%s'", $uuid);
-    drupal_set_message(t('User partner link deleted.'));
     // delete settings
     db_query("DELETE FROM {usersettings} WHERE useruuid = '%s'", $uuid);
-    drupal_set_message(t('User settings deleted.'));
     d4os_io_db_070_set_active('default');
+    drupal_set_message(t('Classifieds deleted.'));
+    drupal_set_message(t('User notes deleted.'));
+    drupal_set_message(t('User picks deleted.'));
+    drupal_set_message(t('User profile deleted.'));
+    drupal_set_message(t('User partner link deleted.'));
+    drupal_set_message(t('User settings deleted.'));
   }
 
   /*
