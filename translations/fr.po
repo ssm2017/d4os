@@ -550,12 +550,12 @@ msgid "Your offline message module is responding."
 msgstr "Votre module de messages hors ligne répond."
 
 #: io/services/d4os_io_offline_messages/d4os_io_offline_messages.module:285
-msgid "E-mail sent from @site-name"
-msgstr "Courriel envoyé depuis @site-name"
+msgid "Offline message sent from @site-name"
+msgstr "Message hors ligne envoyé depuis @site-name"
 
 #: io/services/d4os_io_offline_messages/d4os_io_offline_messages.module:286
-msgid "@name sent you the following message:"
-msgstr "@name vous a envoyé le message suivant:"
+msgid "@name sent you the following offline message:"
+msgstr "@name vous a envoyé le message hors ligne suivant:"
 
 #: io/services/d4os_io_offline_messages/d4os_io_offline_messages.module:288
 msgid "You need to log in the grid to answer this message."
