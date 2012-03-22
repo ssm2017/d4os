@@ -140,11 +140,11 @@ function d4os_io_offline_messages_savemessage($params) {
   $success = db_query("INSERT INTO {d4os_io_offline_messages} (uuid, message) VALUES ('%s', '%s')", $params['toAgentID'], $params['message']);
   if ($success) {
     if (variable_get('d4os_io_offline_messages_send_mails', 0)) {
-      d4os_io_services_offline_messages_mail_send($params);
+      d4os_io_offline_messages_mail_send($params);
     }
   }
 
-  $return = d4os_oi_offline_message_build_answer('savemessage', array('success' => $success));
+  $return = d4os_io_offline_message_build_answer('savemessage', array('success' => $success));
 
   if ($d4os_io_offline_messages_log_level > 6) {
     $log = array();
@@ -198,7 +198,7 @@ function d4os_io_offline_messages_retrievemessages($params) {
   // delete the messages
   db_query("DELETE FROM {d4os_io_offline_messages} WHERE uuid = '%s'", $uuid);
 
-  $return = d4os_oi_offline_message_build_answer('retrievemessages', array('success' => TRUE, 'data' => $messages_list));
+  $return = d4os_io_offline_message_build_answer('retrievemessages', array('success' => TRUE, 'data' => $messages_list));
 
   if ($d4os_io_offline_messages_log_level > 6) {
     $log = array();
@@ -217,7 +217,7 @@ function d4os_io_offline_messages_retrievemessages($params) {
   print $return;
 }
 
-function d4os_oi_offline_message_build_answer($action, $params) {
+function d4os_io_offline_message_build_answer($action, $params) {
   $output = '<?xml version="1.0" encoding="utf-8"?>';
   switch($action) {
     case 'savemessage':
