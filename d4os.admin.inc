@@ -17,73 +17,21 @@ function d4os_admin() {
   global $base_url;
   $form = array();
 
-  $form['ugaim'] = array(
-    '#type'         => 'fieldset',
-    '#title'        => t('UGAIM'),
-    '#collapsible'  => TRUE,
-    '#collapsed'    => FALSE,
-  );
-// user
-  $form['ugaim']['user'] = array(
-    '#type'         => 'fieldset',
-    '#title'        => t('Users'),
-    '#collapsible'  => TRUE,
-    '#collapsed'    => FALSE,
-  );
-  $form['ugaim']['user']['d4os_default_users_server_uri'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Default users server URI'),
-    '#default_value'  => variable_get('d4os_default_users_server_uri', $base_url),
-    '#description'    => t("Default users server URI"),
-    '#required'       => TRUE,
-  );
-  $form['ugaim']['user']['d4os_default_users_server_port'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Default users server port'),
-    '#size'           => 5,
-    '#maxlength'      => 5,
-    '#default_value'  => variable_get('d4os_default_users_server_port', '8002'),
-    '#description'    => t("Default users server port"),
-    '#required'       => TRUE,
-  );
-// grid
-  $form['ugaim']['grid'] = array(
-    '#type'         => 'fieldset',
-    '#title'        => t('Grid'),
-    '#collapsible'  => TRUE,
-    '#collapsed'    => FALSE,
-  ); // TODO :maybe remove this default grid uri and port
-  $form['ugaim']['grid']['d4os_default_grid_uri'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Default grid server URI'),
-    '#default_value'  => variable_get('d4os_default_grid_uri', $base_url),
-    '#description'    => t("Default grid server URI"),
-    '#required'       => TRUE,
-  );
-  $form['ugaim']['grid']['d4os_default_grid_port'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Default grid server port'),
-    '#size'           => 5,
-    '#maxlength'      => 5,
-    '#default_value'  => variable_get('d4os_default_grid_port', '9000'),
-    '#description'    => t("Default grid server port"),
-    '#required'       => TRUE,
-  );
 // loginuri
-  $form['other']['loginuri'] = array(
+  $form['loginuri'] = array(
     '#type'         => 'fieldset',
     '#title'        => t('LoginURI'),
     '#collapsible'  => TRUE,
     '#collapsed'    => FALSE,
   );
-  $form['other']['loginuri']['d4os_default_login_uri'] = array(
+  $form['loginuri']['d4os_default_login_uri'] = array(
     '#type'           => 'textfield',
     '#title'          => t('Default login URI'),
     '#default_value'  => variable_get('d4os_default_login_uri', $base_url),
     '#description'    => t("Default login URI"),
     '#required'       => TRUE,
   );
-  $form['other']['loginuri']['d4os_default_login_port'] = array(
+  $form['loginuri']['d4os_default_login_port'] = array(
     '#type'           => 'textfield',
     '#title'          => t('Default login port'),
     '#size'           => 5,
@@ -92,6 +40,14 @@ function d4os_admin() {
     '#description'    => t("Default login port"),
     '#required'       => TRUE,
   );
+  $form['d4os_default_service_urls'] = array(
+    '#type'           => 'textarea',
+    '#title'          => t('Default service URLs'),
+    '#default_value'  => variable_get('d4os_default_service_urls', 'HomeURI= GatekeeperURI= InventoryServerURI= AssetServerURI= ProfileServerURI= FriendsServerURI= IMServerURI= '),
+    '#description'    => t("Default service URLs"),
+    '#required'       => TRUE,
+  );
+
 // asset pictures
   $form['other']['pictures'] = array(
     '#type'         => 'fieldset',

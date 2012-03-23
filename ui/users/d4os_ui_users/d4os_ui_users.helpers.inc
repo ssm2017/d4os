@@ -27,7 +27,7 @@ function d4os_ui_users_generate_user($firstname, $lastname, $password, $mail, $h
   $grid_user->FirstName    = $firstname;
   $grid_user->LastName     = $lastname;
   $grid_user->Email        = $mail;
-  $grid_user->ServiceURLs  = 'HomeURI= GatekeeperURI= InventoryServerURI= AssetServerURI=';
+  $grid_user->ServiceURLs  = variable_get('d4os_default_service_urls', 'HomeURI= GatekeeperURI= InventoryServerURI= AssetServerURI= ProfileServerURI= FriendsServerURI= IMServerURI= ');
   $grid_user->Created      = time();
   $grid_user->UserLevel    = variable_get('d4os_ui_users_default_user_level', 0);
   $grid_user->UserFlags    = 0;

@@ -17,12 +17,6 @@
 if (!defined('UUID_ZERO')) define('UUID_ZERO', '00000000-0000-0000-0000-000000000000');
 
 /**
- * @global String $grid_url
- * @name $grid_url
- */
-global $grid_url;
-
-/**
  * @global String $base_url
  * @name $base_url
  */
@@ -33,10 +27,6 @@ global $base_url;
  * @name $grid_is_online
  */
 global $grid_is_online;
-
-$grid_uri   = variable_get('d4os_default_grid_uri', $base_url);
-$grid_port  = variable_get('d4os_default_grid_port', '9000');
-$grid_url   = $grid_uri. ':'. $grid_port;
 
 /**
  * Helpfull function to search items in an array with a lot of sublevels
@@ -116,14 +106,14 @@ function d4os_grid_is_online() {
   // -111 = connection refused
   global $base_url;
   $online = FALSE;
-// TODO : why not use loginuri ?
+
   // remove http://
-  $url = variable_get('d4os_default_users_server_uri', $base_url);
+  $url = variable_get('d4os_default_login_uri', $base_url);
 
   if (strpos($url, 'http://') !== FALSE) {
     $url = substr($url, 7);
   }
-  $port = variable_get('d4os_default_users_server_port', '8002');
+  $port = variable_get('d4os_default_login_port', '8002');
   $fp = @fsockopen($url, $port, $errno, $errstr, 1.0);
   if ($fp) {
     $online = TRUE;

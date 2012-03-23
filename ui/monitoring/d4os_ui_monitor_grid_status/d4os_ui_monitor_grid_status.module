@@ -12,7 +12,7 @@
  */
 
 function d4os_ui_monitor_grid_status_block($op = 'list', $delta = 0, $edit = array()) {
-  global $grid_url, $base_url;
+  global $base_url;
   $block = array();
   switch ($op) {
 
