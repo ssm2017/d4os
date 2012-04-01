@@ -66,6 +66,10 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
             $queries[]= "ua.UserLevel = %d";
             $values[] = $value;
             break;
+          case 'UserTitle':
+            $queries[]= "ua.UserTitle = %d";
+            $values[] = $value;
+            break;
           case 'name':
             $names = explode(' ', $value);
             $queries[]= "ua.FirstName = '%s'";
@@ -153,6 +157,7 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
           case 'FirstName':
           case 'LastName':
           case 'Email':
+          case 'UserTitle':
             $queries .= "$key = '%s', ";
             $values[] = $value;
             break;
@@ -253,6 +258,7 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
           case 'LastName':
           case 'Email':
           case 'ServiceURLs':
+          case 'UserTitle':
             $queries[] = $key;
             $values[] = $value;
             $s[] = "'%s'";

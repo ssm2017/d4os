@@ -354,6 +354,9 @@ class D4OS_IO_rest_Users_Model extends CI_Model {
         case 'UserLevel':
           $values['UserLevel'] = $value;
           break;
+        case 'UserTitle':
+          $values['UserTitle'] = $value;
+          break;
       }
     }
     return $values;

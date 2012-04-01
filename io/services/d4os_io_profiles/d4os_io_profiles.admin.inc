@@ -17,8 +17,8 @@ function d4os_io_profiles_admin() {
   $form['user_registration'] = array(
     '#type'         => 'fieldset',
     '#title'        => t('User registration'),
-    '#collapsible'  => FALSE,
-    '#collapsed'    => FALSE,
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
   );
   $form['user_registration']['d4os_io_profiles_create_profile_on_register'] = array(
     '#type' => 'checkbox',
@@ -30,8 +30,8 @@ function d4os_io_profiles_admin() {
   $form['user_registration']['profile_texts'] = array(
     '#type'         => 'fieldset',
     '#title'        => t('Profile texts'),
-    '#collapsible'  => FALSE,
-    '#collapsed'    => FALSE,
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
   );
   $form['user_registration']['profile_texts']['d4os_io_profiles_default_profile_about_text'] = array(
     '#type'           => 'textarea',
@@ -49,8 +49,8 @@ function d4os_io_profiles_admin() {
   $form['user_registration']['profile_images'] = array(
     '#type'         => 'fieldset',
     '#title'        => t('Profile images'),
-    '#collapsible'  => FALSE,
-    '#collapsed'    => FALSE,
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
   );
   $form['user_registration']['profile_images']['d4os_io_profiles_default_profile_image'] = array(
     '#type'           => 'textfield',
@@ -65,6 +65,24 @@ function d4os_io_profiles_admin() {
     '#size'           => 36,
     '#maxlength'      => 36,
     '#default_value'  => variable_get('d4os_io_profiles_default_profile_first_image',UUID_ZERO),
+  );
+  // profile UserTitle
+  $form['user_title'] = array(
+    '#type'         => 'fieldset',
+    '#title'        => t('User title'),
+    '#collapsible'  => TRUE,
+    '#collapsed'    => TRUE,
+  );
+  $roles = array(
+    '0' => t('None'),
+  );
+  $roles += user_roles(TRUE);
+  $form['user_title']['d4os_io_profiles_usertitle_role'] = array(
+    '#type' => 'select',
+    '#title' => t('UserTitle role'),
+    '#description' => t('Select the role that will be used to set the UserTitle'),
+    '#options' => $roles,
+    '#default_value' => variable_get('d4os_io_profiles_usertitle_role', 0)
   );
 
   return system_settings_form($form);
