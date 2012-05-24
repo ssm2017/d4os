@@ -161,10 +161,10 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
           ->condition('PrincipalID', $grid_user->PrincipalID)
           ->execute();
         d4os_io_db_070_set_active('default');
-        if (!$success) {
+        /*if (!$success) {
           // The query failed - better to abort the save than risk further data loss.
           return FALSE;
-        }
+        }*/
      }
       // update the auth table
       $values = array();
@@ -179,8 +179,6 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
         }
       }
       if (count($values)) {
-        // remove the last ", "
-        $queries = substr($queries, 0, -2);
         // make the query
         d4os_io_db_070_set_active('os_robust');
         $success = db_update('auth')
@@ -188,10 +186,10 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
           ->condition('UUID', $grid_user->PrincipalID)
           ->execute();
         d4os_io_db_070_set_active('default');
-        if (!$success) {
+        /*if (!$success) {
           // The query failed - better to abort the save than risk further data loss.
           return FALSE;
-        }
+        }*/
       }
 			// update the GridUser table
       $values = array();
@@ -209,8 +207,6 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
         }
       }
       if (count($values)) {
-        // remove the last ", "
-        $queries = substr($queries, 0, -2);
         // make the query
         d4os_io_db_070_set_active('os_robust');
         $success = db_update('GridUser')
