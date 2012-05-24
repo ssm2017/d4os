@@ -22,73 +22,34 @@ function d4os_io_profiles_help($path, $arg) {
 
 function d4os_io_profiles_menu() {
 
-  $items['admin/settings/d4os/io/profiles'] = array(
-    'title'             => 'Profiles',
-    'description'       => 'd4os io profiles settings',
+  $items['admin/config/d4os/io/profiles/registration'] = array(
+    'title'             => 'Profiles registration',
+    'description'       => 'd4os io profiles registration settings',
     'page callback'     => 'drupal_get_form',
     'page arguments'    => array('d4os_io_profiles_admin'),
-    'access arguments'  => array('admin d4os ui profiles'),
-    'type'              => MENU_LOCAL_TASK,
+    'access arguments'  => array('admin d4os io profiles'),
+    'type'              => MENU_NORMAL_ITEM,
     'file'              => 'd4os_io_profiles.admin.inc'
    );
   return $items;
 }
 
-function d4os_io_profiles_perm() {
+function d4os_io_profiles_permission() {
   return array(
-    'admin d4os ui profiles',
+    'admin d4os io profiles' => array(
+      'title' => t('Admin d4os io profiles'),
+      'description' => t('Admin d4os io profiles.'),
+    ),
   );
 }
 
-function d4os_io_profiles_user($op, &$edit, &$account, $category = NULL) {
-  switch ($op) {
-    case 'update':
-      d4os_io_profiles_update_user($edit, $account);
-      break;
-    case 'delete':
-      d4os_io_profiles_delete_user($account->uid);
-      break;
-  }
-}
-
-function d4os_io_profiles_update_user(&$edit, &$account) {
-  // check if the user is admin
-  if ($account->uid < 2) return;
-
-  // check if the user is registered on the grid
-  $uuid = db_result(db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=%d", $account->uid));
-  if ($uuid === FALSE) return;
-
-  // load the grid user
-  $d4os_users = D4OS_IO::create('Users');
-  $grid_user = $d4os_users->load_user(array('PrincipalID' => $uuid));
-  $grid_user = $grid_user[0];
-
-  // get role infos for UserAccounts.UserTitle
-  $rid = variable_get('d4os_io_profiles_usertitle_role', 0);
-  $role_name = db_result(db_query("SELECT name FROM {role} WHERE rid=%d", $rid));
-  if ($role_name !== FALSE) {
-    // check if the user have this role
-    if (array_key_exists($rid, $edit['roles'])) {
-      $grid_user->UserTitle = $role_name;
-    }
-    else {
-      $grid_user->UserTitle = '';
-    }
-  }
-
-  // save the grid user
-  $d4os_users->save_user($grid_user);
-}
-
-function d4os_io_profiles_delete_user($uid) {
+function d4os_io_profiles_user_delete($edit, $account, $method) {
   // get the user uuid
-  $uuid = db_result(db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=%d", $uid));
-  if ($uuid === FALSE) {
-    return;
+  $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $edit->uid))->fetchField();
+  if ($uuid !== FALSE) {
+    $d4os_profiles = D4OS_IO::create('Profiles');
+    $d4os_profiles->delete_profile($uuid);
   }
-  $d4os_profiles = D4OS_IO::create('Profiles');
-  $d4os_profiles->delete_profile($uuid);
 }
 
 function d4os_io_profiles_form_alter(&$form, $form_state, $form_id) {
@@ -101,9 +62,9 @@ function d4os_io_profiles_form_alter(&$form, $form_state, $form_id) {
 
 function d4os_io_profiles_grid_registration_fom_submit($form, &$form_state) {
   // check if the user is registered
-  $uuid = db_result(db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=%d", arg(1)));
+  $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => arg(1)))->fetchField();
   // assign the role
-  if ($uuid !== FALSE) {
+  if ($uuid) {
     $d4os_profiles = D4OS_IO::create('Profiles');
     $d4os_profiles->save_profile(
       d4os_io_profiles_create_profile($uuid)

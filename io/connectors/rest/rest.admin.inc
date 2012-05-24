@@ -10,7 +10,7 @@
  * other free or open source software licenses.
  */
 
-define('D4OS_IO_REST_URL', variable_get('d4os_io_rest_url', 'http://127.0.0.1/rest'));
+if (!defined('D4OS_IO_REST_URL')) define('D4OS_IO_REST_URL', variable_get('d4os_io_rest_url', 'http://127.0.0.1/rest'));
 function d4os_io_rest_admin(&$form) {
 	$form['d4os_io_rest'] = array(
     '#type'         => 'fieldset',

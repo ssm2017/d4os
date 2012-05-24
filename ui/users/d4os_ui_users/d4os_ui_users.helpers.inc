@@ -27,7 +27,7 @@ function d4os_ui_users_generate_user($firstname, $lastname, $password, $mail, $h
   $grid_user->FirstName    = $firstname;
   $grid_user->LastName     = $lastname;
   $grid_user->Email        = $mail;
-  $grid_user->ServiceURLs  = variable_get('d4os_default_service_urls', 'HomeURI= GatekeeperURI= InventoryServerURI= AssetServerURI= ProfileServerURI= FriendsServerURI= IMServerURI= ');
+  $grid_user->ServiceURLs  = 'HomeURI= GatekeeperURI= InventoryServerURI= AssetServerURI=';
   $grid_user->Created      = time();
   $grid_user->UserLevel    = variable_get('d4os_ui_users_default_user_level', 0);
   $grid_user->UserFlags    = 0;
@@ -60,11 +60,21 @@ function d4os_ui_users_generate_user($firstname, $lastname, $password, $mail, $h
 }
 
 function d4os_ui_users_validate_name($name, $type, $type_str) {
-  if (!strlen($name)) return t('You must enter a !name.', array('!name'=>$type_str));
-  if (substr($name, 0, 1) == ' ') return t('The !name cannot begin with a space.', array('!name'=>$type_str));
-  if (substr($name, -1) == ' ') return t('The !name cannot end with a space.', array('!name'=>$type_str));
-  if (strpos($name, '  ') !== FALSE) return t('The !name cannot contain multiple spaces in a row.', array('!name'=>$type_str));
-  if (ereg("[^\x80-\xF7 [:alnum:]@_.-]", $name)) return t('The !name contains an illegal character.', array('!name'=>$type_str));
+  if (!$name) {
+    return t('You must enter a !name.', array('!name'=>$type_str));
+  }
+  if (substr($name, 0, 1) == ' ') {
+    return t('The !name cannot begin with a space.', array('!name'=>$type_str));
+  }
+  if (substr($name, -1) == ' ') {
+    return t('The !name cannot end with a space.', array('!name'=>$type_str));
+  }
+  if (strpos($name, '  ') !== FALSE) {
+    return t('The !name cannot contain multiple spaces in a row.', array('!name'=>$type_str));
+  }
+  if (preg_match('/[^\x{80}-\x{F7} a-z0-9@_.\'-]/i', $name)) {
+    return t('The !name contains an illegal character.', array('!name'=>$type_str));
+  }
   if (preg_match('/[\x{80}-\x{A0}'.          // Non-printable ISO-8859-1 + NBSP
                    '\x{AD}'.                 // Soft-hyphen
                    '\x{2000}-\x{200F}'.      // Various space characters
@@ -76,6 +86,9 @@ function d4os_ui_users_validate_name($name, $type, $type_str) {
                    '\x{0}]/u',               // NULL byte
                    $name)) {
     return t('The !name contains an illegal character.', array('!name'=>$type_str));
+  }
+  if (drupal_strlen($name) > USERNAME_MAX_LENGTH) {
+    return t('The username %name is too long: it must be %max characters or less.', array('%name' => $name, '%max' => USERNAME_MAX_LENGTH));
   }
   if (strpos($name, '@') !== FALSE && !eregi('@([0-9a-z](-?[0-9a-z])*.)+[a-z]{2}([zmuvtg]|fo|me)?$', $name)) return t('The !name is not a valid authentication ID.', array('!name'=>$type_str));
   $maxlength = ($type == 'firstname') ? FIRSTNAME_MAX_LENGTH : LASTNAME_MAX_LENGTH;

@@ -45,16 +45,10 @@ function d4os_io_offline_messages_schema() {
   return $schema;
 }
 
-function d4os_io_offline_messages_install() {
-  drupal_install_schema('d4os_io_offline_messages');
-}
-
-
 /**
  * Hook uninstall
  */
 function d4os_io_offline_messages_uninstall() {
-  drupal_uninstall_schema('d4os_io_offline_messages');
   // Remove variables.
   db_query("DELETE FROM {variable} WHERE name LIKE 'd4os_io_offline_message%%'");
 }

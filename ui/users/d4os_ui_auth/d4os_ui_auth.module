@@ -21,22 +21,25 @@ function d4os_ui_auth_help($path, $arg) {
 }
 
 function d4os_ui_auth_menu() {
-
-  $items['admin/settings/d4os/ui/auth'] = array(
+  $items = array();
+  $items['admin/config/d4os/ui/auth'] = array(
     'title'             => 'auth',
     'description'       => 'd4os ui auth settings',
     'page callback'     => 'drupal_get_form',
     'page arguments'    => array('d4os_ui_auth_settings'),
     'access arguments'  => array('admin d4os ui auth'),
-    'type'              => MENU_LOCAL_TASK,
+    'type'              => MENU_NORMAL_ITEM,
     'file'              => 'd4os_ui_auth.admin.inc'
    );
   return $items;
 }
 
-function d4os_ui_auth_perm() {
+function d4os_ui_auth_permission() {
   return array(
-    'admin d4os ui auth',
+    'admin d4os ui auth' => array(
+      'title' => t('Admin d4os auth'),
+      'description' => t('Admin d4os auth.'),
+    ),
   );
 }
 
@@ -57,9 +60,17 @@ function d4os_ui_auth_login_validate($form, &$form_state) {
   // check for the openid module
   if (module_exists('openid')) {
     if (!empty($form_state['values']['openid_identifier'])) {
+      drupal_set_message(t('Using openid.'), 'warning');
       openid_login_validate($form, $form_state);
       return;
     }
+  }
+
+  // check for lastname and password
+  if (empty($form_state['values']['lastname']) || empty($form_state['values']['pass'])) {
+    drupal_set_message('Lastname and password fields are required', 'error');
+    form_set_error();
+    return FALSE;
   }
 
   // get login flow
@@ -78,25 +89,32 @@ function d4os_ui_auth_login_validate($form, &$form_state) {
   switch ($login_flow) {
     // drupal only
     case 0:
-      user_authenticate($form_state['values']);
+      user_login_name_validate($form, $form_state);
+      user_login_authenticate_validate($form, $form_state);
       user_login_final_validate($form, $form_state);
       break;
     // grid only
     case 1:
-      d4os_ui_auth_grid_login($form_state);
+      d4os_ui_auth_grid_login($form, $form_state);
       break;
     // drupal -> grid
     case 2:
-      if (!user_authenticate($form_state['values'])) {
+      if (!user_authenticate($form_state['values']['name'], $form_state['values']['pass'])) {
         drupal_set_message(t('Sorry, unable to log in using the website credentials. Trying grid process.'), 'error');
-        d4os_ui_auth_grid_login($form_state);
+        d4os_ui_auth_grid_login($form, $form_state);
+      }
+      else {
+        user_login_name_validate($form, $form_state);
+        user_login_authenticate_validate($form, $form_state);
+        user_login_final_validate($form, $form_state);
       }
       break;
     // grid -> drupal
     case 3:
-      if (!d4os_ui_auth_grid_login($form_state)) {
+      if (!d4os_ui_auth_grid_login($form, $form_state)) {
         drupal_set_message(t('Sorry, unable to log in using the grid credentials. Trying website process.'), 'error');
-        user_authenticate($form_state['values']);
+        user_login_name_validate($form, $form_state);
+        user_authenticate($form_state['values']['name'], $form_state['values']['pass']);
         user_login_final_validate($form, $form_state);
       }
       break;
@@ -106,7 +124,7 @@ function d4os_ui_auth_login_validate($form, &$form_state) {
 /**
  * Inworld login
  */
-function d4os_ui_auth_grid_login(&$form_state) {
+function d4os_ui_auth_grid_login($form, &$form_state) {
   // check if the datastore is alive
   $d4os_user = D4OS_IO::create('Users');
   $d4os_user->ping();
@@ -124,6 +142,7 @@ function d4os_ui_auth_grid_login(&$form_state) {
 
   if (!is_object($grid_account)) {
     drupal_set_message(t('Grid authentication has failed. Please try again.'), 'error');
+    user_login_final_validate($form, $form_state);
     return FALSE;
   }
   $data = array();
@@ -131,21 +150,24 @@ function d4os_ui_auth_grid_login(&$form_state) {
   // check the password
   // md5(md5($pass) . ":" . $user['passwordSalt'])
   if ($grid_account->passwordHash != md5(md5($pass). ':'. $grid_account->passwordSalt)) {
-    drupal_set_message(t('Grid authentication has failed. Please try again. Or create an account'), 'error');
+    drupal_set_message(t('Grid authentication has failed. Please try again.'), 'error');
+    user_login_final_validate($form, $form_state);
     return FALSE;
   }
 
   // log in the website
   drupal_set_message(t('Grid Authentication Success'));
-  $account = user_load(array('name' =>$form_state['values']['name']));
-  if ($account->uid) {
+  $account = user_load_by_name($form_state['values']['name']);
+  if ($account) {
     global $user;
     $user = $account;
     // update the account of the user
     $data['pass'] = $pass;
     user_save($account, $data);
     // authenticate the user
-    user_authenticate($form_state['values']);
+    $form_state['uid'] = $account->uid;
+    user_login_name_validate($form, $form_state);
+    user_authenticate($form_state['values']['name'], $form_state['values']['pass']);
     user_login_final_validate($form, $form_state);
     return TRUE;
   }
@@ -190,15 +212,14 @@ function d4os_ui_auth_grid_login(&$form_state) {
     if ($account->uid) {
       global $user;
       $user = $account;
-      user_authenticate($form_state['values']);
+      $form_state['uid'] = $account->uid;
+      user_login_name_validate($form, $form_state);
+      user_authenticate($form_state['values']['name'], $form_state['values']['pass']);
       user_login_final_validate($form, $form_state);
       drupal_set_message(t('User !name added on the website.', array('!name' => $name)));
       // save grid user
       $grid_account->UserLevel = d4os_ui_users_get_user_level();
       $d4os_user->set_uuid($account->uid, $grid_account->PrincipalID);
-      if (!variable_get('d4os_ui_users_save_email_in_grid', 1)) {
-        $grid_account->Email = '';
-      }
       $d4os_user->save_user($grid_account);
       return TRUE;
     }
@@ -211,8 +232,8 @@ function d4os_ui_auth_grid_login(&$form_state) {
 }
 
 function d4os_ui_auth_generate_mail($uuid) {
-  global $base_url;
-  $domain = $base_url;
+  global $base_root;
+  $domain = $base_root;
   $replacers = array(
     'http://'   => '',
     'https://'  => '',

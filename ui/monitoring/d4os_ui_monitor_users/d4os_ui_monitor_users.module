@@ -23,6 +23,7 @@ function d4os_ui_monitor_users_help($path, $arg) {
 }
 
 function d4os_ui_monitor_users_menu() {
+  $items = array();
   $items['grid/monitor/users/online/list'] = array(
     'title'             => 'Online Users',
     'description'       => 'Shows a list of online users.',
@@ -33,9 +34,12 @@ function d4os_ui_monitor_users_menu() {
   return $items;
 }
 
-function d4os_ui_monitor_users_perm() {
+function d4os_ui_monitor_users_permission() {
   return array(
-    'view d4os ui monitor online users list',
+    'view d4os ui monitor online users list' => array(
+      'title' => t('View grid online users list'),
+      'description' => t('Shows a list of online users on the grid.'),
+    ),
   );
 }
 
@@ -172,29 +176,29 @@ function d4os_ui_monitor_show_online_users_list() {
       '#collapsed' => TRUE,
     )
   );
+  // TODO : not collapsable
   $form['filter_links']['usefull_links'] = array(
     '#type' => 'item',
-    '#value' => $usefull_links
+    '#markup' => $usefull_links
   );
   $form['filter_links']['qty'] = array(
     '#type' => 'item',
-    '#value' => $qty_filter
+    '#markup' => $qty_filter
   );
 
   $output .= drupal_render($form);
 
   // format the table
-  $output .= theme_d4os_ui_monitor_users_list_table($online_users->users, $params, $headers, $title);
+  $output .= theme_d4os_ui_monitor_users_list_table($online_users->users, $params, $headers);
   $output .= theme('pager');
   return $output;
 }
 
 function theme_d4os_ui_monitor_users_list_table($online_users, $params, $headers, $title = NULL) {
-  global $user;
 
   // build the table
   $rows = array();
-  $params['cols'] = $params['cols'] ? $params['cols'] : 1;
+  $params['cols'] = isset($params['cols']) ? $params['cols'] : 1;
   $col = 0;
   $cells = array();
   foreach ($online_users as $online_user) {
@@ -218,6 +222,15 @@ function theme_d4os_ui_monitor_users_list_table($online_users, $params, $headers
       $col    = 0;
     }
   }
-  $output = theme_table($headers, $rows);
+  $variables = array(
+    'header' => $headers,
+    'rows' => $rows,
+    'attributes' => array(),
+    'caption' => '',
+    'colgroups' => array(),
+    'sticky' => FALSE,
+    'empty' => ''
+  );
+  $output = theme_table($variables);
   return $output;
 }

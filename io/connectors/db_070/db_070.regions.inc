@@ -26,9 +26,9 @@ class D4OS_IO_db_070_Regions implements D4OS_IO_regions_Interface {
 	function get_regions_owners() {
     $owners = array();
     d4os_io_db_070_set_active('os_robust');
-    $result = db_query('SELECT DISTINCT owner_uuid FROM {regions}');
-    while ($owner = db_fetch_object($result)) {
-      $owners[] = $owner;
+    $results = db_query('SELECT DISTINCT owner_uuid FROM {regions}');
+    foreach ($results as $result) {
+      $owners[] = $result;
     }
     d4os_io_db_070_set_active('default');
     return $owners;
@@ -36,7 +36,7 @@ class D4OS_IO_db_070_Regions implements D4OS_IO_regions_Interface {
 
   function region_exists($uuid) {
 		d4os_io_db_070_set_active('os_robust');
-    $region_exists = db_result(db_query("SELECT count(regionName) FROM {regions} WHERE uuid = '%s'", $uuid));
+    $region_exists = db_query("SELECT count(regionName) FROM {regions} WHERE uuid = :uuid", array(':uuid' => $uuid))->fetchField();
     d4os_io_db_070_set_active('default');
 		if($region_exists) {
 			return TRUE;
@@ -46,7 +46,7 @@ class D4OS_IO_db_070_Regions implements D4OS_IO_regions_Interface {
 
   function get_regions_count() {
     d4os_io_db_070_set_active('os_robust');
-    $count = db_result(db_query("SELECT COUNT(uuid) FROM {regions}"));
+    $count = db_query("SELECT COUNT(uuid) FROM {regions}")->fetchField();
     d4os_io_db_070_set_active('default');
     return $count;
   }
@@ -73,9 +73,9 @@ class D4OS_IO_db_070_Regions implements D4OS_IO_regions_Interface {
   */
   function get_regions_names() {
     d4os_io_db_070_set_active('os_robust');
-    $result = db_query('SELECT uuid, regionHandle, regionName FROM {regions} ORDER BY regionName');
-    while ($region = db_fetch_object($result)) {
-      $items[] = $region;
+    $results = db_query('SELECT uuid, regionHandle, regionName FROM {regions} ORDER BY regionName');
+    foreach ($results as $result) {
+      $items[] = $result;
     }
     d4os_io_db_070_set_active('default');
     return $items;

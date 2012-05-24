@@ -114,10 +114,10 @@ class D4OS_IO_rest_Users implements D4OS_IO_Users_Interface {
   */
   function set_uuid($uid, $uuid) {
     // check the link between drupal and the grid
-    $uid_exists = db_result(db_query("SELECT count(uid) FROM {d4os_ui_users} WHERE UUID = '%s' OR uid = %d", array($uuid, $uid)));
+    $uid_exists = db_query("SELECT uid FROM {d4os_ui_users} WHERE UUID=:uuid OR uid=:uid", array(':uuid' => $uuid, ':uid' => $uid))->fetchField();
     if ($uid_exists) {
-      db_query("DELETE FROM {d4os_ui_users} WHERE UUID = '%s' OR uid = %d", array($uuid, $uid));
+      db_query("DELETE FROM {d4os_ui_users} WHERE UUID = :uuid OR uid = :uid", array(':uuid' => $uuid, ':uid' => $uid));
     }
-    db_query("INSERT INTO {d4os_ui_users} (UUID, uid) VALUES ('%s', %d)", array($uuid, $uid));
+    db_query("INSERT INTO {d4os_ui_users} (UUID, uid) VALUES (:uuid, :uid)", array(':uuid' => $uuid, ':uid' => $uid));
   }
 }

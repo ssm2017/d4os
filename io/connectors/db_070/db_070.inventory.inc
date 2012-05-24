@@ -34,7 +34,7 @@ class D4OS_IO_db_070_Inventory implements D4OS_IO_Inventory_Interface {
     $notecards      = isset($params['notecards'])       ? $params['notecards']      : d4os_uuid_create();
     $calling_cards  = isset($params['calling_cards'])   ? $params['calling_cards']  : d4os_uuid_create();
     $landmarks      = isset($params['landmarks'])       ? $params['landmarks']      : d4os_uuid_create();
-    $scipts         = isset($params['scripts'])         ? $params['scripts']        : d4os_uuid_create();
+    $scripts        = isset($params['scripts'])         ? $params['scripts']        : d4os_uuid_create();
     $body_parts     = isset($params['body_parts'])      ? $params['body_parts']     : d4os_uuid_create();
     $sounds         = isset($params['sounds'])          ? $params['sounds']         : d4os_uuid_create();
     $photo_album    = isset($params['photo_album'])     ? $params['photo_album']    : d4os_uuid_create();
@@ -46,245 +46,72 @@ class D4OS_IO_db_070_Inventory implements D4OS_IO_Inventory_Interface {
     $objects        = isset($params['objects'])         ? $params['objects']        : d4os_uuid_create();
 
     $values = array(
-      $my_inventory,    $user_uuid, UUID_ZERO,
-      $animations,      $user_uuid, $my_inventory,
-      $notecards,       $user_uuid, $my_inventory,
-      $calling_cards,   $user_uuid, $my_inventory,
-      $landmarks,       $user_uuid, $my_inventory,
-      $scipts,          $user_uuid, $my_inventory,
-      $body_parts,      $user_uuid, $my_inventory,
-      $sounds,          $user_uuid, $my_inventory,
-      $photo_album,     $user_uuid, $my_inventory,
-      $textures,        $user_uuid, $my_inventory,
-      $gestures,        $user_uuid, $my_inventory,
-      $clothing,        $user_uuid, $my_inventory,
-      $lost_and_found,  $user_uuid, $my_inventory,
-      $trash,           $user_uuid, $my_inventory,
-      $objects,         $user_uuid, $my_inventory,
+      array('folderName' => 'My Inventory',   'type' => 8,  'version' => 1, 'folderID' => $my_inventory,    'agentID' => $user_uuid, 'parentFolderID' => UUID_ZERO),
+      array('folderName' => 'Animations',     'type' => 20, 'version' => 1, 'folderID' => $animations,      'agentID' => $user_uuid, 'parentFolderID' => $my_inventory),
+      array('folderName' => 'Notecards',      'type' => 7,  'version' => 1, 'folderID' => $notecards,       'agentID' => $user_uuid, 'parentFolderID' => $my_inventory),
+      array('folderName' => 'Calling Cards',  'type' => 2,  'version' => 1, 'folderID' => $calling_cards,   'agentID' => $user_uuid, 'parentFolderID' => $my_inventory),
+      array('folderName' => 'Landmarks',      'type' => 3,  'version' => 1, 'folderID' => $landmarks,       'agentID' => $user_uuid, 'parentFolderID' => $my_inventory),
+      array('folderName' => 'Scripts',        'type' => 10, 'version' => 1, 'folderID' => $scripts,         'agentID' => $user_uuid, 'parentFolderID' => $my_inventory),
+      array('folderName' => 'Body Parts',     'type' => 13, 'version' => 1, 'folderID' => $body_parts,      'agentID' => $user_uuid, 'parentFolderID' => $my_inventory),
+      array('folderName' => 'Sounds',         'type' => 1,  'version' => 1, 'folderID' => $sounds,          'agentID' => $user_uuid, 'parentFolderID' => $my_inventory),
+      array('folderName' => 'Photo Album',    'type' => 15, 'version' => 1, 'folderID' => $photo_album,     'agentID' => $user_uuid, 'parentFolderID' => $my_inventory),
+      array('folderName' => 'Textures',       'type' => 0,  'version' => 1, 'folderID' => $textures,        'agentID' => $user_uuid, 'parentFolderID' => $my_inventory),
+      array('folderName' => 'Gestures',       'type' => 21, 'version' => 1, 'folderID' => $gestures,        'agentID' => $user_uuid, 'parentFolderID' => $my_inventory),
+      array('folderName' => 'Clothing',       'type' => 5,  'version' => 1, 'folderID' => $clothing,        'agentID' => $user_uuid, 'parentFolderID' => $my_inventory),
+      array('folderName' => 'Lost And Found', 'type' => 16, 'version' => 1, 'folderID' => $lost_and_found,  'agentID' => $user_uuid, 'parentFolderID' => $my_inventory),
+      array('folderName' => 'Trash',          'type' => 14, 'version' => 1, 'folderID' => $trash,           'agentID' => $user_uuid, 'parentFolderID' => $my_inventory),
+      array('folderName' => 'Objects',        'type' => 6,  'version' => 1, 'folderID' => $objects,         'agentID' => $user_uuid, 'parentFolderID' => $my_inventory),
     );
-
-    $query = "INSERT INTO {inventoryfolders} (`folderName`, `type`, `version`, `folderID`, `agentID`, `parentFolderID`) VALUES"
-          . "('My Inventory', 8, 1, '%s', '%s', '%s'),"
-          . "('Animations', 20, 1, '%s', '%s', '%s'),"
-          . "('Notecards', 7, 1, '%s', '%s', '%s'),"
-          . "('Calling Cards', 2, 1, '%s', '%s', '%s'),"
-          . "('Landmarks', 3, 1, '%s', '%s', '%s'),"
-          . "('Scripts', 10, 1, '%s', '%s', '%s'),"
-          . "('Body Parts', 13, 1, '%s', '%s', '%s'),"
-          . "('Sounds', 1, 1, '%s', '%s', '%s'),"
-          . "('Photo Album', 15, 1, '%s', '%s', '%s'),"
-          . "('Textures', 0, 1, '%s', '%s', '%s'),"
-          . "('Gestures', 21, 1, '%s', '%s', '%s'),"
-          . "('Clothing', 5, 1, '%s', '%s', '%s'),"
-          . "('Lost And Found', 16, 1, '%s', '%s', '%s'),"
-          . "('Trash', 14, 1, '%s', '%s', '%s'),"
-          . "('Objects', 6, 1, '%s', '%s', '%s');";
-
     d4os_io_db_070_set_active('os_robust');
-    db_query($query, $values);
+    $query = db_insert('inventoryfolders');
+    foreach ($values as $record) {
+      $query->values($record);
+    }
+    $query->execute();
     d4os_io_db_070_set_active('default');
   }
 
   function create_inventory_item($params) {
     $values = array(
-      $params['asset_id'], // 1
-      $params['asset_type'], // 2
-      $params['inventory_name'], // 3
-      $params['inventory_description'], // 4
-      $params['inventory_next_permissions'], // 5
-      $params['inventory_current_permissions'], // 6
-      $params['inventory_type'], // 7
-      $params['creator_uuid'], // 8
-      $params['inventory_base_permissions'], // 9
-      $params['inventory_everyone_permissions'], // 10
-      $params['sale_price'], // 11
-      $params['sale_type'], // 12
-      $params['creation_date'], // 13
-      $params['group_id'], // 14
-      $params['group_owned'], // 15
-      $params['flags'], // 16
-      $params['inventory_id'], // 17
-      $params['uder_uuid'], // 18
-      $params['parent_folder_id'], // 19
+      'assetID'                       => $params['asset_id'], // 1
+      'assetType'                     => $params['asset_type'], // 2
+      'inventoryName'                 => $params['inventory_name'], // 3
+      'inventoryDescription'          => $params['inventory_description'], // 4
+      'inventoryNextPermissions'      => $params['inventory_next_permissions'], // 5
+      'inventoryCurrentPermissions'   => $params['inventory_current_permissions'], // 6
+      'invType'                       => $params['inventory_type'], // 7
+      'creatorID'                     => $params['creator_uuid'], // 8
+      'inventoryBasePermissions'      => $params['inventory_base_permissions'], // 9
+      'inventoryEveryOnePermissions'  => $params['inventory_everyone_permissions'], // 10
+      'salePrice'                     => $params['sale_price'], // 11
+      'saleType'                      => $params['sale_type'], // 12
+      'creationDate'                  => $params['creation_date'], // 13
+      'groupID'                       => $params['group_id'], // 14
+      'groupOwned'                    => $params['group_owned'], // 15
+      'flags'                         => $params['flags'], // 16
+      'inventoryID'                   => $params['inventory_id'], // 17
+      'avatarID'                      => $params['uder_uuid'], // 18
+      'parentFolderID'                => $params['parent_folder_id'], // 19
     );
-
-    $query = "INSERT INTO {inventoryitems} ("
-          . "`assetID`, " // 1
-          . "`assetType`, " // 2
-          . "`inventoryName`, " // 3
-          . "`inventoryDescription`, " // 4
-          . "`inventoryNextPermissions`, " // 5
-          . "`inventoryCurrentPermissions`, " // 6
-          . "`invType`, " // 7
-          . "`creatorID`, " // 8
-          . "`inventoryBasePermissions`, " // 9
-          . "`inventoryEveryOnePermissions`, " // 10
-          . "`salePrice`, " // 11
-          . "`saleType`, " // 12
-          . "`creationDate`, " // 13
-          . "`groupID`, " // 14
-          . "`groupOwned`, " // 15
-          . "`flags`, " // 16
-          . "`inventoryID`, " // 17
-          . "`avatarID`, " // 18
-          . "`parentFolderID`" // 19
-          . ") VALUES ("
-          . "'%s', " // 1 assetID
-          . "%d, " // 2 assetType
-          . "'%s', " // 3 inventoryName
-          . "'%s', " // 4 inventoryDescription
-          . "%d, " // 5 inventoryNextPermissions
-          . "%d, " // 6 inventoryCurrentPermissions
-          . "%d, " // 7 invType
-          . "'%s', " // 8 creatorID
-          . "%d, " // 9 inventoryBasePermissions
-          . "%d, " // 10 inventoryEveryOnePermissions
-          . "%d, " // 11 salePrice
-          . "'%s', " // 12 saleType
-          . "%d, " // 13 creationDate
-          . "'%s', " // 14 groupID
-          . "%d, " // 15 groupOwned
-          . "%d, " // 16 flags
-          . "'%s', " // 17 inventoryID
-          . "'%s', " // 18 avatarID
-          . "'%s', " // 19 parentFolderID
-          . ");";
 
     d4os_io_db_070_set_active('os_robust');
-    db_query($query, $values);
-    d4os_io_db_070_set_active('default');
-  }
-
-  function create_user_attachment($params) {
-    $values = array(
-      $params['user_uuid'],
-      $params['attachment_point'],
-      $params['inventory_id'],
-      $params['random_asset_uuid'],
-    );
-    $query = "INSERT INTO {avatarattachments} (`UUID`, `attachpoint`, `item`, `asset`) VALUES ('%s', %d, '%s', '%s');";
-
-    d4os_io_db_070_set_active('os_users');
-    db_query($query, $values);
-    d4os_io_db_070_set_active('default');
-  }
-
-  function create_user_wearable($params) {
-    $values = array(
-      $params['Owner'], // 1
-      $params['Serial'], // 2
-      $params['Visual_Params'], // 3
-      $params['Texture'], // 4
-      $params['Avatar_Height'], // 5
-      $params['Body_Item'], // 6
-      $params['Body_Asset'], // 7
-      $params['Skin_Item'], // 8
-      $params['Skin_Asset'], // 9
-      $params['Hair_Item'], // 10
-      $params['Hair_Asset'], // 11
-      $params['Eyes_Item'], // 12
-      $params['Eyes_Asset'], // 13
-      $params['Shirt_Item'], // 14
-      $params['Shirt_Asset'], // 15
-      $params['Pants_Item'], // 16
-      $params['Pants_Asset'], // 17
-      $params['Shoes_Item'], // 18
-      $params['Shoes_Asset'], // 19
-      $params['Socks_Item'], // 20
-      $params['Socks_Asset'], // 21
-      $params['Jacket_Item'], // 22
-      $params['Jacket_Asset'], // 23
-      $params['Gloves_Item'], // 24
-      $params['Gloves_Asset'], // 25
-      $params['Undershirt_Item'], // 26
-      $params['Undershirt_Asset'], // 27
-      $params['Underpants_Item'], // 28
-      $params['Underpants_Asset'], // 29
-      $params['Skirt_Item'], // 30
-      $params['Skirt_Asset'] // 31
-    );
-    $query = "INSERT INTO {avatarappearance} ("
-    . "`Owner`, " // 1
-    . "`Serial`, " // 2
-    . "`Visual_Params`, " // 3
-    . "`Texture`, " // 4
-    . "`Avatar_Height`," // 5
-    . "`Body_Item`, " // 6
-    . "`Body_Asset`, " // 7
-    . "`Skin_Item`, " // 8
-    . "`Skin_Asset`, " // 9
-    . "`Hair_Item`, " // 10
-    . "`Hair_Asset`, " // 11
-    . "`Eyes_Item`, " // 12
-    . "`Eyes_Asset`, " // 13
-    . "`Shirt_Item`, " // 14
-    . "`Shirt_Asset`, " // 15
-    . "`Pants_Item`, " // 16
-    . "`Pants_Asset`, " // 17
-    . "`Shoes_Item`, " // 18
-    . "`Shoes_Asset`, " // 19
-    . "`Socks_Item`, " // 20
-    . "`Socks_Asset`, " // 21
-    . "`Jacket_Item`, " // 22
-    . "`Jacket_Asset`, " // 23
-    . "`Gloves_Item`, " // 24
-    . "`Gloves_Asset`, " // 25
-    . "`Undershirt_Item`, " // 26
-    . "`Undershirt_Asset`, " // 27
-    . "`Underpants_Item`, " // 28
-    . "`Underpants_Asset`, " // 29
-    . "`Skirt_Item`, " // 30
-    . "`Skirt_Asset`" // 31
-    . ") VALUES ("
-    . "%d, " // 1 Owner // int
-    . "%b, " // 2 Serial // blob
-    . "%b, " // 3 Visual_Params // blob
-    . "%f, " // 4 Texture // float
-    . "'%s', " // 5 Avatar_Height
-    . "'%s', " // 6 Body_Item
-    . "'%s', " // 7 Body_Asset
-    . "'%s', " // 8 Skin_Item
-    . "'%s', " // 9 Skin_Asset
-    . "'%s', " // 10 Hair_Item
-    . "'%s', " // 11 Hair_Asset
-    . "'%s', " // 12 Eyes_Item
-    . "'%s', " // 13 Eyes_Asset
-    . "'%s', " // 14 Shirt_Item
-    . "'%s', " // 15 Shirt_Asset
-    . "'%s', " // 16 Pants_Item
-    . "'%s', " // 17 Pants_Asset
-    . "'%s', " // 18 Shoes_Item
-    . "'%s', " // 19 Shoes_Asset
-    . "'%s', " // 20 Socks_Item
-    . "'%s', " // 21 Socks_Asset
-    . "'%s', " // 22 Jacket_Item
-    . "'%s', " // 23 Jacket_Asset
-    . "'%s', " // 24 Gloves_Item
-    . "'%s', " // 25 Gloves_Asset
-    . "'%s', " // 26 Undershirt_Item
-    . "'%s', " // 27 Undershirt_Asset
-    . "'%s', " // 28 Underpants_Item
-    . "'%s', " // 29 Underpants_Asset
-    . "'%s', " // 30 Skirt_Item
-    . "'%s', " // 31 Skirt_Asset
-    . "');";
-
-    d4os_io_db_070_set_active('os_users');
-    db_query($query, $values);
+    db_insert('inventoryitems')
+      ->fields($values)
+      ->execute();
     d4os_io_db_070_set_active('default');
   }
 
   function get_inventory_folder_by_path($params) {
     // build the query
-    $values = array($params['user_uuid']);
-    $query = "SELECT * FROM {inventoryfolders} WHERE agentID = '%s'";
+    $values = array(':agentID' => $params['user_uuid']);
+    $query = "SELECT * FROM {inventoryfolders} WHERE agentID = :agentID";
 
     // request the data
-    d4os_io_db_070_set_active('os_robust');
-    $result = db_query($query, $values);
     $user_folders = array();
-    while ($folder = db_fetch_array($result)) {
-      $user_folders[] = $folder;
+    d4os_io_db_070_set_active('os_robust');
+    $results = db_query($query, $values)->fetchAssoc();
+    foreach ($results as $result) {
+      $user_folders[] = $result;
     }
     d4os_io_db_070_set_active('default');
 
@@ -341,10 +168,10 @@ class D4OS_IO_db_070_Inventory implements D4OS_IO_Inventory_Interface {
     $new_folders = array();
     // get the uuids
     $old_folders_uuids = array();
-    foreach($params['user_folders'] as $k => $folder) {
-      $old_folders_uuids[] = $folder['folderID'];
-      if ($folder['parentFolderID'] != UUID_ZERO) {
-        $old_folders_uuids[] = $folder['parentFolderID'];
+    foreach($params['user_folders'] as $folder) {
+      $old_folders_uuids[] = $folder->folderid;
+      if ($folder->parentfolderid != UUID_ZERO) {
+        $old_folders_uuids[] = $folder->parentfolderid;
       }
     }
     $old_folders_uuids = array_unique($old_folders_uuids);
@@ -360,15 +187,15 @@ class D4OS_IO_db_070_Inventory implements D4OS_IO_Inventory_Interface {
     foreach($params['user_folders'] as $folder) {
       $values = $folder;
 
-      $new_uuid_id        = array_search($folder['folderID'], $old_folders_uuids);
-      $values['folderID'] = $new_folders_uuids[$new_uuid_id];
+      $new_uuid_id        = array_search($folder->folderid, $old_folders_uuids);
+      $values->folderid = $new_folders_uuids[$new_uuid_id];
 
-      if ($folder['parentFolderID'] != UUID_ZERO) {
-        $new_parent_uuid_id = array_search($folder['parentFolderID'], $old_folders_uuids);
-        $values['parentFolderID'] = $new_folders_uuids[$new_parent_uuid_id];
+      if ($folder->parentfolderid != UUID_ZERO) {
+        $new_parent_uuid_id = array_search($folder->parentfolderid, $old_folders_uuids);
+        $values->parentfolderid = $new_folders_uuids[$new_parent_uuid_id];
       }
 
-      $values['agentID'] = $params['avatar_dest_uuid'];
+      $values->agentid = $params['avatar_dest_uuid'];
       $new_folders[] = $values;
     }
 
@@ -389,8 +216,8 @@ class D4OS_IO_db_070_Inventory implements D4OS_IO_Inventory_Interface {
 
     // get the uuids
     $old_items_uuids = array();
-    foreach($params['user_items'] as $k => $item) {
-      $old_items_uuids[] = $item['inventoryID'];
+    foreach($params['user_items'] as $item) {
+      $old_items_uuids[] = $item->inventoryid;
     }
     $old_items_uuids = array_unique($old_items_uuids);
     sort($old_items_uuids);
@@ -402,13 +229,13 @@ class D4OS_IO_db_070_Inventory implements D4OS_IO_Inventory_Interface {
     }
 
     // replace the uuids
-    foreach($params['user_items'] as $k => $item) {
-      $new_uuid_id        = array_search($item['inventoryID'], $old_items_uuids);
-      $new_parent_uuid_id = array_search($item['parentFolderID'], $params['old_folders_uuids']);
+    foreach($params['user_items'] as $item) {
+      $new_uuid_id        = array_search($item->inventoryid, $old_items_uuids);
+      $new_parent_uuid_id = array_search($item->parentfolderid, $params['old_folders_uuids']);
       $values = $item;
-      $values['inventoryID']    = $new_items_uuids[$new_uuid_id];
-      $values['avatarID']       = $params['avatar_dest_uuid'];
-      $values['parentFolderID'] = $params['new_folders_uuids'][$new_parent_uuid_id];
+      $values->inventoryid    = $new_items_uuids[$new_uuid_id];
+      $values->avatarid       = $params['avatar_dest_uuid'];
+      $values->parentfolderid = $params['new_folders_uuids'][$new_parent_uuid_id];
       $new_items[] = $values;
     }
 
@@ -430,16 +257,16 @@ class D4OS_IO_db_070_Inventory implements D4OS_IO_Inventory_Interface {
   function clone_inventory($params) {
     // delete actual folders and items
     d4os_io_db_070_set_active('os_robust');
-    db_query("DELETE FROM {inventoryfolders} WHERE agentID = '%s'", array($params['avatar_dest_uuid']));
-    db_query("DELETE FROM {inventoryitems} WHERE avatarID = '%s'", array($params['avatar_dest_uuid']));
+    db_query("DELETE FROM {inventoryfolders} WHERE agentID = :agentID", array(':agentID' => $params['avatar_dest_uuid']));
+    db_query("DELETE FROM {inventoryitems} WHERE avatarID = :avatarID", array(':avatarID' => $params['avatar_dest_uuid']));
     d4os_io_db_070_set_active('default');
 
     // get the folders
     $user_folders = array();
     d4os_io_db_070_set_active('os_robust');
-    $result = db_query("SELECT * FROM {inventoryfolders} WHERE agentID = '%s'", $params['avatar_src_uuid']);
-    while ($folder = db_fetch_array($result)) {
-      $user_folders[] = $folder;
+    $results = db_query("SELECT * FROM {inventoryfolders} WHERE agentID = :agentID", array(':agentID' => $params['avatar_src_uuid']))->fetchAll();
+    foreach ($results as $result) {
+      $user_folders[] = $result;
     }
     d4os_io_db_070_set_active('default');
 
@@ -458,9 +285,9 @@ class D4OS_IO_db_070_Inventory implements D4OS_IO_Inventory_Interface {
     // get the items
     $user_items = array();
     d4os_io_db_070_set_active('os_robust');
-    $result = db_query("SELECT * FROM {inventoryitems} WHERE avatarID = '%s'", $params['avatar_src_uuid']);
-    while ($item = db_fetch_array($result)) {
-      $user_items[] = $item;
+    $results = db_query("SELECT * FROM {inventoryitems} WHERE avatarID = :avatarID", array(':avatarID' => $params['avatar_src_uuid']))->fetchAll();
+    foreach ($results as $result) {
+      $user_items[] = $result;
     }
     d4os_io_db_070_set_active('default');
 
@@ -480,107 +307,60 @@ class D4OS_IO_db_070_Inventory implements D4OS_IO_Inventory_Interface {
 
     // build the query for folders
     $folders_list_values = array();
-    $folders_list_vars = '';
     foreach ($new_items['data']['new_folders'] as $new_folder) {
-      $folders_list_vars .= "('%s', %d, %d, '%s', '%s', '%s'),";
-      $folders_list_values[] = $new_folder['folderName'];
-      $folders_list_values[] = $new_folder['type'];
-      $folders_list_values[] = $new_folder['version'];
-      $folders_list_values[] = $new_folder['folderID'];
-      $folders_list_values[] = $new_folder['agentID'];
-      $folders_list_values[] = $new_folder['parentFolderID'];
+      $folders_list_values[] = array(
+        'folderName'      => $new_folder->foldername,
+        'type'            => $new_folder->type,
+        'version'         => $new_folder->version,
+        'folderID'        => $new_folder->folderid,
+        'agentID'         => $new_folder->agentid,
+        'parentFolderID'  => $new_folder->parentfolderid,
+      );
     }
-    // remove the trailing ,
-    $folders_list_vars = substr($folders_list_vars, 0, -1);
 
     // fill the base with all this data
-    $query = "INSERT INTO {inventoryfolders} ("
-            . "folderName,"
-            . "type,"
-            . "version,"
-            . "folderID,"
-            . "agentID,"
-            . "parentFolderID"
-            . ") VALUES ". $folders_list_vars;
     d4os_io_db_070_set_active('os_robust');
-    db_query($query, $folders_list_values);
+    $query = db_insert('inventoryfolders')->fields(array_keys($folders_list_values[0]));
+    foreach ($folders_list_values as $record) {
+      $query->values($record);
+    }
+    $query->execute();
     d4os_io_db_070_set_active('default');
 
     // build the query for items
     $items_list_values = array();
-    $items_list_vars = '';
     foreach ($new_items['data']['new_items'] as $new_item) {
-      $items_list_vars .= "("
-                        . "'%s'," // 1
-                        . "%d," // 2
-                        . "'%s'," // 3
-                        . "'%s'," // 4
-                        . "%d," // 5
-                        . "%d," // 6
-                        . "%d," // 7
-                        . "'%s'," // 8
-                        . "%d," // 9
-                        . "%d," // 10
-                        . "%d," // 11
-                        . "%d," // 12
-                        . "%d," // 13
-                        . "'%s'," // 14
-                        . "%d," // 15
-                        . "%d," // 16
-                        . "'%s'," // 17
-                        . "'%s'," // 18
-                        . "'%s'," // 19
-                        . "%d" // 20
-                        . "),";
-      $items_list_values[] = $new_item['assetID']; // 1
-      $items_list_values[] = $new_item['assetType']; // 2 int
-      $items_list_values[] = $new_item['inventoryName']; // 3
-      $items_list_values[] = $new_item['inventoryDescription']; // 4
-      $items_list_values[] = $new_item['inventoryNextPermissions']; // 5 int
-      $items_list_values[] = $new_item['inventoryCurrentPermissions']; // 6 int
-      $items_list_values[] = $new_item['invType']; // 7 int
-      $items_list_values[] = $new_item['creatorID']; // 8
-      $items_list_values[] = $new_item['inventoryBasePermissions']; // 9 int
-      $items_list_values[] = $new_item['inventoryEveryOnePermissions']; // 10 int
-      $items_list_values[] = $new_item['salePrice']; // 11 int
-      $items_list_values[] = $new_item['saleType']; // 12 int
-      $items_list_values[] = $new_item['creationDate']; // 13 int
-      $items_list_values[] = $new_item['groupID']; // 14
-      $items_list_values[] = $new_item['groupOwned']; // 15 int
-      $items_list_values[] = $new_item['flags']; // 16 int
-      $items_list_values[] = $new_item['inventoryID']; // 17
-      $items_list_values[] = $new_item['avatarID']; // 18
-      $items_list_values[] = $new_item['parentFolderID']; // 19
-      $items_list_values[] = $new_item['inventoryGroupPermissions']; // 20 int
+      $items_list_values[] = array(
+        'assetID'                       => $new_item->assetid,
+        'assetType'                     => $new_item->assettype,
+        'inventoryName'                 => $new_item->inventoryname,
+        'inventoryDescription'          => $new_item->inventorydescription,
+        'inventoryNextPermissions'      => $new_item->inventorynextpermissions,
+        'inventoryCurrentPermissions'   => $new_item->inventorycurrentpermissions,
+        'invType'                       => $new_item->invtype,
+        'creatorID'                     => $new_item->creatorid,
+        'inventoryBasePermissions'      => $new_item->inventorybasepermissions,
+        'inventoryEveryOnePermissions'  => $new_item->inventoryeveryonepermissions,
+        'salePrice'                     => $new_item->saleprice,
+        'saleType'                      => $new_item->saletype,
+        'creationDate'                  => $new_item->creationdate,
+        'groupID'                       => $new_item->groupid,
+        'groupOwned'                    => $new_item->groupowned,
+        'flags'                         => $new_item->flags,
+        'inventoryID'                   => $new_item->inventoryid,
+        'avatarID'                      => $new_item->avatarid,
+        'parentFolderID'                => $new_item->parentfolderid,
+        'inventoryGroupPermissions'     => $new_item->inventorygrouppermissions,
+      );
     }
-    // remove the trailing ,
-    $items_list_vars = substr($items_list_vars, 0, -1);
 
     // fill the base with all this data
-    $query = "INSERT INTO {inventoryitems} ("
-            . "assetID," // 1
-            . "assetType," // 2
-            . "inventoryName," // 3
-            . "inventoryDescription," // 4
-            . "inventoryNextPermissions," // 5
-            . "inventoryCurrentPermissions," // 6
-            . "invType," // 7
-            . "creatorID," // 8
-            . "inventoryBasePermissions," // 9
-            . "inventoryEveryOnePermissions," // 10
-            . "salePrice," // 11
-            . "saleType," // 12
-            . "creationDate," // 13
-            . "groupID," // 14
-            . "groupOwned," // 15
-            . "flags," // 16
-            . "inventoryID," // 17
-            . "avatarID," // 18
-            . "parentFolderID," // 19
-            . "inventoryGroupPermissions" // 20
-            . ") VALUES ". $items_list_vars;
     d4os_io_db_070_set_active('os_robust');
-    db_query($query, $items_list_values);
+    $query = db_insert('inventoryitems')->fields(array_keys($items_list_values[0]));
+    foreach ($items_list_values as $record) {
+      $query->values($record);
+    }
+    $query->execute();
     d4os_io_db_070_set_active('default');
 
     return array(
@@ -596,15 +376,15 @@ class D4OS_IO_db_070_Inventory implements D4OS_IO_Inventory_Interface {
   function clone_appearance($params) {
     // delete actual appearance
     d4os_io_db_070_set_active('os_robust');
-    db_query("DELETE FROM {Avatars} WHERE PrincipalID = '%s'", array($params['avatar_dest_uuid']));
+    db_query("DELETE FROM {Avatars} WHERE PrincipalID = :PrincipalID", array(':PrincipalID' => $params['avatar_dest_uuid']));
     d4os_io_db_070_set_active('default');
 
     // get the folders
     $appearance = array();
     d4os_io_db_070_set_active('os_robust');
-    $result = db_query("SELECT Name, Value FROM {Avatars} WHERE PrincipalID = '%s'", $params['avatar_src_uuid']);
-    while ($item = db_fetch_array($result)) {
-      $appearance[] = $item;
+    $results = db_query("SELECT Name, Value FROM {Avatars} WHERE PrincipalID = :PrincipalID", array(':PrincipalID' => $params['avatar_src_uuid']))->fetchAll();
+    foreach ($results as $result) {
+      $appearance[] = $result;
     }
     d4os_io_db_070_set_active('default');
 
@@ -640,60 +420,60 @@ class D4OS_IO_db_070_Inventory implements D4OS_IO_Inventory_Interface {
   ('f775ad73-cb26-4d76-ac1c-58d8593b54d1', '_ap_8', '73915a4e-9743-4897-aa66-f10fee793b25');
   UUID_INVENTORY_ITEM:UUID_ASSET
   */
-    // fill the base with all this data
-    $queries  = array();
     $values   = array();
 
     for ($i=0; $i < count($appearance); $i++) {
-      if (strpos($appearance[$i]['Name'], 'Wearable') !== FALSE) {
-        $uuids = explode(":", $appearance[$i]['Value']);
+      if (strpos($appearance[$i]->name, 'Wearable') !== FALSE) {
+        $uuids = explode(":", $appearance[$i]->value);
         $item = $uuids[0];
         $asset = $uuids[1];
-        $query = "SELECT inventoryID FROM {inventoryitems} WHERE assetID='%s' AND avatarID='%s'";
+        $query = "SELECT inventoryID FROM {inventoryitems} WHERE assetID=:assetID AND avatarID=:avatarID";
 
         d4os_io_db_070_set_active('os_robust');
-        $result = db_fetch_object(db_query($query, $asset, $params['avatar_dest_uuid']));
+        $result = db_query($query, array(':assetID' => $asset, ':avatarID' => $params['avatar_dest_uuid']))->fetchObject();
         d4os_io_db_070_set_active('default');
         if (!$result) {
           return;
         }
-        $appearance[$i]['Value'] = $result->inventoryID. ":". $asset;
+        $appearance[$i]->value = $result->inventoryid. ":". $asset;
       }
-      else if (strpos($appearance[$i]['Name'], '_ap_') !== FALSE) {
-        $query = "SELECT assetID FROM {inventoryitems} WHERE inventoryID='%s'";
+      else if (strpos($appearance[$i]->name, '_ap_') !== FALSE) {
+        $query = "SELECT assetID FROM {inventoryitems} WHERE inventoryID=:inventoryID";
 
         d4os_io_db_070_set_active('os_robust');
-        $result = db_fetch_object(db_query($query, $appearance[$i]['Value']));
+        $result = db_query($query, array(':inventoryID' => $appearance[$i]->value))->fetchObject();
         d4os_io_db_070_set_active('default');
         if (!$result) {
           return;
         }
 
-        $query = "SELECT inventoryID FROM {inventoryitems} WHERE assetID='%s' AND avatarID='%s'";
+        $query = "SELECT inventoryID FROM {inventoryitems} WHERE assetID=:assetID AND avatarID=:avatarID";
 
         d4os_io_db_070_set_active('os_robust');
-        $result = db_fetch_object(db_query($query, $result->assetID, $params['avatar_dest_uuid']));
+        $result = db_query($query, array(':assetID' => $result->assetid, ':avatarID' => $params['avatar_dest_uuid']))->fetchObject();
         d4os_io_db_070_set_active('default');
         if (!$result) {
           return;
         }
-        $appearance[$i]['Value'] = $result->inventoryID;
+        $appearance[$i]->value = $result->inventoryid;
       }
-      if ($appearance[$i]['Name'] == "UserID") {
-        $appearance[$i]['Value'] = $params['avatar_dest_uuid'];
+      if ($appearance[$i]->name == "UserID") {
+        $appearance[$i]->value = $params['avatar_dest_uuid'];
       }
-      $queries[] = "('%s', '%s', '%s')";
-      $values[] = $params['avatar_dest_uuid'];
-      $values[] = $appearance[$i]['Name'];
-      $values[] = $appearance[$i]['Value'];
+      $values[] = array(
+        'PrincipalID' => $params['avatar_dest_uuid'],
+        'Name' => $appearance[$i]->name,
+        'Value' => $appearance[$i]->value,
+      );
     }
-    $query = "INSERT INTO {Avatars} ("
-            . "PrincipalID," // 1 str
-            . "Name," // 2 str
-            . "Value" // 3 str
-            . ") VALUES ". implode(',', $queries);
+
+    // fill the base with all this data
     d4os_io_db_070_set_active('os_robust');
-    db_query($query, $values);
+    $query = db_insert('Avatars')->fields(array_keys($values[0]));
+    foreach ($values as $record) {
+      $query->values($record);
+    }
+    $query->execute();
     d4os_io_db_070_set_active('default');
 
     return array(
@@ -714,17 +494,17 @@ class D4OS_IO_db_070_Inventory implements D4OS_IO_Inventory_Interface {
   function delete_user_inventory($uuid) {
     // delete attachments and appearance
     d4os_io_db_070_set_active('os_robust');
-    db_query("DELETE FROM {Avatars} WHERE PrincipalID = '%s'", $uuid);
+    db_delete('Avatars')->condition('PrincipalID', $uuid)->execute();
     d4os_io_db_070_set_active('default');
     drupal_set_message(t('Appearance deleted.'));
     // delete folders
     d4os_io_db_070_set_active('os_robust');
-    db_query("DELETE FROM {inventoryfolders} WHERE agentID = '%s'", $uuid);
+    db_delete('inventoryfolders')->condition('agentID', $uuid)->execute();
     d4os_io_db_070_set_active('default');
     drupal_set_message(t('Inventory folders deleted.'));
     // delete items
     d4os_io_db_070_set_active('os_robust');
-    db_query("DELETE FROM {inventoryitems} WHERE avatarID = '%s'", $uuid);
+    db_delete('inventoryitems')->condition('avatarID', $uuid)->execute();
     d4os_io_db_070_set_active('default');
     drupal_set_message(t('Inventory items deleted.'));
   }

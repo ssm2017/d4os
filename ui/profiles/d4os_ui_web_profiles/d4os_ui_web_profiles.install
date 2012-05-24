@@ -11,17 +11,9 @@
  */
 
 /**
- * Implementation of hook_install()
- */
-function d4os_ui_web_profiles_install() {
-  drupal_install_schema('d4os_ui_web_profiles');
-}
-
-/**
  * Implementation of hook_uninstall().
  */
 function d4os_ui_web_profiles_uninstall() {
-  drupal_uninstall_schema('d4os_ui_web_profiles');
   // Remove variables.
   db_query("DELETE FROM {variable} WHERE name LIKE 'd4os_ui_web_profiles%%'");
 }

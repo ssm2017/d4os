@@ -2,7 +2,7 @@
 name = "d4os ui loginpage"
 description = "This module is managing loginpage."
 package = d4os ui
-core = 6.x
+core = 7.x
 dependencies[] = d4os
 dependencies[] = d4os_ui_users
 dependencies[] = d4os_ui_monitor_grid_status

@@ -30,13 +30,13 @@ function d4os_ui_users_menu() {
     'access arguments'  => array('access user profiles'),
     'type'              => MENU_CALLBACK,
   );
-  $items['admin/settings/d4os/ui/users'] = array(
+  $items['admin/config/d4os/ui/users'] = array(
     'title'             => 'users',
     'description'       => 'd4os ui users settings',
     'page callback'     => 'drupal_get_form',
     'page arguments'    => array('d4os_ui_users_admin'),
     'access arguments'  => array('admin d4os ui users'),
-    'type'              => MENU_LOCAL_TASK,
+    'type'              => MENU_NORMAL_ITEM,
     'file'              => 'd4os_ui_users.admin.inc'
   );
   $items['user/%user/grid/register'] = array(
@@ -59,10 +59,19 @@ function d4os_ui_users_theme() {
   );
 }
 
-function d4os_ui_users_perm() {
+/**
+ * Hook permission
+ */
+function d4os_ui_users_permission() {
   return array(
-    'admin d4os ui users',
-    'search d4os ui users',
+    'admin d4os ui users' => array(
+      'title' => t('Administer d4os'),
+      'description' => t('Perform administration tasks for d4os ui users.'),
+    ),
+    'search d4os ui users' => array(
+      'title' => t('Search users by uuid'),
+      'description' => t('Search users by uuid.'),
+    ),
   );
 }
 
@@ -86,7 +95,7 @@ function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
       break;
 
     // registration
-    case 'user_register':
+    case 'user_register_form':
       // check if the datastore is alive
       $d4os_user = D4OS_IO::create('Users');
       $d4os_user->ping();
@@ -130,8 +139,13 @@ function d4os_ui_users_login_form(&$form) {
     '#required'     => TRUE,
     '#weight'       => -1,
   );
-  $form['#after_build'][] = 'd4os_ui_users_openid_form_alter';
-  array_unshift($form['#validate'], 'd4os_ui_users_login_authenticate_validate');
+  if (module_exists('openid')) {
+    $form['#attached']['js'][] = drupal_get_path('module', 'd4os_ui_users').'/d4os_ui_users.js';
+    $form['lastname']['#required'] = FALSE;
+  }
+  if (!module_exists('d4os_ui_auth')) {
+    array_unshift($form['#validate'], 'd4os_ui_users_login_authenticate_validate');
+  }
 }
 
 function d4os_ui_users_register_form(&$form) {
@@ -177,14 +191,9 @@ function d4os_ui_users_register_form(&$form) {
   array_unshift($form['#validate'], 'd4os_ui_users_account_validate');
 }
 
-function d4os_ui_users_openid_form_alter($form_element, &$form_state) {
-  drupal_add_js(drupal_get_path('module', 'd4os_ui_users').'/d4os_ui_users.js', 'module');
-  return $form_element;
-}
-
 function d4os_ui_users_profile_form(&$form) {
-  $account = $form['_account']['#value'];
-  if ($account->uid > 1 && $form['_category']['#value'] == 'account') {
+  $account = $form['#user'];
+  if ($account->uid > 1 && $form['#user_category'] == 'account') {
     if (user_access('administer users') || user_access('change own username')) {
       $names = explode(' ', $account->name);
       unset($form['account']['name']);
@@ -210,30 +219,13 @@ function d4os_ui_users_profile_form(&$form) {
       );
     }
   }
+
   array_unshift($form['#validate'], 'd4os_ui_users_account_validate');
 }
 
-function d4os_ui_users_user($op, &$edit, &$account, $category = NULL) {
-  switch ($op) {
-
-    case 'update':
-      d4os_ui_users_update_user($edit, $account);
-      break;
-
-    case 'delete':
-      d4os_ui_users_delete_user($account);
-      break;
-
-    case 'view':
-      d4os_ui_users_view_user($account);
-      break;
-
-  }
-}
-
-function d4os_ui_users_view_user(&$account) {
+function d4os_ui_users_user_view($account, $view_mode, $langcode) {
   // check if the user exists in the grid
-  $uuid = db_result(db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=%d", $account->uid));
+  $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $account->uid))->fetchField();
   if ($uuid === FALSE) {
     drupal_set_message(t('User not registered InWorld.'));
   }
@@ -245,30 +237,30 @@ function d4os_ui_users_view_user(&$account) {
     $account->content['grid']['account']['uuid'] = array(
       '#type'   => 'user_profile_item',
       '#title'  => t('Uuid'),
-      '#value'  => $uuid,
+      '#markup' => $uuid,
       '#weight' => 0,
     );
   }
 }
 
-function d4os_ui_users_delete_user($account) {
+function d4os_ui_users_user_delete($edit, $account, $method) {
   // check if the user exists in the grid
-  $uuid = db_result(db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=%d", $account->uid));
+  $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $edit->uid))->fetchField();
   if ($uuid !== FALSE) {
     // delete the user in the grid
     $d4os_user = D4OS_IO::create('Users');
     $d4os_user->delete_user($uuid);
     // delete drupal link
-    db_query("DELETE FROM {d4os_ui_users} WHERE UUID = '%s' OR uid = %d", array($uuid, $account->uid));
+    db_query("DELETE FROM {d4os_ui_users} WHERE UUID = :uuid OR uid = :uid", array(':uuid' => $uuid, ':uid' => $edit->uid));
   }
 }
 
-function d4os_ui_users_update_user(&$edit, &$account) {
+function d4os_ui_users_user_update(&$edit, $account, $category) {
   // check if the user is admin
   if ($account->uid < 2) return;
 
   // check if the user is registered on the grid
-  $uuid = db_result(db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=%d", $account->uid));
+  $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $account->uid))->fetchField();
   if ($uuid === FALSE) return;
 
   // load the grid user
@@ -277,12 +269,18 @@ function d4os_ui_users_update_user(&$edit, &$account) {
   $grid_user = $grid_user[0];
 
   // check if username has changed
-  $grid_user->FirstName = (isset($edit['firstname']) && $grid_user->FirstName != $edit['firstname']) ? $edit['firstname'] : $grid_user->FirstName;
-  $grid_user->LastName = (isset($edit['lastname']) && $grid_user->LastName != $edit['lastname']) ? $edit['lastname'] : $grid_user->LastName;
+  if (!empty($edit['firstname'])) {
+    $grid_user->FirstName = ($grid_user->FirstName != $edit['firstname']) ? $edit['firstname'] : $grid_user->FirstName;
+  }
+  if (!empty($edit['lastname'])) {
+    $grid_user->LastName = ($grid_user->LastName != $edit['lastname']) ? $edit['lastname'] : $grid_user->LastName;
+  }
 
   // check if email has changed
-  $grid_user->Email = empty($edit['mail']) ? $grid_user->Email : $edit['mail'];
-  $grid_user->Email = ($grid_user->Email != $edit['mail']) ? $edit['mail'] : $grid_user->Email;
+  if (!empty($edit['mail'])) {
+    $grid_user->Email = empty($edit['mail']) ? $grid_user->Email : $edit['mail'];
+    $grid_user->Email = ($grid_user->Email != $edit['mail']) ? $edit['mail'] : $grid_user->Email;
+  }
 
   // check if password has changed
   if (!empty($edit['pass']) && md5($edit['pass']) != $account->pass) {
@@ -295,10 +293,6 @@ function d4os_ui_users_update_user(&$edit, &$account) {
 
   // save the grid user
   $d4os_users->set_uuid($account->uid, $grid_user->PrincipalID);
-  if (!variable_get('d4os_ui_users_save_email_in_grid', 1)) {
-    $grid_user->Email = '';
-  }
-
   $d4os_users->save_user($grid_user);
 }
 
@@ -312,7 +306,7 @@ function d4os_ui_users_login_authenticate_validate($form, &$form_state) {
   }
   // TODO : show a message to the users if they are not allowed to log in the grid
   $admin = user_load(1);
-  if ($form_state['values']['firstname'] == $admin->name) {
+  if ($form_state['values']['lastname'] == $admin->name) {
     $form_state['values']['name'] = $admin->name;
   }
   else {
@@ -321,6 +315,7 @@ function d4os_ui_users_login_authenticate_validate($form, &$form_state) {
 }
 
 function d4os_ui_users_can_register_on_grid($account) {
+  d4os_init(); // TODO : why this ? why drupal loads this function before asking hook_init ?
   // check the datastore
   $d4os_user = D4OS_IO::create('Users');
   $d4os_user->ping();
@@ -334,7 +329,7 @@ function d4os_ui_users_can_register_on_grid($account) {
   if ($account->uid == 1) return FALSE;
 
   // check if the account is already registered on the grid
-  $uuid = db_result(db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=%d", $account->uid));
+  $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $account->uid))->fetchField();
   if ($uuid !== FALSE) return FALSE;
 
   // else
@@ -383,7 +378,8 @@ function d4os_ui_users_grid_registration_form_validate($form, &$form_state) {
   $account = user_load(arg(1));
 
   // check the password
-  if (md5($form_state['values']['pass']) != $account->pass) {
+  require_once DRUPAL_ROOT . '/' . variable_get('password_inc', 'includes/password.inc');
+  if (!user_check_password($form_state['values']['pass'], $account)) {
     form_set_error('pass', t('Wrong password.'));
   }
 
@@ -400,13 +396,16 @@ function d4os_ui_users_grid_registration_form_submit($form, &$form_state) {
   // get names
   $names = explode(' ', $account->name);
 
+  // define the model_uuid
+  $model_uuid = UUID_ZERO;
+  if (isset($form_state['values']['model_uuid'])) {
+    $model_uuid = $form_state['values']['model_uuid'];
+  }
+
   // build the grid account
-  $grid_user = d4os_ui_users_generate_user($names[0], $names[1], $form_state['values']['pass'], $account->mail, UUID_ZERO, $form_state['values']['model_uuid']);
+  $grid_user = d4os_ui_users_generate_user($names[0], $names[1], $form_state['values']['pass'], $account->mail, UUID_ZERO, $model_uuid);
   $d4os_user = D4OS_IO::create('Users');
   $d4os_user->set_uuid($account->uid, $grid_user->PrincipalID);
-  if (!variable_get('d4os_ui_users_save_email_in_grid', 1)) {
-    $grid_user->Email = '';
-  }
   $d4os_user->save_user($grid_user);
 
   // assign the default grid user role
@@ -424,10 +423,10 @@ function d4os_ui_users_set_grid_user_role($uid) {
   if ($rid == 0) return;
 
   // remove assigned roles
-  db_query("DELETE FROM {users_roles} WHERE rid=%d AND uid=%d", array($rid, $uid));
+  db_query("DELETE FROM {users_roles} WHERE rid=:rid AND uid=:uid", array(':rid' => $rid, ':uid' => $uid));
 
   // assign the role
-  db_query("INSERT INTO {users_roles} (rid, uid) VALUES (%d, %d)", array($rid, $uid));
+  db_query("INSERT INTO {users_roles} (rid, uid) VALUES (:rid, :uid)", array(':rid' => $rid, ':uid' => $uid));
 }
 
 function d4os_ui_users_account_validate($form, &$form_state) {
@@ -446,8 +445,8 @@ function d4os_ui_users_account_validate($form, &$form_state) {
   }
 
   // get username and lastname
-  if (isset($values['_account']->name)) {
-    $names = explode(' ', $values['_account']->name);
+  if (isset($form_state['user']->name)) {
+    $names = explode(' ', $form_state['user']->name);
   }
   $firstname = isset($values['firstname']) ? $values['firstname'] : $names[0];
   $lastname = isset($values['lastname']) ? $values['lastname'] : $names[1];
@@ -455,7 +454,7 @@ function d4os_ui_users_account_validate($form, &$form_state) {
 
   // check if the lastname is the same one as admin account
   $admin = user_load(1);
-  if ($firstname == $admin->name) {
+  if ($lastname == $admin->name) {
     form_set_error('lastname', t('Please use another last name.'));
   }
 
@@ -487,7 +486,7 @@ function d4os_ui_users_account_validate($form, &$form_state) {
   $grid_user = $grid_user[0];
 
   switch ($values['form_id']){
-    case 'user_register':
+    case 'user_register_form':
       // check if user already exists when registering
       if (is_object($grid_user)) {
         form_set_error('firstname', t('This name already exists'));
@@ -496,7 +495,7 @@ function d4os_ui_users_account_validate($form, &$form_state) {
       break;
     case 'user_profile_form':
       // get the user uuid
-      $uuid = db_result(db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=%d", $values['_account']->uid));
+      $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $form_state['user']->uid))->fetchField();
       if ($uuid === FALSE) return;
       // check if the user already exists after changing username
       if (is_object($grid_user) && $grid_user->PrincipalID != $uuid) {
@@ -505,6 +504,45 @@ function d4os_ui_users_account_validate($form, &$form_state) {
       }
       break;
   }
+}
+
+function d4os_ui_users_search_info() {
+  return array(
+    'title' => t('Avatar by uuid'),
+    'path' => 'uuid'
+  );
+}
+
+function d4os_ui_users_search_access() {
+  //return user_access('search d4os ui users');
+  return TRUE;
+}
+
+function d4os_ui_users_search_execute($keys = NULL, $conditions = NULL) {
+  // TODO : not working
+  $find = array();
+
+  $keys = preg_replace('!\*+!', '%', $keys);
+  $query = db_select('users', 'u')
+          ->fields ('u',
+            array (
+              'name',
+              'uid',
+            )
+          );
+  $query->leftJoin('d4os_ui_users', 'du', 'du.uid=u.uid');
+  $query->condition('du.UUID', array(':uuid' => $keys))
+          ->extend('PagerDefault')
+          ->limit(15);
+
+  $results = $query->execute();
+  foreach ($results as $result) {
+    $find[] = array(
+      'title' => $result->name,
+      'link'  => url('user/'. $result->uid, array('absolute' => TRUE))
+    );
+  }
+  return $find;
 }
 
 function d4os_ui_users_search($op = 'search', $keys = NULL, $skip_access_check = FALSE) {
@@ -534,7 +572,6 @@ function d4os_ui_users_search($op = 'search', $keys = NULL, $skip_access_check =
 }
 
 function d4os_ui_users_avatars_models_select_form(&$form) {
-  global $base_url;
 // TODO : use caching
   // get the list of models
   $available_models = array();
@@ -555,6 +592,10 @@ function d4os_ui_users_avatars_models_select_form(&$form) {
     return;
   }
 
+  // get some vars
+  $image_width = variable_get('d4os_ui_users_models_image_width', '150');
+  $use_lightbox2 = variable_get('d4os_ui_users_models_image_use_lightbox2', 0);
+
   // build the form fieldset
   $form['models'] = array(
     '#type'         => 'fieldset',
@@ -562,59 +603,46 @@ function d4os_ui_users_avatars_models_select_form(&$form) {
     '#collapsible'  => TRUE,
     '#collapsed'    => FALSE,
     '#description'  => t('Please select an avatar to use. You will be able to change it later.'),
-    '#theme'        => 'd4os_ui_users_models_select_form',
+    //'#theme'        => 'd4os_ui_users_models_select_form',
+  );
+
+  $header = array (
+    'name' => t('Name'),
+    'picture' => t('Picture')
   );
 
   $options = array();
   $i = 1;
-  $image_width = variable_get('d4os_ui_users_models_image_width', '150');
-  $use_lightbox2 = variable_get('d4os_ui_users_models_image_use_lightbox2', 0);
-  foreach ($available_models as $model) {
-    // build the form
-    $form['models'][$model->uuid]['name'] = array(
-      '#value' => $model->name,
-    );
+  foreach($available_models as $available_model) {
+    // get the picture
     $picture = theme_image(
-      $model->picture_url,
-      t('No picture available'),
-      t("!user's picture", array('!user'=>$model->name)),
-      array("width" => $image_width. 'px'),
-      FALSE
+      array(
+        'path' => $model->picture_url,
+        'width' => $image_width. 'px',
+        'alt' => t('No picture available'),
+        'title' => t("!user's picture", array('!user'=>$model->name)),
+        'attributes' => array()
+      )
     );
     if ($use_lightbox2 == 1) {
       $picture = l($picture,
                    $model->picture_url,
                    array('html' => TRUE, 'attributes'=> array('rel' => 'lightbox[models]')));
     }
-    $form['models'][$model->uuid]['picture'] = array(
-      '#value' => $picture,
+
+    // fill the options
+    $options[$available_model->uuid] = array (
+      'name' => $available_model->name,
+      'picture' => $picture,
     );
-    $options[$model->uuid] = '';
     ++$i;
   }
-  $form['models']['model_uuid'] = array(
-    '#type'     => 'radios',
-    '#title'    => t('Models'),
-    '#options'  => $options,
+  $form['models']['model_uuid'] = array (
+    '#type' => 'tableselect',
+    '#header' => $header,
+    '#options' => $options,
+    '#multiple' => FALSE,
   );
-}
-
-function theme_d4os_ui_users_models_select_form($form) {
-  $rows = array();
-  foreach (element_children($form) as $key) {
-    $row = array();
-    if (isset($form[$key]['picture']) && is_array($form[$key]['picture'])) {
-      $row[] = drupal_render($form['model_uuid'][$key]);
-      $row[] = drupal_render($form[$key]['name']);
-      $row[] = drupal_render($form[$key]['picture']);
-    }
-    $rows[] = $row;
-  }
-
-  $header = array(t('Selected'), t('Name'), t('Picture'));
-
-  $output = theme('table', $header, $rows);
-  return $output;
 }
 
 function d4os_ui_users_set_region_owner_role() {
@@ -631,15 +659,15 @@ function d4os_ui_users_set_region_owner_role() {
   if ($rid == 0) return;
 
   // remove owner roles
-  db_query('DELETE FROM {users_roles} WHERE rid=%d', $rid);
+  db_query('DELETE FROM {users_roles} WHERE rid=:rid', array(':rid' => $rid));
 
   // for each owner, assign the role
   foreach ($owners as $owner) {
     // get the owner uid
-    $uid = db_result(db_query("SELECT uid FROM {d4os_ui_users} WHERE UUID='%s'", $owner->owner_uuid));
+    $uid = db_query("SELECT uid FROM {d4os_ui_users} WHERE UUID=:uuid", array(':uuid' => $owner->owner_uuid))->fetchField();
     // assign the role
     if (is_numeric($uid)) {
-      db_query("INSERT INTO {users_roles} (rid, uid) VALUES (%d, %d)", array($rid, $uid));
+      db_query("INSERT INTO {users_roles} (rid, uid) VALUES (:rid, :uid)", array(':rid' => $rid, ':uid' => $uid));
     }
   }
 }
@@ -647,12 +675,19 @@ function d4os_ui_users_set_region_owner_role() {
 function d4os_ui_users_user_autocomplete($string = '') {
   $matches = array();
   if ($string) {
-    $query = "SELECT u.name AS name FROM {users} u LEFT JOIN {d4os_ui_users} du ON du.uid=u.uid WHERE (du.uid IS NOT NULL ) AND (u.name LIKE LOWER('%s%%'))";
-    $result = db_query_range($query, $string, 0, 10);
-    while ($user = db_fetch_object($result)) {
+
+    $query = db_select('users', 'u');
+    $query->fields ('u', array ('name'));
+    $query->leftJoin('d4os_ui_users', 'du', 'du.uid=u.uid');
+    $query->isNotNull('du.uid');
+    $query->condition('u.name', db_like($string) . '%', 'LIKE');
+    $query->range(0, 10);
+    $result = $query->execute();
+
+    foreach ($result as $user) {
       $matches[$user->name] = check_plain($user->name);
     }
   }
 
-  drupal_json($matches);
+  drupal_json_output($matches);
 }

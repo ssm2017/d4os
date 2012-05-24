@@ -14,18 +14,13 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
 	public $response;
 	public $values;
 
-	function __construct() {
-		$this->values = array(
-
-		);
-	}
-
 	function ping() {
 		$this->response->success = d4os_io_db_070_mysql_is_alive('os_robust', 'Robust');
 		return;
 	}
 
 	function load_user($params) {
+
     $this->response->success = false;
     // Dynamically compose a SQL query:
     $queries = array();
@@ -35,47 +30,43 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
         $value = rawurldecode($value);
         switch ($param) {
           case 'PrincipalID':
-            $queries[]= "ua.PrincipalID = '%s'";
-            $values[] = $value;
+            $queries[]= "ua.PrincipalID = :PrincipalID";
+            $values[':PrincipalID'] = $value;
             break;
           case 'ScopeID':
-            $queries[]= "ua.ScopeID = '%s'";
-            $values[] = $value;
+            $queries[]= "ua.ScopeID = :ScopeID";
+            $values[':ScopeID'] = $value;
             break;
           case 'FirstName':
-            $queries[]= "ua.FirstName = '%s'";
-            $values[] = $value;
+            $queries[]= "ua.FirstName = :FirstName";
+            $values[':FirstName'] = $value;
             break;
           case 'LastName':
-            $queries[]= "ua.LastName = '%s'";
-            $values[] = $value;
+            $queries[]= "ua.LastName = :LastName";
+            $values[':LastName'] = $value;
             break;
           case 'Email':
-            $queries[]= "ua.Email = '%s'";
-            $values[] = $value;
+            $queries[]= "ua.Email = :Email";
+            $values[':Email'] = $value;
             break;
           case 'ServiceURLs':
-            $queries[]= "ua.ServiceURLs = '%s'";
-            $values[] = $value;
+            $queries[]= "ua.ServiceURLs = :ServiceURLs";
+            $values[':ServiceURLs'] = $value;
             break;
           case 'Created':
-            $queries[]= "ua.Created = %d";
-            $values[] = $value;
+            $queries[]= "ua.Created = :Created";
+            $values[':Created'] = $value;
             break;
           case 'UserLevel':
-            $queries[]= "ua.UserLevel = %d";
-            $values[] = $value;
-            break;
-          case 'UserTitle':
-            $queries[]= "ua.UserTitle = %d";
-            $values[] = $value;
+            $queries[]= "ua.UserLevel = :UserLevel";
+            $values[':UserLevel'] = $value;
             break;
           case 'name':
             $names = explode(' ', $value);
-            $queries[]= "ua.FirstName = '%s'";
-            $values[] = $names[0];
-            $queries[]= "ua.LastName = '%s'";
-            $values[] = $names[1];
+            $queries[]= "ua.FirstName = :FirstName";
+            $values[':FirstName'] = $names[0];
+            $queries[]= "ua.LastName = :LastName";
+            $values[':LastName'] = $names[1];
             break;
         }
       }
@@ -117,9 +108,9 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
             . " WHERE ". implode(' AND ', $queries);
 
     d4os_io_db_070_set_active('os_robust');
-    $result = db_query($query, $values);
-    while ($user = db_fetch_object($result)) {
-      $users[] = $user;
+    $results = db_query($query, $values);
+    foreach ($results as $result) {
+      $users[] = $result;
     }
     d4os_io_db_070_set_active('default');
 
@@ -135,7 +126,7 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
     }
     // check if the user already exists
     d4os_io_db_070_set_active('os_robust');
-    $user_exists = db_fetch_object(db_query("SELECT * FROM {UserAccounts} WHERE PrincipalID='%s'", $grid_user->PrincipalID));
+    $user_exists = db_query("SELECT * FROM {UserAccounts} WHERE PrincipalID=:PrincipalID", array(':PrincipalID' => $grid_user->PrincipalID))->fetchObject();
 		d4os_io_db_070_set_active('default');
 
     // check if another user with the same name exists
@@ -148,7 +139,6 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
 
     if ($user_exists) {
 			// update the UserAccounts table
-      $queries = '';
       $values = array();
       foreach ($grid_user as $key => $value) {
         switch ($key) {
@@ -157,23 +147,19 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
           case 'FirstName':
           case 'LastName':
           case 'Email':
-          case 'UserTitle':
-            $queries .= "$key = '%s', ";
-            $values[] = $value;
-            break;
           case 'Created':
           case 'UserLevel':
-            $queries .= "$key = %d, ";
-            $values[] = $value;
+            $values[$key] = $value;
             break;
         }
       }
-      if (!empty($queries)) {
-        // remove the last ", "
-        $queries = substr($queries, 0, -2);
+      if (count($values)) {
         // make the query
         d4os_io_db_070_set_active('os_robust');
-        $success = db_query("UPDATE {UserAccounts} SET $queries WHERE `PrincipalID` = '%s'", array_merge($values, array($grid_user->PrincipalID)));
+        $success = db_update('UserAccounts')
+          ->fields($values)
+          ->condition('PrincipalID', $grid_user->PrincipalID)
+          ->execute();
         d4os_io_db_070_set_active('default');
         if (!$success) {
           // The query failed - better to abort the save than risk further data loss.
@@ -181,7 +167,6 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
         }
      }
       // update the auth table
-      $queries = '';
       $values = array();
       foreach ($grid_user as $key => $value) {
         switch ($key) {
@@ -189,17 +174,19 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
           case 'passwordHash':
           case 'webLoginKey':
           case 'accountType':
-            $queries .= "$key = '%s', ";
-            $values[] = $value;
+            $values[$key] = $value;
             break;
         }
       }
-      if (!empty($queries)) {
+      if (count($values)) {
         // remove the last ", "
         $queries = substr($queries, 0, -2);
         // make the query
         d4os_io_db_070_set_active('os_robust');
-        $success = db_query("UPDATE {auth} SET $queries WHERE `UUID` = '%s'", array_merge($values, array($grid_user->PrincipalID)));
+        $success = db_update('auth')
+          ->fields($values)
+          ->condition('UUID', $grid_user->PrincipalID)
+          ->execute();
         d4os_io_db_070_set_active('default');
         if (!$success) {
           // The query failed - better to abort the save than risk further data loss.
@@ -207,7 +194,6 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
         }
       }
 			// update the GridUser table
-      $queries = '';
       $values = array();
       foreach ($grid_user as $key => $value) {
         switch ($key) {
@@ -217,35 +203,32 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
           case 'LastRegionID':
           case 'LastPosition':
           case 'LastLookAt':
-            $queries .= "$key = '%s', ";
-            $values[] = $value;
-            break;
           case 'Login':
-            $queries .= "$key = %d, ";
-            $values[] = $value;
+            $values[$key] = $value;
             break;
         }
       }
-      if (!empty($queries)) {
+      if (count($values)) {
         // remove the last ", "
         $queries = substr($queries, 0, -2);
         // make the query
         d4os_io_db_070_set_active('os_robust');
-        $success = db_query("UPDATE {GridUser} SET $queries WHERE `UserID` = '%s'", array_merge($values, array($grid_user->PrincipalID)));
+        $success = db_update('GridUser')
+          ->fields($values)
+          ->condition('UserID', $grid_user->PrincipalID)
+          ->execute();
         d4os_io_db_070_set_active('default');
-        if (!$success) {
+        /*if (!$success) {
           // The query failed - better to abort the save than risk further data loss.
           return FALSE;
-        }
+        }*/
       }
 		}
 		else {
       // user does not exist so create a new one
 
 			// insert in the UserAccounts table
-      $queries  = array();
       $values   = array();
-      $s        = array();
       // add blank value to "ScopeID"
       $grid_user->ScopeID = UUID_ZERO;
       $grid_user->ServiceURLs = "HomeURI= GatekeeperURI= InventoryServerURI= AssetServerURI=";
@@ -258,59 +241,51 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
           case 'LastName':
           case 'Email':
           case 'ServiceURLs':
-          case 'UserTitle':
-            $queries[] = $key;
-            $values[] = $value;
-            $s[] = "'%s'";
-            break;
           case 'Created':
           case 'UserLevel':
-            $queries[] = $key;
-            $values[] = $value;
-            $s[] = "%d";
+            $values[$key] = $value;
             break;
         }
       }
 
       d4os_io_db_070_set_active('os_robust');
-      $success = db_query('INSERT INTO {UserAccounts} ('. implode(', ', $queries) .') VALUES ('. implode(', ', $s) .')', $values);
+      $success = db_insert('UserAccounts')
+          ->fields($values)
+          ->execute();
       d4os_io_db_070_set_active('default');
-      if (!$success) {
+
+      /*if (!$success) {
         // On a failed INSERT some other existing user's uid may be returned.
         // We must abort to avoid overwriting their account.
         return FALSE;
-      }
+      }*/
 
     // insert in the auth table
-      $queries  = array('UUID');
-      $values   = array($grid_user->PrincipalID);
-      $s        = array("'%s'");
+      $values   = array('UUID' => $grid_user->PrincipalID);
       foreach ($grid_user as $key => $value) {
         switch ($key) {
           case 'passwordSalt':
           case 'passwordHash':
           case 'webLoginKey':
           case 'accountType':
-            $queries[] = $key;
-            $values[] = $value;
-            $s[] = "'%s'";
+            $values[$key] = $value;
             break;
         }
       }
 
       d4os_io_db_070_set_active('os_robust');
-      $success = db_query('INSERT INTO {auth} ('. implode(', ', $queries) .') VALUES ('. implode(', ', $s) .')', $values);
+      $success = db_insert('auth')
+          ->fields($values)
+          ->execute();
       d4os_io_db_070_set_active('default');
-      if (!$success) {
+      /*if (!$success) {
         // On a failed INSERT some other existing user's uid may be returned.
         // We must abort to avoid overwriting their account.
         return FALSE;
-      }
+      }*/
 
     // insert in the GridUser table
-      $queries  = array('UserID');
-      $values   = array($grid_user->PrincipalID);
-      $s        = array("'%s'");
+      $values   = array('UserID' => $grid_user->PrincipalID);
       foreach ($grid_user as $key => $value) {
         switch ($key) {
           case 'HomeRegionID':
@@ -319,26 +294,22 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
           case 'LastRegionID':
           case 'LastPosition':
           case 'LastLookAt':
-            $queries[] = $key;
-            $values[] = $value;
-            $s[] = "'%s'";
-            break;
           case 'Login':
-            $queries[] = $key;
-            $values[] = $value;
-            $s[] = "%d";
+            $values[$key] = $value;
             break;
         }
       }
 
       d4os_io_db_070_set_active('os_robust');
-      $success = db_query('INSERT INTO {GridUser} ('. implode(', ', $queries) .') VALUES ('. implode(', ', $s) .')', $values);
+      $success = db_insert('GridUser')
+          ->fields($values)
+          ->execute();
       d4os_io_db_070_set_active('default');
-      if (!$success) {
+      /*if (!$success) {
         // On a failed INSERT some other existing user's uid may be returned.
         // We must abort to avoid overwriting their account.
         return FALSE;
-      }
+      }*/
 
       // create the inventory
       $d4os_inventory = D4OS_IO::create('Inventory');
@@ -359,27 +330,27 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
 	function delete_user($uuid) {
     // delete from UserAccounts
     d4os_io_db_070_set_active('os_robust');
-    db_query("DELETE FROM {UserAccounts} WHERE PrincipalID='%s'", $uuid);
+    db_delete('UserAccounts')->condition('PrincipalID', $uuid)->execute();
     d4os_io_db_070_set_active('default');
 		// delete from auth
     d4os_io_db_070_set_active('os_robust');
-    db_query("DELETE FROM {auth} WHERE UUID='%s'", $uuid);
+    db_delete('auth')->condition('UUID', $uuid)->execute();
     d4os_io_db_070_set_active('default');
 		// delete from GridUser
     d4os_io_db_070_set_active('os_robust');
-    db_query("DELETE FROM {GridUser} WHERE UserID='%s'", $uuid);
+    db_delete('GridUser')->condition('UserID', $uuid)->execute();
     d4os_io_db_070_set_active('default');
     // delete from Presence
     d4os_io_db_070_set_active('os_robust');
-    db_query("DELETE FROM {Presence} WHERE UserID='%s'", $uuid);
+    db_delete('Presence')->condition('UserID', $uuid)->execute();
     d4os_io_db_070_set_active('default');
 		// delete from tokens
     d4os_io_db_070_set_active('os_robust');
-    db_query("DELETE FROM {tokens} WHERE UUID='%s'", $uuid);
+    db_delete('tokens')->condition('UUID', $uuid)->execute();
     d4os_io_db_070_set_active('default');
     // delete from friends
     d4os_io_db_070_set_active('os_robust');
-    db_query("DELETE FROM {Friends} WHERE PrincipalID='%s' OR Friend='%s'", $uuid, $uuid);
+    db_delete('Friends')->condition('PrincipalID', $uuid)->execute();
     d4os_io_db_070_set_active('default');
     drupal_set_message(t('User deleted from grid.'));
 
@@ -413,7 +384,7 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
     // get the quantity of users in Presence table
     $query = "SELECT COUNT(p.UserID)". $main_query;
     d4os_io_db_070_set_active('os_robust');
-    $users->count_presence = db_result(db_query($query));
+    $users->count_presence = db_query($query)->fetchField();
     d4os_io_db_070_set_active('default');
 
     // get the quantity of "online" users in the GridUser table
@@ -427,13 +398,16 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
            . ", gu.Login"
            . ", gu.Logout"
            . ", gu.LastPosition". $main_query;
-    $query .= " ORDER BY %s %s";
-    $query .= " LIMIT %d,%d";
+    $query .= " ORDER BY :order_by :order_way";
+    $options = array(
+      ':order_by' => $values['order_by'],
+      ':order_way' => $values['order_way']
+    );
 
     d4os_io_db_070_set_active('os_robust');
-    $result = db_query($query, array($values['order_by'], $values['order_way'], $values['offset'], $values['limit']));
-    while ($user = db_fetch_object($result)) {
-      $users->users[] = $user;
+    $results = db_query_range($query, $values['offset'], $values['limit'], $options)->fetchAll();
+    foreach ($results as $result) {
+      $users->users[] = $result;
     }
     d4os_io_db_070_set_active('default');
 
@@ -458,7 +432,7 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
     }
 
     d4os_io_db_070_set_active('os_robust');
-    $result = db_result(db_query($query));
+    $result = db_query($query)->fetchField();
     d4os_io_db_070_set_active('default');
 
     return $result;
@@ -466,7 +440,7 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
 
   function get_users_count() {
     d4os_io_db_070_set_active('os_robust');
-    $count = db_result(db_query("SELECT COUNT(PrincipalID) FROM {UserAccounts}"));
+    $count = db_query("SELECT COUNT(PrincipalID) FROM {UserAccounts}")->fetchField();
     d4os_io_db_070_set_active('default');
     return $count;
   }
@@ -478,11 +452,11 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
   */
   function set_uuid($uid, $uuid) {
     // check the link between drupal and the grid
-    $uid_exists = db_result(db_query("SELECT count(uid) FROM {d4os_ui_users} WHERE UUID = '%s' OR uid = %d", array($uuid, $uid)));
+    $uid_exists = db_query("SELECT uid FROM {d4os_ui_users} WHERE UUID=:uuid OR uid=:uid", array(':uuid' => $uuid, ':uid' => $uid))->fetchField();
     if ($uid_exists) {
-      db_query("DELETE FROM {d4os_ui_users} WHERE UUID = '%s' OR uid = %d", array($uuid, $uid));
+      db_query("DELETE FROM {d4os_ui_users} WHERE UUID = :uuid OR uid = :uid", array(':uuid' => $uuid, ':uid' => $uid));
     }
-    db_query("INSERT INTO {d4os_ui_users} (UUID, uid) VALUES ('%s', %d)", array($uuid, $uid));
+    db_query("INSERT INTO {d4os_ui_users} (UUID, uid) VALUES (:uuid, :uid)", array(':uuid' => $uuid, ':uid' => $uid));
   }
 
 }

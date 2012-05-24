@@ -22,38 +22,34 @@ function d4os_io_groups_help($path, $arg) {
 
 function d4os_io_groups_menu() {
 
-  $items['admin/settings/d4os/io/groups'] = array(
+  $items['admin/config/d4os/io/groups'] = array(
     'title'             => 'Groups',
-    'description'       => 'd4os ui groups settings',
+    'description'       => 'd4os io groups settings',
     'page callback'     => 'drupal_get_form',
     'page arguments'    => array('d4os_io_groups_admin'),
-    'access arguments'  => array('admin d4os ui groups'),
-    'type'              => MENU_LOCAL_TASK,
+    'access arguments'  => array('admin d4os io groups'),
+    'type'              => MENU_NORMAL_ITEM,
     'file'              => 'd4os_io_groups.admin.inc'
    );
   return $items;
 }
 
-function d4os_io_groups_perm() {
+function d4os_io_groups_permission() {
   return array(
-    'admin d4os ui groups',
+    'admin d4os io groups' => array(
+      'title' => t('Admin d4os io groups'),
+      'description' => t('Admin d4os io groups.'),
+    ),
   );
 }
 
-function d4os_io_groups_user($op, &$edit, &$account, $category = NULL) {
-  if ($op == 'delete') {
-    d4os_io_groups_delete_user($account->uid);
-  }
-}
-
-function d4os_io_groups_delete_user($uid) {
+function d4os_io_groups_user_delete($edit, $account, $method) {
   // get the user uuid
-  $uuid = db_result(db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=%d", $uid));
-  if ($uuid === FALSE) {
-    return;
+  $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $edit->uid))->fetchField();
+  if ($uuid) {
+    $d4os_groups = D4OS_IO::create('Groups');
+    $d4os_groups->delete_user($uuid);
   }
-  $d4os_groups = D4OS_IO::create('Groups');
-  $d4os_groups->delete_user($uuid);
 }
 
 function d4os_io_groups_form_alter(&$form, $form_state, $form_id) {
@@ -80,9 +76,9 @@ function d4os_io_groups_form_alter(&$form, $form_state, $form_id) {
 function d4os_io_groups_grid_registration_fom_submit($form, &$form_state) {
   if ($form_state['values']['add_to_default_group'] == 1) {
     // check if the user is registered
-    $uuid = db_result(db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=%d", arg(1)));
+    $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => arg(1)))->fetchField();
     // assign the role
-    if ($uuid !== FALSE) {
+    if ($uuid) {
       $default_group = variable_get('d4os_io_groups_default_group',UUID_ZERO);
       $d4os_groups = D4OS_IO::create('Groups');
       $d4os_groups->add_user_to_group($uuid, $default_group);

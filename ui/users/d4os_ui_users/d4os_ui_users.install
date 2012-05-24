@@ -15,14 +15,21 @@
  * Implementation of hook_install()
  */
 function d4os_ui_users_install() {
-  drupal_install_schema('d4os_ui_users');
+  $weight = db_select('system', 's')
+              ->fields('s', array('weight'))
+              ->condition('name', 'openid', '=')
+              ->execute()
+              ->fetchField();
+  db_update('system')
+    ->fields(array('weight' => $weight +1))
+    ->condition('name', 'd4os_ui_users', '=')
+    ->execute();
 }
 
 /**
 * Implementation of hook_uninstall().
 */
 function d4os_ui_users_uninstall() {
-  drupal_uninstall_schema('d4os_ui_users');
   // Remove variables.
   db_query("DELETE FROM {variable} WHERE name LIKE 'd4os_ui_users%%'");
 }

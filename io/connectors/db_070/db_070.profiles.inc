@@ -25,7 +25,7 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
 
 	function load_profile($params) {
     d4os_io_db_070_set_active('os_profile');
-    $profile = db_fetch_object(db_query("SELECT * FROM {userprofile} WHERE useruuid = '%s'", $params['useruuid']));
+    $profile = db_query("SELECT * FROM {userprofile} WHERE useruuid = :useruuid", array(':useruuid' => $params['useruuid']))->fetch();
     d4os_io_db_070_set_active('default');
     return $profile;
 	}
@@ -38,117 +38,59 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
     // check if the profile already exists
     $profile_exists = FALSE;
     d4os_io_db_070_set_active('os_profile');
-    $profile_exists = db_result(db_query("SELECT COUNT(useruuid) FROM {userprofile} WHERE useruuid='%s'", $user_profile->useruuid));
+    $profile_exists = db_query("SELECT COUNT(useruuid) FROM {userprofile} WHERE useruuid=:useruuid", array(':useruuid' => $user_profile->useruuid))->fetchField();
     d4os_io_db_070_set_active('default');
 
     // update or insert ?
     if ($profile_exists) {
-      $queries = '';
       $values = array();
       foreach ($user_profile as $key => $value) {
         switch ($key) {
           case 'profileSkillsMask':
-            $queries .= "profileSkillsMask = '%s', ";
-            $values[] = $value;
-            break;
           case 'profileWantToMask':
-            $queries .= "profileWantToMask = '%s', ";
-            $values[] = $value;
-            break;
           case 'profileAboutText':
-            $queries .= "profileAboutText = '%s', ";
-            $values[] = $value;
-            break;
           case 'profileFirstText':
-            $queries .= "profileFirstText = '%s', ";
-            $values[] = $value;
-            break;
           case 'profileImage':
-            $queries .= "profileImage = '%s', ";
-            $values[] = $value;
-            break;
           case 'profileFirstImage':
-            $queries .= "profileFirstImage = '%s', ";
-            $values[] = $value;
-            break;
           case 'profileURL':
-            $queries .= "profileURL = '%s', ";
-            $values[] = $value;
-            break;
           case 'profilePartner':
-            $queries .= "profilePartner = '%s', ";
-            $values[] = $value;
+            $values[$key] = $value;
             break;
         }
       }
-      if (!empty($queries)) {
-        // remove the last ", "
-        $queries = substr($queries, 0, -2);
-
+      if (count($values)) {
         d4os_io_db_070_set_active('os_profile');
-        db_query("UPDATE {userprofile} SET $queries WHERE `useruuid` = '%s'", array_merge($values, array($user_profile->useruuid)));
+        db_update('userprofile')
+          ->fields($values)
+          ->condition('useruuid', $user_profile->useruuid)
+          ->execute();
         d4os_io_db_070_set_active('default');
         drupal_set_message(t('User profile updated'));
       }
     }
     else {
-      $queries  = array();
       $values   = array();
-      $s        = array();
-
       // parse values
       foreach ($user_profile as $key => $value) {
         switch ($key) {
           case 'useruuid':
-            $queries[] = "useruuid";
-            $values[] = $value;
-            $s[] = "'%s'";
-            break;
           case 'profileSkillsMask':
-            $queries[] = "profileSkillsMask";
-            $values[] = $value;
-            $s[] = "'%s'";
-            break;
           case 'profileWantToMask':
-            $queries[] = "profileWantToMask";
-            $values[] = $value;
-            $s[] = "'%s'";
-            break;
           case 'profileAboutText':
-            $queries[] = "profileAboutText";
-            $values[] = $value;
-            $s[] = "'%s'";
-            break;
           case 'profileFirstText':
-            $queries[] = "profileFirstText";
-            $values[] = $value;
-            $s[] = "'%s'";
-            break;
           case 'profileImage':
-            $queries[] = "profileImage";
-            $values[] = $value;
-            $s[] = "'%s'";
-            break;
           case 'profileFirstImage':
-            $queries[] = "profileFirstImage";
-            $values[] = $value;
-            $s[] = "'%s'";
-            break;
           case 'profileURL':
-            $queries[] = "profileURL";
-            $values[] = $value;
-            $s[] = "'%s'";
-            break;
           case 'profilePartner':
-            $queries[] = "profilePartner";
-            $values[] = $value;
-            $s[] = "'%s'";
+            $values[$key] = $value;
             break;
         }
       }
-      if (!empty($queries)) {
+      if (count($values)) {
         d4os_io_db_070_set_active('os_profile');
-        db_query('INSERT INTO {userprofile} ('. implode(', ', $queries) .') VALUES ('. implode(', ', $s) .')', $values);
+        db_insert('userprofile')
+          ->fields($values)
+          ->execute();
         d4os_io_db_070_set_active('default');
         drupal_set_message(t('User profile added'));
       }
@@ -158,17 +100,17 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
   function delete_profile($uuid) {
     d4os_io_db_070_set_active('os_profile');
     // delete classifieds
-    db_query("DELETE FROM {classifieds} WHERE creatoruuid = '%s'", $uuid);
+    db_delete('classifieds')->condition('creatoruuid', $uuid)->execute();
     // delete usernotes
-    db_query("DELETE FROM {usernotes} WHERE useruuid = '%s' OR targetuuid = '%s'", $uuid, $uuid);
+    db_delete('usernotes')->condition('useruuid', $uuid)->execute();
     // delete userpicks
-    db_query("DELETE FROM {userpicks} WHERE creatoruuid = '%s'", $uuid);
+    db_delete('userpicks')->condition('creatoruuid', $uuid)->execute();
     // delete userprofile
-    db_query("DELETE FROM {userprofile} WHERE useruuid = '%s'", $uuid);
+    db_delete('userprofile')->condition('useruuid', $uuid)->execute();
     // delete partner
-    db_query("UPDATE {userprofile} SET profilePartner= '' WHERE profilePartner = '%s'", $uuid);
+    db_delete('userprofile')->condition('profilePartner', $uuid)->execute();
     // delete settings
-    db_query("DELETE FROM {usersettings} WHERE useruuid = '%s'", $uuid);
+    db_delete('usersettings')->condition('useruuid', $uuid)->execute();
     d4os_io_db_070_set_active('default');
     drupal_set_message(t('Classifieds deleted.'));
     drupal_set_message(t('User notes deleted.'));
@@ -186,12 +128,12 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
     $data = array();
 
     d4os_io_db_070_set_active('os_profile');
-    $result = db_query("SELECT * FROM {classifieds} WHERE creatoruuid = '%s'", array($uuid));
+    $results = db_query("SELECT * FROM {classifieds} WHERE creatoruuid = :creatoruuid", array(':creatoruuid' => $uuid));
 
-    while (($row = db_fetch_array($result))) {
+    foreach ($results as $result) {
       $data[] = array(
-        "classifiedid"  => $row["classifieduuid"],
-        "name"          => $row["name"]
+        "classifiedid"  => $result->classifieduuid,
+        "name"          => $result->name
       );
     }
     d4os_io_db_070_set_active('default');
@@ -220,7 +162,7 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
 
     // Check if we already have this one in the database
     d4os_io_db_070_set_active('os_profile');
-    $exists = db_result(db_query("SELECT count(*) FROM {classifieds} WHERE classifieduuid = '%s'", array($classifieduuid)));
+    $exists = db_query("SELECT count(*) FROM {classifieds} WHERE classifieduuid = :classifieduuid", array(':classifieduuid' => $classifieduuid))->fetchField();
     d4os_io_db_070_set_active('default');
 
     // Doing some late checking
@@ -232,7 +174,7 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
     }
 
     if($parceluuid == "") {
-      $parceluuid = "00000000-0000-0000-0000-0000000000000";
+      $parceluuid = UUID_ZERO;
     }
 
     if($description == "") {
@@ -250,66 +192,39 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
 
     // fill the values
     $values = array(
-      $creator,         // 1
-      $creationdate,    // 2
-      $expirationdate,  // 3
-      $category,        // 4
-      $name,            // 5
-      $description,     // 6
-      $parceluuid,      // 7
-      $parentestate,    // 8
-      $snapshotuuid,    // 9
-      $simname,         // 10
-      $globalpos,       // 11
-      $parcelname,      // 12
-      $classifiedflag,  // 13
-      $priceforlist,    // 14
-      $classifieduuid   // 15
+      'creatoruuid'     => $creator,         // 1
+      'creationdate'    => $creationdate,    // 2
+      'expirationdate'  => $expirationdate,  // 3
+      'category'        => $category,        // 4
+      'name'            => $name,            // 5
+      'description'     => $description,     // 6
+      'parceluuid'      => $parceluuid,      // 7
+      'parentestate'    => $parentestate,    // 8
+      'snapshotuuid'    => $snapshotuuid,    // 9
+      'simname'         => $simname,         // 10
+      'posglobal'       => $globalpos,       // 11
+      'parcelname'      => $parcelname,      // 12
+      'classifiedflags' => $classifiedflag,  // 13
+      'priceforlisting' => $priceforlist,    // 14
+      'classifieduuid'  => $classifieduuid   // 15
     );
 
     if (!$exists) {
-
-      $query = "INSERT INTO {classifieds} ("
-                  . "creatoruuid, creationdate, expirationdate, category, name, description, parceluuid, parentestate, snapshotuuid, simname, posglobal, parcelname, classifiedflags, priceforlisting, classifieduuid"
-                  . ") VALUES ("
-                  . "'%s',"  // 1 creatoruuid
-                  . "%d,"    // 2 creationdate
-                  . "%d,"    // 3 expirationdate
-                  . "'%s',"  // 4 category
-                  . "'%s',"  // 5 name
-                  . "'%s',"  // 6 description
-                  . "'%s',"  // 7 parceluuid
-                  . "%d,"    // 8 parentestate
-                  . "'%s',"  // 9 snapshotuuid
-                  . "'%s',"  // 10 simname
-                  . "'%s',"  // 11 posglobal
-                  . "'%s',"  // 12 parcelname
-                  . "%d,"    // 13 classifiedflags
-                  . "%d,"    // 14 priceforlisting
-                  . "'%s'"   // 15 classifieduuid
-                  . ")";
+      d4os_io_db_070_set_active('os_profile');
+      db_insert('classifieds')
+        ->fields($values)
+        ->execute();
+      d4os_io_db_070_set_active('default');
     }
     else {
-      $query = "UPDATE {classifieds} SET "
-                  . "creatoruuid = '%s',"     // 1
-                  . "creationdate = %d,"      // 2
-                  . "expirationdate = %d,"    // 3
-                  . "category = '%s',"        // 4
-                  . "name = '%s',"            // 5
-                  . "description = '%s',"     // 6
-                  . "parceluuid = '%s',"      // 7
-                  . "parentestate = %d,"      // 8
-                  . "snapshotuuid = '%s',"    // 9
-                  . "simname = '%s',"         // 10
-                  . "posglobal = '%s',"       // 11
-                  . "parcelname = '%s',"      // 12
-                  . "classifiedflags = %d,"   // 13
-                  . "priceforlisting = %d"    // 14
-                  . " WHERE classifieduuid = '%s'";
+      unset($values['classifieduuid']);
+      d4os_io_db_070_set_active('os_profile');
+      db_update('classifieds')
+        ->fields($values)
+        ->condition('classifieduuid', $classifieduuid)
+        ->execute();
+      d4os_io_db_070_set_active('default');
     }
-    d4os_io_db_070_set_active('os_profile');
-    db_query($query, $values);
-    d4os_io_db_070_set_active('default');
 
     return array(
       'success'       => TRUE,
@@ -321,7 +236,7 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
     $classifieduuid = $params['classifiedID'];
 
     d4os_io_db_070_set_active('os_profile');
-    db_query("DELETE FROM {classifieds} WHERE classifieduuid = '%s'", array($classifieduuid));
+    db_query("DELETE FROM {classifieds} WHERE classifieduuid = :classifieduuid", array(':classifieduuid' => $classifieduuid));
     d4os_io_db_070_set_active('default');
 
     return array(
@@ -336,12 +251,12 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
     $data = array();
 
     d4os_io_db_070_set_active('os_profile');
-    $result = db_query("SELECT * FROM {userpicks} WHERE creatoruuid = '%s'", array($uuid));
+    $results = db_query("SELECT * FROM {userpicks} WHERE creatoruuid = :creatoruuid", array(':creatoruuid' => $uuid))->fetchAll();
 
-    while (($row = db_fetch_array($result))) {
+    foreach ($results as $result) {
       $data[] = array(
-        "pickid"  => $row["pickuuid"],
-        "name"    => $row["name"]
+        "pickid"  => $result->pickuuid,
+        "name"    => $result->name
       );
     }
     d4os_io_db_070_set_active('default');
@@ -354,18 +269,15 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
   }
 
   function pickinforequest($params) {
-    $uuid = $params['useruuid'];
-    $pick = $params['pick_id'];
     $data = array();
 
-    $values = array($uuid, $pick);
     d4os_io_db_070_set_active('os_profile');
-    $result = db_query("SELECT * FROM {userpicks} WHERE creatoruuid = '%s' AND pickuuid = '%s'", $values);
-    while (($row = db_fetch_array($result))) {
-      if ($row["description"] == "") {
-        $row["description"] = "No description given";
+    $results = db_query("SELECT * FROM {userpicks} WHERE creatoruuid = :creatoruuid AND pickuuid = :pickuuid", array(':creatoruuid' => $params['useruuid'], ':pickuuid' => $params['pick_id']))->fetchAssoc();
+    foreach ($results as $result) {
+      if ($result['description'] == "") {
+        $result["description"] = "No description given";
       }
-      $data[] = $row;
+      $data[] = $result;
     }
     d4os_io_db_070_set_active('default');
 
@@ -393,7 +305,7 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
 
     // Check if we already have this one in the database
     d4os_io_db_070_set_active('os_profile');
-    $exists = db_result(db_query("SELECT COUNT(*) FROM {userpicks} WHERE pickuuid = '%s'", array($pickuuid)));
+    $exists = db_query("SELECT COUNT(*) FROM {userpicks} WHERE pickuuid = :pickuuid", array(':pickuuid' => $pickuuid))->fetchField();
     d4os_io_db_070_set_active('default');
 
     // Doing some late checking
@@ -401,7 +313,7 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
     // I do it here
 
     if($parceluuid == "") {
-      $parceluuid = "00000000-0000-0000-0000-0000000000000";
+      $parceluuid = UUID_ZERO;
     }
 
     if($description == "") {
@@ -417,60 +329,44 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
     }
 
     if (!$exists) {
-      $insertquery = "INSERT INTO {userpicks} VALUES ("
-                    ."'%s'," // 1 $pickuuid
-                    ."'%s'," // 2 $creator
-                    ."'%s'," // 3 $toppick
-                    ."'%s'," // 4 $parceluuid
-                    ."'%s'," // 5 $name
-                    ."'%s'," // 6 $description
-                    ."'%s'," // 7 $snapshotuuid
-                    ."'%s'," // 8 $user
-                    ."'%s'," // 9 $original
-                    ."'%s'," // 10 $simname
-                    ."'%s'," // 11 $posglobal
-                    ."'%s'," // 12 $sortorder
-                    ."'%s'" // 13 $enabled
-                    .")";
 
       $values = array(
-        $pickuuid,      // 1
-        $creator,       // 2
-        $toppick,       // 3
-        $parceluuid,    // 4
-        $name,          // 5
-        $description,   // 6
-        $snapshotuuid,  // 7
-        $user,          // 8
-        $original,      // 9
-        $simname,       // 10
-        $posglobal,     // 11
-        $sortorder,     // 12
-        $enabled        // 13
+        'pickuuid' => $pickuuid,      // 1
+        'creatoruuid' => $creator,       // 2
+        'toppick' => $toppick,       // 3
+        'parceluuid' => $parceluuid,    // 4
+        'name' => $name,          // 5
+        'description' => $description,   // 6
+        'snapshotuuid' => $snapshotuuid,  // 7
+        'user' => $user,          // 8
+        'originalname' => $original,      // 9
+        'simname' => $simname,       // 10
+        'posglobal' => $posglobal,     // 11
+        'sortorder' => $sortorder,     // 12
+        'enabled' => $enabled        // 13
       );
 
-      // Create a new record for this avatar note
+      // Create a new record for this pick
       d4os_io_db_070_set_active('os_profile');
-      db_query($insertquery, $values);
+      db_insert('userpicks')
+        ->fields($values)
+        ->execute();
       d4os_io_db_070_set_active('default');
     }
     else {
       $values = array(
-        $parceluuid,
-        $name,
-        $description,
-        $snapshotuuid,
-        $pickuuid
+        'parceluuid' => $parceluuid,    // 4
+        'name' => $name,          // 5
+        'description' => $description,   // 6
+        'snapshotuuid' => $snapshotuuid,  // 7
       );
-      $query = "UPDATE {userpicks} SET "
-              . "parceluuid = '%s', "
-              . "name = '%s', "
-              . "description = '%s', "
-              . "snapshotuuid = '%s'"
-              . " WHERE pickuuid = '%s'";
+
       // Update the existing record
       d4os_io_db_070_set_active('os_profile');
-      db_query($query, array($parceluuid, $name, $description, $snapshotuuid, $pickuuid));
+      db_update('userpicks')
+        ->fields($values)
+        ->condition('pickuuid', $pickuuid)
+        ->execute();
       d4os_io_db_070_set_active('default');
     }
 
@@ -483,7 +379,7 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
   function picks_delete($params) {
     $pickuuid = $params['pick_id'];
     d4os_io_db_070_set_active('os_profile');
-    db_query("DELETE FROM {userpicks} WHERE pickuuid = '%s'", array($pickuuid));
+    db_query("DELETE FROM {userpicks} WHERE pickuuid = :pickuuid", array(':pickuuid' => $pickuuid));
     d4os_io_db_070_set_active('default');
 
     return array(
@@ -496,7 +392,7 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
     $data = array();
 
     d4os_io_db_070_set_active('os_profile');
-    $notes = db_fetch_array(db_query("SELECT * FROM {usernotes} WHERE useruuid = '%s' AND targetuuid = '%s'", $params['useruuid'], $params['uuid']));
+    $notes = db_query("SELECT * FROM {usernotes} WHERE useruuid = '%s' AND targetuuid = '%s'", $params['useruuid'], $params['uuid'])->fetchAssoc();
     d4os_io_db_070_set_active('default');
 
     if ($notes) {

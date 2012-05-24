@@ -68,7 +68,7 @@ function d4os_ui_auth_settings() {
   // default role assigned to non email users
   $form['users_synchro']['d4os_ui_auth_default_missing_email_role'] = array(
     '#type'           => 'select',
-    '#title'          => t('Assigned role'),
+    '#title'          => t('Assigned role to users without email'),
     '#default_value'  => variable_get('d4os_ui_auth_default_missing_email_role',0),
     '#options'        => $roles,
     '#description'    => t('This role is assigned to synchronized users without an email address.'),

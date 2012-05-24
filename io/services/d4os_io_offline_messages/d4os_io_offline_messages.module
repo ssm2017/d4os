@@ -47,13 +47,13 @@ function d4os_io_offline_messages_help($path, $arg) {
 }
 
 function d4os_io_offline_messages_menu() {
-  $items['admin/settings/d4os/io/services/offline_messages'] = array(
+  $items['admin/config/d4os/io/services/offline_messages'] = array(
     'title'             => 'Offline messages',
     'description'       => 'd4os io services offline_messages settings',
     'page callback'     => 'drupal_get_form',
     'page arguments'    => array('d4os_io_offline_messages_admin'),
     'access arguments'  => array('admin d4os io offline_messages'),
-    'type'              => MENU_LOCAL_TASK,
+    'type'              => MENU_NORMAL_ITEM,
     'file'              => 'd4os_io_offline_messages.admin.inc'
   );
   $items['grid/services/offline-messages'] = array(
@@ -74,9 +74,12 @@ function d4os_io_offline_messages_menu() {
   return $items;
 }
 
-function d4os_io_offline_messages_perm() {
+function d4os_io_offline_messages_permission() {
   return array(
-    'admin d4os io offline_messages',
+    'admin d4os io offline_messages' => array(
+      'title' => t('Admin d4os io offline_messages'),
+      'description' => t('Admin d4os io offline_messages.'),
+    ),
   );
 }
 
@@ -93,12 +96,10 @@ function d4os_io_offline_messages_query($action) {
   $params = array(
     'xml' => $xml,
     'raw' => $raw_data,
-    'action' => $action
   );
 
   switch($action) {
     case 'SaveMessage':
-    case 'SaveMessage/':
       // filter uuids
       $forbidden_uuids = explode("\n", variable_get('d4os_io_offline_messages_filter_uuids', ''));
       if (in_array($xml->fromAgentID, $forbidden_uuids)) return;
@@ -110,7 +111,6 @@ function d4os_io_offline_messages_query($action) {
       d4os_io_offline_messages_savemessage($params);
       break;
     case 'RetrieveMessages':
-    case 'RetrieveMessages/':
       d4os_io_offline_messages_retrievemessages($params);
       break;
   }
@@ -140,14 +140,14 @@ function d4os_io_offline_messages_savemessage($params) {
   }
 
   // do the job
-  $success = db_query("INSERT INTO {d4os_io_offline_messages} (uuid, message) VALUES ('%s', '%s')", $params['toAgentID'], $params['message']);
+  $success = db_query("INSERT INTO {d4os_io_offline_messages} (uuid, message) VALUES (:toAgentID, :message)", array(':toAgentID' => $params['toAgentID'], ':message' => $params['message']));
   if ($success) {
     if (variable_get('d4os_io_offline_messages_send_mails', 0)) {
-      d4os_io_offline_messages_mail_send($params);
+      d4os_io_services_offline_messages_mail_send($params);
     }
   }
 
-  $return = d4os_io_offline_message_build_answer('savemessage', array('success' => $success));
+  $return = d4os_oi_offline_message_build_answer('savemessage', array('success' => $success));
 
   if ($d4os_io_offline_messages_log_level > 6) {
     $log = array();
@@ -193,15 +193,16 @@ function d4os_io_offline_messages_retrievemessages($params) {
 
   // get the messages
   $messages_list = array();
-  $messages = db_query("SELECT * FROM {d4os_io_offline_messages} WHERE uuid = '%s'", $uuid);
-  while ($message = db_fetch_object($messages)) {
+  $query = db_select('d4os_io_offline_messages')->fields('d4os_io_offline_messages')->condition('uuid', $uuid);
+  $messages = $query->execute();
+  foreach ($messages as $message) {
     $messages_list[] = $message->message;
   }
 
   // delete the messages
-  db_query("DELETE FROM {d4os_io_offline_messages} WHERE uuid = '%s'", $uuid);
+  db_query("DELETE FROM {d4os_io_offline_messages} WHERE uuid = :uuid", array(':uuid' => $uuid));
 
-  $return = d4os_io_offline_message_build_answer('retrievemessages', array('success' => TRUE, 'data' => $messages_list));
+  $return = d4os_oi_offline_message_build_answer('retrievemessages', array('success' => TRUE, 'data' => $messages_list));
 
   if ($d4os_io_offline_messages_log_level > 6) {
     $log = array();
@@ -220,7 +221,7 @@ function d4os_io_offline_messages_retrievemessages($params) {
   print $return;
 }
 
-function d4os_io_offline_message_build_answer($action, $params) {
+function d4os_oi_offline_message_build_answer($action, $params) {
   $output = '<?xml version="1.0" encoding="utf-8"?>';
   switch($action) {
     case 'savemessage':
@@ -251,9 +252,9 @@ function d4os_io_offline_messages_mail_send($form_values) {
   $d4os_profiles = D4OS_IO::create('Profiles');
   $user_prefs = $d4os_profiles->user_preferences_request(array('useruuid' => $form_values['toAgentID']));
 
-  if ($user_prefs[0]->imviaemail == 'true') {
+  if ($user_prefs['data'][0]['imviaemail'] == 'true') {
     // get the website user email
-    $user_email = db_result(db_query("SELECT u.mail FROM {users} AS u LEFT JOIN {d4os_ui_users} AS du ON du.uid=u.uid WHERE du.UUID = '%s'", $form_values['toAgentID']));
+    $user_email = db_query("SELECT u.mail FROM {users} AS u LEFT JOIN {d4os_ui_users} AS du ON du.uid=u.uid WHERE du.UUID = :uuid", array(':uuid' => $form_values['toAgentID']))->fetchField();
     if (!$user_email) {
       return;
     }
@@ -276,13 +277,6 @@ function d4os_io_offline_messages_mail_send($form_values) {
     $send = TRUE;
 
     $result = drupal_mail($module, $key, $to, $language, $params, $from, $send);
-    $log = array();
-    $log[] = array(
-      'name' => 'retour email',
-      'type' => 'array',
-      'data' => $result,
-    );
-    d4os_log('d4os_io_srv_omsg', $log, WATCHDOG_DEBUG);
   }
 }
 
@@ -292,17 +286,11 @@ function d4os_io_offline_messages_mail($key, &$message, $params) {
 
   switch ($key) {
     case 'offline_message':
-      $message['subject'] = t('Offline message sent from @site-name', array('@site-name' => variable_get('site_name', 'Drupal')), $language->language);
-      $message['body'][] = t('@name sent you the following offline message:', array('@name' => $params['from']), $language->language);
+      $message['subject'] = t('E-mail sent from @site-name', array('@site-name' => variable_get('site_name', 'Drupal')), $language->language);
+      $message['body'][] = t('@name sent you the following message:', array('@name' => $params['from']), $language->language);
       $message['body'][] = $params['message'];
-      $message['body'][] = t('You need to log in the grid to answer this message.');
+      $message['body'][] = t('You need to log in the grid to answer this message.', $language->language);
       break;
-  }
-}
-
-function d4os_io_offline_messages_user($op, &$edit, &$account, $category = NULL) {
-  if ($op == 'delete') {
-    d4os_io_offline_messages_delete_user($account->uid);
   }
 }
 
@@ -310,11 +298,12 @@ function d4os_io_offline_messages_user($op, &$edit, &$account, $category = NULL)
  * Delete messages for a user by uuid
  * @param uuid of the user to delete messages
  */
-function d4os_io_offline_messages_delete_user($uid) {
+function d4os_io_offline_messages_user_delete($edit, $account, $method) {
   // get the user uuid
-  $uuid = db_result(db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=%d", $uid));
+  $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $edit->uid))->fetchField();
   if ($uuid === FALSE) {
     return;
   }
-  db_query("DELETE FROM {d4os_io_offline_messages} WHERE uuid = '%s'", $uuid);
+  db_query("DELETE FROM {d4os_io_offline_messages} WHERE uuid = :uuid", array(':uuid' => $uuid));
+  drupal_set_message(t('Offline messages deleted for user !uuid', array('!uuid' => $uuid)));
 }

@@ -42,13 +42,11 @@ function d4os_ui_loginpage_perm() {
 function d4os_ui_loginpage_theme() {
   return array(
     'd4os_ui_loginpage' => array(
-      'arguments' => array(
-        'site_name' => '',
-        'site_slogan' => '',
-        'site_mission' => '',
-        'site_footer' => '',
-        'grid_info_block' => '',
-        'grid_status_bloc' => ''
+      'variables' => array(
+        'site_name' => NULL,
+        'site_slogan' => NULL,
+        'grid_info_block' => NULL,
+        'grid_status_bloc' => NULL
       ),
       'template' => 'd4os-ui-loginpage',
     ),
@@ -57,20 +55,33 @@ function d4os_ui_loginpage_theme() {
 
 function d4os_ui_loginpage_render() {
   // get grid infos blocks
-  $block = (object) module_invoke('d4os_ui_monitor_grid_status', 'block', 'view', 'd4os_ui_monitor_grid_infos');
-  $block->module = 'd4os_ui_monitor_grid_infos';
-  $block->delta = 'd4os_ui_monitor_grid_infos';
-  $grid_info_block = theme('block', $block);
-  $block = (object) module_invoke('d4os_ui_monitor_grid_status', 'block', 'view', 'd4os_ui_monitor_grid_status');
-  $block->module = 'd4os_ui_monitor_grid_status';
-  $block->delta = 'd4os_ui_monitor_grid_status';
-  $grid_status_bloc = theme('block', $block);
-  // get some vars
-  $site_name = variable_get('site_name', '');
-  $site_slogan = variable_get('site_slogan', '');
-  $site_mission = variable_get('site_mission', '');
-  $site_footer = variable_get('site_footer', '');
+  $grid_info_block = drupal_render(
+    _block_get_renderable_array(
+        _block_render_blocks(
+          array(
+            block_load('d4os_ui_monitor_grid_status', 'd4os_ui_monitor_grid_infos')
+          )
+       )
+    )
+  );
+
+  $grid_status_bloc = drupal_render(
+    _block_get_renderable_array(
+        _block_render_blocks(
+          array(
+            block_load('d4os_ui_monitor_grid_status', 'd4os_ui_monitor_grid_status')
+          )
+       )
+    )
+  );
+
+  $variables = array(
+    'site_name' => variable_get('site_name', ''),
+    'site_slogan' => variable_get('site_slogan', ''),
+    'grid_info_block' => $grid_info_block,
+    'grid_status_bloc' => $grid_status_bloc
+  );
 
   // render the output
-  echo theme('d4os_ui_loginpage', $site_name, $site_slogan, $site_mission, $site_footer, $grid_info_block, $grid_status_bloc);
+  echo theme('d4os_ui_loginpage', $variables);
 }

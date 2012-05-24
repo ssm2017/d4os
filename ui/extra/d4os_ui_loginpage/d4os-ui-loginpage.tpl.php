@@ -43,7 +43,6 @@ $text_shadow = $GLOBALS['grid_is_online'] ? '#0f0' : '#f00';
       <div id="header">
         <div class="title"><h1><?php print $site_name; ?></h1></div>
         <div class="slogan"><?php print $site_slogan; ?></div>
-        <div class="mission"><?php print $site_mission; ?></div>
       </div><!-- header -->
       <div id="wrapper">
         <div id="left">
@@ -53,14 +52,15 @@ $text_shadow = $GLOBALS['grid_is_online'] ? '#0f0' : '#f00';
           <?php print $grid_info_block; ?>
         </div><!-- right -->
         <div id="content">
-          <p>main content rendering the node 1 by default: </p>
+          <p>main content rendering the node 1 by default:</p>
           <p>To change this content, you need to copy the files ui/extra/d4os_loginpage/d4os-ui-loginpage.tpl.php and ui/extra/d4os_loginpage/d4os-ui-loginpage.css to your main site theme folder and edit them.</p>
-          <?php print node_view(node_load(1), FALSE, TRUE, FALSE); ?>
+          <?php
+          $build = node_view(node_load(1));
+          print drupal_render($build['body']); ?>
         </div><!-- content -->
       </div><!-- wrapper -->
-
       <div id="footer">
-        <div class="footer-message"><?php print $site_footer;?></div>
+        <div class="footer-message">Welcome</div>
       </div><!-- footer -->
     </div><!-- container -->
   </body>

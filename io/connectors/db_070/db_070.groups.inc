@@ -26,7 +26,7 @@ class D4OS_IO_db_070_Groups implements D4OS_IO_groups_Interface {
 
   function group_exists($uuid) {
     d4os_io_db_070_set_active('os_groups');
-    $group_exists = db_result(db_query("SELECT count(GroupID) FROM {osgroup} WHERE GroupID = '%s'", $uuid));
+    $group_exists = db_query("SELECT count(GroupID) FROM {osgroup} WHERE GroupID = :GroupID", array(':GroupID' => $uuid))->fetchField();
     d4os_io_db_070_set_active('default');
 		if($group_exists) {
 			return TRUE;
@@ -54,16 +54,26 @@ class D4OS_IO_db_070_Groups implements D4OS_IO_groups_Interface {
     }
 
     // Check if agent already a member
-    $query = "SELECT count(AgentID) as isMember FROM osgroupmembership WHERE AgentID = '%s' AND GroupID = '%s'";
+    $query = "SELECT count(AgentID) as isMember FROM osgroupmembership WHERE AgentID = :AgentID AND GroupID = :GroupID";
     d4os_io_db_070_set_active('os_groups');
-    $result = db_result(db_query($query, array($agentID, $groupID)));
+    $result = db_query($query, array(':AgentID' => $agentID, ':GroupID' => $groupID))->fetchField();
     d4os_io_db_070_set_active('default');
 
     // If not a member, add membership, select role (defaults to uuidZero, or everyone role)
-    if ($result == 0) {
-      $query = "INSERT INTO osgroupmembership (GroupID, AgentID, Contribution, ListInProfile, AcceptNotices, SelectedRoleID) VALUES ('%s','%s', 0, 1, 1,'%s')";
+    if ($result && $result === 0) {
+      $values = array(
+        'GroupID'         => $groupID,
+        'AgentID'         => $agentID,
+        'Contribution'    => 0,
+        'ListInProfile'   => 1,
+        'AcceptNotices'   => 1,
+        'SelectedRoleID'  => $roleID
+      );
+
       d4os_io_db_070_set_active('os_groups');
-      db_query($query, array($groupID, $agentID, $roleID));
+      db_insert('osgroupmembership')
+        ->fields($values)
+        ->execute();
       d4os_io_db_070_set_active('default');
     }
 
@@ -89,15 +99,22 @@ class D4OS_IO_db_070_Groups implements D4OS_IO_groups_Interface {
     $roleID = $params["RoleID"];
 
     // Check if agent already a member
-    $query = "SELECT count(AgentID) as isMember FROM osgrouprolemembership WHERE AgentID = '%s' AND RoleID = '%s' AND GroupID = '%s'";
+    $query = "SELECT count(AgentID) as isMember FROM osgrouprolemembership WHERE AgentID = :AgentID AND RoleID = :RoleID AND GroupID = :GroupID";
     d4os_io_db_070_set_active('os_groups');
-    $result = db_result(db_query($query, array($agentID, $roleID, $groupID)));
+    $result = db_query($query, array(':AgentID' => $agentID, ':RoleID' => $roleID, ':GroupID' => $groupID))->fetchField();
     d4os_io_db_070_set_active('default');
 
-    if ($result == 0) {
-      $query = "INSERT INTO osgrouprolemembership (GroupID, RoleID, AgentID) VALUES ('%s', '%s', '%s')";
+    if ($result && $result === 0) {
+      $values = array(
+        'GroupID' => $groupID,
+        'RoleID'  => $roleID,
+        'AgentID' => $agentID
+      );
+
       d4os_io_db_070_set_active('os_groups');
-      db_query($query, array($groupID, $roleID, $agentID));
+      db_insert('osgrouprolemembership')
+        ->fields($values)
+        ->execute();
       d4os_io_db_070_set_active('default');
     }
 
@@ -109,9 +126,14 @@ class D4OS_IO_db_070_Groups implements D4OS_IO_groups_Interface {
     $groupID = $params["GroupID"];
     $roleID = $params["RoleID"];
 
-    $query = "UPDATE osgroupmembership SET SelectedRoleID = '%s' WHERE AgentID = '%s' AND GroupID = '%s'";
     d4os_io_db_070_set_active('os_groups');
-    db_query($query, array($roleID, $agentID, $groupID));
+    db_update('osgroupmembership')
+      ->fields(array(
+        'SelectedRoleID' => $roleID
+      ))
+      ->condition('AgentID', $agentID)
+      ->condition('GroupID', $groupID)
+      ->execute();
     d4os_io_db_070_set_active('default');
 
     return array('success' => 'true');
@@ -120,8 +142,8 @@ class D4OS_IO_db_070_Groups implements D4OS_IO_groups_Interface {
   function getAgentGroups($uuid) {
     $groups = array();
     d4os_io_db_070_set_active('os_groups');
-    $result = db_query("SELECT GroupID FROM {osgroupmembership} WHERE AgentID = '%s'", $uuid);
-    while ($group = db_fetch_object($result)) {
+    $results = db_query("SELECT GroupID FROM {osgroupmembership} WHERE AgentID = :AgentID", array(':AgentID' => $uuid));
+    foreach ($results as $group) {
       $groups[] = $group->GroupID;
     }
     d4os_io_db_070_set_active('default');
@@ -146,7 +168,7 @@ class D4OS_IO_db_070_Groups implements D4OS_IO_groups_Interface {
 
     // remove agent from group invites
     d4os_io_db_070_set_active('os_groups');
-    db_query("DELETE FROM {osgroupinvite} WHERE AgentID = '%s'", $uuid);
+    db_query("DELETE FROM {osgroupinvite} WHERE AgentID = :AgentID", array('AgentID' => $uuid));
     d4os_io_db_070_set_active('default');
 
     drupal_set_message(t('User removed from group invites.'));
@@ -161,22 +183,22 @@ class D4OS_IO_db_070_Groups implements D4OS_IO_groups_Interface {
     // 3. Remove Agent from all of the groups roles (osgrouprolemembership)
 
     $sql = " UPDATE osagent "
-          ." SET ActiveGroupID = '%s'"
-          ." WHERE AgentID = '%s' AND ActiveGroupID = '%s'";
+          ." SET ActiveGroupID = :ActiveGroupID"
+          ." WHERE AgentID = :AgentID AND ActiveGroupID = :ActiveGroupID";
     d4os_io_db_070_set_active('os_groups');
-    db_query($sql, array(UUID_ZERO, $agentID, $groupID));
+    db_query($sql, array(':ActiveGroupID' => UUID_ZERO, ':AgentID' => $agentID, ':ActiveGroupID' => $groupID));
     d4os_io_db_070_set_active('default');
 
     $sql = " DELETE FROM osgroupmembership "
-          ." WHERE AgentID = '%s' AND GroupID = '%s'";
+          ." WHERE AgentID = :AgentID AND GroupID = :GroupID";
     d4os_io_db_070_set_active('os_groups');
-    db_query($sql, array($agentID, $groupID));
+    db_query($sql, array(':AgentID' => $agentID, ':GroupID' => $groupID));
     d4os_io_db_070_set_active('default');
 
     $sql = " DELETE FROM osgrouprolemembership "
-          ." WHERE AgentID = '%s' AND GroupID = '%s'";
+          ." WHERE AgentID = :AgentID AND GroupID = :GroupID";
     d4os_io_db_070_set_active('os_groups');
-    db_query($sql, array($agentID, $groupID));
+    db_query($sql, array(':AgentID' => $agentID, ':GroupID' => $groupID));
     d4os_io_db_070_set_active('default');
 
     drupal_set_message(t('User removed from group.'));
