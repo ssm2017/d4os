@@ -118,6 +118,18 @@ function d4os_ui_web_profiles_display_public_profile($account) {
 
   // load the user profile
   $profile = $d4os_profiles->load_profile(array('useruuid' => $uuid));
+
+  // create a default profile if no one exists
+  if (!is_object($profile)) {
+    $profile = new stdclass;
+    $profile->profileFirstImage = UUID_ZERO;
+    $profile->profileImage = UUID_ZERO;
+    $profile->profilePartner = '';
+    $profile->profileAboutText = '';
+    $profile->profileURL = '';
+    $profile->profileFirstText = '';
+  }
+
   // load the grid user
   $profile->grid_user = $d4os_user->load_user(array('PrincipalID' => $uuid));
   $profile->grid_user = $profile->grid_user[0];
@@ -169,7 +181,7 @@ function d4os_ui_web_profiles_display_public_profile($account) {
 
   // get the partner infos
   $profile->profilePartner_name = t('No partner');
-  if ($profile->profilePartner != '' || $profile->profilePartner != UUID_ZERO) {
+  if ($profile->profilePartner != '' && $profile->profilePartner != UUID_ZERO) {
     $profile->partner_user = $d4os_user->load_user(array('PrincipalID' => $profile->profilePartner));
     $profile->partner_user = $profile->partner_user[0];
     $profile->profilePartner_name = $profile->partner_user->FirstName. ' '. $profile->partner_user->LastName;
