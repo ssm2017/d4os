@@ -283,9 +283,9 @@ function d4os_ui_users_user_update(&$edit, $account, $category) {
   }
 
   // check if password has changed
-  if (!empty($edit['pass']) && md5($edit['pass']) != $account->pass) {
+  if (isset($edit['pass_raw']) && (!empty($edit['pass_raw'])) && (strlen($edit['pass_raw']) > 0) && (md5($edit['pass_raw']) != $account->pass)) {
     $grid_user->passwordSalt = md5(microtime() . mt_rand(0,0xffff));
-    $grid_user->passwordHash = md5(md5($edit['pass']) . ":" . $grid_user->passwordSalt);
+    $grid_user->passwordHash = md5(md5($edit['pass_raw']) . ":" . $grid_user->passwordSalt);
   }
 
   // set user level
@@ -475,6 +475,12 @@ function d4os_ui_users_account_validate($form, &$form_state) {
   if (isset($values['pass']) && !empty($values['pass']) && strlen($values['pass']) < 6) {
     form_set_error('pass', t('The Password field must be at least 6 characters in length.'));
   }
+
+  // Save the new raw password for later.  Coz in D7, we don't get to access this raw password later.
+  if (isset($values['pass']) && !empty($values['pass']) && strlen($values['pass']) > 0) {
+    $form_state['values']['pass_raw'] = $values['pass'];
+  }
+
   // check the email address to fit new opensim rules
   if (!d4os_ui_users_validate_email($values['mail'])) {
     form_set_error('pass', t('The Email field must contain a valid email address.'));
