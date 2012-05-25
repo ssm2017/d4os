@@ -58,7 +58,7 @@ function d4os_ui_monitor_grid_status_block_view($delta = '') {
       // add the login uri
       $values['data']->login_uri = variable_get('d4os_default_login_uri', $base_url). ':'. variable_get('d4os_default_login_port', '8002');
       $content = theme('d4os_ui_monitor_grid_status_infos', $values);
-      $block['subject'] = t('Grid infos');
+      $block['subject'] = t('Grid info');
       $block['content'] = $content;
       break;
   }
@@ -98,8 +98,8 @@ function theme_d4os_ui_monitor_grid_status_infos($values) {
   }
   $output .= '<li>'. t('Online now'). ' : '. $values->online_now. '</li>';
   $output .= '<li>'. t('Online last month'). ' : '. $values->online_last_month. '</li>';
-  $output .= '<li>'. t('Users count'). ' : '. $values->users_count. '</li>';
-  $output .= '<li>'. t('Regions count'). ' : '. $values->regions_count. '</li>';
+  $output .= '<li>'. t('Number of members'). ' : '. $values->users_count. '</li>';
+  $output .= '<li>'. t('Number of regions'). ' : '. $values->regions_count. '</li>';
   $output .= '</ul>';
   $output .= '</div>';
   return $output;

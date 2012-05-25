@@ -667,7 +667,7 @@ msgid "Grid status"
 msgstr ""
 
 #: ui/monitoring/d4os_ui_monitor_grid_status/d4os_ui_monitor_grid_status.module:21;39
-msgid "Grid infos"
+msgid "Grid info"
 msgstr ""
 
 #: ui/monitoring/d4os_ui_monitor_grid_status/d4os_ui_monitor_grid_status.module:70
@@ -699,11 +699,11 @@ msgid "Online last month"
 msgstr ""
 
 #: ui/monitoring/d4os_ui_monitor_grid_status/d4os_ui_monitor_grid_status.module:112
-msgid "Users count"
+msgid "Number of users"
 msgstr ""
 
 #: ui/monitoring/d4os_ui_monitor_grid_status/d4os_ui_monitor_grid_status.module:113
-msgid "Regions count"
+msgid "Number of regions"
 msgstr ""
 
 #: ui/monitoring/d4os_ui_monitor_grid_status/d4os_ui_monitor_grid_status.info:0
