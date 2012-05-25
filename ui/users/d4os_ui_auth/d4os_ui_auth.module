@@ -114,7 +114,7 @@ function d4os_ui_auth_login_validate($form, &$form_state) {
       if (!d4os_ui_auth_grid_login($form, $form_state)) {
         drupal_set_message(t('Sorry, unable to log in using the grid credentials. Trying website process.'), 'error');
         user_login_name_validate($form, $form_state);
-        user_authenticate($form_state['values']['name'], $form_state['values']['pass']);
+        user_login_authenticate_validate($form, $form_state);
         user_login_final_validate($form, $form_state);
       }
       break;
