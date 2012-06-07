@@ -464,6 +464,34 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
     return $result;
   }
 
+  function get_online_hypergridders_count() {
+    $where = array();
+    // Count the true number of users online.  GridUser.Online is not reliable.
+    $query = "SELECT COUNT(*) FROM {Presence}";
+    // Don't count ghosts.  Sometimes OpenSim gets confused and leaves people online when they are not, but at least sets the region they are in to the NULL key.
+    $where[] = "RegionID<>'00000000-0000-0000-0000-000000000000'";
+
+    if (count($where)) {
+      $query .= ' WHERE '. implode(' AND ', $where);
+    }
+    d4os_io_db_070_set_active('os_robust');
+    $result = db_query($query)->fetchField();
+    d4os_io_db_070_set_active('default');
+
+    $query = "SELECT COUNT(*) FROM {Presence} AS p, {UserAccounts} AS u";
+    // Yes, we are keeping the previous WHERE clause, and adding a new one.
+    $where[] = "p.UserID = u.PrincipalID";
+    if (count($where)) {
+      $query .= ' WHERE '. implode(' AND ', $where);
+    }
+
+    d4os_io_db_070_set_active('os_robust');
+    $result -= db_result(db_query($query));
+    d4os_io_db_070_set_active('default');
+
+    return $result;
+  }
+
   function get_users_count() {
     d4os_io_db_070_set_active('os_robust');
     $count = db_result(db_query("SELECT COUNT(PrincipalID) FROM {UserAccounts}"));
