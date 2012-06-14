@@ -116,6 +116,15 @@ function d4os_ui_auth_login_validate($form, &$form_state) {
         user_login_name_validate($form, $form_state);
         user_login_authenticate_validate($form, $form_state);
         user_login_final_validate($form, $form_state);
+
+        // Create the grid user if they are a member of the role that can register.
+        $account = user_load_by_name($form_state['values']['name']);
+        $register_role = variable_get('d4os_ui_users_register_role', 0);
+        if ($register_role && isset($account->roles[$register_role])) {
+          drupal_set_message(t('Creating a grid account for you.'));
+          d4os_ui_users_grid_registration_form_validate($form, &$form_state);
+          d4os_ui_users_grid_registration_form_submit($form, &$form_state, FALSE);
+        }
       }
       break;
   }

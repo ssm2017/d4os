@@ -332,6 +332,12 @@ function d4os_ui_users_can_register_on_grid($account) {
   $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $account->uid))->fetchField();
   if ($uuid !== FALSE) return FALSE;
 
+  // Check if they are the proper role for registering.
+  $register_role = variable_get('d4os_ui_users_register_role', 0);
+  if ($register_role && !isset($account->roles[$register_role])) {
+      return FALSE;
+  }
+
   // else
   return TRUE;
 }
@@ -375,7 +381,10 @@ function d4os_ui_users_grid_registration_form_validate($form, &$form_state) {
   }
 
   // get the account
-  $account = user_load(arg(1));
+  $uid = arg(1);
+  if (1 == $uid)
+    $uid = $form_state['uid'];
+  $account = user_load($uid);
 
   // check the password
   require_once DRUPAL_ROOT . '/' . variable_get('password_inc', 'includes/password.inc');
@@ -389,9 +398,12 @@ function d4os_ui_users_grid_registration_form_validate($form, &$form_state) {
   }
 }
 
-function d4os_ui_users_grid_registration_form_submit($form, &$form_state) {
+function d4os_ui_users_grid_registration_form_submit($form, &$form_state, $redirect = TRUE) {
   // get the account
-  $account = user_load(arg(1));
+  $uid = arg(1);
+  if (1 == $uid)
+    $uid = $form_state['uid'];
+  $account = user_load($uid);
 
   // get names
   $names = explode(' ', $account->name);
@@ -412,7 +424,8 @@ function d4os_ui_users_grid_registration_form_submit($form, &$form_state) {
   d4os_ui_users_set_grid_user_role($account->uid);
 
   // redirect
-  $form_state['redirect'] = 'user/'. arg(1);
+  if ($redirect)
+    $form_state['redirect'] = 'user/'. $uid;
 }
 
 function d4os_ui_users_set_grid_user_role($uid) {
