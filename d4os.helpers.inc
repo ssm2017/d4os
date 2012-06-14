@@ -115,20 +115,33 @@ function d4os_grid_is_online() {
   // 8002 = user; 8003 = asset+grid+inventory; 8006 = messaging
   // -111 = connection refused
   global $base_url;
-  $online = FALSE;
-// TODO : why not use loginuri ?
-  // remove http://
-  $url = variable_get('d4os_default_users_server_uri', $base_url);
 
-  if (strpos($url, 'http://') !== FALSE) {
-    $url = substr($url, 7);
+  // If we have not checked recently, poll it, otherwise use the current value.
+  // Coz this can be a slow operation if the web server is not on the grid server.
+  // Measured it at 0.8 seconds on my test server.
+  // Also, if it's a high traffic web server, and the online status is on all pages, pointless checking many times a second.
+  $grid_is_online_timestamp = variable_get('d4os_grid_is_online_timestamp', 0);
+  if ($grid_is_online_timestamp < (time() - (60 * 3)))
+  {
+    $online = FALSE;
+// TODO : why not use loginuri ?
+    // remove http://
+    $url = variable_get('d4os_default_users_server_uri', $base_url);
+
+    if (strpos($url, 'http://') !== FALSE) {
+      $url = substr($url, 7);
+    }
+    $port = variable_get('d4os_default_users_server_port', '8002');
+    $fp = @fsockopen($url, $port, $errno, $errstr, 1.0);
+    if ($fp) {
+      $online = TRUE;
+    }
+    $grid_is_online = $online;
+    variable_set('d4os_grid_is_online_timestamp', time());
+    variable_set('d4os_grid_is_online', $online);
   }
-  $port = variable_get('d4os_default_users_server_port', '8002');
-  $fp = @fsockopen($url, $port, $errno, $errstr, 1.0);
-  if ($fp) {
-    $online = TRUE;
-  }
-  $grid_is_online = $online;
+  else
+    $online = variable_get('d4os_grid_is_online');
   return $online;
 }
 
