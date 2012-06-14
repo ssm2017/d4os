@@ -12,6 +12,7 @@
 
 define('FIRSTNAME_MAX_LENGTH', 31);
 define('LASTNAME_MAX_LENGTH', 31);
+define('PASSWORD_MAX_LENGTH', 16);
 
 module_load_include('helpers.inc', 'd4os_ui_users');
 
@@ -153,6 +154,24 @@ function d4os_ui_users_profile_form(&$form) {
   $form['account']['name']['#description'] = 'A two word name is required for grid access.';
 }
 
+/**
+ * Implement hook_element_info()
+ */
+function d4os_element_info()
+{
+  // Change the length of the passwords.  OpenSim/SL have a limit of 16 characters.  Anything longer than that and you have locked yourself out.
+  // TODO - does not change it on the login form, but if badly wrong passwords can't get into the system, then should not matter.  Should fix that anyway.
+  $types['password'] = array(
+    '#size' => PASSWORD_MAX_LENGTH,
+    '#maxlength' => PASSWORD_MAX_LENGTH,
+  );
+
+  $types['password_confirm'] = array(
+    '#size' => PASSWORD_MAX_LENGTH,
+    '#maxlength' => PASSWORD_MAX_LENGTH,
+  );
+
+  return $types;
 }
 
 function d4os_ui_users_user_view($account, $view_mode, $langcode) {
@@ -284,8 +303,8 @@ function d4os_ui_users_grid_registration_form($form_state) {
   $form['password_validation']['pass'] = array(
     '#type' => 'password',
     '#title' => t('Password'),
-    '#maxlength' => 64,
-    '#size' => 15,
+    '#maxlength' => PASSWORD_MAX_LENGTH,
+    '#size' => PASSWORD_MAX_LENGTH,
   );
   d4os_ui_users_avatars_models_select_form($form);
   $form['submit'] = array(
