@@ -66,13 +66,6 @@ function d4os_ui_auth_login_validate($form, &$form_state) {
     }
   }
 
-  // check for lastname and password
-  if (empty($form_state['values']['lastname']) || empty($form_state['values']['pass'])) {
-    drupal_set_message('Lastname and password fields are required', 'error');
-    form_set_error();
-    return FALSE;
-  }
-
   // get login flow
   $login_flow = variable_get('d4os_ui_auth_login_flow', 0);
 
