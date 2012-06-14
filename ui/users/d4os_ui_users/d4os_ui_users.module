@@ -87,11 +87,6 @@ function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
     case 'user_login_block':
     case 'user_login':
       d4os_ui_users_login_form($form);
-      // remove required (to use openid module)
-      if (!empty($form_state['post']['openid_identifier'])) {
-        $form['firstname']['#required'] = FALSE;
-        $form['lastname']['#required'] = FALSE;
-      }
       break;
 
     // registration
@@ -123,25 +118,8 @@ function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
 }
 
 function d4os_ui_users_login_form(&$form) {
-  unset($form['name']);
-  $form['firstname'] = array(
-    '#type'         => 'textfield',
-    '#title'        => t('First Name'),
-    '#size'         => 15,
-    '#maxlength'    => 32,
-    '#weight'       => -2,
-  );
-  $form['lastname'] = array(
-    '#type'         => 'textfield',
-    '#title'        => t('Last Name'),
-    '#size'         => 15,
-    '#maxlength'    => 32,
-    '#required'     => TRUE,
-    '#weight'       => -1,
-  );
   if (module_exists('openid')) {
     $form['#attached']['js'][] = drupal_get_path('module', 'd4os_ui_users').'/d4os_ui_users.js';
-    $form['lastname']['#required'] = FALSE;
   }
   if (!module_exists('d4os_ui_auth')) {
     array_unshift($form['#validate'], 'd4os_ui_users_login_authenticate_validate');
@@ -149,35 +127,14 @@ function d4os_ui_users_login_form(&$form) {
 }
 
 function d4os_ui_users_register_form(&$form) {
-  $firstname_field = array(
-    '#type'         => 'textfield',
-    '#title'        => t('First Name'),
-    '#size'         => 32,
-    '#maxlength'    => 32,
-    '#description'  => t('Enter the first name for the avatar. Spaces are NOT allowed; Punctuation is not allowed except for periods, hyphens, and underscores.'),
-    '#weight'       => -4,
-  );
-  $lastname_field = array(
-    '#type'         => 'textfield',
-    '#title'        => t('Last Name'),
-    '#size'         => 32,
-    '#maxlength'    => 32,
-    '#required'     => TRUE,
-    '#description'  => t('Enter the last name for the avatar. Spaces are NOT allowed; Punctuation is not allowed except for periods, hyphens, and underscores.'),
-    '#weight'       => -3,
-  );
   // workaround for this bug : http://drupal.org/node/760838
   if (isset($form['account'])) {
     $form['account']['mail']['#weight'] = -2;
-    unset($form['account']['name']);
-    $form['account']['firstname'] = $firstname_field;
-    $form['account']['lastname'] = $lastname_field;
+    $form['account']['name']['#description'] = 'A two word name is required for grid access.';
   }
   else {
     $form['mail']['#weight'] = -2;
-    unset($form['name']);
-    $form['firstname'] = $firstname_field;
-    $form['lastname'] = $lastname_field;
+    $form['name']['#description'] = 'A two word name is required for grid access.';
   }
   $form['account']['mail2'] = array(
     '#type'           => 'textfield',
@@ -192,35 +149,10 @@ function d4os_ui_users_register_form(&$form) {
 }
 
 function d4os_ui_users_profile_form(&$form) {
-  $account = $form['#user'];
-  if ($account->uid > 1 && $form['#user_category'] == 'account') {
-    if (user_access('administer users') || user_access('change own username')) {
-      $names = explode(' ', $account->name);
-      unset($form['account']['name']);
-      $form['account']['firstname'] = array(
-        '#type'           => 'textfield',
-        '#title'          => t('First Name'),
-        '#default_value'  => $names[0],
-        '#size'           => 32,
-        '#maxlength'      => 32,
-        '#required'       => TRUE,
-        '#description'    => t('Enter the first name for the avatar. Spaces are not allowed. Punctuation is not allowed except for periods, hyphens, and underscores.'),
-        '#weight'         => -2,
-      );
-      $form['account']['lastname'] = array(
-        '#type'           => 'textfield',
-        '#title'          => t('Last Name'),
-        '#default_value'  => $names[1],
-        '#size'           => 32,
-        '#maxlength'      => 32,
-        '#required'       => TRUE,
-        '#description'    => t('Enter the last name for the avatar. Spaces are not allowed. Punctuation is not allowed except for periods, hyphens, and underscores.'),
-        '#weight'         => -1,
-      );
-    }
-  }
-
   array_unshift($form['#validate'], 'd4os_ui_users_account_validate');
+  $form['account']['name']['#description'] = 'A two word name is required for grid access.';
+}
+
 }
 
 function d4os_ui_users_user_view($account, $view_mode, $langcode) {
@@ -269,11 +201,12 @@ function d4os_ui_users_user_update(&$edit, $account, $category) {
   $grid_user = $grid_user[0];
 
   // check if username has changed
-  if (!empty($edit['firstname'])) {
-    $grid_user->FirstName = ($grid_user->FirstName != $edit['firstname']) ? $edit['firstname'] : $grid_user->FirstName;
-  }
-  if (!empty($edit['lastname'])) {
-    $grid_user->LastName = ($grid_user->LastName != $edit['lastname']) ? $edit['lastname'] : $grid_user->LastName;
+  if (!empty($edit['name'])) {
+    $names = explode(' ', $edit['name']);
+    if (count($names) == 2) {
+      $grid_user->FirstName = $names[0];
+      $grid_user->LastName = $names[1];
+    }
   }
 
   // check if email has changed
@@ -450,17 +383,17 @@ function d4os_ui_users_account_validate($form, &$form_state) {
     form_set_error('model', t('Please select a model.'));
   }
 
-  // get username and lastname
-  if (isset($form_state['user']->name)) {
-    $names = explode(' ', $form_state['user']->name);
+  // get firstname and lastname
+  $name = $values['name'];
+  if (isset($name)) {
+    $names = explode(' ', $name);
+    if (count($names) == 2) {
+      $firstname = $names[0];
+      $lastname = $names[1];
+      $values['firstname'] = $firstname;
+      $values['lastname'] = $lastname;
+    }
   }
-  $firstname = isset($values['firstname']) ? $values['firstname'] : $names[0];
-  $lastname = isset($values['lastname']) ? $values['lastname'] : $names[1];
-  $name     = $firstname. ' '. $lastname;
-
-
-  // rebuild the "name" for drupal account
-  $values['name'] = $name;
 
   // check the username
   $name_validate = d4os_ui_users_validate_name($name);
@@ -485,7 +418,7 @@ function d4os_ui_users_account_validate($form, &$form_state) {
 
   // get the inworld user
   $d4os_user = D4OS_IO::create('Users');
-  $grid_user = $d4os_user->load_user(array('name' => $firstname. ' '. $lastname));
+  $grid_user = $d4os_user->load_user(array('name' => $name));
   $grid_user = $grid_user[0];
 
   switch ($values['form_id']){

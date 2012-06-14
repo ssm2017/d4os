@@ -131,12 +131,11 @@ function d4os_ui_auth_grid_login($form, &$form_state) {
     return FALSE;
   }
   // get the credentials
-  $firstname = $form_state['values']['firstname'];
-  $lastname = $form_state['values']['lastname'];
+  $name = $form_state['values']['name'];
   $pass = $form_state['values']['pass'];
 
   // get the user
-  $grid_account = $d4os_user->load_user(array('name' => $firstname. ' '. $lastname));
+  $grid_account = $d4os_user->load_user(array('name' => $name));
   $grid_account = $grid_account[0];
 
   if (!is_object($grid_account)) {
@@ -173,7 +172,6 @@ function d4os_ui_auth_grid_login($form, &$form_state) {
   // user exists in the grid but not in the website so create one
   else {
     // check username
-    $name = $firstname. ' '. $lastname;
     $msg = user_validate_name($name);
     if ($msg) {
       drupal_set_message($msg, 'error');
