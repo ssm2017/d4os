@@ -714,7 +714,7 @@ msgid "Online now"
 msgstr "En ligne maintenant"
 
 #: ui/monitoring/d4os_ui_monitor_grid_status/d4os_ui_monitor_grid_status.module:111
-msgid "Online last month"
+msgid "Online last 30 days"
 msgstr "En ligne le mois dernier"
 
 #: ui/monitoring/d4os_ui_monitor_grid_status/d4os_ui_monitor_grid_status.module:112
