@@ -25,6 +25,12 @@ function d4os_ui_monitor_grid_status_block_info() {
 function d4os_ui_monitor_grid_status_block_configure($delta = '') {
   $form = array();
   if ($delta == 'd4os_ui_monitor_grid_infos') {
+    $form['d4os_ui_monitor_grid_status_show_status'] = array(
+      '#type'           => 'checkbox',
+      '#default_value'  => variable_get('d4os_ui_monitor_grid_status_show_status', 1),
+      '#title'          => t('Show grid online status.'),
+      '#description'    => t('Check this option if you want to show the grids online status.'),
+    );
     $form['d4os_ui_monitor_grid_status_show_loginuri'] = array(
       '#type'           => 'checkbox',
       '#default_value'  => variable_get('d4os_ui_monitor_grid_status_show_loginuri', 1),
@@ -37,6 +43,7 @@ function d4os_ui_monitor_grid_status_block_configure($delta = '') {
 
 function d4os_ui_monitor_grid_status_block_save($delta = '', $edit = array()) {
   if ($delta == 'd4os_ui_monitor_grid_infos') {
+    variable_set('d4os_ui_monitor_grid_status_show_status', $edit['d4os_ui_monitor_grid_status_show_status']);
     variable_set('d4os_ui_monitor_grid_status_show_loginuri', $edit['d4os_ui_monitor_grid_status_show_loginuri']);
   }
   return;
@@ -55,8 +62,14 @@ function d4os_ui_monitor_grid_status_block_view($delta = '') {
       $d4os_grid = D4OS_IO::create('Grid');
       $values['data'] = $d4os_grid->get_grid_infos();
 
-      // add the login uri
-      $values['data']->login_uri = variable_get('d4os_default_login_uri', $base_url). ':'. variable_get('d4os_default_login_port', '8002');
+      if (variable_get('d4os_ui_monitor_grid_status_show_status', 0)) {
+        // add the grid status
+        $values['data']->status = theme('d4os_ui_monitor_grid_status', d4os_grid_is_online());
+      }
+      if (variable_get('d4os_ui_monitor_grid_status_show_loginuri', 1)) {
+        // add the login uri
+        $values['data']->login_uri = variable_get('d4os_default_login_uri', $base_url). ':'. variable_get('d4os_default_login_port', '8002');
+      }
       $content = theme('d4os_ui_monitor_grid_status_infos', $values);
       $block['subject'] = t('Grid info');
       $block['content'] = $content;
@@ -92,8 +105,11 @@ function theme_d4os_ui_monitor_grid_status($online) {
 function theme_d4os_ui_monitor_grid_status_infos($values) {
   $values = $values['data'];
   $output = '<div id="grid-stats">';
+  if (isset($values->status)) {
+    $output .= $values->status;
+  }
   $output .= '<ul>';
-  if (variable_get('d4os_ui_monitor_grid_status_show_loginuri', 1)) {
+  if (isset($values->login_uri)) {
     $output .= '<li>'. t('Login uri'). ' : '. $values->login_uri. '</li>';
   }
   $output .= '<li>'. t('Online now'). ' : '. $values->online_now. '</li>';
