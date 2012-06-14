@@ -98,7 +98,7 @@ function theme_d4os_ui_monitor_grid_status_infos($values) {
   }
   $output .= '<li>'. t('Online now'). ' : '. $values->online_now. '</li>';
   $output .= '<li>'. t('Online hypergridders'). ' : '. $values->online_hypergridders. '</li>';
-  $output .= '<li>'. t('Online last month'). ' : '. $values->online_last_month. '</li>';
+  $output .= '<li>'. t('Online last 30 days'). ' : '. $values->online_last_30_days. '</li>';
   $output .= '<li>'. t('Number of members'). ' : '. $values->users_count. '</li>';
   $output .= '<li>'. t('Number of regions'). ' : '. $values->regions_count. '</li>';
   $output .= '</ul>';

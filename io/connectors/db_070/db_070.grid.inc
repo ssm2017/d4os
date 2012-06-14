@@ -30,7 +30,7 @@ class D4OS_IO_db_070_Grid implements D4OS_IO_Grid_Interface {
     if ($d4os_users->response->success) {
 	$values->online_now = $d4os_users->get_online_users_count();
 	$values->online_hypergridders = $d4os_users->get_online_hypergridders_count();
-	$values->online_last_month = $d4os_users->get_online_users_count(2419200);
+	$values->online_last_30_days = $d4os_users->get_online_users_count(2419200);
 	$values->users_count = $d4os_users->get_users_count();
 	$d4os_regions = D4OS_IO::create('Regions');
 	$values->regions_count = $d4os_regions->get_regions_count();
