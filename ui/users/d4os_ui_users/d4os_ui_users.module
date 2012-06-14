@@ -305,13 +305,6 @@ function d4os_ui_users_login_authenticate_validate($form, &$form_state) {
     }
   }
   // TODO : show a message to the users if they are not allowed to log in the grid
-  $admin = user_load(1);
-  if ($form_state['values']['lastname'] == $admin->name) {
-    $form_state['values']['name'] = $admin->name;
-  }
-  else {
-    $form_state['values']['name'] = $form_state['values']['firstname']. ' '. $form_state['values']['lastname'];
-  }
 }
 
 function d4os_ui_users_can_register_on_grid($account) {
@@ -465,11 +458,6 @@ function d4os_ui_users_account_validate($form, &$form_state) {
   $lastname = isset($values['lastname']) ? $values['lastname'] : $names[1];
   $name     = $firstname. ' '. $lastname;
 
-  // check if the lastname is the same one as admin account
-  $admin = user_load(1);
-  if ($lastname == $admin->name) {
-    form_set_error('lastname', t('Please use another last name.'));
-  }
 
   // rebuild the "name" for drupal account
   $values['name'] = $name;
