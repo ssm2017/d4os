@@ -59,42 +59,54 @@ function d4os_ui_users_generate_user($firstname, $lastname, $password, $mail, $h
   return $grid_user;
 }
 
-function d4os_ui_users_validate_name($name, $type, $type_str) {
-  if (!$name) {
-    return t('You must enter a !name.', array('!name'=>$type_str));
+function d4os_ui_users_validate_name($name) {
+  // Return all the strings, so they can see ALL that is wrong with it at one go, 
+  // rather than "correct that, let's see what it complains about next".  Or whackamole as it's called.
+  $error = '';
+
+  // First let Drupal check the name.  Better to do it this way than try to duplicate it's code, coz Drupal changed it.
+  $drupal_validate = user_validate_name($name);
+  if ($drupal_validate) {
+    $error .= '  ' . $drupal_validate;
   }
-  if (substr($name, 0, 1) == ' ') {
-    return t('The !name cannot begin with a space.', array('!name'=>$type_str));
+
+  $names = explode(' ', $name);
+
+  // Check spaces.
+  if (count($names) > 2) {
+    $error .= '  ' . t('You can only use one space, or no spaces in name');
   }
-  if (substr($name, -1) == ' ') {
-    return t('The !name cannot end with a space.', array('!name'=>$type_str));
+
+  // Checks for OpenSim / SL names.
+  if (count($names) == 2) {
+    // Check length.  Drupal allows up to 60.  OpenSim and SL allow a combined length of up to 63, 31 in first and last names, plus the single space.
+    // So people nearing the limits of OpenSim/SL names (combined name with the space is over 60) are out of luck.
+    // The case where they supply names that are too short is already covered by the space check.  Assuming that 1 is a legal length for first and last names.
+    if (strlen($names[0]) > FIRSTNAME_MAX_LENGTH) {
+      $error .= '  ' . t('The first name %name is too long: it must be %max characters or less.', array('%name' => $names[0], '%max' => FIRSTNAME_MAX_LENGTH));
+    }
+    if (strlen($names[1]) > LASTNAME_MAX_LENGTH) {
+      $error .= '  ' . t('The last name %name is too long: it must be %max characters or less.', array('%name' => $names[1], '%max' => LASTNAME_MAX_LENGTH));
+    }
+
+    // Check for illegal characters by SL's standards, I don't think OpenSim cares.  
+    // On the other hand, I've NEVER seen any names with the supposedly allowed punctuation characters.
+    // If such names ever pop up, then it's easy enough to add the allowed characters here.
+    $OSL_allowed = '/[^a-z0-9]/i';
+    if (preg_match($OSL_allowed, $names[0]) == 1) {
+      $error .= '  ' . t('The first name contains an illegal character.');
+    }
+    if (preg_match($OSL_allowed, $names[1]) == 1) {
+      $error .= '  ' . t('The last name contains an illegal character.');
+    }
   }
-  if (strpos($name, '  ') !== FALSE) {
-    return t('The !name cannot contain multiple spaces in a row.', array('!name'=>$type_str));
+  else {
+    // Check for email addresses I think?  Maybe it's this OpenID thing I don't use?  Should be an option to turn that off.
+    if (strpos($name, '@') !== FALSE && !eregi('@([0-9a-z](-?[0-9a-z])*.)+[a-z]{2}([zmuvtg]|fo|me)?$', $name)) {
+      $error .= '  ' . t('The name is not a valid authentication ID.');
+    }
   }
-  if (preg_match('/[^\x{80}-\x{F7} a-z0-9@_.\'-]/i', $name)) {
-    return t('The !name contains an illegal character.', array('!name'=>$type_str));
-  }
-  if (preg_match('/[\x{80}-\x{A0}'.          // Non-printable ISO-8859-1 + NBSP
-                   '\x{AD}'.                 // Soft-hyphen
-                   '\x{2000}-\x{200F}'.      // Various space characters
-                   '\x{2028}-\x{202F}'.      // Bidirectional text overrides
-                   '\x{205F}-\x{206F}'.      // Various text hinting characters
-                   '\x{FEFF}'.               // Byte order mark
-                   '\x{FF01}-\x{FF60}'.      // Full-width latin
-                   '\x{FFF9}-\x{FFFD}'.      // Replacement characters
-                   '\x{0}]/u',               // NULL byte
-                   $name)) {
-    return t('The !name contains an illegal character.', array('!name'=>$type_str));
-  }
-  if (drupal_strlen($name) > USERNAME_MAX_LENGTH) {
-    return t('The username %name is too long: it must be %max characters or less.', array('%name' => $name, '%max' => USERNAME_MAX_LENGTH));
-  }
-  if (strpos($name, '@') !== FALSE && !eregi('@([0-9a-z](-?[0-9a-z])*.)+[a-z]{2}([zmuvtg]|fo|me)?$', $name)) return t('The !name is not a valid authentication ID.', array('!name'=>$type_str));
-  $maxlength = ($type == 'firstname') ? FIRSTNAME_MAX_LENGTH : LASTNAME_MAX_LENGTH;
-  if (strlen($name) > $maxlength) return t('The !name %name is too long: it must be %max characters or less.', array('!name'=>$type_str, '%name' => $name, '%max' => $maxlength));
-  if (count(explode(' ', $name)) > 1) return t('You can not use spaces in !name', array('!name'=>$type_str));
-  return FALSE;
+  return $error;
 }
 
 function d4os_ui_users_get_user_level_roles() {

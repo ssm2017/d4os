@@ -10,8 +10,8 @@
  * other free or open source software licenses.
  */
 
-define('FIRSTNAME_MAX_LENGTH', 32);
-define('LASTNAME_MAX_LENGTH', 32);
+define('FIRSTNAME_MAX_LENGTH', 31);
+define('LASTNAME_MAX_LENGTH', 31);
 
 module_load_include('helpers.inc', 'd4os_ui_users');
 
@@ -475,14 +475,10 @@ function d4os_ui_users_account_validate($form, &$form_state) {
   $values['name'] = $name;
 
   // check the username
-  $firstname_validate = d4os_ui_users_validate_name($firstname, 'firstname', t('first name'));
-  if ($firstname_validate) {
-    form_set_error('firstname', $firstname_validate);
-  }
-  // check the lastname
-  $lastname_validate = d4os_ui_users_validate_name($lastname, 'lastname', t('last name'));
-  if ($lastname_validate) {
-    form_set_error('lastname', $lastname_validate);
+  $name_validate = d4os_ui_users_validate_name($name);
+  if ($name_validate != '') {
+    form_set_error('name', $name_validate);
+    return;
   }
   // check the password length
   if (isset($values['pass']) && !empty($values['pass']) && strlen($values['pass']) < 6) {
