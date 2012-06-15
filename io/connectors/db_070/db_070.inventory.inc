@@ -63,7 +63,7 @@ class D4OS_IO_db_070_Inventory implements D4OS_IO_Inventory_Interface {
       array('folderName' => 'Objects',        'type' => 6,  'version' => 1, 'folderID' => $objects,         'agentID' => $user_uuid, 'parentFolderID' => $my_inventory),
     );
     d4os_io_db_070_set_active('os_robust');
-    $query = db_insert('inventoryfolders');
+    $query = db_insert('inventoryfolders')->fields(array('folderName', 'type', 'version', 'folderID', 'agentID', 'parentFolderID'));
     foreach ($values as $record) {
       $query->values($record);
     }
