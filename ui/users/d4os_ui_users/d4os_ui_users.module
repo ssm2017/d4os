@@ -128,13 +128,10 @@ function d4os_ui_users_login_form(&$form) {
 }
 
 function d4os_ui_users_register_form(&$form) {
-  // workaround for this bug : http://drupal.org/node/760838
   if (isset($form['account'])) {
-    $form['account']['mail']['#weight'] = -2;
     $form['account']['name']['#description'] = 'A two word name is required for grid access.';
   }
   else {
-    $form['mail']['#weight'] = -2;
     $form['name']['#description'] = 'A two word name is required for grid access.';
   }
   array_unshift($form['#validate'], 'd4os_ui_users_account_validate');
