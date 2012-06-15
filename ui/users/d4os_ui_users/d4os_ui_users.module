@@ -137,15 +137,6 @@ function d4os_ui_users_register_form(&$form) {
     $form['mail']['#weight'] = -2;
     $form['name']['#description'] = 'A two word name is required for grid access.';
   }
-  $form['account']['mail2'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('E-mail address confirmation'),
-    '#default_value'  => '',
-    '#maxlength'      => EMAIL_MAX_LENGTH,
-    '#description'    => t('Confirm your email address please.'),
-    '#required'       => TRUE,
-    '#weight'         => -1,
-  );
   array_unshift($form['#validate'], 'd4os_ui_users_account_validate');
 }
 
@@ -389,13 +380,6 @@ function d4os_ui_users_set_grid_user_role($uid) {
 
 function d4os_ui_users_account_validate($form, &$form_state) {
 	$values = &$form_state['values'];
-
-  // check if email address matches
-  if ($values['form_id'] != 'user_profile_form') {
-    if ($values['mail'] != $values['mail2']) {
-      form_set_error('mail2', t('The email address does not match.'));
-    }
-  }
 
   // check for the model
   if (isset($values['model_uuid']) && $values['model_uuid'] == '') {
