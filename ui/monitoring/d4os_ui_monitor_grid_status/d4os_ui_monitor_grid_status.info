@@ -1,0 +1,6 @@
+; $Id$
+name = "d4os ui monitor grid status"
+description = "Some blocks to display grid status."
+package = "d4os ui monitoring"
+core = 7.x
+dependencies[] = d4os

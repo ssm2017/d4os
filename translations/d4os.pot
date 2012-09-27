@@ -1,0 +1,1530 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  d4os.admin.inc: n/a
+#  d4os.module: n/a
+#  d4os.info: n/a
+#  io/services/d4os_io_groups/d4os_io_groups.info: n/a
+#  io/services/d4os_io_offline_messages/d4os_io_offline_messages.info: n/a
+#  io/services/d4os_io_profiles/d4os_io_profiles.info: n/a
+#  io/connectors/db_070/db_070.admin.inc: n/a
+#  ui/users/d4os_ui_users/d4os_ui_users.module: n/a
+#  io/connectors/db_070/db_070.settings.inc: n/a
+#  io/connectors/db_070/db_070.groups.inc: n/a
+#  io/connectors/rest/rest.groups.inc: n/a
+#  io/connectors/db_070/db_070.inventory.inc: n/a
+#  io/connectors/db_070/db_070.plugin.inc: n/a
+#  io/connectors/db_070/db_070.profiles.inc: n/a
+#  io/connectors/rest/rest.profiles.inc: n/a
+#  ui/users/d4os_ui_auth/d4os_ui_auth.admin.inc: n/a
+#  ui/users/d4os_ui_users/d4os_ui_users.admin.inc: n/a
+#  io/services/d4os_io_groups/d4os_io_groups.module: n/a
+#  io/connectors/db_070/db_070.users.inc: n/a
+#  io/connectors/rest/rest.admin.inc: n/a
+#  ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module: n/a
+#  io/services/d4os_io_groups/d4os_io_groups.admin.inc: n/a
+#  io/services/d4os_io_offline_messages/d4os_io_offline_messages.admin.inc: n/a
+#  ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.module: n/a
+#  ui/profiles/d4os_ui_web_profiles/theme/d4os_ui_web_profiles_display.tpl.php: n/a
+#  io/services/d4os_io_offline_messages/d4os_io_offline_messages.module: n/a
+#  io/services/d4os_io_offline_messages/d4os_io_offline_messages.install: n/a
+#  io/services/d4os_io_profiles/d4os_io_profiles.admin.inc: n/a
+#  io/services/d4os_io_profiles/d4os_io_profiles.module: n/a
+#  ui/extra/d4os_ui_loginpage/d4os_ui_loginpage.module: n/a
+#  ui/extra/d4os_ui_loginpage/d4os_ui_loginpage.info: n/a
+#  ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.info: n/a
+#  ui/users/d4os_ui_auth/d4os_ui_auth.info: n/a
+#  ui/users/d4os_ui_users/d4os_ui_users.info: n/a
+#  ui/monitoring/d4os_ui_monitor_grid_status/d4os_ui_monitor_grid_status.module: n/a
+#  ui/monitoring/d4os_ui_monitor_grid_status/d4os_ui_monitor_grid_status.info: n/a
+#  ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.info: n/a
+#  ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.admin.inc: n/a
+#  ui/users/d4os_ui_auth/d4os_ui_auth.module: n/a
+#  ui/users/d4os_ui_users/d4os_ui_users.helpers.inc: n/a
+#  ui/users/d4os_ui_users/d4os_ui_users.install: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2012-02-17 17:50+0100\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: d4os.admin.inc:22
+msgid "UGAIM"
+msgstr ""
+
+#: d4os.admin.inc:29
+msgid "Users"
+msgstr ""
+
+#: d4os.admin.inc:35;37
+msgid "Default users server URI"
+msgstr ""
+
+#: d4os.admin.inc:42;46
+msgid "Default users server port"
+msgstr ""
+
+#: d4os.admin.inc:52
+msgid "Grid"
+msgstr ""
+
+#: d4os.admin.inc:58;60
+msgid "Default grid server URI"
+msgstr ""
+
+#: d4os.admin.inc:65;69
+msgid "Default grid server port"
+msgstr ""
+
+#: d4os.admin.inc:75
+msgid "LoginURI"
+msgstr ""
+
+#: d4os.admin.inc:81;83
+msgid "Default login URI"
+msgstr ""
+
+#: d4os.admin.inc:88;92
+msgid "Default login port"
+msgstr ""
+
+#: d4os.admin.inc:98
+msgid "Pictures"
+msgstr ""
+
+#: d4os.admin.inc:104
+msgid "Default asset pictures server URL"
+msgstr ""
+
+#: d4os.admin.inc:106
+msgid "Default asset pictures server URL. This server is rendering assets to images."
+msgstr ""
+
+#: d4os.admin.inc:112
+msgid "Debugging enabled ?"
+msgstr ""
+
+#: d4os.admin.inc:114
+msgid "Enable debugging output of server/client interactions. Enter the full absolute path name of the file to write the debugging output to, such as /tmp/d4os.log. It must be writable to the user who runs your web server. Leave blank for no debugging"
+msgstr ""
+
+#: d4os.admin.inc:138
+msgid "Select io system"
+msgstr ""
+
+#: d4os.admin.inc:141
+msgid "Select what system you would like to use for input/output."
+msgstr ""
+
+#: d4os.admin.inc:155
+msgid "Use these tabs to configure the io settings"
+msgstr ""
+
+#: d4os.admin.inc:162
+msgid "Use these tabs to configure the services settings"
+msgstr ""
+
+#: d4os.admin.inc:169
+msgid "Use these tabs to configure the ui settings"
+msgstr ""
+
+#: d4os.admin.inc:176
+msgid "Use these tabs to configure the ui grid monitor settings"
+msgstr ""
+
+#: d4os.module:26
+msgid "OpenSim grid management"
+msgstr ""
+
+#: d4os.module:78
+msgid "admin d4os"
+msgstr ""
+
+#: d4os.module:36;37
+msgid "d4os settings"
+msgstr ""
+
+#: d4os.module:45
+msgid "IO"
+msgstr ""
+
+#: d4os.module:46
+msgid "IO settings"
+msgstr ""
+
+#: d4os.module:53
+msgid "Connectors"
+msgstr ""
+
+#: d4os.module:54
+msgid "d4os io settings"
+msgstr ""
+
+#: d4os.module:62
+msgid "UI"
+msgstr ""
+
+#: d4os.module:63
+msgid "UI settings"
+msgstr ""
+
+#: d4os.info:0
+msgid "d4os"
+msgstr ""
+
+#: d4os.info:0
+msgid "Main module to manage other ones. This module only have some tools used by the other modules."
+msgstr ""
+
+#: d4os.info:0 io/services/d4os_io_groups/d4os_io_groups.info:0 io/services/d4os_io_offline_messages/d4os_io_offline_messages.info:0 io/services/d4os_io_profiles/d4os_io_profiles.info:0
+msgid "d4os io"
+msgstr ""
+
+#: io/connectors/db_070/db_070.admin.inc:22
+msgid "Database system"
+msgstr ""
+
+#: io/connectors/db_070/db_070.admin.inc:23
+msgid "Same as website"
+msgstr ""
+
+#: io/connectors/db_070/db_070.admin.inc:23
+msgid "Single"
+msgstr ""
+
+#: io/connectors/db_070/db_070.admin.inc:23
+msgid "Multiple"
+msgstr ""
+
+#: io/connectors/db_070/db_070.admin.inc:25
+msgid "Select if you are using only one database for all the OpenSim grid or if you are using separated bases."
+msgstr ""
+
+#: io/connectors/db_070/db_070.admin.inc:30
+msgid "Single base"
+msgstr ""
+
+#: io/connectors/db_070/db_070.admin.inc:33
+msgid "Fill these values if you are using a single database."
+msgstr ""
+
+#: io/connectors/db_070/db_070.admin.inc:37;39;93;95;141;143;190;192
+msgid "Host"
+msgstr ""
+
+#: io/connectors/db_070/db_070.admin.inc:43;45;99;101;147;149;196;198
+msgid "Database"
+msgstr ""
+
+#: io/connectors/db_070/db_070.admin.inc:49;51;105;107;153;155;202;204
+msgid "Prefix"
+msgstr ""
+
+#: io/connectors/db_070/db_070.admin.inc:55;57;111;113;159;161;208;210
+msgid "Username"
+msgstr ""
+
+#: io/connectors/db_070/db_070.admin.inc:61;63;117;119;165;167;214;216 ui/users/d4os_ui_users/d4os_ui_users.module:355
+msgid "Password"
+msgstr ""
+
+#: io/connectors/db_070/db_070.admin.inc:69
+msgid "Multiple bases"
+msgstr ""
+
+#: io/connectors/db_070/db_070.admin.inc:72
+msgid "Fill these values if you are using multiple databases."
+msgstr ""
+
+#: io/connectors/db_070/db_070.admin.inc:78 io/connectors/db_070/db_070.settings.inc:25
+msgid "Robust"
+msgstr ""
+
+#: io/connectors/db_070/db_070.admin.inc:86;134;183
+msgid "Same as"
+msgstr ""
+
+#: io/connectors/db_070/db_070.admin.inc:89;137;186
+msgid "Select if this database is the same as another one."
+msgstr ""
+
+#: io/connectors/db_070/db_070.admin.inc:126
+msgid "Profile"
+msgstr ""
+
+#: io/connectors/db_070/db_070.admin.inc:175
+msgid "groups"
+msgstr ""
+
+#: io/connectors/db_070/db_070.groups.inc:81 io/connectors/rest/rest.groups.inc:52
+msgid "User added to group."
+msgstr ""
+
+#: io/connectors/db_070/db_070.groups.inc:152
+msgid "User removed from group invites."
+msgstr ""
+
+#: io/connectors/db_070/db_070.groups.inc:182
+msgid "User removed from group."
+msgstr ""
+
+#: io/connectors/db_070/db_070.inventory.inc:295;450
+msgid "Could not find folders for this user."
+msgstr ""
+
+#: io/connectors/db_070/db_070.inventory.inc:471
+msgid "Could not find items for this user."
+msgstr ""
+
+#: io/connectors/db_070/db_070.inventory.inc:615
+msgid "Could not find appearance for this user."
+msgstr ""
+
+#: io/connectors/db_070/db_070.inventory.inc:708
+msgid "Inventory folders created and default items added."
+msgstr ""
+
+#: io/connectors/db_070/db_070.inventory.inc:711
+msgid "Appearance added."
+msgstr ""
+
+#: io/connectors/db_070/db_070.inventory.inc:719
+msgid "Appearance deleted."
+msgstr ""
+
+#: io/connectors/db_070/db_070.inventory.inc:724
+msgid "Inventory folders deleted."
+msgstr ""
+
+#: io/connectors/db_070/db_070.inventory.inc:729
+msgid "Inventory items deleted."
+msgstr ""
+
+#: io/connectors/db_070/db_070.plugin.inc:99;101
+msgid "The !datastore datastore is not available."
+msgstr ""
+
+#: io/connectors/db_070/db_070.plugin.inc:100
+msgid "Please inform the website admins."
+msgstr ""
+
+#: io/connectors/db_070/db_070.plugin.inc:101
+msgid "d4os io db"
+msgstr ""
+
+#: io/connectors/db_070/db_070.profiles.inc:91
+msgid "User profile updated"
+msgstr ""
+
+#: io/connectors/db_070/db_070.profiles.inc:153 io/connectors/rest/rest.profiles.inc:64
+msgid "User profile added"
+msgstr ""
+
+#: io/connectors/db_070/db_070.profiles.inc:162
+msgid "Classifieds deleted."
+msgstr ""
+
+#: io/connectors/db_070/db_070.profiles.inc:165
+msgid "User notes deleted."
+msgstr ""
+
+#: io/connectors/db_070/db_070.profiles.inc:168
+msgid "User picks deleted."
+msgstr ""
+
+#: io/connectors/db_070/db_070.profiles.inc:171
+msgid "User profile deleted."
+msgstr ""
+
+#: io/connectors/db_070/db_070.profiles.inc:174
+msgid "User partner link deleted."
+msgstr ""
+
+#: io/connectors/db_070/db_070.profiles.inc:177
+msgid "User settings deleted."
+msgstr ""
+
+#: io/connectors/db_070/db_070.settings.inc:23 ui/users/d4os_ui_auth/d4os_ui_auth.admin.inc:20 ui/users/d4os_ui_users/d4os_ui_users.admin.inc:21
+msgid "None"
+msgstr ""
+
+#: io/connectors/db_070/db_070.settings.inc:24
+msgid "Website"
+msgstr ""
+
+#: io/connectors/db_070/db_070.settings.inc:28
+msgid "Profiles"
+msgstr ""
+
+#: io/connectors/db_070/db_070.settings.inc:31 io/services/d4os_io_groups/d4os_io_groups.module:65;26
+msgid "Groups"
+msgstr ""
+
+#: io/connectors/db_070/db_070.users.inc:378
+msgid "User deleted from grid."
+msgstr ""
+
+#: io/connectors/rest/rest.admin.inc:23 ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:460
+msgid "Url"
+msgstr ""
+
+#: io/connectors/rest/rest.admin.inc:25
+msgid "Default URI"
+msgstr ""
+
+#: io/connectors/rest/rest.admin.inc:30
+msgid "Login"
+msgstr ""
+
+#: io/connectors/rest/rest.admin.inc:32
+msgid "Default login"
+msgstr ""
+
+#: io/connectors/rest/rest.admin.inc:36;38
+msgid "Default password"
+msgstr ""
+
+#: io/connectors/rest/rest.groups.inc:46
+msgid "Could not add user to group."
+msgstr ""
+
+#: io/connectors/rest/rest.groups.inc:62
+msgid "User removed from groups."
+msgstr ""
+
+#: io/connectors/rest/rest.profiles.inc:81
+msgid "User removed from profiles."
+msgstr ""
+
+#: io/services/d4os_io_groups/d4os_io_groups.admin.inc:22
+msgid "Default Group"
+msgstr ""
+
+#: io/services/d4os_io_groups/d4os_io_groups.admin.inc:23
+msgid "Add new users to a group."
+msgstr ""
+
+#: io/services/d4os_io_groups/d4os_io_groups.admin.inc:29
+msgid "Default group uuid"
+msgstr ""
+
+#: io/services/d4os_io_groups/d4os_io_groups.admin.inc:46
+msgid "This uuid for group !uuid is not registered on the grid."
+msgstr ""
+
+#: io/services/d4os_io_groups/d4os_io_groups.module:19
+msgid "OpenSim grid groups management"
+msgstr ""
+
+#: io/services/d4os_io_groups/d4os_io_groups.module:71
+msgid "Register to default group"
+msgstr ""
+
+#: io/services/d4os_io_groups/d4os_io_groups.module:72
+msgid "Select if you would like to be registered in the default group."
+msgstr ""
+
+#: io/services/d4os_io_groups/d4os_io_groups.module:39
+msgid "admin d4os ui groups"
+msgstr ""
+
+#: io/services/d4os_io_groups/d4os_io_groups.module:27
+msgid "d4os ui groups settings"
+msgstr ""
+
+#: io/services/d4os_io_groups/d4os_io_groups.info:0
+msgid "d4os io groups"
+msgstr ""
+
+#: io/services/d4os_io_groups/d4os_io_groups.info:0
+msgid "This module is managing inworld groups."
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.admin.inc:22
+msgid "Send mails"
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.admin.inc:24
+msgid "Select if you allow the users to receive emails for online messages."
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.admin.inc:29 ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.module:170
+msgid "Filters"
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.admin.inc:35
+msgid "Allow group messages"
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.admin.inc:37
+msgid "Select if you allow the groups to store online messages."
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.admin.inc:41
+msgid "Filtered dialogs"
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.admin.inc:43
+msgid "Enter a comma separated list of ids to select filtered message dialogs. See !link for a complete list."
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.admin.inc:47
+msgid "Forbidden uuids"
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.admin.inc:50
+msgid "Enter the forbidden uuids, one by line."
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.admin.inc:55;67
+msgid "Debug"
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.admin.inc:60
+msgid "Emergency"
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.admin.inc:61
+msgid "Alert"
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.admin.inc:62
+msgid "Critical"
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.admin.inc:63
+msgid "Error"
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.admin.inc:64
+msgid "Warning"
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.admin.inc:65
+msgid "Notice"
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.admin.inc:66 ui/profiles/d4os_ui_web_profiles/theme/d4os_ui_web_profiles_display.tpl.php:158
+msgid "Info"
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.admin.inc:71
+msgid "Log level"
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.admin.inc:74
+msgid "Define the log level"
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.module:43;45
+msgid "Provides offline_message methods to services applications. Requires services.module."
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.module:84
+msgid "Your offline message module is responding."
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.module:285
+msgid "E-mail sent from @site-name"
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.module:286
+msgid "@name sent you the following message:"
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.module:288
+msgid "You need to log in the grid to answer this message."
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.module:79
+msgid "admin d4os io offline_messages"
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.module:51;60;67
+msgid "Offline messages"
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.module:52
+msgid "d4os io services offline_messages settings"
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.module:61;68
+msgid "d4os io services offline_message"
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.install:15
+msgid "The single table necessary for offline message storage."
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.info:0
+msgid "d4os io offline messages"
+msgstr ""
+
+#: io/services/d4os_io_offline_messages/d4os_io_offline_messages.info:0
+msgid "Provides tools to manage offline messages in an opensim grid."
+msgstr ""
+
+#: io/services/d4os_io_profiles/d4os_io_profiles.admin.inc:19
+msgid "User registration"
+msgstr ""
+
+#: io/services/d4os_io_profiles/d4os_io_profiles.admin.inc:25
+msgid "Create profile on new registration"
+msgstr ""
+
+#: io/services/d4os_io_profiles/d4os_io_profiles.admin.inc:26
+msgid "Select if you would like to create a new user profile on new user grid registration."
+msgstr ""
+
+#: io/services/d4os_io_profiles/d4os_io_profiles.admin.inc:32
+msgid "Profile texts"
+msgstr ""
+
+#: io/services/d4os_io_profiles/d4os_io_profiles.admin.inc:38
+msgid "Profile about text"
+msgstr ""
+
+#: io/services/d4os_io_profiles/d4os_io_profiles.admin.inc:44
+msgid "Profile first life tab text"
+msgstr ""
+
+#: io/services/d4os_io_profiles/d4os_io_profiles.admin.inc:51
+msgid "Profile images"
+msgstr ""
+
+#: io/services/d4os_io_profiles/d4os_io_profiles.admin.inc:57
+msgid "Default image profile uuid"
+msgstr ""
+
+#: io/services/d4os_io_profiles/d4os_io_profiles.admin.inc:64
+msgid "Default first life tab image profile uuid"
+msgstr ""
+
+#: io/services/d4os_io_profiles/d4os_io_profiles.module:19 ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:21
+msgid "OpenSim grid profiles management"
+msgstr ""
+
+#: io/services/d4os_io_profiles/d4os_io_profiles.module:39
+msgid "admin d4os ui profiles"
+msgstr ""
+
+#: io/services/d4os_io_profiles/d4os_io_profiles.module:26
+msgid "Profiles registration"
+msgstr ""
+
+#: io/services/d4os_io_profiles/d4os_io_profiles.module:27
+msgid "d4os ui profiles registration settings"
+msgstr ""
+
+#: io/services/d4os_io_profiles/d4os_io_profiles.info:0
+msgid "d4os io profiles"
+msgstr ""
+
+#: io/services/d4os_io_profiles/d4os_io_profiles.info:0
+msgid "This module is managing inworld profiles."
+msgstr ""
+
+#: ui/extra/d4os_ui_loginpage/d4os_ui_loginpage.module:20
+msgid "OpenSim grid loginpage management"
+msgstr ""
+
+#: ui/extra/d4os_ui_loginpage/d4os_ui_loginpage.module:38
+msgid "admin d4os ui loginpage"
+msgstr ""
+
+#: ui/extra/d4os_ui_loginpage/d4os_ui_loginpage.module:27
+msgid "Loginpage"
+msgstr ""
+
+#: ui/extra/d4os_ui_loginpage/d4os_ui_loginpage.module:28
+msgid "Viewer login page"
+msgstr ""
+
+#: ui/extra/d4os_ui_loginpage/d4os_ui_loginpage.info:0
+msgid "d4os ui loginpage"
+msgstr ""
+
+#: ui/extra/d4os_ui_loginpage/d4os_ui_loginpage.info:0
+msgid "This module is managing loginpage."
+msgstr ""
+
+#: ui/extra/d4os_ui_loginpage/d4os_ui_loginpage.info:0 ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.info:0 ui/users/d4os_ui_auth/d4os_ui_auth.info:0 ui/users/d4os_ui_users/d4os_ui_users.info:0
+msgid "d4os ui"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_grid_status/d4os_ui_monitor_grid_status.module:20;28
+msgid "Grid status"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_grid_status/d4os_ui_monitor_grid_status.module:21;39
+msgid "Grid info"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_grid_status/d4os_ui_monitor_grid_status.module:70
+msgid "Show loginuri."
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_grid_status/d4os_ui_monitor_grid_status.module:71
+msgid "Check this option if you want to show the loginuri."
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_grid_status/d4os_ui_monitor_grid_status.module:96
+msgid "Online"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_grid_status/d4os_ui_monitor_grid_status.module:99
+msgid "Offline"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_grid_status/d4os_ui_monitor_grid_status.module:108
+msgid "Login uri"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_grid_status/d4os_ui_monitor_grid_status.module:110
+msgid "Online now"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_grid_status/d4os_ui_monitor_grid_status.module:111
+msgid "Online last 30 days"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_grid_status/d4os_ui_monitor_grid_status.module:112
+msgid "Number of users"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_grid_status/d4os_ui_monitor_grid_status.module:113
+msgid "Number of regions"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_grid_status/d4os_ui_monitor_grid_status.info:0
+msgid "d4os ui monitor grid status"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_grid_status/d4os_ui_monitor_grid_status.info:0
+msgid "Some blocks to display grid status."
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_grid_status/d4os_ui_monitor_grid_status.info:0 ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.info:0
+msgid "d4os ui monitoring"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.module:21
+msgid "OpenSim grid users monitoring"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.module:48
+msgid "You can not see the users list."
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.module:49 ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:98;107 ui/users/d4os_ui_users/d4os_ui_users.module:95;108;325;374
+msgid "Please try again later."
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.module:56
+msgid "UserID"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.module:60
+msgid "FirstName"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.module:64
+msgid "LastName"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.module:68;88
+msgid "loginTime"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.module:72
+msgid "logoutTime"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.module:76
+msgid "RegionName"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.module:80
+msgid "LastPosition"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.module:111
+msgid "There are no users currently logged in the grid."
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.module:124
+msgid "There %users in the Presence table."
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.module:126
+msgid "There %users Online users in the GridUser table."
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.module:153
+msgid "Limit list by"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.module:162
+msgid "See only online users (\"Online\" set in \"GridUser\" table)"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.module:163
+msgid "See only online users since 24 hours"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.module:206
+msgid "Never logged out"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.module:125;127
+msgid "is 1 user"
+msgid_plural "are @count users"
+msgstr[0] ""
+msgstr[1] ""
+
+#: ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.module:38
+msgid "view d4os ui monitor online users list"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.module:27
+msgid "Online Users"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.module:28
+msgid "Shows a list of online users."
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.info:0
+msgid "d4os ui monitor users"
+msgstr ""
+
+#: ui/monitoring/d4os_ui_monitor_users/d4os_ui_monitor_users.info:0
+msgid "Provides a page to display currently online users"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.admin.inc:21
+msgid "Enable profile tab"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.admin.inc:23
+msgid "Select if you want to enable the profile tab for users."
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.admin.inc:27
+msgid "Disable Drupal user view tab"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.admin.inc:29
+msgid "Select if you want to disable the Drupal user view tab. You need to flush caches after changing this option."
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.admin.inc:39 ui/users/d4os_ui_users/d4os_ui_users.admin.inc:166
+msgid "Images width"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.admin.inc:43
+msgid "Define the width of the profile images."
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.admin.inc:48 ui/users/d4os_ui_users/d4os_ui_users.admin.inc:175
+msgid "Use lightbox2"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.admin.inc:50
+msgid "Select if you want to use the lightbox 2 effect to display images in profile."
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.admin.inc:60
+msgid "The cache menu was rebuilt."
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:97;106
+msgid "You can not see user profiles."
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:116 ui/users/d4os_ui_users/d4os_ui_users.module:238
+msgid "User not registered InWorld."
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:134;142;253;484 ui/users/d4os_ui_users/d4os_ui_users.module:572
+msgid "No picture available"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:135;254;485
+msgid "!user's profile picture"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:143
+msgid "!user's first life picture"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:166
+msgid "No partner"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:174
+msgid "Never connected to the grid"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:286;517
+msgid "Change image"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:298;338;369;409;465;529;559;597;639
+msgid "Save"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:314
+msgid "Change region"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:387
+msgid "Change partner"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:398 ui/users/d4os_ui_users/d4os_ui_users.module:607
+msgid "Name"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:430
+msgid "No website defined"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:445
+msgid "Change url"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:625
+msgid "Profile options"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:628
+msgid "Show profile"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:635
+msgid "Check the options to allow profile access to other users."
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:753
+msgid "Unable to send the partner request. The email address is not valid."
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:766
+msgid "A request was sent to the avatar."
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:780
+msgid "Partner request from !site"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:781
+msgid "Dear !username\n\nThe user called !source_name would like you to accept his partnership request.\n\nYou may accept it by clicking on this link or copying and pasting it in your browser:\n\n!request_url!"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:817;844
+msgid "Could not find the user in the grid."
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:898
+msgid "Saved"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:901
+msgid "An error occured during saving"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:69
+msgid "admin d4os ui web profile"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:70
+msgid "access d4os ui web profile"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:33
+msgid "Inworld profile"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:34
+msgid "Shows the user's inworld profile."
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:49
+msgid "Web profile"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.module:50
+msgid "d4os ui profile settings"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.info:0
+msgid "d4os ui web profiles"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/d4os_ui_web_profiles.info:0
+msgid "User interface to manage users profiles. The module is allowing the display of a new tab in the user profile to view and edit inworld profile."
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/theme/d4os_ui_web_profiles_display.tpl.php:54;80
+msgid "Inworld"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/theme/d4os_ui_web_profiles_display.tpl.php:57;109;112
+msgid "Web"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/theme/d4os_ui_web_profiles_display.tpl.php:60;120;123
+msgid "Interests"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/theme/d4os_ui_web_profiles_display.tpl.php:63;131;134
+msgid "Picks"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/theme/d4os_ui_web_profiles_display.tpl.php:66;142;145
+msgid "Classifieds"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/theme/d4os_ui_web_profiles_display.tpl.php:69;153
+msgid "First life"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/theme/d4os_ui_web_profiles_display.tpl.php:72;166
+msgid "My notes"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/theme/d4os_ui_web_profiles_display.tpl.php:75;177
+msgid "Options"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/theme/d4os_ui_web_profiles_display.tpl.php:83;156
+msgid "Photo"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/theme/d4os_ui_web_profiles_display.tpl.php:85
+msgid "Key"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/theme/d4os_ui_web_profiles_display.tpl.php:87
+msgid "Firstname"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/theme/d4os_ui_web_profiles_display.tpl.php:89
+msgid "Lastname"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/theme/d4os_ui_web_profiles_display.tpl.php:91
+msgid "Born"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/theme/d4os_ui_web_profiles_display.tpl.php:93
+msgid "Partner"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/theme/d4os_ui_web_profiles_display.tpl.php:96
+msgid "Last connection"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/theme/d4os_ui_web_profiles_display.tpl.php:98
+msgid "Home region"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/theme/d4os_ui_web_profiles_display.tpl.php:101
+msgid "About text"
+msgstr ""
+
+#: ui/profiles/d4os_ui_web_profiles/theme/d4os_ui_web_profiles_display.tpl.php:169
+msgid "Notes"
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.admin.inc:26
+msgid "Drupal only"
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.admin.inc:27
+msgid "Grid only"
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.admin.inc:28
+msgid "Drupal -> Grid"
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.admin.inc:29
+msgid "Grid -> Drupal"
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.admin.inc:33;39
+msgid "Login flow"
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.admin.inc:42
+msgid "Define the login flow."
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.admin.inc:50
+msgid "Users synchronization"
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.admin.inc:55
+msgid "This email address is used when a user from the grid is created on the website and the user doesnt have an email address."
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.admin.inc:56
+msgid " <p>You can use tokens from this list :"
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.admin.inc:58
+msgid "The uuid of the inworld user"
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.admin.inc:59
+msgid "The url of the website"
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.admin.inc:63
+msgid "Default email"
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.admin.inc:71
+msgid "Assigned role"
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.admin.inc:74
+msgid "This role is assigned to synchronized users without an email address."
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.module:19
+msgid "OpenSim grid auth management"
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.module:91
+msgid "Sorry, unable to log in using the website credentials. Trying grid process."
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.module:98
+msgid "Sorry, unable to log in using the grid credentials. Trying website process."
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.module:126
+msgid "Grid authentication has failed. Please try again."
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.module:134
+msgid "Grid authentication has failed. Please try again. Or create an account"
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.module:139
+msgid "Grid Authentication Success"
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.module:184
+msgid "A new email address was generated. You will need to update it to be able to recover your password if needed."
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.module:186
+msgid "Change the email value on your !account_page"
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.module:195
+msgid "User !name added on the website."
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.module:203
+msgid "Error adding user !name on the website."
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.module:39
+msgid "admin d4os ui auth"
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.module:26
+msgid "auth"
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.module:27
+msgid "d4os ui auth settings"
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.info:0
+msgid "d4os ui auth"
+msgstr ""
+
+#: ui/users/d4os_ui_auth/d4os_ui_auth.info:0
+msgid "This module is managing user authentication by the website only, the grid only, or both. It is allowing you to synchronize users between grid and Drupal website. If a user is on the grid and not registered on the website, when the user tries to log in the website, his website account is created and vice versa."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:32
+msgid "User level"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:33
+msgid "That usage is NOT supported by OpenSim devs. Use at your own risk. Side effects unknown. More infos can be found here !link"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:40
+msgid "Default user level"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:44
+msgid "The default user level for new users."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:50
+msgid "Blocked"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:53
+msgid "-1 : Resident:Login blocked"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:60
+msgid "0 : <strong>Resident:GOD_NOT</strong>"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:67
+msgid "1 : Resident:GOD_LIKE"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:74
+msgid "20 : Resident:Payment info on account"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:81
+msgid "30 : Testing:Payment info on account"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:88
+msgid "40 : Testing:No payment info on account"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:95
+msgid "50 : Testing:No payment info on account"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:102
+msgid "60 : Member Estatute:Payment info on account"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:109
+msgid "70 : Member Estatute:Payment info on account"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:116
+msgid "80 : Linden Contracted"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:123
+msgid "90 : Linden Contracted"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:130
+msgid "100 : GOD_CUSTOMER_SERVICE"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:137
+msgid "150 : GOD_LIAISON"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:144
+msgid "200 : <strong>GOD_FULL</strong>"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:151
+msgid "250 : GOD_MAINTENANCE"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:159 ui/users/d4os_ui_users/d4os_ui_users.module:554;590
+msgid "Models"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:160
+msgid "UUID of the users to use as models for new registrations."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:170
+msgid "Define the width of the model images."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:177
+msgid "Select if you want to use the lightbox 2 effect to display images for models."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:180
+msgid "Model"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:181
+msgid "Model uuid"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:182
+msgid "Model name"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:183
+msgid "Model picture url"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:223
+msgid "Default roles"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:224
+msgid "Assign website roles depending on special actions."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:230
+msgid "Grid user role"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:233
+msgid "This role is assigned to user when they register on the grid or when a new website account is created from the grid auth."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:237
+msgid "Region owner role"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:240
+msgid "This role is assigned to region owners when running cron."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:248
+msgid "Default Home"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:249
+msgid "Define a home place for new users."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:255
+msgid "Home region uuid"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:262
+msgid "Home location"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:265;273
+msgid "Default value"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:270
+msgid "Home look at"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:291
+msgid "This uuid for model !id is not registered on the grid."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.admin.inc:302
+msgid "This uuid for region !uuid is not registered on the grid."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.helpers.inc:63
+msgid "You must enter a !name."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.helpers.inc:64
+msgid "The !name cannot begin with a space."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.helpers.inc:65
+msgid "The !name cannot end with a space."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.helpers.inc:66
+msgid "The !name cannot contain multiple spaces in a row."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.helpers.inc:67;78
+msgid "The !name contains an illegal character."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.helpers.inc:80
+msgid "The !name is not a valid authentication ID."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.helpers.inc:82
+msgid "The !name %name is too long: it must be %max characters or less."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.helpers.inc:83
+msgid "You can not use spaces in !name"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:21
+msgid "OpenSim grid users management"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:94;324
+msgid "You can not register an account."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:107;373
+msgid "You can not edit an account."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:120;140;193
+msgid "First Name"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:127;148;203
+msgid "Last Name"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:143
+msgid "Enter the first name for the avatar. Spaces are NOT allowed; Punctuation is not allowed except for periods, hyphens, and underscores."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:152
+msgid "Enter the last name for the avatar. Spaces are NOT allowed; Punctuation is not allowed except for periods, hyphens, and underscores."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:170
+msgid "E-mail address confirmation"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:173
+msgid "Confirm your email address please."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:198
+msgid "Enter the first name for the avatar. Spaces are not allowed. Punctuation is not allowed except for periods, hyphens, and underscores."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:208
+msgid "Enter the last name for the avatar. Spaces are not allowed. Punctuation is not allowed except for periods, hyphens, and underscores."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:243
+msgid "InWorld"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:247
+msgid "Uuid"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:305
+msgid "Using openid."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:344
+msgid "This form will allow you to create an account on the grid."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:348
+msgid "Password check"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:351
+msgid "You need to enter your password for validation."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:362
+msgid "Create avatar"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:383
+msgid "Wrong password."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:388;438
+msgid "Please select a model."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:432
+msgid "The email address does not match."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:452
+msgid "Please use another last name."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:459
+msgid "first name"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:464
+msgid "last name"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:470
+msgid "The Password field must be at least 6 characters in length."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:474
+msgid "The Email field must contain a valid email address."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:486;496
+msgid "This name already exists"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:557
+msgid "Please select an avatar to use. You will be able to change it later."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:573
+msgid "!user's picture"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:607
+msgid "Selected"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:607
+msgid "Picture"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:64
+msgid "admin d4os ui users"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:65
+msgid "search d4os ui users"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:28
+msgid "User autocomplete"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:34
+msgid "users"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:35
+msgid "d4os ui users settings"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:43
+msgid "Grid registration"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.module:44
+msgid "Registers the user on the grid."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.install:32
+msgid "The single table necessary for events storage."
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.info:0
+msgid "d4os ui users"
+msgstr ""
+
+#: ui/users/d4os_ui_users/d4os_ui_users.info:0
+msgid "User interface to manage users. This module is adding registration and user account modification on the grid ."
+msgstr ""
+

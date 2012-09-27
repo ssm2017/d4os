@@ -1,0 +1,246 @@
+<?php
+/**
+ * @package    d4os_ui_auth
+ * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+ * @link      http://www.d4os.org
+ * @license   GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+ * D4os is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ */
+
+/**
+ * Implementation of hook help
+ */
+function d4os_ui_auth_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#d4os_ui_auth':
+      return '<p>' . t('OpenSim grid auth management') . '</p>';
+  }
+}
+
+function d4os_ui_auth_menu() {
+  $items = array();
+  $items['admin/config/d4os/ui/auth'] = array(
+    'title'             => 'auth',
+    'description'       => 'd4os ui auth settings',
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('d4os_ui_auth_settings'),
+    'access arguments'  => array('admin d4os ui auth'),
+    'type'              => MENU_NORMAL_ITEM,
+    'file'              => 'd4os_ui_auth.admin.inc'
+   );
+  return $items;
+}
+
+function d4os_ui_auth_permission() {
+  return array(
+    'admin d4os ui auth' => array(
+      'title' => t('Admin d4os auth'),
+      'description' => t('Admin d4os auth.'),
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_form_alter
+ */
+function d4os_ui_auth_form_alter(&$form, $form_state, $form_id) {
+  if ($form_id == 'user_login_block' || $form_id == 'user_login') {
+    $form['#validate'] = array('d4os_ui_auth_login_validate');
+  }
+}
+
+/**
+ * Login form _validate
+ */
+function d4os_ui_auth_login_validate($form, &$form_state) {
+
+  // check for the openid module
+  if (module_exists('openid')) {
+    if (!empty($form_state['values']['openid_identifier'])) {
+      drupal_set_message(t('Using openid.'), 'warning');
+      openid_login_validate($form, $form_state);
+      return;
+    }
+  }
+
+  // get login flow
+  $login_flow = variable_get('d4os_ui_auth_login_flow', 0);
+
+  switch ($login_flow) {
+    // drupal only
+    case 0:
+      user_login_name_validate($form, $form_state);
+      user_login_authenticate_validate($form, $form_state);
+      user_login_final_validate($form, $form_state);
+      break;
+    // grid only
+    case 1:
+      if (!d4os_ui_auth_grid_login($form, $form_state)) {
+        drupal_set_message(t('Grid authentication has failed. Please try again.'), 'error');
+      }
+      break;
+    // drupal -> grid
+    case 2:
+      if (!user_authenticate($form_state['values']['name'], $form_state['values']['pass'])) {
+        drupal_set_message(t('Sorry, unable to log in using the website credentials. Trying grid login.'), 'error');
+        if (!d4os_ui_auth_grid_login($form, $form_state)) {
+          drupal_set_message(t('Grid authentication has failed. Please try again.'), 'error');
+          user_login_final_validate($form, $form_state);
+        }
+      }
+      else {
+        user_login_name_validate($form, $form_state);
+        user_login_authenticate_validate($form, $form_state);
+        user_login_final_validate($form, $form_state);
+      }
+      break;
+    // grid -> drupal
+    case 3:
+      if (!d4os_ui_auth_grid_login($form, $form_state)) {
+        drupal_set_message(t('Sorry, unable to log in using the grid credentials. Trying website login.'), 'error');
+        if (user_authenticate($form_state['values']['name'], $form_state['values']['pass'])) {
+          user_login_name_validate($form, $form_state);
+          user_login_authenticate_validate($form, $form_state);
+          user_login_final_validate($form, $form_state);
+
+          // Create the grid user if they are a member of the role that can register.
+          $account = user_load_by_name($form_state['values']['name']);
+          $register_role = variable_get('d4os_ui_users_register_role', 0);
+          if ($register_role && isset($account->roles[$register_role])) {
+            drupal_set_message(t('Creating a grid account for you.'));
+            d4os_ui_users_grid_registration_form_validate($form, &$form_state);
+            d4os_ui_users_grid_registration_form_submit($form, &$form_state, FALSE);
+          }
+        }
+      }
+      break;
+  }
+}
+
+/**
+ * Inworld login
+ */
+function d4os_ui_auth_grid_login($form, &$form_state) {
+  // check if the datastore is alive
+  $d4os_user = D4OS_IO::create('Users');
+  $d4os_user->ping();
+  if ($d4os_user->response->success !== TRUE) {
+    return FALSE;
+  }
+  // get the credentials
+  $name = $form_state['values']['name'];
+  $pass = $form_state['values']['pass'];
+
+  // get the user
+  $grid_account = $d4os_user->load_user(array('name' => $name));
+  $grid_account = $grid_account[0];
+
+  if (!is_object($grid_account)) {
+    return FALSE;
+  }
+  $data = array();
+
+  // check the password
+  // md5(md5($pass) . ":" . $user['passwordSalt'])
+  if ($grid_account->passwordHash != md5(md5($pass). ':'. $grid_account->passwordSalt)) {
+    return FALSE;
+  }
+
+  // log in the website
+  drupal_set_message(t('Grid authentication success.'));
+  $account = user_load_by_name($form_state['values']['name']);
+  if ($account) {
+    global $user;
+    $user = $account;
+    // update the account of the user
+    $data['pass'] = $pass;
+    user_save($account, $data);
+    // authenticate the user
+    $form_state['uid'] = $account->uid;
+    user_login_name_validate($form, $form_state);
+    user_authenticate($form_state['values']['name'], $form_state['values']['pass']);
+    user_login_final_validate($form, $form_state);
+    return TRUE;
+  }
+  // user exists in the grid but not in the website so create one
+  else {
+    // check username
+    $msg = user_validate_name($name);
+    if ($msg) {
+      drupal_set_message($msg, 'error');
+      return FALSE;
+    }
+    // check email
+    $data['mail'] = $grid_account->Email;
+    $email_error_msg = user_validate_mail($grid_account->Email);
+    if ($email_error_msg) {
+      drupal_set_message($email_error_msg, 'error');
+      $data['mail'] = d4os_ui_auth_generate_mail($grid_account->PrincipalID);
+      $assigned_role = variable_get('d4os_ui_auth_default_missing_email_role',0);
+      if ($assigned_role != 0) {
+        $data['roles'] = array($assigned_role => 'role');
+      }
+    }
+
+    // save user
+    $data['name']   = $name;
+    $data['pass']   = $pass;
+    $data['status'] = 1;
+    $account = user_save(NULL, $data);
+
+    // assign the default grid user role
+    d4os_ui_users_set_grid_user_role($account->uid);
+
+    // warn the user about email
+    if ($email_error_msg) {
+      drupal_set_message(t('A new email address was generated. You will need to update it to be able to recover your password if needed.'), 'warning');
+      drupal_set_message($data['mail'], 'warning');
+      drupal_set_message(t('Change the email value on your !account_page', array('!account_page' => l('account page', '/user/'. $account->uid. '/edit'))), 'warning');
+    }
+
+    // login the user
+    if ($account->uid) {
+      global $user;
+      $user = $account;
+      $form_state['uid'] = $account->uid;
+      user_login_name_validate($form, $form_state);
+      user_authenticate($form_state['values']['name'], $form_state['values']['pass']);
+      user_login_final_validate($form, $form_state);
+      drupal_set_message(t('User !name added on the website.', array('!name' => $name)));
+      // save grid user
+      $grid_account->UserLevel = d4os_ui_users_get_user_level();
+      $d4os_user->set_uuid($account->uid, $grid_account->PrincipalID);
+      $d4os_user->save_user($grid_account);
+      return TRUE;
+    }
+    else {
+      drupal_set_message(t('Error adding user !name on the website.', array('!name' => $name)));
+      user_login_final_validate($form, $form_state);
+      return FALSE;
+    }
+  }
+}
+
+function d4os_ui_auth_generate_mail($uuid) {
+  global $base_root;
+  $domain = $base_root;
+  $replacers = array(
+    'http://'   => '',
+    'https://'  => '',
+  );
+  foreach ($replacers as $key=>$value) {
+    $domain = str_replace($key, $value, $domain);
+  }
+  $string = variable_get('d4os_ui_auth_default_missing_email', '[uuid]@[livesite]');
+  $replacers = array(
+    '[uuid]'      =>$uuid,
+    '[livesite]'  =>$domain,
+  );
+  foreach ($replacers as $key=>$value) {
+    $string = str_replace($key, $value, $string);
+  }
+  return $string;
+}

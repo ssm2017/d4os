@@ -1,0 +1,87 @@
+<?php
+
+/**
+ * @package    d4os_ui_loginpage
+ * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+ * @link      http://www.d4os.org
+ * @license   GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+ * D4os is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ */
+
+/**
+ * Implementation of hook help
+ */
+function d4os_ui_loginpage_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#d4os_ui_loginpage':
+      return '<p>' . t('OpenSim grid loginpage management') . '</p>';
+  }
+}
+
+function d4os_ui_loginpage_menu() {
+  $items = array();
+  $items['loginpage'] = array(
+    'title' => 'Loginpage',
+    'description' => 'Viewer login page',
+    'page callback' => 'd4os_ui_loginpage_render',
+    'access callback' => true,
+    'type' => MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+function d4os_ui_loginpage_perm() {
+  return array(
+    'admin d4os ui loginpage'
+  );
+}
+
+function d4os_ui_loginpage_theme() {
+  return array(
+    'd4os_ui_loginpage' => array(
+      'variables' => array(
+        'site_name' => NULL,
+        'site_slogan' => NULL,
+        'grid_info_block' => NULL,
+        'grid_status_bloc' => NULL
+      ),
+      'template' => 'd4os-ui-loginpage',
+    ),
+  );
+}
+
+function d4os_ui_loginpage_render() {
+  // get grid infos blocks
+  $grid_info_block = drupal_render(
+    _block_get_renderable_array(
+        _block_render_blocks(
+          array(
+            block_load('d4os_ui_monitor_grid_status', 'd4os_ui_monitor_grid_infos')
+          )
+       )
+    )
+  );
+
+  $grid_status_bloc = drupal_render(
+    _block_get_renderable_array(
+        _block_render_blocks(
+          array(
+            block_load('d4os_ui_monitor_grid_status', 'd4os_ui_monitor_grid_status')
+          )
+       )
+    )
+  );
+
+  $variables = array(
+    'site_name' => variable_get('site_name', ''),
+    'site_slogan' => variable_get('site_slogan', ''),
+    'grid_info_block' => $grid_info_block,
+    'grid_status_bloc' => $grid_status_bloc
+  );
+
+  // render the output
+  echo theme('d4os_ui_loginpage', $variables);
+}

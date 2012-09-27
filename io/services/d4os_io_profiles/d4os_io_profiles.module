@@ -1,0 +1,87 @@
+<?php
+/**
+ * @package    d4os_io_profiles
+ * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+ * @link      http://www.d4os.org
+ * @license   GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+ * D4os is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ */
+
+/**
+ * Implementation of hook help
+ */
+function d4os_io_profiles_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#d4os_io_profiles':
+      return '<p>' . t('OpenSim grid profiles management') . '</p>';
+  }
+}
+
+function d4os_io_profiles_menu() {
+
+  $items['admin/config/d4os/io/profiles/registration'] = array(
+    'title'             => 'Profiles registration',
+    'description'       => 'd4os io profiles registration settings',
+    'page callback'     => 'drupal_get_form',
+    'page arguments'    => array('d4os_io_profiles_admin'),
+    'access arguments'  => array('admin d4os io profiles'),
+    'type'              => MENU_NORMAL_ITEM,
+    'file'              => 'd4os_io_profiles.admin.inc'
+   );
+  return $items;
+}
+
+function d4os_io_profiles_permission() {
+  return array(
+    'admin d4os io profiles' => array(
+      'title' => t('Admin d4os io profiles'),
+      'description' => t('Admin d4os io profiles.'),
+    ),
+  );
+}
+
+function d4os_io_profiles_user_delete($edit, $account, $method) {
+  // get the user uuid
+  $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $edit->uid))->fetchField();
+  if ($uuid !== FALSE) {
+    $d4os_profiles = D4OS_IO::create('Profiles');
+    $d4os_profiles->delete_profile($uuid);
+  }
+}
+
+function d4os_io_profiles_form_alter(&$form, $form_state, $form_id) {
+  if ($form_id == 'd4os_ui_users_grid_registration_form') {
+    if (variable_get('d4os_io_profiles_create_profile_on_register', 1)) {
+      $form['#submit'][] = 'd4os_io_profiles_grid_registration_fom_submit';
+    }
+  }
+}
+
+function d4os_io_profiles_grid_registration_fom_submit($form, &$form_state) {
+  // check if the user is registered
+  $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => arg(1)))->fetchField();
+  // assign the role
+  if ($uuid) {
+    $d4os_profiles = D4OS_IO::create('Profiles');
+    $d4os_profiles->save_profile(
+      d4os_io_profiles_create_profile($uuid)
+    );
+  }
+}
+
+function d4os_io_profiles_create_profile($uuid) {
+  $profile = new stdClass();
+  $profile->useruuid = $uuid;
+  $profile->profileSkillsMask = 0;
+  $profile->profileWantToMask = 0;
+  $profile->profileAboutText = variable_get('d4os_io_profiles_default_profile_about_text', 'I am a new user');
+  $profile->profileFirstText = variable_get('d4os_io_profiles_default_profile_first_text', 'I am as real as you are');
+  $profile->profileImage = variable_get('d4os_io_profiles_default_profile_image',UUID_ZERO);
+  $profile->profileFirstImage = variable_get('d4os_io_profiles_default_profile_first_image',UUID_ZERO);
+  $profile->profileURL = '';
+  $profile->profilePartner = '';
+  return $profile;
+}

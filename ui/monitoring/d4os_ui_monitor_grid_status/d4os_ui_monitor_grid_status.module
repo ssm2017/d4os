@@ -1,0 +1,123 @@
+<?php
+/**
+ * @package    d4os_ui_grid_monitor
+ * @subpackage grid_status
+ * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+ * @link      http://www.d4os.org
+ * @license   GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+ * D4os is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ */
+
+function d4os_ui_monitor_grid_status_block_info() {
+  $blocks = array();
+  $blocks['d4os_ui_monitor_grid_status'] = array(
+    'info' => t('Grid status'),
+  );
+  $blocks['d4os_ui_monitor_grid_infos'] = array(
+    'info' => t('Grid infos'),
+  );
+  return $blocks;
+}
+
+function d4os_ui_monitor_grid_status_block_configure($delta = '') {
+  $form = array();
+  if ($delta == 'd4os_ui_monitor_grid_infos') {
+    $form['d4os_ui_monitor_grid_status_show_status'] = array(
+      '#type'           => 'checkbox',
+      '#default_value'  => variable_get('d4os_ui_monitor_grid_status_show_status', 1),
+      '#title'          => t('Show grid online status.'),
+      '#description'    => t('Check this option if you want to show the grids online status.'),
+    );
+    $form['d4os_ui_monitor_grid_status_show_loginuri'] = array(
+      '#type'           => 'checkbox',
+      '#default_value'  => variable_get('d4os_ui_monitor_grid_status_show_loginuri', 1),
+      '#title'          => t('Show loginuri.'),
+      '#description'    => t('Check this option if you want to show the loginuri.'),
+    );
+  }
+  return $form;
+}
+
+function d4os_ui_monitor_grid_status_block_save($delta = '', $edit = array()) {
+  if ($delta == 'd4os_ui_monitor_grid_infos') {
+    variable_set('d4os_ui_monitor_grid_status_show_status', $edit['d4os_ui_monitor_grid_status_show_status']);
+    variable_set('d4os_ui_monitor_grid_status_show_loginuri', $edit['d4os_ui_monitor_grid_status_show_loginuri']);
+  }
+  return;
+}
+
+function d4os_ui_monitor_grid_status_block_view($delta = '') {
+  global $base_url;
+  $block = array();
+  switch ($delta) {
+    case 'd4os_ui_monitor_grid_status':
+      $block['subject'] = t('Grid status');
+      $block['content'] = theme('d4os_ui_monitor_grid_status', d4os_grid_is_online());
+      break;
+    case 'd4os_ui_monitor_grid_infos':
+      $values = array();
+      $d4os_grid = D4OS_IO::create('Grid');
+      $values['data'] = $d4os_grid->get_grid_infos();
+
+      if (variable_get('d4os_ui_monitor_grid_status_show_status', 0)) {
+        // add the grid status
+        $values['data']->status = theme('d4os_ui_monitor_grid_status', d4os_grid_is_online());
+      }
+      if (variable_get('d4os_ui_monitor_grid_status_show_loginuri', 1)) {
+        // add the login uri
+        $values['data']->login_uri = variable_get('d4os_default_login_uri', $base_url). ':'. variable_get('d4os_default_login_port', '8002');
+      }
+      $content = theme('d4os_ui_monitor_grid_status_infos', $values);
+      $block['subject'] = t('Grid info');
+      $block['content'] = $content;
+      break;
+  }
+  return $block;
+}
+
+function d4os_ui_monitor_grid_status_theme() {
+  return array(
+    // status
+    'd4os_ui_monitor_grid_status' => array(
+      'arguments' => array('online' => FALSE),
+    ),
+    // status
+    'd4os_ui_monitor_grid_status_infos' => array(
+      'arguments' => array('values' => array()),
+    ),
+  );
+}
+
+function theme_d4os_ui_monitor_grid_status($online) {
+  $output = '';
+  if ($online) {
+    $output .= '<div id="grid_status" class="messages status">'. t('Online'). '</div>';
+  }
+  else {
+    $output .= '<div id="grid_status" class="messages error">'. t('Offline'). '</div>';
+  }
+  return $output;
+}
+
+function theme_d4os_ui_monitor_grid_status_infos($values) {
+  $values = $values['data'];
+  $output = '<div id="grid-stats">';
+  if (isset($values->status)) {
+    $output .= $values->status;
+  }
+  $output .= '<ul>';
+  if (isset($values->login_uri)) {
+    $output .= '<li>'. t('Login uri'). ' : '. $values->login_uri. '</li>';
+  }
+  $output .= '<li>'. t('Online now'). ' : '. $values->online_now. '</li>';
+  $output .= '<li>'. t('Online hypergridders'). ' : '. $values->online_hypergridders. '</li>';
+  $output .= '<li>'. t('Online last 30 days'). ' : '. $values->online_last_30_days. '</li>';
+  $output .= '<li>'. t('Number of members'). ' : '. $values->users_count. '</li>';
+  $output .= '<li>'. t('Number of regions'). ' : '. $values->regions_count. '</li>';
+  $output .= '</ul>';
+  $output .= '</div>';
+  return $output;
+}

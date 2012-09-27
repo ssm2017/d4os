@@ -1,0 +1,7 @@
+; $Id$
+name = "d4os io groups"
+description = "This module is managing inworld groups."
+package = d4os io
+core = 7.x
+dependencies[] = d4os
+dependencies[] = d4os_ui_users

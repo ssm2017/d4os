@@ -1,0 +1,15 @@
+D4os is a set of modules to manage an OpenSim grid using drupal.
+
+***** THIS IS AN ALPHA STAGE USE IT AT YOUR OWN RISK AND NOT IN A PRODUCTION SITE *****
+
+more infos can be found in http://d4os.org
+
+****************
+Installation :
+****************
+  * install OpenSim in grid mode using mysql as datastore
+  * extract the archive in your drupal modules folder (sites/all/modules)
+  * go to you modules admin page and enable the modules (admin/build/modules)
+  * go to the d4os admin pages and set the values to fit your OpenSim installation (admin/settings/d4os)
+  * if using the database module, you need to configure the databases urls (admin/settings/d4os/io/db)
+  * if using the rest module, you need to get files from io rest plugin folder and copy them to a code igniter installation and configure settings.
