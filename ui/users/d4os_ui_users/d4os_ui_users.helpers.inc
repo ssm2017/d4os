@@ -60,7 +60,7 @@ function d4os_ui_users_generate_user($firstname, $lastname, $password, $mail, $h
 }
 
 function d4os_ui_users_validate_name($name) {
-  // Return all the strings, so they can see ALL that is wrong with it at one go, 
+  // Return all the strings, so they can see ALL that is wrong with it at one go,
   // rather than "correct that, let's see what it complains about next".  Or whackamole as it's called.
   $error = '';
 
@@ -89,7 +89,7 @@ function d4os_ui_users_validate_name($name) {
       $error .= '  ' . t('The last name %name is too long: it must be %max characters or less.', array('%name' => $names[1], '%max' => LASTNAME_MAX_LENGTH));
     }
 
-    // Check for illegal characters by SL's standards, I don't think OpenSim cares.  
+    // Check for illegal characters by SL's standards, I don't think OpenSim cares.
     // On the other hand, I've NEVER seen any names with the supposedly allowed punctuation characters.
     // If such names ever pop up, then it's easy enough to add the allowed characters here.
     $OSL_allowed = '/[^a-z0-9]/i';
@@ -101,9 +101,11 @@ function d4os_ui_users_validate_name($name) {
     }
   }
   else {
-    // Check for email addresses I think?  Maybe it's this OpenID thing I don't use?  Should be an option to turn that off.
-    if (strpos($name, '@') !== FALSE && !eregi('@([0-9a-z](-?[0-9a-z])*.)+[a-z]{2}([zmuvtg]|fo|me)?$', $name)) {
-      $error .= '  ' . t('The name is not a valid authentication ID.');
+    // Check for openid.
+    if (module_exists('openid')) {
+      if (strpos($name, '@') !== FALSE && !eregi('@([0-9a-z](-?[0-9a-z])*.)+[a-z]{2}([zmuvtg]|fo|me)?$', $name)) {
+        $error .= '  ' . t('The name is not a valid authentication ID.');
+      }
     }
   }
   return $error;
