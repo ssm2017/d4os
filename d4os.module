@@ -14,12 +14,12 @@ module_load_include('helpers.inc', 'd4os');
 
 if (!defined('D4OS_IO_SYSTEM')) {
   define('D4OS_IO_SYSTEM', variable_get('d4os_io_system', 0));
-  if (!D4OS_IO_SYSTEM || D4OS_IO_SYSTEM == 'none') {
-    drupal_set_message(t('You need to define an IO system for D4os. Go to !link to set it please.', array('!link' => l('this page', 'admin/config/d4os/io/connectors'))), 'error');
-  }
 }
 
 function d4os_init() {
+  if (!D4OS_IO_SYSTEM || D4OS_IO_SYSTEM == 'none') {
+    drupal_set_message(t('You need to define an IO system for D4os. Go to !link to set it please.', array('!link' => l('this page', 'admin/config/d4os/io/connectors'))), 'error');
+  }
   d4os_io_load();
 }
 
