@@ -143,23 +143,15 @@ function d4os_ui_users_profile_form(&$form) {
 }
 
 /**
- * Implement hook_element_info()
+ * Implement hook_element_info_alter()
  */
-function d4os_element_info()
-{
+function d4os_element_info_alter(&$types) {
   // Change the length of the passwords.  OpenSim/SL have a limit of 16 characters.  Anything longer than that and you have locked yourself out.
   // TODO - does not change it on the login form, but if badly wrong passwords can't get into the system, then should not matter.  Should fix that anyway.
-  $types['password'] = array(
-    '#size' => PASSWORD_MAX_LENGTH,
-    '#maxlength' => PASSWORD_MAX_LENGTH,
-  );
-
-  $types['password_confirm'] = array(
-    '#size' => PASSWORD_MAX_LENGTH,
-    '#maxlength' => PASSWORD_MAX_LENGTH,
-  );
-
-  return $types;
+  $types['password']['#size'] = PASSWORD_MAX_LENGTH;
+  $types['password']['#maxlength'] = PASSWORD_MAX_LENGTH;
+  $types['password_confirm']['#size'] = PASSWORD_MAX_LENGTH;
+  $types['password_confirm']['#maxlength'] = PASSWORD_MAX_LENGTH;
 }
 
 function d4os_ui_users_user_view($account, $view_mode, $langcode) {
