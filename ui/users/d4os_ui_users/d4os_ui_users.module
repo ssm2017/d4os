@@ -77,6 +77,7 @@ function d4os_ui_users_permission() {
 }
 
 function d4os_ui_users_cron() {
+  return ; // TODO : cron is broken
   // do the job
   d4os_ui_users_set_region_owner_role();
 }
@@ -436,18 +437,16 @@ function d4os_ui_users_account_validate($form, &$form_state) {
 
 function d4os_ui_users_search_info() {
   return array(
-    'title' => t('Avatar by uuid'),
+    'title' => 'Avatar by uuid',
     'path' => 'uuid'
   );
 }
 
 function d4os_ui_users_search_access() {
-  //return user_access('search d4os ui users');
-  return TRUE;
+  return user_access('search d4os ui users');
 }
 
 function d4os_ui_users_search_execute($keys = NULL, $conditions = NULL) {
-  // TODO : not working
   $find = array();
 
   $keys = preg_replace('!\*+!', '%', $keys);
