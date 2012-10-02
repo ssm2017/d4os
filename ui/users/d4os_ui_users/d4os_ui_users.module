@@ -16,6 +16,9 @@ define('PASSWORD_MAX_LENGTH', 16);
 
 module_load_include('helpers.inc', 'd4os_ui_users');
 
+/**
+ *  Implements hook_help().
+ */
 function d4os_ui_users_help($path, $arg) {
   switch ($path) {
     case 'admin/help#d4os_ui_users':
@@ -23,6 +26,9 @@ function d4os_ui_users_help($path, $arg) {
   }
 }
 
+/**
+ *  Implements hook_menu().
+ */
 function d4os_ui_users_menu() {
   $items = array();
   $items['grid/users/autocomplete'] = array(
@@ -52,6 +58,9 @@ function d4os_ui_users_menu() {
   return $items;
 }
 
+/**
+ *  Implements hook_theme().
+ */
 function d4os_ui_users_theme() {
   return array(
     'd4os_ui_users_models_select_form' => array(
@@ -61,7 +70,7 @@ function d4os_ui_users_theme() {
 }
 
 /**
- * Hook permission
+ *  Implements hook_permission().
  */
 function d4os_ui_users_permission() {
   return array(
@@ -76,12 +85,18 @@ function d4os_ui_users_permission() {
   );
 }
 
+/**
+ *  Implements hook_cron().
+ */
 function d4os_ui_users_cron() {
   return ; // TODO : cron is broken
   // do the job
   d4os_ui_users_set_region_owner_role();
 }
 
+/**
+ *  Implements hook_form_alter().
+ */
 function d4os_ui_users_form_alter(&$form, $form_state, $form_id) {
   switch ($form_id) {
 
@@ -144,7 +159,7 @@ function d4os_ui_users_profile_form(&$form) {
 }
 
 /**
- * Implement hook_element_info_alter()
+ *  Implements hook_element_info_alter()
  */
 function d4os_element_info_alter(&$types) {
   // Change the length of the passwords.  OpenSim/SL have a limit of 16 characters.
@@ -155,6 +170,9 @@ function d4os_element_info_alter(&$types) {
   $types['password']['#maxlength'] = PASSWORD_MAX_LENGTH;
 }
 
+/**
+ *  Implements hook_user_view().
+ */
 function d4os_ui_users_user_view($account, $view_mode, $langcode) {
   // check if the user exists in the grid
   $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $account->uid))->fetchField();
@@ -175,6 +193,9 @@ function d4os_ui_users_user_view($account, $view_mode, $langcode) {
   }
 }
 
+/**
+ *  Implements hook_user_delete().
+ */
 function d4os_ui_users_user_delete($edit, $account, $method) {
   // check if the user exists in the grid
   $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $edit->uid))->fetchField();
@@ -187,6 +208,9 @@ function d4os_ui_users_user_delete($edit, $account, $method) {
   }
 }
 
+/**
+ *  Implements hook_user_update().
+ */
 function d4os_ui_users_user_update(&$edit, $account, $category) {
   // check if the user is admin
   if ($account->uid < 2) return;
@@ -435,6 +459,9 @@ function d4os_ui_users_account_validate($form, &$form_state) {
   }
 }
 
+/**
+ *  Implements hook_search_info().
+ */
 function d4os_ui_users_search_info() {
   return array(
     'title' => 'Avatar by uuid',
@@ -442,10 +469,16 @@ function d4os_ui_users_search_info() {
   );
 }
 
+/**
+ *  Implements hook_search_access().
+ */
 function d4os_ui_users_search_access() {
   return user_access('search d4os ui users');
 }
 
+/**
+ *  Implements hook_search_execute().
+ */
 function d4os_ui_users_search_execute($keys = NULL, $conditions = NULL) {
   $find = array();
 
