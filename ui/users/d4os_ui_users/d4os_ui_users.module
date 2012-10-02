@@ -473,32 +473,6 @@ function d4os_ui_users_search_execute($keys = NULL, $conditions = NULL) {
   return $find;
 }
 
-function d4os_ui_users_search($op = 'search', $keys = NULL, $skip_access_check = FALSE) {
-  switch ($op) {
-    case 'name':
-      if ($skip_access_check || user_access('search d4os ui users')) {
-        return 'Avatars par uuid';
-      }
-    case 'search':
-      if (user_access('search d4os ui users')) {
-        $find = array();
-        // Replace wildcards with MySQL/PostgreSQL wildcards.
-        $keys = preg_replace('!\*+!', '%', $keys);
-        $query = "SELECT u.name, u.uid FROM {users} AS u"
-              . " LEFT JOIN {d4os_ui_users} AS du ON du.UUID='%s'"
-              . " WHERE u.uid=du.uid";
-        $result = pager_query($query, 15, 0, NULL, $keys);
-        while ($account = db_fetch_object($result)) {
-          $find[] = array(
-            'title' => $account->name,
-            'link'  => url('user/'. $account->uid, array('absolute' => TRUE))
-          );
-        }
-        return $find;
-      }
-  }
-}
-
 function d4os_ui_users_avatars_models_select_form(&$form) {
 // TODO : use caching
   // get the list of models
