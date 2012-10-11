@@ -356,9 +356,8 @@ function d4os_ui_users_grid_registration_form_validate($form, &$form_state) {
       $form_state['user_exists_on_grid']['msg'] = t('An avatar with the same name and email already exists on the grid.');
     }
     // check if the password is the same
-    if (md5(md5($form_state['values']['pass']) . ":" . $grid_user->passwordSalt) == $grid_user->passwordHash) {
-      $form_state['user_exists_on_grid']['same_pass'] = TRUE;
-      $form_state['user_exists_on_grid']['msg'] .= t('An avatar with the same password already exists on the grid.');
+    if (md5(md5($form_state['values']['pass']) . ":" . $grid_user->passwordSalt) != $grid_user->passwordHash) {
+      form_set_error(t('An avatar with the same name already exists on the grid but the password is different as the website account one.<br/>Set the same password on the website account as the grid account one and try again.'));
     }
     if (!empty($form_state['user_exists_on_grid']['msg'])) {
       drupal_set_message($form_state['user_exists_on_grid']['msg'], 'error');
@@ -384,11 +383,6 @@ function d4os_ui_users_grid_registration_form_submit($form, &$form_state, $redir
   // check if the user already exists on the grid
   if (isset($form_state['user_exists_on_grid']['grid_users'][0])) {
     $grid_user = $form_state['user_exists_on_grid']['grid_users'][0];
-    // update the password if different
-    if ($form_state['user_exists_on_grid']['same_email'] && !$form_state['user_exists_on_grid']['same_pass']) {
-      $grid_user->passwordSalt  = md5(microtime() . mt_rand(0,0xffff));
-      $grid_user->passwordHash  = md5(md5($form_state['values']['pass']) . ":" . $grid_user->passwordSalt);
-    }
   }
   else {
     // get names
