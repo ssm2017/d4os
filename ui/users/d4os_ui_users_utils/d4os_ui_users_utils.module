@@ -1,0 +1,157 @@
+<?php
+/**
+ * @package   d4os_ui_users
+ * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+ * @link      http://www.d4os.org
+ * @license   GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+ * D4os is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ */
+/**
+ *  Implements hook_menu().
+ */
+function d4os_ui_users_utils_menu() {
+  $items = array();
+  $items['grid/users/utils'] = array(
+    'title'             => 'Users utils',
+    'page callback'     => 'd4os_ui_users_utils_page',
+    'access arguments'  => array('access users utils'),
+    'type'              => MENU_NORMAL_ITEM,
+  );
+  $items['grid/users/utils/avatar/delete/confirm/%'] = array(
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('d4os_ui_users_utils_delete_avatar_confirm_form', 6),
+    'access arguments'  => array('access users utils'),
+  );
+  return $items;
+}
+
+/**
+ *  Implements hook_permission().
+ */
+function d4os_ui_users_utils_permission() {
+  return array(
+    'access users utils' => array(
+      'title' => t('Access users utils'),
+      'description' => t('Allow the user to use the users utils. Beware with this option.'),
+    ),
+  );
+}
+
+function d4os_ui_users_utils_page() {
+  $content = array();
+  // check the datastore
+  $d4os_user = D4OS_IO::create('Users');
+  $d4os_user->ping();
+  // display the delete avatar form
+  if ($d4os_user->response->success === TRUE) {
+    $content[] = drupal_get_form('d4os_ui_users_utils_delete_avatar_form');
+  }
+  return $content;
+}
+
+function d4os_ui_users_utils_delete_avatar_form($form, &$form_state, $params = array()) {
+  $form = array();
+  $form['delete_avatar'] = array(
+    '#type' => 'fieldset',
+    '#title' => 'Delete user',
+    '#collapsible' => FALSE
+  );
+  $form['delete_avatar']['uuid'] = array(
+    '#type' => 'textfield',
+    '#title' => 'User UUID',
+    '#size' => 36,
+    '#maxsize' => 36,
+    '#description' => t('Enter the UUID of the avatar you would like to delete.')
+  );
+  $form['delete_avatar']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Delete Avatar',
+//    '#attributes' => array('onclick' => 'if(!confirm("Really Delete?")){return false;}'),
+  );
+  return $form;
+}
+
+function d4os_ui_users_utils_delete_avatar_form_validate($form, &$form_state) {
+  // check the datastore
+  $d4os_user = D4OS_IO::create('Users');
+  $d4os_user->ping();
+  if ($d4os_user->response->success !== TRUE) {
+    drupal_set_message(t('You can not edit an account.'), 'error');
+    drupal_set_message(t('Please try again later.'), 'error');
+    return;
+  }
+  // get the grid user account
+  $grid_user = $d4os_user->load_user(array('PrincipalID' => $form_state['values']['uuid']));
+  if ($grid_user !== NULL) {
+    $form_state['values']['grid_user'] = $grid_user[0];
+  }
+  else {
+    form_set_error('uuid', t('There is no avatar with this uuid on the grid.'));
+  }
+}
+
+function d4os_ui_users_utils_delete_avatar_form_submit($form, &$form_state) {
+  $form_state['redirect'] = 'grid/users/utils/avatar/delete/confirm/'. $form_state['values']['uuid'];
+}
+
+function d4os_ui_users_utils_delete_avatar_confirm_form($form, &$form_state, $uuid) {
+  // check the datastore
+  $d4os_user = D4OS_IO::create('Users');
+  $d4os_user->ping();
+  if ($d4os_user->response->success !== TRUE) {
+    drupal_set_message(t('You can not edit an account.'), 'error');
+    drupal_set_message(t('Please try again later.'), 'error');
+    return;
+  }
+  // get the grid user account
+  $grid_user = $d4os_user->load_user(array('PrincipalID' => $uuid));
+  if ($grid_user !== NULL) {
+    $grid_user = $grid_user[0];
+  }
+  $form = array();
+  $form['avatar_infos'] = array(
+    '#type' => 'fieldset',
+    '#title' => 'Avatar infos',
+    '#collapsible' => FALSE
+  );
+  $form['avatar_infos']['firstname'] = array(
+    '#type' => 'item',
+    '#title' => 'FirstName',
+    '#markup' => $grid_user->FirstName
+  );
+  $form['avatar_infos']['lastname'] = array(
+    '#type' => 'item',
+    '#title' => 'LastName',
+    '#markup' => $grid_user->LastName
+  );
+  $form['avatar_infos']['email'] = array(
+    '#type' => 'item',
+    '#title' => 'Email',
+    '#markup' => $grid_user->Email
+  );
+  $form['uuid'] = array(
+    '#type' => 'hidden',
+    '#value' => $uuid
+  );
+  $question = t('Do you really want to delete this avatar account on the grid ?');
+  return confirm_form($form, $question, "grid/users/utils");
+}
+
+function d4os_ui_users_utils_delete_avatar_confirm_form_submit($form, &$form_state) {
+  // check the datastore
+  $d4os_user = D4OS_IO::create('Users');
+  $d4os_user->ping();
+  if ($d4os_user->response->success !== TRUE) {
+    drupal_set_message(t('You can not edit an account.'), 'error');
+    drupal_set_message(t('Please try again later.'), 'error');
+    return;
+  }
+  // delete the grid user
+  $d4os_user->delete_user($form_state['values']['uuid']);
+  // delete drupal link
+  db_query("DELETE FROM {d4os_ui_users} WHERE UUID = :uuid", array(':uuid' => $form_state['values']['uuid']));
+  $form_state['redirect'] = 'grid/users/utils';
+}

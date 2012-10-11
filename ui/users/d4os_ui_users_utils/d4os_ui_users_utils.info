@@ -1,0 +1,6 @@
+; $Id$
+name = "d4os ui users utils"
+description = "Some usefull tools to manage users."
+package = d4os ui
+core = 7.x
+dependencies[] = d4os_ui_users
