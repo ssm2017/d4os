@@ -89,7 +89,7 @@ function d4os_ui_users_permission() {
  *  Implements hook_cron().
  */
 function d4os_ui_users_cron() {
-  return ; // TODO : cron is broken
+//  return ; // TODO : cron is broken
   // do the job
   d4os_ui_users_set_region_owner_role();
 }
@@ -317,7 +317,7 @@ function d4os_ui_users_grid_registration_form_validate($form, &$form_state) {
   if ($d4os_user->response->success !== TRUE) {
     drupal_set_message(t('You can not edit an account.'), 'error');
     drupal_set_message(t('Please try again later.'), 'error');
-    form_set_error();
+    form_set_error('');
   }
 
   // get the account
@@ -332,9 +332,43 @@ function d4os_ui_users_grid_registration_form_validate($form, &$form_state) {
     form_set_error('pass', t('Wrong password.'));
   }
 
-  // check for the model
-  if (isset($form_state['values']['model_uuid']) && $form_state['values']['model_uuid'] == '') {
-    form_set_error('model', t('Please select a model.'));
+  // check if there is already a user with the same name on the grid
+  $form_state['user_exists_on_grid'] = array(
+    'same_name' => FALSE,
+    'same_email' => FALSE,
+    'same_pass' => FALSE,
+    'msg' => '',
+    'grid_users' => NULL
+  );
+  $form_state['user_exists_on_grid']['grid_users'] = $d4os_user->load_user(array('name' => $account->name));
+  if (isset($form_state['user_exists_on_grid']['grid_users'][0])) {
+    if (count($form_state['user_exists_on_grid']['grid_users']) > 1) {
+      form_set_error('', t('Several users with the same name already exist on the grid. Please contact an administrator.'));
+      return;
+    }
+    $grid_user = $form_state['user_exists_on_grid']['grid_users'][0];
+    $form_state['user_exists_on_grid']['same_name'] = TRUE;
+    $form_state['user_exists_on_grid']['msg'] = t('An avatar with the same name already exists on the grid.');
+
+    // check if the email address is the same
+    if ($account->mail == $grid_user->Email) {
+      $form_state['user_exists_on_grid']['same_email'] = TRUE;
+      $form_state['user_exists_on_grid']['msg'] = t('An avatar with the same name and email already exists on the grid.');
+    }
+    // check if the password is the same
+    if (md5(md5($form_state['values']['pass']) . ":" . $grid_user->passwordSalt) == $grid_user->passwordHash) {
+      $form_state['user_exists_on_grid']['same_pass'] = TRUE;
+      $form_state['user_exists_on_grid']['msg'] .= t('An avatar with the same password already exists on the grid.');
+    }
+    if (!empty($form_state['user_exists_on_grid']['msg'])) {
+      drupal_set_message($form_state['user_exists_on_grid']['msg'], 'error');
+    }
+  }
+  else {
+    // check for the model
+    if (isset($form_state['values']['model_uuid']) && $form_state['values']['model_uuid'] == '') {
+      form_set_error('model', t('Please select a model.'));
+    }
   }
 }
 
@@ -345,18 +379,31 @@ function d4os_ui_users_grid_registration_form_submit($form, &$form_state, $redir
     $uid = $form_state['uid'];
   $account = user_load($uid);
 
-  // get names
-  $names = explode(' ', $account->name);
-
-  // define the model_uuid
-  $model_uuid = UUID_ZERO;
-  if (isset($form_state['values']['model_uuid'])) {
-    $model_uuid = $form_state['values']['model_uuid'];
-  }
-
-  // build the grid account
-  $grid_user = d4os_ui_users_generate_user($names[0], $names[1], $form_state['values']['pass'], $account->mail, UUID_ZERO, $model_uuid);
   $d4os_user = D4OS_IO::create('Users');
+
+  // check if the user already exists on the grid
+  if (isset($form_state['user_exists_on_grid']['grid_users'][0])) {
+    $grid_user = $form_state['user_exists_on_grid']['grid_users'][0];
+    // update the password if different
+    if ($form_state['user_exists_on_grid']['same_email'] && !$form_state['user_exists_on_grid']['same_pass']) {
+      $grid_user->passwordSalt  = md5(microtime() . mt_rand(0,0xffff));
+      $grid_user->passwordHash  = md5(md5($form_state['values']['pass']) . ":" . $grid_user->passwordSalt);
+    }
+  }
+  else {
+    // get names
+    $names = explode(' ', $account->name);
+
+    // define the model_uuid
+    $model_uuid = UUID_ZERO;
+    if (isset($form_state['values']['model_uuid'])) {
+      $model_uuid = $form_state['values']['model_uuid'];
+    }
+
+    // build the grid account
+    $grid_user = d4os_ui_users_generate_user($names[0], $names[1], $form_state['values']['pass'], $account->mail, UUID_ZERO, $model_uuid);
+  }
+  // save the user on the grid
   $d4os_user->set_uuid($account->uid, $grid_user->PrincipalID);
   $d4os_user->save_user($grid_user);
 
