@@ -215,43 +215,55 @@ function d4os_ui_users_user_update(&$edit, $account, $category) {
   if ($account->uid < 2)
     return;
 
+  $autocreate = variable_get('d4os_ui_users_autocreate_grid_account', 0);
+
   // check if the user is registered on the grid
   $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $account->uid))->fetchField();
-  if ($uuid === FALSE)
+  if (!$autocreate && $uuid === FALSE) {
     return;
+  }
+  elseif ($autocreate && $uuid === FALSE) {
+    drupal_set_message(t('Creating a grid account for you.'));
+    $form_state = array();
+    $form_state['uid'] = $account->uid;
+    $form_state['values']['pass'] = $edit['pass_raw'];
+    d4os_ui_users_grid_registration_form_validate(array(), $form_state);
+    d4os_ui_users_grid_registration_form_submit(array(), $form_state, FALSE);
+  }
+  else {
+    // load the grid user
+    $d4os_users = D4OS_IO::create('Users');
+    $grid_user = $d4os_users->load_user(array('PrincipalID' => $uuid));
+    $grid_user = $grid_user[0];
 
-  // load the grid user
-  $d4os_users = D4OS_IO::create('Users');
-  $grid_user = $d4os_users->load_user(array('PrincipalID' => $uuid));
-  $grid_user = $grid_user[0];
-
-  // check if username has changed
-  if (!empty($edit['name'])) {
-    $names = explode(' ', $edit['name']);
-    if (count($names) == 2) {
-      $grid_user->FirstName = $names[0];
-      $grid_user->LastName = $names[1];
+    // check if username has changed
+    if (!empty($edit['name'])) {
+      $names = explode(' ', $edit['name']);
+      if (count($names) == 2) {
+        $grid_user->FirstName = $names[0];
+        $grid_user->LastName = $names[1];
+      }
     }
+
+    // check if email has changed
+    if (!empty($edit['mail'])) {
+      $grid_user->Email = empty($edit['mail']) ? $grid_user->Email : $edit['mail'];
+      $grid_user->Email = ($grid_user->Email != $edit['mail']) ? $edit['mail'] : $grid_user->Email;
+    }
+
+    // check if password has changed
+    if (isset($edit['pass_raw']) && (!empty($edit['pass_raw'])) && (strlen($edit['pass_raw']) > 0) && (md5($edit['pass_raw']) != $account->pass)) {
+      $grid_user->passwordSalt = md5(microtime() . mt_rand(0, 0xffff));
+      $grid_user->passwordHash = md5(md5($edit['pass_raw']) . ":" . $grid_user->passwordSalt);
+    }
+
+    // set user level
+    $grid_user->UserLevel = d4os_ui_users_get_user_level($edit['roles']);
+
+    // save the grid user
+    $d4os_users->set_uuid($account->uid, $grid_user->PrincipalID);
+    $d4os_users->save_user($grid_user);
   }
-
-  // check if email has changed
-  if (!empty($edit['mail'])) {
-    $grid_user->Email = empty($edit['mail']) ? $grid_user->Email : $edit['mail'];
-    $grid_user->Email = ($grid_user->Email != $edit['mail']) ? $edit['mail'] : $grid_user->Email;
-  }
-
-  // check if password has changed
-  if (isset($edit['pass_raw']) && (!empty($edit['pass_raw'])) && (strlen($edit['pass_raw']) > 0) && (md5($edit['pass_raw']) != $account->pass)) {
-    $grid_user->passwordSalt = md5(microtime() . mt_rand(0, 0xffff));
-    $grid_user->passwordHash = md5(md5($edit['pass_raw']) . ":" . $grid_user->passwordSalt);
-  }
-
-  // set user level
-  $grid_user->UserLevel = d4os_ui_users_get_user_level($edit['roles']);
-
-  // save the grid user
-  $d4os_users->set_uuid($account->uid, $grid_user->PrincipalID);
-  $d4os_users->save_user($grid_user);
 }
 
 function d4os_ui_users_login_authenticate_validate($form, &$form_state) {
@@ -269,6 +281,11 @@ function d4os_ui_users_can_register_on_grid($account) {
   // check if the account is admin
   if ($account->uid == 1)
     return FALSE;
+
+  // check if autocreate is enabled
+  if (variable_get('d4os_ui_users_autocreate_grid_account', 0)) {
+    return FALSE;
+  }
 
   // check if the account is already registered on the grid
   $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $account->uid))->fetchField();
@@ -329,10 +346,12 @@ function d4os_ui_users_grid_registration_form_validate($form, &$form_state) {
     $uid = $form_state['uid'];
   $account = user_load($uid);
 
-  // check the password
-  require_once DRUPAL_ROOT . '/' . variable_get('password_inc', 'includes/password.inc');
-  if (!user_check_password($form_state['values']['pass'], $account)) {
-    form_set_error('pass', t('Wrong password.'));
+  if (!variable_get('d4os_ui_users_autocreate_grid_account', 0)) {
+    // check the password
+    require_once DRUPAL_ROOT . '/' . variable_get('password_inc', 'includes/password.inc');
+    if (!user_check_password($form_state['values']['pass'], $account)) {
+      form_set_error('pass', t('Wrong password.'));
+    }
   }
 
   // check if there is already a user with the same name on the grid

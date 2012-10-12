@@ -25,6 +25,12 @@ function d4os_ui_users_admin() {
 
   $form = array();
 
+  $form['d4os_ui_users_autocreate_grid_account'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Autocreate grid account'),
+    '#default_value' => variable_get('d4os_ui_users_autocreate_grid_account', 0),
+    '#description' => t('Auto create a grid account if the user is not registered on the grid and when updating his profile.'),
+  );
   /*
    * User level management
    */
