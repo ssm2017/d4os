@@ -74,7 +74,7 @@ function d4os_ui_users_validate_name($name) {
 
   // Check spaces.
   if (count($names) > 2) {
-    $error .= '  ' . t('You can only use one space, or no spaces in name');
+    $error .= '  ' . t('You can only use one space');
   }
 
   // Checks for OpenSim / SL names.
