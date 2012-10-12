@@ -89,7 +89,6 @@ function d4os_ui_users_permission() {
  *  Implements hook_cron().
  */
 function d4os_ui_users_cron() {
-//  return ; // TODO : cron is broken
   // do the job
   d4os_ui_users_set_region_owner_role();
 }
@@ -145,10 +144,10 @@ function d4os_ui_users_login_form(&$form) {
 
 function d4os_ui_users_register_form(&$form) {
   if (isset($form['account'])) {
-    $form['account']['name']['#description'] = 'A two word name is required for grid access.';
+    $form['account']['name']['#description'] = t('A two word name is required for grid access.');
   }
   else {
-    $form['name']['#description'] = 'A two word name is required for grid access.';
+    $form['name']['#description'] = t('A two word name is required for grid access.');
   }
   array_unshift($form['#validate'], 'd4os_ui_users_account_validate');
 }
@@ -440,6 +439,10 @@ function d4os_ui_users_account_validate($form, &$form_state) {
       $lastname = $names[1];
       $values['firstname'] = $firstname;
       $values['lastname'] = $lastname;
+    }
+    else {
+      form_set_error('name', t('A two word name is required for grid access.'));
+      return;
     }
   }
 
