@@ -1,4 +1,3 @@
-; $Id$
 name = "d4os ui loginpage"
 description = "This module is managing loginpage."
 package = d4os ui

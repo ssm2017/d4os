@@ -1,4 +1,3 @@
-; $Id$
 name = "d4os ui users"
 description = "User interface to manage users. This module is adding registration and user account modification on the grid ."
 package = d4os ui

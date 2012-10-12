@@ -1,4 +1,3 @@
-; $Id$
 name = "d4os io offline messages"
 description = "Provides tools to manage offline messages in an opensim grid."
 package = d4os io
