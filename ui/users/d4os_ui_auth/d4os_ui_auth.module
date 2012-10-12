@@ -107,12 +107,14 @@ function d4os_ui_auth_login_validate($form, &$form_state) {
           user_login_final_validate($form, $form_state);
 
           // Create the grid user if they are a member of the role that can register.
-          $account = user_load_by_name($form_state['values']['name']);
-          $register_role = variable_get('d4os_ui_users_register_role', 0);
-          if ($register_role && isset($account->roles[$register_role])) {
-            drupal_set_message(t('Creating a grid account for you.'));
-            d4os_ui_users_grid_registration_form_validate($form, &$form_state);
-            d4os_ui_users_grid_registration_form_submit($form, &$form_state, FALSE);
+          if (variable_get('d4os_ui_auth_autocreate_grid_account', 0)) {
+            $account = user_load_by_name($form_state['values']['name']);
+            $register_role = variable_get('d4os_ui_users_register_role', 0);
+            if ($register_role && isset($account->roles[$register_role])) {
+              drupal_set_message(t('Creating a grid account for you.'));
+              d4os_ui_users_grid_registration_form_validate($form, $form_state);
+              d4os_ui_users_grid_registration_form_submit($form, $form_state, FALSE);
+            }
           }
         }
       }
@@ -198,7 +200,7 @@ function d4os_ui_auth_grid_login($form, &$form_state) {
     if ($email_error_msg) {
       drupal_set_message(t('A new email address was generated. You will need to update it to be able to recover your password if needed.'), 'warning');
       drupal_set_message($data['mail'], 'warning');
-      drupal_set_message(t('Change the email value on your !account_page', array('!account_page' => l('account page', '/user/'. $account->uid. '/edit'))), 'warning');
+      drupal_set_message(t('Change the email value on your !account_page', array('!account_page' => l('account page', 'user/'. $account->uid. '/edit'))), 'warning');
     }
 
     // login the user

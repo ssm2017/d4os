@@ -41,6 +41,12 @@ function d4os_ui_auth_settings() {
     '#options'        => $options,
     '#description'    => t('Define the login flow.'),
   );
+  $form['login_flow']['d4os_ui_auth_autocreate_grid_account'] = array(
+    '#type'           => 'checkbox',
+    '#title'          => t('Autocreate grid account'),
+    '#default_value'  => variable_get('d4os_ui_auth_autocreate_grid_account', 0),
+    '#description'    => t('Auto create a grid account if the user is not registered on the grid and is allowed to create a grid user.'),
+  );
 
   /*
    * Email value to set when creating a drupal user from the grid one
