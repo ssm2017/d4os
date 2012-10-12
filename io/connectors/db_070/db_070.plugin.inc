@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    d4os_io db 070
  * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
@@ -9,7 +10,6 @@
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
  */
-
 module_load_include('settings.inc', 'd4os', 'io/connectors/db_070/db_070');
 
 /**
@@ -67,12 +67,11 @@ function d4os_io_db_070_mysql_is_alive($name, $datastore) {
   }
 
   try {
-    $db_string = 'mysql:host='. $databases[$name]['default']['host']. ';dbname='. $databases[$name]['default']['database'];
+    $db_string = 'mysql:host=' . $databases[$name]['default']['host'] . ';dbname=' . $databases[$name]['default']['database'];
     $dbh = new PDO($db_string, $databases[$name]['default']['username'], $databases[$name]['default']['password']);
     $dbh = null;
     return TRUE;
-  }
-  catch (PDOException $e) {
+  } catch (PDOException $e) {
     drupal_set_message(t('The !datastore datastore is not available.', array('!datastore' => $datastore)), 'error');
     drupal_set_message(t('Please inform the website admins.'), 'error');
     watchdog('d4os io db', 'The !datastore datastore is not available.', array('!datastore' => $datastore), WATCHDOG_EMERGENCY);

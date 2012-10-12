@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    d4os_io rest
  * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
@@ -9,5 +10,4 @@
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
  */
-
 define('D4OS_IO_REST_URL', variable_get('d4os_io_rest_url', 'http://127.0.0.1/rest'));

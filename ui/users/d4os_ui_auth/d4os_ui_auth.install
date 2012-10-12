@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package   d4os_ui_auth
  * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
@@ -11,17 +12,17 @@
  */
 /*
 
-/**
+  /**
  * Implementation of hook_install()
  */
 function d4os_ui_auth_install() {
   $weight = db_select('system', 's')
-              ->fields('s', array('weight'))
-              ->condition('name', 'd4os_ui_users', '=')
-              ->execute()
-              ->fetchField();
+      ->fields('s', array('weight'))
+      ->condition('name', 'd4os_ui_users', '=')
+      ->execute()
+      ->fetchField();
   db_update('system')
-    ->fields(array('weight' => $weight +1))
-    ->condition('name', 'd4os_ui_auth', '=')
-    ->execute();
+      ->fields(array('weight' => $weight + 1))
+      ->condition('name', 'd4os_ui_auth', '=')
+      ->execute();
 }

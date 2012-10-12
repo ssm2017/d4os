@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package   d4os_ui_web_profiles
  * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
@@ -22,19 +23,19 @@ function d4os_ui_web_profiles_schema() {
   $schema['d4os_ui_web_profiles_partners'] = array(
     'fields' => array(
       'source_uuid' => array(
-        'type'      => 'char',
-        'length'    => 36,
-        'not null'  => TRUE
+        'type' => 'char',
+        'length' => 36,
+        'not null' => TRUE
       ),
       'destination_uuid' => array(
-        'type'      => 'char',
-        'length'    => 36,
-        'not null'  => TRUE
+        'type' => 'char',
+        'length' => 36,
+        'not null' => TRUE
       ),
       'token' => array(
-        'type'      => 'char',
-        'length'    => 36,
-        'not null'  => TRUE
+        'type' => 'char',
+        'length' => 36,
+        'not null' => TRUE
       ),
     ),
   );

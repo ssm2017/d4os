@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    d4os_io_groups
  * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
@@ -18,18 +19,18 @@ function d4os_io_groups_admin() {
    * Default group
    */
   $form['groups'] = array(
-    '#type'         => 'fieldset',
-    '#title'        => t('Default Group'),
-    '#description'  => t('Add new users to a group.'),
-    '#collapsible'  => FALSE,
-    '#collapsed'    => FALSE,
+    '#type' => 'fieldset',
+    '#title' => t('Default Group'),
+    '#description' => t('Add new users to a group.'),
+    '#collapsible' => FALSE,
+    '#collapsed' => FALSE,
   );
   $form['groups']['d4os_io_groups_default_group'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Default group uuid'),
-    '#size'           => 36,
-    '#maxlength'      => 36,
-    '#default_value'  => variable_get('d4os_io_groups_default_group',UUID_ZERO),
+    '#type' => 'textfield',
+    '#title' => t('Default group uuid'),
+    '#size' => 36,
+    '#maxlength' => 36,
+    '#default_value' => variable_get('d4os_io_groups_default_group', UUID_ZERO),
   );
 
   return system_settings_form($form);

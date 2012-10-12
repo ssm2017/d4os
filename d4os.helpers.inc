@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     d4os_main
  * @subpackage  d4os_helpers
@@ -10,11 +11,11 @@
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
  */
-
 /**
  * UUID zero
  */
-if (!defined('UUID_ZERO')) define('UUID_ZERO', '00000000-0000-0000-0000-000000000000');
+if (!defined('UUID_ZERO'))
+  define('UUID_ZERO', '00000000-0000-0000-0000-000000000000');
 
 /**
  * @global String $grid_url
@@ -34,9 +35,9 @@ global $base_url;
  */
 global $grid_is_online;
 
-$grid_uri   = variable_get('d4os_default_grid_uri', $base_url);
-$grid_port  = variable_get('d4os_default_grid_port', '9000');
-$grid_url   = $grid_uri. ':'. $grid_port;
+$grid_uri = variable_get('d4os_default_grid_uri', $base_url);
+$grid_port = variable_get('d4os_default_grid_port', '9000');
+$grid_url = $grid_uri . ':' . $grid_port;
 
 /**
  * Helpfull function to search items in an array with a lot of sublevels
@@ -46,7 +47,7 @@ $grid_url   = $grid_uri. ':'. $grid_port;
  */
 function d4os_array_search_recursive($needle, $haystack) {
   foreach ($haystack as $k => $v) {
-    foreach($v as $v2) {
+    foreach ($v as $v2) {
       if ($v2 === $needle) {
         return $k;
         break;
@@ -65,22 +66,22 @@ function d4os_array_search_recursive($needle, $haystack) {
 function d4os_log($module, $array, $severity = WATCHDOG_DEBUG) {
   $output = '';
   $output .= "\n*************************************************************\n";
-  $output .= format_date(time(), 'custom', 'Y-m-d G:i:s'). "\n";
+  $output .= format_date(time(), 'custom', 'Y-m-d G:i:s') . "\n";
   foreach ($array as $value) {
     switch ($value['type']) {
       case 'string':
         switch ($value['name']) {
           case 'function call':
           case 'function output':
-            $output .= ' '. $value['name']. ' = '. $value['data']. "\n-------------------------------------------------------------\n";
+            $output .= ' ' . $value['name'] . ' = ' . $value['data'] . "\n-------------------------------------------------------------\n";
             break;
           default:
-            $output .= ' '. $value['name']. ' = '. $value['data']. "\n";
+            $output .= ' ' . $value['name'] . ' = ' . $value['data'] . "\n";
             break;
         }
         break;
       case 'var':
-        $output .= var_export($value['data'], TRUE). "\n";
+        $output .= var_export($value['data'], TRUE) . "\n";
         break;
       case 'array':
         $output .= print_r($value['data'], true);
@@ -99,11 +100,7 @@ function d4os_log($module, $array, $severity = WATCHDOG_DEBUG) {
  * @return String The uuid
  */
 function d4os_uuid_create() {
-  return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-  mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
-  mt_rand( 0, 0x0fff ) | 0x4000,
-  mt_rand( 0, 0x3fff ) | 0x8000,
-  mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ) );
+  return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x', mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0x0fff) | 0x4000, mt_rand(0, 0x3fff) | 0x8000, mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff));
 }
 
 /**
@@ -121,8 +118,7 @@ function d4os_grid_is_online() {
   // Measured it at 0.8 seconds on my test server.
   // Also, if it's a high traffic web server, and the online status is on all pages, pointless checking many times a second.
   $grid_is_online_timestamp = variable_get('d4os_grid_is_online_timestamp', 0);
-  if ($grid_is_online_timestamp < (time() - (60 * 3)))
-  {
+  if ($grid_is_online_timestamp < (time() - (60 * 3))) {
     $online = FALSE;
 // TODO : why not use loginuri ?
     // remove http://
@@ -187,23 +183,26 @@ function d4os_ajax_form_handler() {
  * unique
  *
  * calling: result = array_merge_recursive_distinct(a1, a2, ... aN)
-**/
-
+ * */
 function d4os_array_merge_recursive_distinct() {
   $arrays = func_get_args();
   $base = array_shift($arrays);
-  if(!is_array($base)) $base = empty($base) ? array() : array($base);
-  foreach($arrays as $append) {
-    if(!is_array($append)) $append = array($append);
-    foreach($append as $key => $value) {
-      if(!array_key_exists($key, $base) and !is_numeric($key)) {
+  if (!is_array($base))
+    $base = empty($base) ? array() : array($base);
+  foreach ($arrays as $append) {
+    if (!is_array($append))
+      $append = array($append);
+    foreach ($append as $key => $value) {
+      if (!array_key_exists($key, $base) and !is_numeric($key)) {
         $base[$key] = $append[$key];
         continue;
       }
-      if(is_array($value) or is_array($base[$key])) {
+      if (is_array($value) or is_array($base[$key])) {
         $base[$key] = d4os_array_merge_recursive_distinct($base[$key], $append[$key]);
-      } else if(is_numeric($key)) {
-        if(!in_array($value, $base)) $base[] = $value;
+      }
+      else if (is_numeric($key)) {
+        if (!in_array($value, $base))
+          $base[] = $value;
       } else {
         $base[$key] = $value;
       }
@@ -212,7 +211,7 @@ function d4os_array_merge_recursive_distinct() {
   return $base;
 }
 
-function d4os_http_request($url, $headers = array(), $method = 'GET', $data = NULL, $retry = 3, $timeout=5) {
+function d4os_http_request($url, $headers = array(), $method = 'GET', $data = NULL, $retry = 3, $timeout = 5) {
   global $db_prefix;
 
   $result = new stdClass();

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    d4os_io_profiles
  * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
@@ -23,14 +24,14 @@ function d4os_io_profiles_help($path, $arg) {
 function d4os_io_profiles_menu() {
 
   $items['admin/config/d4os/io/profiles/registration'] = array(
-    'title'             => 'Profiles registration',
-    'description'       => 'd4os io profiles registration settings',
-    'page callback'     => 'drupal_get_form',
-    'page arguments'    => array('d4os_io_profiles_admin'),
-    'access arguments'  => array('admin d4os io profiles'),
-    'type'              => MENU_NORMAL_ITEM,
-    'file'              => 'd4os_io_profiles.admin.inc'
-   );
+    'title' => 'Profiles registration',
+    'description' => 'd4os io profiles registration settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('d4os_io_profiles_admin'),
+    'access arguments' => array('admin d4os io profiles'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'd4os_io_profiles.admin.inc'
+  );
   return $items;
 }
 
@@ -67,7 +68,7 @@ function d4os_io_profiles_grid_registration_fom_submit($form, &$form_state) {
   if ($uuid) {
     $d4os_profiles = D4OS_IO::create('Profiles');
     $d4os_profiles->save_profile(
-      d4os_io_profiles_create_profile($uuid)
+        d4os_io_profiles_create_profile($uuid)
     );
   }
 }
@@ -79,8 +80,8 @@ function d4os_io_profiles_create_profile($uuid) {
   $profile->profileWantToMask = 0;
   $profile->profileAboutText = variable_get('d4os_io_profiles_default_profile_about_text', 'I am a new user');
   $profile->profileFirstText = variable_get('d4os_io_profiles_default_profile_first_text', 'I am as real as you are');
-  $profile->profileImage = variable_get('d4os_io_profiles_default_profile_image',UUID_ZERO);
-  $profile->profileFirstImage = variable_get('d4os_io_profiles_default_profile_first_image',UUID_ZERO);
+  $profile->profileImage = variable_get('d4os_io_profiles_default_profile_image', UUID_ZERO);
+  $profile->profileFirstImage = variable_get('d4os_io_profiles_default_profile_first_image', UUID_ZERO);
   $profile->profileURL = '';
   $profile->profilePartner = '';
   return $profile;

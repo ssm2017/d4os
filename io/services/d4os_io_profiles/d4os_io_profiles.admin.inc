@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    d4os_io_profiles
  * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
@@ -15,10 +16,10 @@
  */
 function d4os_io_profiles_admin() {
   $form['user_registration'] = array(
-    '#type'         => 'fieldset',
-    '#title'        => t('User registration'),
-    '#collapsible'  => FALSE,
-    '#collapsed'    => FALSE,
+    '#type' => 'fieldset',
+    '#title' => t('User registration'),
+    '#collapsible' => FALSE,
+    '#collapsed' => FALSE,
   );
   $form['user_registration']['d4os_io_profiles_create_profile_on_register'] = array(
     '#type' => 'checkbox',
@@ -28,43 +29,43 @@ function d4os_io_profiles_admin() {
   );
   // profile default texts
   $form['user_registration']['profile_texts'] = array(
-    '#type'         => 'fieldset',
-    '#title'        => t('Profile texts'),
-    '#collapsible'  => FALSE,
-    '#collapsed'    => FALSE,
+    '#type' => 'fieldset',
+    '#title' => t('Profile texts'),
+    '#collapsible' => FALSE,
+    '#collapsed' => FALSE,
   );
   $form['user_registration']['profile_texts']['d4os_io_profiles_default_profile_about_text'] = array(
-    '#type'           => 'textarea',
-    '#title'          => t('Profile about text'),
-    '#default_value'  => variable_get('d4os_io_profiles_default_profile_about_text', 'I am a new user'),
-    '#required'       => TRUE
+    '#type' => 'textarea',
+    '#title' => t('Profile about text'),
+    '#default_value' => variable_get('d4os_io_profiles_default_profile_about_text', 'I am a new user'),
+    '#required' => TRUE
   );
   $form['user_registration']['profile_texts']['d4os_io_profiles_default_profile_first_text'] = array(
-    '#type'           => 'textarea',
-    '#title'          => t('Profile first life tab text'),
-    '#default_value'  => variable_get('d4os_io_profiles_default_profile_first_text', 'I am as real as you are'),
-    '#required'       => TRUE
+    '#type' => 'textarea',
+    '#title' => t('Profile first life tab text'),
+    '#default_value' => variable_get('d4os_io_profiles_default_profile_first_text', 'I am as real as you are'),
+    '#required' => TRUE
   );
   // profile default images
   $form['user_registration']['profile_images'] = array(
-    '#type'         => 'fieldset',
-    '#title'        => t('Profile images'),
-    '#collapsible'  => FALSE,
-    '#collapsed'    => FALSE,
+    '#type' => 'fieldset',
+    '#title' => t('Profile images'),
+    '#collapsible' => FALSE,
+    '#collapsed' => FALSE,
   );
   $form['user_registration']['profile_images']['d4os_io_profiles_default_profile_image'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Default image profile uuid'),
-    '#size'           => 36,
-    '#maxlength'      => 36,
-    '#default_value'  => variable_get('d4os_io_profiles_default_profile_image',UUID_ZERO),
+    '#type' => 'textfield',
+    '#title' => t('Default image profile uuid'),
+    '#size' => 36,
+    '#maxlength' => 36,
+    '#default_value' => variable_get('d4os_io_profiles_default_profile_image', UUID_ZERO),
   );
   $form['user_registration']['profile_images']['d4os_io_profiles_default_profile_first_image'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Default first life tab image profile uuid'),
-    '#size'           => 36,
-    '#maxlength'      => 36,
-    '#default_value'  => variable_get('d4os_io_profiles_default_profile_first_image',UUID_ZERO),
+    '#type' => 'textfield',
+    '#title' => t('Default first life tab image profile uuid'),
+    '#size' => 36,
+    '#maxlength' => 36,
+    '#default_value' => variable_get('d4os_io_profiles_default_profile_first_image', UUID_ZERO),
   );
 
   return system_settings_form($form);

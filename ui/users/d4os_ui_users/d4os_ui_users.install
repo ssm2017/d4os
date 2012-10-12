@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package   d4os_ui_users
  * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
@@ -11,24 +12,24 @@
  */
 /*
 
-/**
+  /**
  * Implementation of hook_install()
  */
 function d4os_ui_users_install() {
   $weight = db_select('system', 's')
-              ->fields('s', array('weight'))
-              ->condition('name', 'openid', '=')
-              ->execute()
-              ->fetchField();
+      ->fields('s', array('weight'))
+      ->condition('name', 'openid', '=')
+      ->execute()
+      ->fetchField();
   db_update('system')
-    ->fields(array('weight' => $weight +1))
-    ->condition('name', 'd4os_ui_users', '=')
-    ->execute();
+      ->fields(array('weight' => $weight + 1))
+      ->condition('name', 'd4os_ui_users', '=')
+      ->execute();
 }
 
 /**
-* Implementation of hook_uninstall().
-*/
+ * Implementation of hook_uninstall().
+ */
 function d4os_ui_users_uninstall() {
   // Remove variables.
   db_query("DELETE FROM {variable} WHERE name LIKE 'd4os_ui_users%%'");
@@ -38,14 +39,14 @@ function d4os_ui_users_schema() {
   $schema['d4os_ui_users'] = array(
     'description' => t('The single table necessary for events storage.'),
     'fields' => array(
-      'uid'      => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
+      'uid' => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
       'UUID' => array(
         'description' => 'The user UUID.',
         'type' => 'char',
         'length' => 40,
         'not null' => TRUE
       ),
-    ),// TODO : check indexes
+    ), // TODO : check indexes
     'primary key' => array('uid'),
   );
   return $schema;

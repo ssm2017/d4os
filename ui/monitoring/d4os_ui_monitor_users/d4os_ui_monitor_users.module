@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    d4os_ui_monitor
  * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
@@ -9,7 +10,6 @@
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
  */
-
 // TODO : see what we can do with http://domain.com:9000/admin/regioninfo/
 
 /**
@@ -25,11 +25,11 @@ function d4os_ui_monitor_users_help($path, $arg) {
 function d4os_ui_monitor_users_menu() {
   $items = array();
   $items['grid/monitor/users/online/list'] = array(
-    'title'             => 'Online Users',
-    'description'       => 'Shows a list of online users.',
-    'page callback'     => 'd4os_ui_monitor_show_online_users_list',
-    'access arguments'  => array('view d4os ui grid monitor online users list'),
-    'type'              => MENU_NORMAL_ITEM,
+    'title' => 'Online Users',
+    'description' => 'Shows a list of online users.',
+    'page callback' => 'd4os_ui_monitor_show_online_users_list',
+    'access arguments' => array('view d4os ui grid monitor online users list'),
+    'type' => MENU_NORMAL_ITEM,
   );
   return $items;
 }
@@ -57,31 +57,31 @@ function d4os_ui_monitor_show_online_users_list() {
   // format the headers
   $headers = array(
     array(
-      'data'  => t('UserID'), // 1
+      'data' => t('UserID'), // 1
       'field' => 'p.UserID',
     ),
     array(
-      'data'  => t('FirstName'), // 2
+      'data' => t('FirstName'), // 2
       'field' => 'ua.FirstName',
     ),
-      array(
-      'data'  => t('LastName'), // 3
+    array(
+      'data' => t('LastName'), // 3
       'field' => 'ua.LastName',
     ),
-      array(
-      'data'  => t('loginTime'), // 4
+    array(
+      'data' => t('loginTime'), // 4
       'field' => 'gu.Login',
     ),
-      array(
-      'data'  => t('logoutTime'), // 5
+    array(
+      'data' => t('logoutTime'), // 5
       'field' => 'gu.Logout',
     ),
-      array(
-      'data'  => t('RegionName'), // 6
+    array(
+      'data' => t('RegionName'), // 6
       'field' => 'r.regionName',
     ),
-      array(
-      'data'  => t('LastPosition'), // 7
+    array(
+      'data' => t('LastPosition'), // 7
       'field' => 'gu.LastPosition',
     )
   );
@@ -121,14 +121,14 @@ function d4os_ui_monitor_show_online_users_list() {
   $element = 0;
   $pager_total_items[$element] = $online_users->count_presence;
   $pager_total[$element] = ceil($pager_total_items[$element] / $limit);
-  $pager_page_array[$element] = max(0, min((int)$pager_page_array[$element], ((int)$pager_total[$element]) - 1));
+  $pager_page_array[$element] = max(0, min((int) $pager_page_array[$element], ((int) $pager_total[$element]) - 1));
 
   // format the quantity info
   $output = '<div id="online-users-count">';
-  $output .= '<p>'. t('There %users in the Presence table.', array(
-              '%users' => format_plural($online_users->count_presence, 'is 1 user', 'are @count users'))). '</p>';
-  $output .= '<p>'. t('There %users Online users in the GridUser table.', array(
-              '%users' => format_plural($online_users->count_griduser, 'is 1 user', 'are @count users'))). '</p>';
+  $output .= '<p>' . t('There %users in the Presence table.', array(
+        '%users' => format_plural($online_users->count_presence, 'is 1 user', 'are @count users'))) . '</p>';
+  $output .= '<p>' . t('There %users Online users in the GridUser table.', array(
+        '%users' => format_plural($online_users->count_griduser, 'is 1 user', 'are @count users'))) . '</p>';
   $output .= '</div>';
 
   // format some usefull links
@@ -142,29 +142,29 @@ function d4os_ui_monitor_show_online_users_list() {
   );
   unset($limit_array[$limit]);
   if (isset($_GET['sort'])) {
-    $paramseters[0] = 'sort='. $_GET['sort'];
+    $paramseters[0] = 'sort=' . $_GET['sort'];
   }
   if (isset($_GET['order'])) {
-    $paramseters[1] = 'order='. $_GET['order'];
+    $paramseters[1] = 'order=' . $_GET['order'];
   }
   if (isset($_GET['online'])) {
-    $paramseters[2] = 'online='. $_GET['online'];
+    $paramseters[2] = 'online=' . $_GET['online'];
   }
   if (isset($_GET['range'])) {
-    $paramseters[3] = 'range='. $_GET['range'];
+    $paramseters[3] = 'range=' . $_GET['range'];
   }
 
-  $qty_filter = '<div class="item-list"><span>'. t('Limit list by'). '</span><ul class="pager">';
+  $qty_filter = '<div class="item-list"><span>' . t('Limit list by') . '</span><ul class="pager">';
   foreach ($limit_array as $k => $limit_qty) {
-    $paramseters[4] = 'limit='. $limit_qty;
-    $redirect_url = $_SERVER['REDIRECT_URL']. '?'. implode('&', $paramseters);
-    $qty_filter .= '<li class="pager-item"><a href="'. $redirect_url. '">'. $limit_qty. '</a></li>';
+    $paramseters[4] = 'limit=' . $limit_qty;
+    $redirect_url = $_SERVER['REDIRECT_URL'] . '?' . implode('&', $paramseters);
+    $qty_filter .= '<li class="pager-item"><a href="' . $redirect_url . '">' . $limit_qty . '</a></li>';
   }
   $qty_filter .= '</ul></div>';
 
   $usefull_links = '<div><ul>';
-  $usefull_links .= '<li><a href="'. $_SERVER['REDIRECT_URL']. '?online">'. t('See only online users ("Online" set in "GridUser" table)'). '</a></li>';
-  $usefull_links .= '<li><a href="'. $_SERVER['REDIRECT_URL']. '?online&range=86400">'. t('See only online users since 24 hours'). '</a></li>';
+  $usefull_links .= '<li><a href="' . $_SERVER['REDIRECT_URL'] . '?online">' . t('See only online users ("Online" set in "GridUser" table)') . '</a></li>';
+  $usefull_links .= '<li><a href="' . $_SERVER['REDIRECT_URL'] . '?online&range=86400">' . t('See only online users since 24 hours') . '</a></li>';
   $usefull_links .= '</ul></div>';
 
   // build a form to display links in a fieldset
@@ -214,12 +214,11 @@ function theme_d4os_ui_monitor_users_list_table($online_users, $params, $headers
     }
     $cells[] = $online_user->regionName; // 6
     $cells[] = $online_user->LastPosition; // 7
-
     ++$col;
     if ($col >= $params['cols']) {
       $rows[] = $cells;
-      $cells  = array();
-      $col    = 0;
+      $cells = array();
+      $col = 0;
     }
   }
   $variables = array(

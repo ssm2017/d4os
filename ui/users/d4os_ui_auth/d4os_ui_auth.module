@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    d4os_ui_auth
  * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
@@ -23,14 +24,14 @@ function d4os_ui_auth_help($path, $arg) {
 function d4os_ui_auth_menu() {
   $items = array();
   $items['admin/config/d4os/ui/auth'] = array(
-    'title'             => 'auth',
-    'description'       => 'd4os ui auth settings',
-    'page callback'     => 'drupal_get_form',
-    'page arguments'    => array('d4os_ui_auth_settings'),
-    'access arguments'  => array('admin d4os ui auth'),
-    'type'              => MENU_NORMAL_ITEM,
-    'file'              => 'd4os_ui_auth.admin.inc'
-   );
+    'title' => 'auth',
+    'description' => 'd4os ui auth settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('d4os_ui_auth_settings'),
+    'access arguments' => array('admin d4os ui auth'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'd4os_ui_auth.admin.inc'
+  );
   return $items;
 }
 
@@ -147,7 +148,7 @@ function d4os_ui_auth_grid_login($form, &$form_state) {
 
   // check the password
   // md5(md5($pass) . ":" . $user['passwordSalt'])
-  if ($grid_account->passwordHash != md5(md5($pass). ':'. $grid_account->passwordSalt)) {
+  if ($grid_account->passwordHash != md5(md5($pass) . ':' . $grid_account->passwordSalt)) {
     return FALSE;
   }
 
@@ -181,15 +182,15 @@ function d4os_ui_auth_grid_login($form, &$form_state) {
     if ($email_error_msg) {
       drupal_set_message($email_error_msg, 'error');
       $data['mail'] = d4os_ui_auth_generate_mail($grid_account->PrincipalID);
-      $assigned_role = variable_get('d4os_ui_auth_default_missing_email_role',0);
+      $assigned_role = variable_get('d4os_ui_auth_default_missing_email_role', 0);
       if ($assigned_role != 0) {
         $data['roles'] = array($assigned_role => 'role');
       }
     }
 
     // save user
-    $data['name']   = $name;
-    $data['pass']   = $pass;
+    $data['name'] = $name;
+    $data['pass'] = $pass;
     $data['status'] = 1;
     $account = user_save(NULL, $data);
 
@@ -200,7 +201,7 @@ function d4os_ui_auth_grid_login($form, &$form_state) {
     if ($email_error_msg) {
       drupal_set_message(t('A new email address was generated. You will need to update it to be able to recover your password if needed.'), 'warning');
       drupal_set_message($data['mail'], 'warning');
-      drupal_set_message(t('Change the email value on your !account_page', array('!account_page' => l('account page', 'user/'. $account->uid. '/edit'))), 'warning');
+      drupal_set_message(t('Change the email value on your !account_page', array('!account_page' => l('account page', 'user/' . $account->uid . '/edit'))), 'warning');
     }
 
     // login the user
@@ -230,18 +231,18 @@ function d4os_ui_auth_generate_mail($uuid) {
   global $base_root;
   $domain = $base_root;
   $replacers = array(
-    'http://'   => '',
-    'https://'  => '',
+    'http://' => '',
+    'https://' => '',
   );
-  foreach ($replacers as $key=>$value) {
+  foreach ($replacers as $key => $value) {
     $domain = str_replace($key, $value, $domain);
   }
   $string = variable_get('d4os_ui_auth_default_missing_email', '[uuid]@[livesite]');
   $replacers = array(
-    '[uuid]'      =>$uuid,
-    '[livesite]'  =>$domain,
+    '[uuid]' => $uuid,
+    '[livesite]' => $domain,
   );
-  foreach ($replacers as $key=>$value) {
+  foreach ($replacers as $key => $value) {
     $string = str_replace($key, $value, $string);
   }
   return $string;

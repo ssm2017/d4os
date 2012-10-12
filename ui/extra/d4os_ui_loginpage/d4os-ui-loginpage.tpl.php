@@ -18,24 +18,24 @@ $text_shadow = $GLOBALS['grid_is_online'] ? '#0f0' : '#f00';
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta http-equiv="cache-control" content="no-cache">
-    <meta http-equiv="Pragma" content="no-cache">
-      <style>
-        #left, #right, #header, #content, .footer-message{
-            border: 2px solid <?php print $border_dark; ?>;
-        }
-        #left .block .content,
-        #right .block .content{
-            background-color: <?php print $background_color; ?>;
-        }
-        h1, h2 {
-            text-shadow: 1px 1px 2px <?php print $text_shadow; ?>;
-        }
-        h2 {
-            border-bottom: 2px solid <?php print $border_light; ?>;
-        }
-      </style>
-    <link rel="stylesheet" href="<?php print $GLOBALS['base_url']. '/'. $directory; ?>/d4os_ui_loginpage.css" type="text/css" media="screen"/>
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <style>
+      #left, #right, #header, #content, .footer-message{
+        border: 2px solid <?php print $border_dark; ?>;
+      }
+      #left .block .content,
+      #right .block .content{
+        background-color: <?php print $background_color; ?>;
+      }
+      h1, h2 {
+        text-shadow: 1px 1px 2px <?php print $text_shadow; ?>;
+      }
+      h2 {
+        border-bottom: 2px solid <?php print $border_light; ?>;
+      }
+    </style>
+    <link rel="stylesheet" href="<?php print $GLOBALS['base_url'] . '/' . $directory; ?>/d4os_ui_loginpage.css" type="text/css" media="screen"/>
     <title><?php print $site_name; ?></title>
   </head>
   <body>
@@ -56,7 +56,8 @@ $text_shadow = $GLOBALS['grid_is_online'] ? '#0f0' : '#f00';
           <p>To change this content, you need to copy the files ui/extra/d4os_loginpage/d4os-ui-loginpage.tpl.php and ui/extra/d4os_loginpage/d4os-ui-loginpage.css to your main site theme folder and edit them.</p>
           <?php
           $build = node_view(node_load(1));
-          print drupal_render($build['body']); ?>
+          print drupal_render($build['body']);
+          ?>
         </div><!-- content -->
       </div><!-- wrapper -->
       <div id="footer">

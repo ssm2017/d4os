@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    d4os_io db 070
  * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
@@ -9,7 +10,6 @@
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
  */
-
 /**
  * Globals
  */
@@ -20,9 +20,9 @@ global $d4os_same_db, $databases;
  */
 function d4os_io_db_070_build_bases_list() {
   $bases = array(
-    'none'            => t('None'),
-    'default'         => t('Website'),
-    'os_robust'       => t('Robust'),
+    'none' => t('None'),
+    'default' => t('Website'),
+    'os_robust' => t('Robust'),
   );
   if (module_exists('d4os_io_profiles')) {
     $bases['os_profile'] = t('Profiles');
@@ -33,7 +33,7 @@ function d4os_io_db_070_build_bases_list() {
   return $bases;
 }
 
-$d4os_same_db = array('none'=>'none');
+$d4os_same_db = array('none' => 'none');
 
 // single
 $databases['os_single']['default'] = array(

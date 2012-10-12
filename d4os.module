@@ -213,10 +213,14 @@ interface D4OS_IO_Groups_Interface {
  * This class was made for people not reading the doc
  * and trying to make d4os work without setting the connector
  */
+
 class D4OS_IO_0_Users {
+
   public $response = FALSE;
+
   function ping() {
     $this->response->success = FALSE;
     return FALSE;
   }
+
 }

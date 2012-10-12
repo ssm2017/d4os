@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    d4os_io rest
  * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
@@ -9,20 +10,19 @@
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
  */
-
 class D4OS_IO_rest_Inventory implements D4OS_IO_Inventory_Interface {
-	public $response;
-	public $values;
 
-	function __construct() {
-		$this->values = array(
+  public $response;
+  public $values;
 
-		);
-	}
+  function __construct() {
+    $this->values = array(
+    );
+  }
 
-	function ping() {
-		$this->response->success = FALSE;
-		return;
-	}
+  function ping() {
+    $this->response->success = FALSE;
+    return;
+  }
 
 }

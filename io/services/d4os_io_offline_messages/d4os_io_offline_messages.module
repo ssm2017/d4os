@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    d4os_io_offline_messages
  * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
@@ -9,7 +10,6 @@
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
  */
-
 /**
  * [fromAgentID]
  * [fromAgentName]
@@ -30,7 +30,6 @@
  * [RegionID]
  * [timestamp]
  */
-
 global $d4os_io_offline_messages_log_level;
 $d4os_io_offline_messages_log_level = variable_get('d4os_io_offline_messages_log_level', 0);
 
@@ -40,7 +39,7 @@ $d4os_io_offline_messages_log_level = variable_get('d4os_io_offline_messages_log
 function d4os_io_offline_messages_help($path, $arg) {
   switch ($path) {
     case 'admin/help#services_offline_message':
-      return '<p>'. t('Provides offline_message methods to services applications. Requires services.module.') .'</p>';
+      return '<p>' . t('Provides offline_message methods to services applications. Requires services.module.') . '</p>';
     case 'admin/modules#description':
       return t('Provides offline_message methods to services applications. Requires services.module.');
   }
@@ -48,28 +47,28 @@ function d4os_io_offline_messages_help($path, $arg) {
 
 function d4os_io_offline_messages_menu() {
   $items['admin/config/d4os/io/services/offline_messages'] = array(
-    'title'             => 'Offline messages',
-    'description'       => 'd4os io services offline_messages settings',
-    'page callback'     => 'drupal_get_form',
-    'page arguments'    => array('d4os_io_offline_messages_admin'),
-    'access arguments'  => array('admin d4os io offline_messages'),
-    'type'              => MENU_NORMAL_ITEM,
-    'file'              => 'd4os_io_offline_messages.admin.inc'
+    'title' => 'Offline messages',
+    'description' => 'd4os io services offline_messages settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('d4os_io_offline_messages_admin'),
+    'access arguments' => array('admin d4os io offline_messages'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'd4os_io_offline_messages.admin.inc'
   );
   $items['grid/services/offline-messages'] = array(
-    'title'             => 'Offline messages',
-    'description'       => 'd4os io services offline_message',
-    'page callback'     => 'd4os_io_offline_messages_confirm',
-    'access callback'   => TRUE,
-    'type'              => MENU_CALLBACK,
+    'title' => 'Offline messages',
+    'description' => 'd4os io services offline_message',
+    'page callback' => 'd4os_io_offline_messages_confirm',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
   );
   $items['grid/services/offline-messages/%'] = array(
-    'title'             => 'Offline messages',
-    'description'       => 'd4os io services offline_message',
-    'page callback'     => 'd4os_io_offline_messages_query',
-    'page arguments'    => array(3),
-    'access callback'   => TRUE,
-    'type'              => MENU_CALLBACK,
+    'title' => 'Offline messages',
+    'description' => 'd4os io services offline_message',
+    'page callback' => 'd4os_io_offline_messages_query',
+    'page arguments' => array(3),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
   );
   return $items;
 }
@@ -98,16 +97,19 @@ function d4os_io_offline_messages_query($action) {
     'raw' => $raw_data,
   );
 
-  switch($action) {
+  switch ($action) {
     case 'SaveMessage':
       // filter uuids
       $forbidden_uuids = explode("\n", variable_get('d4os_io_offline_messages_filter_uuids', ''));
-      if (in_array($xml->fromAgentID, $forbidden_uuids)) return;
+      if (in_array($xml->fromAgentID, $forbidden_uuids))
+        return;
       // filter dialogs
       $filtered_dialogs = explode("\n", variable_get('d4os_io_offline_messages_filter_dialogs', '42'));
-      if (in_array($xml->dialog, $filtered_dialogs)) return;
+      if (in_array($xml->dialog, $filtered_dialogs))
+        return;
       // filter groups
-      if ($xml->fromGroup == 'true' && !variable_get('d4os_io_offline_messages_filter_allow_groups', 1)) return;
+      if ($xml->fromGroup == 'true' && !variable_get('d4os_io_offline_messages_filter_allow_groups', 1))
+        return;
       d4os_io_offline_messages_savemessage($params);
       break;
     case 'RetrieveMessages':
@@ -120,7 +122,7 @@ function d4os_io_offline_messages_savemessage($params) {
   global $d4os_io_offline_messages_log_level;
 
   // manage params
-  $params['toAgentID'] = (string)$params['xml']->toAgentID;
+  $params['toAgentID'] = (string) $params['xml']->toAgentID;
   $params['message'] = substr($params['raw'], (strpos($params['raw'], "?>") + 2));
 
   // log
@@ -170,7 +172,7 @@ function d4os_io_offline_messages_retrievemessages($params) {
   global $d4os_io_offline_messages_log_level;
 
   // manage params
-  $params['Guid'] = (string)$params['xml']->Guid;
+  $params['Guid'] = (string) $params['xml']->Guid;
 
   // log
   if ($d4os_io_offline_messages_log_level > 6) {
@@ -223,7 +225,7 @@ function d4os_io_offline_messages_retrievemessages($params) {
 
 function d4os_oi_offline_message_build_answer($action, $params) {
   $output = '<?xml version="1.0" encoding="utf-8"?>';
-  switch($action) {
+  switch ($action) {
     case 'savemessage':
       $output .= $params['success'] ? '<boolean>true</boolean>' : '<boolean>false</boolean>';
       break;
@@ -270,7 +272,7 @@ function d4os_io_offline_messages_mail_send($form_values) {
     $from = variable_get('site_mail', 'admin@example.com');
 
     $params = array(
-      'from'    => $message_obj->fromAgentName,
+      'from' => $message_obj->fromAgentName,
       'message' => $message_obj->message,
     );
     $language = language_default();

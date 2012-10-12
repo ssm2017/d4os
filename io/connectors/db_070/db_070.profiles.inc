@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    d4os_io db 070
  * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
@@ -9,26 +10,26 @@
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
  */
-
 class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
-	public $response;
-	public $values;
 
-	function __construct() {
-		$this->values = array();
-	}
+  public $response;
+  public $values;
 
-	function ping() {
-		$this->response->success = d4os_io_db_070_mysql_is_alive('os_profile', 'Robust');
-		return;
-	}
+  function __construct() {
+    $this->values = array();
+  }
 
-	function load_profile($params) {
+  function ping() {
+    $this->response->success = d4os_io_db_070_mysql_is_alive('os_profile', 'Robust');
+    return;
+  }
+
+  function load_profile($params) {
     d4os_io_db_070_set_active('os_profile');
     $profile = db_query("SELECT * FROM {userprofile} WHERE useruuid = :useruuid", array(':useruuid' => $params['useruuid']))->fetch();
     d4os_io_db_070_set_active('default');
     return $profile;
-	}
+  }
 
   function save_profile($user_profile) {
     if (!is_object($user_profile) || !isset($user_profile->useruuid) || empty($user_profile->useruuid)) {
@@ -61,15 +62,15 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
       if (count($values)) {
         d4os_io_db_070_set_active('os_profile');
         db_update('userprofile')
-          ->fields($values)
-          ->condition('useruuid', $user_profile->useruuid)
-          ->execute();
+            ->fields($values)
+            ->condition('useruuid', $user_profile->useruuid)
+            ->execute();
         d4os_io_db_070_set_active('default');
         drupal_set_message(t('User profile updated'));
       }
     }
     else {
-      $values   = array();
+      $values = array();
       // parse values
       foreach ($user_profile as $key => $value) {
         switch ($key) {
@@ -89,8 +90,8 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
       if (count($values)) {
         d4os_io_db_070_set_active('os_profile');
         db_insert('userprofile')
-          ->fields($values)
-          ->execute();
+            ->fields($values)
+            ->execute();
         d4os_io_db_070_set_active('default');
         drupal_set_message(t('User profile added'));
       }
@@ -121,8 +122,9 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
   }
 
   /*
-  * Profile services
-  */
+   * Profile services
+   */
+
   function avatarclassifiedsrequest($params) {
     $uuid = $params['uuid'];
     $data = array();
@@ -132,33 +134,33 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
 
     foreach ($results as $result) {
       $data[] = array(
-        "classifiedid"  => $result->classifieduuid,
-        "name"          => $result->name
+        "classifiedid" => $result->classifieduuid,
+        "name" => $result->name
       );
     }
     d4os_io_db_070_set_active('default');
 
     return array(
-      'success'       => TRUE,
-      'errorMessage'  => "",
-      'data'          => $data
+      'success' => TRUE,
+      'errorMessage' => "",
+      'data' => $data
     );
   }
 
   function classified_update($params) {
     $classifieduuid = $params['classifiedUUID'];
-    $creator        = $params['creatorUUID'];
-    $category       = $params['category'];
-    $name           = $params['name'];
-    $description    = $params['description'];
-    $parceluuid     = $params['parcelUUID'];
-    $parentestate   = $params['parentestate'];
-    $snapshotuuid   = $params['snapshotUUID'];
-    $simname        = $params['sim_name'];
-    $globalpos      = $params['globalpos'];
-    $parcelname     = $params['parcelname'];
+    $creator = $params['creatorUUID'];
+    $category = $params['category'];
+    $name = $params['name'];
+    $description = $params['description'];
+    $parceluuid = $params['parcelUUID'];
+    $parentestate = $params['parentestate'];
+    $snapshotuuid = $params['snapshotUUID'];
+    $simname = $params['sim_name'];
+    $globalpos = $params['globalpos'];
+    $parcelname = $params['parcelname'];
     $classifiedflag = $params['classifiedFlags'];
-    $priceforlist   = $params['classifiedPrice'];
+    $priceforlist = $params['classifiedPrice'];
 
     // Check if we already have this one in the database
     d4os_io_db_070_set_active('os_profile');
@@ -169,66 +171,66 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
     // Should be done by the module but let's see what happens when
     // I do it here
 
-    if($parcelname == "") {
+    if ($parcelname == "") {
       $parcelname = "Unknown";
     }
 
-    if($parceluuid == "") {
+    if ($parceluuid == "") {
       $parceluuid = UUID_ZERO;
     }
 
-    if($description == "") {
+    if ($description == "") {
       $description = "No Description";
     }
 
-    if($classifiedflag == 2) {
-      $creationdate   = time();
+    if ($classifiedflag == 2) {
+      $creationdate = time();
       $expirationdate = time() + (7 * 24 * 60 * 60);
     }
     else {
-      $creationdate   = time();
+      $creationdate = time();
       $expirationdate = time() + (365 * 24 * 60 * 60);
     }
 
     // fill the values
     $values = array(
-      'creatoruuid'     => $creator,         // 1
-      'creationdate'    => $creationdate,    // 2
-      'expirationdate'  => $expirationdate,  // 3
-      'category'        => $category,        // 4
-      'name'            => $name,            // 5
-      'description'     => $description,     // 6
-      'parceluuid'      => $parceluuid,      // 7
-      'parentestate'    => $parentestate,    // 8
-      'snapshotuuid'    => $snapshotuuid,    // 9
-      'simname'         => $simname,         // 10
-      'posglobal'       => $globalpos,       // 11
-      'parcelname'      => $parcelname,      // 12
-      'classifiedflags' => $classifiedflag,  // 13
-      'priceforlisting' => $priceforlist,    // 14
-      'classifieduuid'  => $classifieduuid   // 15
+      'creatoruuid' => $creator, // 1
+      'creationdate' => $creationdate, // 2
+      'expirationdate' => $expirationdate, // 3
+      'category' => $category, // 4
+      'name' => $name, // 5
+      'description' => $description, // 6
+      'parceluuid' => $parceluuid, // 7
+      'parentestate' => $parentestate, // 8
+      'snapshotuuid' => $snapshotuuid, // 9
+      'simname' => $simname, // 10
+      'posglobal' => $globalpos, // 11
+      'parcelname' => $parcelname, // 12
+      'classifiedflags' => $classifiedflag, // 13
+      'priceforlisting' => $priceforlist, // 14
+      'classifieduuid' => $classifieduuid   // 15
     );
 
     if (!$exists) {
       d4os_io_db_070_set_active('os_profile');
       db_insert('classifieds')
-        ->fields($values)
-        ->execute();
+          ->fields($values)
+          ->execute();
       d4os_io_db_070_set_active('default');
     }
     else {
       unset($values['classifieduuid']);
       d4os_io_db_070_set_active('os_profile');
       db_update('classifieds')
-        ->fields($values)
-        ->condition('classifieduuid', $classifieduuid)
-        ->execute();
+          ->fields($values)
+          ->condition('classifieduuid', $classifieduuid)
+          ->execute();
       d4os_io_db_070_set_active('default');
     }
 
     return array(
-      'success'       => TRUE,
-      'errorMessage'  => "",
+      'success' => TRUE,
+      'errorMessage' => "",
     );
   }
 
@@ -240,9 +242,9 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
     d4os_io_db_070_set_active('default');
 
     return array(
-      'success'       => TRUE,
-      'errorMessage'  => "",
-      'data'          => $data
+      'success' => TRUE,
+      'errorMessage' => "",
+      'data' => $data
     );
   }
 
@@ -255,16 +257,16 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
 
     foreach ($results as $result) {
       $data[] = array(
-        "pickid"  => $result->pickuuid,
-        "name"    => $result->name
+        "pickid" => $result->pickuuid,
+        "name" => $result->name
       );
     }
     d4os_io_db_070_set_active('default');
 
     return array(
-      'success'       => TRUE,
-      'errorMessage'  => "",
-      'data'          => $data
+      'success' => TRUE,
+      'errorMessage' => "",
+      'data' => $data
     );
   }
 
@@ -282,26 +284,26 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
     d4os_io_db_070_set_active('default');
 
     return array(
-      'success'       => TRUE,
-      'errorMessage'  => "",
-      'data'          => $data
+      'success' => TRUE,
+      'errorMessage' => "",
+      'data' => $data
     );
   }
 
   function picks_update($params) {
-    $pickuuid     = $params['pick_id'];
-    $creator      = $params['creator_id'];
-    $toppick      = $params['top_pick'];
-    $name         = $params['name'];
-    $description  = $params['desc'];
-    $parceluuid   = $params['parcel_uuid'];
+    $pickuuid = $params['pick_id'];
+    $creator = $params['creator_id'];
+    $toppick = $params['top_pick'];
+    $name = $params['name'];
+    $description = $params['desc'];
+    $parceluuid = $params['parcel_uuid'];
     $snapshotuuid = $params['snapshot_id'];
-    $user         = $params['user'];
-    $original     = $params['original'];
-    $simname      = $params['sim_name'];
-    $posglobal    = $params['pos_global'];
-    $sortorder    = $params['sort_order'];
-    $enabled      = $params['enabled'];
+    $user = $params['user'];
+    $original = $params['original'];
+    $simname = $params['sim_name'];
+    $posglobal = $params['pos_global'];
+    $sortorder = $params['sort_order'];
+    $enabled = $params['enabled'];
 
     // Check if we already have this one in the database
     d4os_io_db_070_set_active('os_profile');
@@ -312,67 +314,67 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
     // Should be done by the module but let's see what happens when
     // I do it here
 
-    if($parceluuid == "") {
+    if ($parceluuid == "") {
       $parceluuid = UUID_ZERO;
     }
 
-    if($description == "") {
+    if ($description == "") {
       $description = "No Description";
     }
 
-    if($user == "") {
+    if ($user == "") {
       $user = "Unknown";
     }
 
-    if($original == "") {
+    if ($original == "") {
       $original = "Unknown";
     }
 
     if (!$exists) {
 
       $values = array(
-        'pickuuid' => $pickuuid,      // 1
-        'creatoruuid' => $creator,       // 2
-        'toppick' => $toppick,       // 3
-        'parceluuid' => $parceluuid,    // 4
-        'name' => $name,          // 5
-        'description' => $description,   // 6
-        'snapshotuuid' => $snapshotuuid,  // 7
-        'user' => $user,          // 8
-        'originalname' => $original,      // 9
-        'simname' => $simname,       // 10
-        'posglobal' => $posglobal,     // 11
-        'sortorder' => $sortorder,     // 12
+        'pickuuid' => $pickuuid, // 1
+        'creatoruuid' => $creator, // 2
+        'toppick' => $toppick, // 3
+        'parceluuid' => $parceluuid, // 4
+        'name' => $name, // 5
+        'description' => $description, // 6
+        'snapshotuuid' => $snapshotuuid, // 7
+        'user' => $user, // 8
+        'originalname' => $original, // 9
+        'simname' => $simname, // 10
+        'posglobal' => $posglobal, // 11
+        'sortorder' => $sortorder, // 12
         'enabled' => $enabled        // 13
       );
 
       // Create a new record for this pick
       d4os_io_db_070_set_active('os_profile');
       db_insert('userpicks')
-        ->fields($values)
-        ->execute();
+          ->fields($values)
+          ->execute();
       d4os_io_db_070_set_active('default');
     }
     else {
       $values = array(
-        'parceluuid' => $parceluuid,    // 4
-        'name' => $name,          // 5
-        'description' => $description,   // 6
-        'snapshotuuid' => $snapshotuuid,  // 7
+        'parceluuid' => $parceluuid, // 4
+        'name' => $name, // 5
+        'description' => $description, // 6
+        'snapshotuuid' => $snapshotuuid, // 7
       );
 
       // Update the existing record
       d4os_io_db_070_set_active('os_profile');
       db_update('userpicks')
-        ->fields($values)
-        ->condition('pickuuid', $pickuuid)
-        ->execute();
+          ->fields($values)
+          ->condition('pickuuid', $pickuuid)
+          ->execute();
       d4os_io_db_070_set_active('default');
     }
 
     return array(
-      'success'       => TRUE,
-      'errorMessage'  => "",
+      'success' => TRUE,
+      'errorMessage' => "",
     );
   }
 
@@ -383,8 +385,8 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
     d4os_io_db_070_set_active('default');
 
     return array(
-      'success'       => TRUE,
-      'errorMessage'  => "",
+      'success' => TRUE,
+      'errorMessage' => "",
     );
   }
 
@@ -397,30 +399,30 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
 
     if ($notes) {
       $data[] = array(
-        'useruuid'  => $params['useruuid'],
-        'targetid'  => $params['uuid'],
-        'notes'     => $notes['notes'],
+        'useruuid' => $params['useruuid'],
+        'targetid' => $params['uuid'],
+        'notes' => $notes['notes'],
       );
     }
     else {
       $data[] = array(
-        'useruuid'  => $params['useruuid'],
-        'targetid'  => $params['uuid'],
-        'notes'     => '',
+        'useruuid' => $params['useruuid'],
+        'targetid' => $params['uuid'],
+        'notes' => '',
       );
     }
 
     return array(
-      'success'       => TRUE,
-      'errorMessage'  => "",
-      'data'          => $data,
+      'success' => TRUE,
+      'errorMessage' => "",
+      'data' => $data,
     );
   }
 
   function avatar_notes_update($params) {
-    $uuid       = $params['useruuid'];
+    $uuid = $params['useruuid'];
     $targetuuid = $params['target_id'];
-    $notes      = $params['notes'];
+    $notes = $params['notes'];
 
     // Check if we already have this one in the database
     d4os_io_db_070_set_active('os_profile');
@@ -447,8 +449,8 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
     }
 
     return array(
-      'success'       => TRUE,
-      'errorMessage'  => "",
+      'success' => TRUE,
+      'errorMessage' => "",
     );
   }
 
@@ -459,53 +461,52 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
     $result = db_query("SELECT * FROM {userprofile} WHERE useruuid = '%s'", $params['useruuid']);
     while ($row = db_fetch_array($result)) {
       $data[] = array(
-        "ProfileUrl"          => $row["profileURL"], // 1
-        "Image"               => $row["profileImage"], // 2
-        "AboutText"           => $row["profileAboutText"], // 3
-        "FirstLifeImage"      => $row["profileFirstImage"], // 4
-        "FirstLifeAboutText"  => $row["profileFirstText"], // 5
-        "Partner"             => $row["profilePartner"], // 6
-
+        "ProfileUrl" => $row["profileURL"], // 1
+        "Image" => $row["profileImage"], // 2
+        "AboutText" => $row["profileAboutText"], // 3
+        "FirstLifeImage" => $row["profileFirstImage"], // 4
+        "FirstLifeAboutText" => $row["profileFirstText"], // 5
+        "Partner" => $row["profilePartner"], // 6
         //Return interest data along with avatar properties
-        "wantmask"   => $row["profileWantToMask"], // 7
-        "wanttext"   => $row["profileWantToText"], // 8
+        "wantmask" => $row["profileWantToMask"], // 7
+        "wanttext" => $row["profileWantToText"], // 8
         "skillsmask" => $row["profileSkillsMask"], // 9
         "skillstext" => $row["profileSkillsText"], // 10
-        "languages"  => $row["profileLanguages"]// 11
+        "languages" => $row["profileLanguages"]// 11
       );
     }
     d4os_io_db_070_set_active('default');
 
     if (count($data) == 0) {
-      $data[0]["ProfileUrl"]          = "";
-      $data[0]["Image"]               = UUID_ZERO;
-      $data[0]["AboutText"]           = "";
-      $data[0]["FirstLifeImage"]      = UUID_ZERO;
-      $data[0]["FirstLifeAboutText"]  = "";
-      $data[0]["Partner"]             = UUID_ZERO;
+      $data[0]["ProfileUrl"] = "";
+      $data[0]["Image"] = UUID_ZERO;
+      $data[0]["AboutText"] = "";
+      $data[0]["FirstLifeImage"] = UUID_ZERO;
+      $data[0]["FirstLifeAboutText"] = "";
+      $data[0]["Partner"] = UUID_ZERO;
 
-      $data[0]["wantmask"]   = 0;
-      $data[0]["wanttext"]   = "";
+      $data[0]["wantmask"] = 0;
+      $data[0]["wanttext"] = "";
       $data[0]["skillsmask"] = 0;
       $data[0]["skillstext"] = "";
-      $data[0]["languages"]  = "";
+      $data[0]["languages"] = "";
     }
 
     return array(
-      'success'       => TRUE,
-      'errorMessage'  => "",
-      'data'          => $data
+      'success' => TRUE,
+      'errorMessage' => "",
+      'data' => $data
     );
   }
 
   function avatar_properties_update($params) {
-    $params['useruuid']           = isset($params['avatarID']) ?            $params['avatarID'] :           $params['useruuid'];
-    $params['profileAboutText']   = isset($params['AboutText']) ?           $params['AboutText'] :          $params['profileAboutText'];
-    $params['profileFirstImage']  = isset($params['FirstLifeImage']) ?      $params['FirstLifeImage'] :     $params['profileFirstImage'];
-    $params['profileImage']       = isset($params['Image']) ?               $params['Image'] :              $params['profileImage'];
-    $params['profileURL']         = isset($params['ProfileUrl'])      ?     $params['ProfileUrl']     :     $params['profileURL'];
-    $params['profileFirstText']   = isset($params['FirstLifeAboutText']) ?  $params['FirstLifeAboutText'] : $params['profileFirstText'];
-    $params['profilePartner']     = isset($params['Partner']) ?             $params['Partner'] :            $params['profilePartner'];
+    $params['useruuid'] = isset($params['avatarID']) ? $params['avatarID'] : $params['useruuid'];
+    $params['profileAboutText'] = isset($params['AboutText']) ? $params['AboutText'] : $params['profileAboutText'];
+    $params['profileFirstImage'] = isset($params['FirstLifeImage']) ? $params['FirstLifeImage'] : $params['profileFirstImage'];
+    $params['profileImage'] = isset($params['Image']) ? $params['Image'] : $params['profileImage'];
+    $params['profileURL'] = isset($params['ProfileUrl']) ? $params['ProfileUrl'] : $params['profileURL'];
+    $params['profileFirstText'] = isset($params['FirstLifeAboutText']) ? $params['FirstLifeAboutText'] : $params['profileFirstText'];
+    $params['profilePartner'] = isset($params['Partner']) ? $params['Partner'] : $params['profilePartner'];
 
     // check if the user has a profile
     d4os_io_db_070_set_active('os_profile');
@@ -535,7 +536,7 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
       $v[] = $params['useruuid'];
 
       d4os_io_db_070_set_active('os_profile');
-      $result = db_query("INSERT INTO {userprofile} (". implode(',', $f). ") VALUES (". implode(',', $s). ")", $v);
+      $result = db_query("INSERT INTO {userprofile} (" . implode(',', $f) . ") VALUES (" . implode(',', $s) . ")", $v);
       d4os_io_db_070_set_active('default');
     }
     else {
@@ -549,7 +550,7 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
           case 'profileURL':
           case 'profileFirstText':
           case 'profilePartner':
-            $f[] = $key. "='%s'";
+            $f[] = $key . "='%s'";
             $v[] = $value;
             break;
         }
@@ -557,13 +558,13 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
       $v[] = $params['useruuid'];
 
       d4os_io_db_070_set_active('os_profile');
-      $result = db_query("UPDATE {userprofile} SET ". implode(',', $f). " WHERE useruuid = '%s'", $v);
+      $result = db_query("UPDATE {userprofile} SET " . implode(',', $f) . " WHERE useruuid = '%s'", $v);
       d4os_io_db_070_set_active('default');
     }
 
     return array(
-      'success'       => TRUE,
-      'errorMessage'  => "",
+      'success' => TRUE,
+      'errorMessage' => "",
     );
   }
 
@@ -581,9 +582,9 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
     d4os_io_db_070_set_active('default');
 
     return array(
-      'success'       => TRUE,
-      'errorMessage'  => "",
-      'data'          => $data
+      'success' => TRUE,
+      'errorMessage' => "",
+      'data' => $data
     );
   }
 
@@ -606,30 +607,30 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
       // create the profile
       d4os_io_db_070_set_active('os_profile');
       $result = db_query("INSERT INTO {userprofile} (profileSkillsMask, profileSkillsText, profileWantToMask, profileWantToText, profileLanguages, useruuid) VALUES ("
-                      . "%d,"     // profileSkillsMask
-                      . "'%s',"   // profileSkillsText
-                      . "%d,"     // profileWantToMask
-                      . "'%s',"   // profileWantToText
-                      . "'%s', "  // profileLanguages
-                      . "'%s' "   // useruuid
-                      . ")", $values);
+          . "%d,"     // profileSkillsMask
+          . "'%s',"   // profileSkillsText
+          . "%d,"     // profileWantToMask
+          . "'%s',"   // profileWantToText
+          . "'%s', "  // profileLanguages
+          . "'%s' "   // useruuid
+          . ")", $values);
       d4os_io_db_070_set_active('default');
     }
     else {
       d4os_io_db_070_set_active('os_profile');
       $result = db_query("UPDATE {userprofile} SET "
-                      . "profileSkillsMask = %d,"
-                      . "profileSkillsText = '%s',"
-                      . "profileWantToMask = %d,"
-                      . "profileWantToText = '%s',"
-                      . "profileLanguages = '%s' "
-                      . "where useruuid = '%s'", $values);
+          . "profileSkillsMask = %d,"
+          . "profileSkillsText = '%s',"
+          . "profileWantToMask = %d,"
+          . "profileWantToText = '%s',"
+          . "profileLanguages = '%s' "
+          . "where useruuid = '%s'", $values);
       d4os_io_db_070_set_active('default');
     }
 
     return array(
-      'success'       => TRUE,
-      'errorMessage'  => "",
+      'success' => TRUE,
+      'errorMessage' => "",
     );
   }
 
@@ -646,16 +647,16 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
 
     if (count($data) == 0) {
       $data[] = array(
-        'imviaemail'  => 0,
-        'visible'     => 0,
-        'email'       => "email"
+        'imviaemail' => 0,
+        'visible' => 0,
+        'email' => "email"
       );
     }
 
     return array(
-      'success'       => TRUE,
-      'errorMessage'  => "",
-      'data'          => $data
+      'success' => TRUE,
+      'errorMessage' => "",
+      'data' => $data
     );
   }
 
@@ -691,8 +692,9 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
     d4os_io_db_070_set_active('default');
 
     return array(
-      'success'       => TRUE,
-      'errorMessage'  => "",
+      'success' => TRUE,
+      'errorMessage' => "",
     );
   }
+
 }

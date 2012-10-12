@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    d4os_ui_auth
  * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
@@ -29,55 +30,55 @@ function d4os_ui_auth_settings() {
     3 => t('Grid -> Drupal')
   );
   $form['login_flow'] = array(
-    '#type'         => 'fieldset',
-    '#title'        => t('Login flow'),
-    '#collapsible'  => FALSE,
-    '#collapsed'    => FALSE,
+    '#type' => 'fieldset',
+    '#title' => t('Login flow'),
+    '#collapsible' => FALSE,
+    '#collapsed' => FALSE,
   );
   $form['login_flow']['d4os_ui_auth_login_flow'] = array(
-    '#type'           => 'radios',
-    '#title'          => t('Login flow'),
-    '#default_value'  => variable_get('d4os_ui_auth_login_flow', 0),
-    '#options'        => $options,
-    '#description'    => t('Define the login flow.'),
+    '#type' => 'radios',
+    '#title' => t('Login flow'),
+    '#default_value' => variable_get('d4os_ui_auth_login_flow', 0),
+    '#options' => $options,
+    '#description' => t('Define the login flow.'),
   );
   $form['login_flow']['d4os_ui_auth_autocreate_grid_account'] = array(
-    '#type'           => 'checkbox',
-    '#title'          => t('Autocreate grid account'),
-    '#default_value'  => variable_get('d4os_ui_auth_autocreate_grid_account', 0),
-    '#description'    => t('Auto create a grid account if the user is not registered on the grid and is allowed to create a grid user.'),
+    '#type' => 'checkbox',
+    '#title' => t('Autocreate grid account'),
+    '#default_value' => variable_get('d4os_ui_auth_autocreate_grid_account', 0),
+    '#description' => t('Auto create a grid account if the user is not registered on the grid and is allowed to create a grid user.'),
   );
 
   /*
    * Email value to set when creating a drupal user from the grid one
    */
   $form['users_synchro'] = array(
-    '#type'         => 'fieldset',
-    '#title'        => t('Users synchronization'),
-    '#collapsible'  => FALSE,
-    '#collapsed'    => FALSE,
+    '#type' => 'fieldset',
+    '#title' => t('Users synchronization'),
+    '#collapsible' => FALSE,
+    '#collapsed' => FALSE,
   );
   // email generated
-  $description = '<p>'. t('This email address is used when a user from the grid is created on the website and the user doesnt have an email address.'). '</p>'
-                .'<p>'. t(' <p>You can use tokens from this list :'). '</p>'
-                .'<ul>'
-                .'<li>[uuid] '. t('The uuid of the inworld user'). '</li>'
-                .'<li>[livesite] '. t('The url of the website'). '</li>'
-                .'</ul>';
+  $description = '<p>' . t('This email address is used when a user from the grid is created on the website and the user doesnt have an email address.') . '</p>'
+      . '<p>' . t(' <p>You can use tokens from this list :') . '</p>'
+      . '<ul>'
+      . '<li>[uuid] ' . t('The uuid of the inworld user') . '</li>'
+      . '<li>[livesite] ' . t('The url of the website') . '</li>'
+      . '</ul>';
   $form['users_synchro']['d4os_ui_auth_default_missing_email'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Default email'),
-    '#default_value'  => variable_get('d4os_ui_auth_default_missing_email', '[uuid]@[livesite]'),
-    '#description'    => $description,
-    '#required'       => TRUE
+    '#type' => 'textfield',
+    '#title' => t('Default email'),
+    '#default_value' => variable_get('d4os_ui_auth_default_missing_email', '[uuid]@[livesite]'),
+    '#description' => $description,
+    '#required' => TRUE
   );
   // default role assigned to non email users
   $form['users_synchro']['d4os_ui_auth_default_missing_email_role'] = array(
-    '#type'           => 'select',
-    '#title'          => t('Assigned role to users without email'),
-    '#default_value'  => variable_get('d4os_ui_auth_default_missing_email_role',0),
-    '#options'        => $roles,
-    '#description'    => t('This role is assigned to synchronized users without an email address.'),
+    '#type' => 'select',
+    '#title' => t('Assigned role to users without email'),
+    '#default_value' => variable_get('d4os_ui_auth_default_missing_email_role', 0),
+    '#options' => $roles,
+    '#description' => t('This role is assigned to synchronized users without an email address.'),
   );
   return system_settings_form($form);
 }

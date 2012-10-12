@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    d4os_ui_grid_monitor
  * @subpackage grid_status
@@ -10,7 +11,6 @@
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
  */
-
 function d4os_ui_monitor_grid_status_block_info() {
   $blocks = array();
   $blocks['d4os_ui_monitor_grid_status'] = array(
@@ -26,16 +26,16 @@ function d4os_ui_monitor_grid_status_block_configure($delta = '') {
   $form = array();
   if ($delta == 'd4os_ui_monitor_grid_infos') {
     $form['d4os_ui_monitor_grid_status_show_status'] = array(
-      '#type'           => 'checkbox',
-      '#default_value'  => variable_get('d4os_ui_monitor_grid_status_show_status', 1),
-      '#title'          => t('Show grid online status.'),
-      '#description'    => t('Check this option if you want to show the grids online status.'),
+      '#type' => 'checkbox',
+      '#default_value' => variable_get('d4os_ui_monitor_grid_status_show_status', 1),
+      '#title' => t('Show grid online status.'),
+      '#description' => t('Check this option if you want to show the grids online status.'),
     );
     $form['d4os_ui_monitor_grid_status_show_loginuri'] = array(
-      '#type'           => 'checkbox',
-      '#default_value'  => variable_get('d4os_ui_monitor_grid_status_show_loginuri', 1),
-      '#title'          => t('Show loginuri.'),
-      '#description'    => t('Check this option if you want to show the loginuri.'),
+      '#type' => 'checkbox',
+      '#default_value' => variable_get('d4os_ui_monitor_grid_status_show_loginuri', 1),
+      '#title' => t('Show loginuri.'),
+      '#description' => t('Check this option if you want to show the loginuri.'),
     );
   }
   return $form;
@@ -68,7 +68,7 @@ function d4os_ui_monitor_grid_status_block_view($delta = '') {
       }
       if (variable_get('d4os_ui_monitor_grid_status_show_loginuri', 1)) {
         // add the login uri
-        $values['data']->login_uri = variable_get('d4os_default_login_uri', $base_url). ':'. variable_get('d4os_default_login_port', '8002');
+        $values['data']->login_uri = variable_get('d4os_default_login_uri', $base_url) . ':' . variable_get('d4os_default_login_port', '8002');
       }
       $content = theme('d4os_ui_monitor_grid_status_infos', $values);
       $block['subject'] = t('Grid info');
@@ -94,10 +94,10 @@ function d4os_ui_monitor_grid_status_theme() {
 function theme_d4os_ui_monitor_grid_status($online) {
   $output = '';
   if ($online) {
-    $output .= '<div id="grid_status" class="messages status">'. t('Online'). '</div>';
+    $output .= '<div id="grid_status" class="messages status">' . t('Online') . '</div>';
   }
   else {
-    $output .= '<div id="grid_status" class="messages error">'. t('Offline'). '</div>';
+    $output .= '<div id="grid_status" class="messages error">' . t('Offline') . '</div>';
   }
   return $output;
 }
@@ -110,13 +110,13 @@ function theme_d4os_ui_monitor_grid_status_infos($values) {
   }
   $output .= '<ul>';
   if (isset($values->login_uri)) {
-    $output .= '<li>'. t('Login uri'). ' : '. $values->login_uri. '</li>';
+    $output .= '<li>' . t('Login uri') . ' : ' . $values->login_uri . '</li>';
   }
-  $output .= '<li>'. t('Online now'). ' : '. $values->online_now. '</li>';
-  $output .= '<li>'. t('Online hypergridders'). ' : '. $values->online_hypergridders. '</li>';
-  $output .= '<li>'. t('Online last 30 days'). ' : '. $values->online_last_30_days. '</li>';
-  $output .= '<li>'. t('Number of members'). ' : '. $values->users_count. '</li>';
-  $output .= '<li>'. t('Number of regions'). ' : '. $values->regions_count. '</li>';
+  $output .= '<li>' . t('Online now') . ' : ' . $values->online_now . '</li>';
+  $output .= '<li>' . t('Online hypergridders') . ' : ' . $values->online_hypergridders . '</li>';
+  $output .= '<li>' . t('Online last 30 days') . ' : ' . $values->online_last_30_days . '</li>';
+  $output .= '<li>' . t('Number of members') . ' : ' . $values->users_count . '</li>';
+  $output .= '<li>' . t('Number of regions') . ' : ' . $values->regions_count . '</li>';
   $output .= '</ul>';
   $output .= '</div>';
   return $output;

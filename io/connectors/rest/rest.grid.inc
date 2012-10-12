@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    d4os_io rest
  * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
@@ -9,40 +10,40 @@
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
  */
-
 class D4OS_IO_rest_Grid implements D4OS_IO_Grid_Interface {
-	public $response;
-	public $values;
 
-	function __construct() {
-		$this->values = array(
+  public $response;
+  public $values;
 
-		);
-	}
+  function __construct() {
+    $this->values = array(
+    );
+  }
 
-	function ping() {
-		$this->response->success = false;
-		$result = d4os_http_request(D4OS_IO_REST_URL. '/index.php/d4os_io_rest_grid/ping/format/json');
-		if(isset($result) && in_array($result->code, array('200')) && $result->data != '') {
-			$data = json_decode($result->data);
-			if ($data->status === 'success') {
-				$this->response->success = true;
-			}
-		}
-		return;
-	}
-
-	function get_grid_infos() {
+  function ping() {
     $this->response->success = false;
-		$url = D4OS_IO_REST_URL. '/index.php/d4os_io_rest_grid/get_grid_infos/format/json';
-		$result = d4os_http_request($url);
-		if(isset($result) && in_array($result->code, array('200')) && $result->data != '') {
-			$data = json_decode($result->data);
+    $result = d4os_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_grid/ping/format/json');
+    if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
+      $data = json_decode($result->data);
+      if ($data->status === 'success') {
+        $this->response->success = true;
+      }
+    }
+    return;
+  }
+
+  function get_grid_infos() {
+    $this->response->success = false;
+    $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_grid/get_grid_infos/format/json';
+    $result = d4os_http_request($url);
+    if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
+      $data = json_decode($result->data);
       $this->response->success = true;
       if (is_object($data)) {
         return $data;
       }
-		}
-		return null;
-	}
+    }
+    return null;
+  }
+
 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package    d4os_io db 070
  * @copyright Copyright (C) 2010-2012 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
@@ -9,7 +10,6 @@
  * is derivative of works licensed under the GNU General Public License or
  * other free or open source software licenses.
  */
-
 class D4OS_IO_db_070_Groups implements D4OS_IO_groups_Interface {
 
   public $response;
@@ -28,21 +28,21 @@ class D4OS_IO_db_070_Groups implements D4OS_IO_groups_Interface {
     d4os_io_db_070_set_active('os_groups');
     $group_exists = db_query("SELECT count(GroupID) FROM {osgroup} WHERE GroupID = :GroupID", array(':GroupID' => $uuid))->fetchField();
     d4os_io_db_070_set_active('default');
-		if($group_exists) {
-			return TRUE;
-		}
-		return FALSE;
-	}
+    if ($group_exists) {
+      return TRUE;
+    }
+    return FALSE;
+  }
 
   function add_user_to_group($user_uuid, $group_uuid) {
     $this->addAgentToGroup(array('AgentID' => $user_uuid, 'GroupID' => $group_uuid));
     return TRUE;
-	}
+  }
 
   function delete_user($uuid) {
-		$this->removeAgentFromGroups($uuid);
+    $this->removeAgentFromGroups($uuid);
     return TRUE;
-	}
+  }
 
   function addAgentToGroup($params) {
     $agentID = $params["AgentID"];
@@ -62,18 +62,18 @@ class D4OS_IO_db_070_Groups implements D4OS_IO_groups_Interface {
     // If not a member, add membership, select role (defaults to uuidZero, or everyone role)
     if ($result && $result === 0) {
       $values = array(
-        'GroupID'         => $groupID,
-        'AgentID'         => $agentID,
-        'Contribution'    => 0,
-        'ListInProfile'   => 1,
-        'AcceptNotices'   => 1,
-        'SelectedRoleID'  => $roleID
+        'GroupID' => $groupID,
+        'AgentID' => $agentID,
+        'Contribution' => 0,
+        'ListInProfile' => 1,
+        'AcceptNotices' => 1,
+        'SelectedRoleID' => $roleID
       );
 
       d4os_io_db_070_set_active('os_groups');
       db_insert('osgroupmembership')
-        ->fields($values)
-        ->execute();
+          ->fields($values)
+          ->execute();
       d4os_io_db_070_set_active('default');
     }
 
@@ -107,14 +107,14 @@ class D4OS_IO_db_070_Groups implements D4OS_IO_groups_Interface {
     if ($result && $result === 0) {
       $values = array(
         'GroupID' => $groupID,
-        'RoleID'  => $roleID,
+        'RoleID' => $roleID,
         'AgentID' => $agentID
       );
 
       d4os_io_db_070_set_active('os_groups');
       db_insert('osgrouprolemembership')
-        ->fields($values)
-        ->execute();
+          ->fields($values)
+          ->execute();
       d4os_io_db_070_set_active('default');
     }
 
@@ -128,12 +128,12 @@ class D4OS_IO_db_070_Groups implements D4OS_IO_groups_Interface {
 
     d4os_io_db_070_set_active('os_groups');
     db_update('osgroupmembership')
-      ->fields(array(
-        'SelectedRoleID' => $roleID
-      ))
-      ->condition('AgentID', $agentID)
-      ->condition('GroupID', $groupID)
-      ->execute();
+        ->fields(array(
+          'SelectedRoleID' => $roleID
+        ))
+        ->condition('AgentID', $agentID)
+        ->condition('GroupID', $groupID)
+        ->execute();
     d4os_io_db_070_set_active('default');
 
     return array('success' => 'true');
@@ -183,20 +183,20 @@ class D4OS_IO_db_070_Groups implements D4OS_IO_groups_Interface {
     // 3. Remove Agent from all of the groups roles (osgrouprolemembership)
 
     $sql = " UPDATE osagent "
-          ." SET ActiveGroupID = :ActiveGroupID"
-          ." WHERE AgentID = :AgentID AND ActiveGroupID = :ActiveGroupID";
+        . " SET ActiveGroupID = :ActiveGroupID"
+        . " WHERE AgentID = :AgentID AND ActiveGroupID = :ActiveGroupID";
     d4os_io_db_070_set_active('os_groups');
     db_query($sql, array(':ActiveGroupID' => UUID_ZERO, ':AgentID' => $agentID, ':ActiveGroupID' => $groupID));
     d4os_io_db_070_set_active('default');
 
     $sql = " DELETE FROM osgroupmembership "
-          ." WHERE AgentID = :AgentID AND GroupID = :GroupID";
+        . " WHERE AgentID = :AgentID AND GroupID = :GroupID";
     d4os_io_db_070_set_active('os_groups');
     db_query($sql, array(':AgentID' => $agentID, ':GroupID' => $groupID));
     d4os_io_db_070_set_active('default');
 
     $sql = " DELETE FROM osgrouprolemembership "
-          ." WHERE AgentID = :AgentID AND GroupID = :GroupID";
+        . " WHERE AgentID = :AgentID AND GroupID = :GroupID";
     d4os_io_db_070_set_active('os_groups');
     db_query($sql, array(':AgentID' => $agentID, ':GroupID' => $groupID));
     d4os_io_db_070_set_active('default');
