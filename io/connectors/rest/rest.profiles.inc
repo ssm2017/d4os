@@ -21,19 +21,19 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
   }
 
   function ping() {
-    $this->response->success = false;
+    $this->response->success = FALSE;
     $result = d4os_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/ping/format/json');
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
       if ($data->status === 'success') {
-        $this->response->success = true;
+        $this->response->success = TRUE;
       }
     }
     return;
   }
 
   function load_profile($values) {
-    $this->response->success = false;
+    $this->response->success = FALSE;
     $params = '';
 
     if (is_array($values)) {
@@ -47,12 +47,12 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
 
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
-      $this->response->success = true;
+      $this->response->success = TRUE;
       if (is_array($data)) {
         return $data[0];
       }
     }
-    return null;
+    return NULL;
   }
 
   function save_profile($values) {
@@ -89,7 +89,7 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
    */
 
   function avatarclassifiedsrequest($values) {
-    $this->response->success = false;
+    $this->response->success = FALSE;
     $params = '';
 
     if (is_array($values)) {
@@ -103,12 +103,12 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
 
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
-      $this->response->success = true;
+      $this->response->success = TRUE;
       if (is_array($data)) {
         return $data;
       }
     }
-    return null;
+    return NULL;
   }
 
   function classified_update($values) {
@@ -130,15 +130,15 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
 
   function classified_delete($values) {
     $id = $values['classifiedID'];
-    $this->response->success = false;
+    $this->response->success = FALSE;
     $result = d4os_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/classified_delete/classifiedID/' . rawurlencode($id) . '/format/json');
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
       if ($data->status === 'success') {
-        $this->response->success = true;
+        $this->response->success = TRUE;
         if (is_array($data->messages)) {
           foreach ($data->messages as $message) {
-            drupal_set_message($message);
+            drupal_set_message(check_plain($message));
           }
         }
       }
@@ -147,7 +147,7 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
   }
 
   function avatarpicksrequest($values) {
-    $this->response->success = false;
+    $this->response->success = FALSE;
     $params = '';
 
     if (is_array($values)) {
@@ -161,16 +161,16 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
 
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
-      $this->response->success = true;
+      $this->response->success = TRUE;
       if (is_array($data)) {
         return $data;
       }
     }
-    return null;
+    return NULL;
   }
 
   function pickinforequest($values) {
-    $this->response->success = false;
+    $this->response->success = FALSE;
     $params = '';
 
     if (is_array($values)) {
@@ -184,12 +184,12 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
 
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
-      $this->response->success = true;
+      $this->response->success = TRUE;
       if (is_array($data)) {
         return $data;
       }
     }
-    return null;
+    return NULL;
   }
 
   function picks_update($values) {
@@ -211,15 +211,15 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
 
   function picks_delete($values) {
     $id = $values['pick_id'];
-    $this->response->success = false;
+    $this->response->success = FALSE;
     $result = d4os_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/picks_delete/pick_id/' . rawurlencode($id) . '/format/json');
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
       if ($data->status === 'success') {
-        $this->response->success = true;
+        $this->response->success = TRUE;
         if (is_array($data->messages)) {
           foreach ($data->messages as $message) {
-            drupal_set_message($message);
+            drupal_set_message(check_plain($message));
           }
         }
       }
@@ -228,7 +228,7 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
   }
 
   function avatarnotesrequest($values) {
-    $this->response->success = false;
+    $this->response->success = FALSE;
     $params = '';
 
     if (is_array($values)) {
@@ -242,12 +242,12 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
 
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
-      $this->response->success = true;
+      $this->response->success = TRUE;
       if (is_array($data)) {
         return $data;
       }
     }
-    return null;
+    return NULL;
   }
 
   function avatar_notes_update($values) {
@@ -268,7 +268,7 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
   }
 
   function avatar_properties_request($values) {
-    $this->response->success = false;
+    $this->response->success = FALSE;
     $params = '';
 
     if (is_array($values)) {
@@ -282,12 +282,12 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
 
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
-      $this->response->success = true;
+      $this->response->success = TRUE;
       if (is_array($data)) {
         return $data;
       }
     }
-    return null;
+    return NULL;
   }
 
   function avatar_properties_update($values) {
@@ -309,7 +309,7 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
   }
 
   function avatar_interests_request($values) {
-    $this->response->success = false;
+    $this->response->success = FALSE;
     $params = '';
 
     if (is_array($values)) {
@@ -323,12 +323,12 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
 
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
-      $this->response->success = true;
+      $this->response->success = TRUE;
       if (is_array($data)) {
         return $data;
       }
     }
-    return null;
+    return NULL;
   }
 
   function avatar_interests_update($values) {
@@ -349,7 +349,7 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
   }
 
   function user_preferences_request($values) {
-    $this->response->success = false;
+    $this->response->success = FALSE;
     $params = '';
 
     if (is_array($values)) {
@@ -363,12 +363,12 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
 
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
-      $this->response->success = true;
+      $this->response->success = TRUE;
       if (is_array($data)) {
         return $data;
       }
     }
-    return null;
+    return NULL;
   }
 
   function user_preferences_update($values) {

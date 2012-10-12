@@ -435,7 +435,7 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
       db_query("INSERT INTO {usernotes} (useruuid, targetuuid, notes) VALUES  ('%s', '%s', '%s')", $uuid, $targetuuid, $notes);
       d4os_io_db_070_set_active('default');
     }
-    else if ($notes == "") {
+    elseif ($notes == "") {
       // Delete the record for this avatar note
       d4os_io_db_070_set_active('os_profile');
       db_query("DELETE FROM {usernotes} WHERE useruuid = '%s' AND targetuuid = '%s'", array($uuid, $targetuuid));

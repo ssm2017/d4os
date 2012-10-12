@@ -21,19 +21,19 @@ class D4OS_IO_rest_Users implements D4OS_IO_Users_Interface {
   }
 
   function ping() {
-    $this->response->success = false;
+    $this->response->success = FALSE;
     $result = d4os_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_users/ping/format/json');
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
       if ($data->status === 'success') {
-        $this->response->success = true;
+        $this->response->success = TRUE;
       }
     }
     return;
   }
 
   function load_user($values) {
-    $this->response->success = false;
+    $this->response->success = FALSE;
     $params = '';
 
     // parse values
@@ -53,11 +53,11 @@ class D4OS_IO_rest_Users implements D4OS_IO_Users_Interface {
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
       if (is_array($data->data)) {
-        $this->response->success = true;
+        $this->response->success = TRUE;
         return $data->data;
       }
     }
-    return null;
+    return NULL;
   }
 
   function save_user($grid_user) {
@@ -70,15 +70,15 @@ class D4OS_IO_rest_Users implements D4OS_IO_Users_Interface {
   }
 
   function delete_user($uuid) {
-    $this->response->success = false;
+    $this->response->success = FALSE;
     $result = d4os_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_users/delete_user/uuid/' . rawurlencode($uuid) . '/format/json');
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
       if ($data->status === 'success') {
-        $this->response->success = true;
+        $this->response->success = TRUE;
         if (is_array($data->messages)) {
           foreach ($data->messages as $message) {
-            drupal_set_message($message);
+            drupal_set_message(check_plain($message));
           }
         }
       }
@@ -87,7 +87,7 @@ class D4OS_IO_rest_Users implements D4OS_IO_Users_Interface {
   }
 
   function get_online_users_list($values) {
-    $this->response->success = false;
+    $this->response->success = FALSE;
     $params = '';
     if (is_array($values)) {
       foreach ($values as $key => $value) {
@@ -99,12 +99,12 @@ class D4OS_IO_rest_Users implements D4OS_IO_Users_Interface {
     $result = d4os_http_request($url);
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
-      $this->response->success = true;
+      $this->response->success = TRUE;
       if (is_object($data)) {
         return $data;
       }
     }
-    return null;
+    return NULL;
   }
 
   /**

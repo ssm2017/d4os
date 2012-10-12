@@ -21,7 +21,7 @@ class D4OS_IO_rest_Groups implements D4OS_IO_Groups_Interface {
   }
 
   function ping() {
-    $this->response->success = false;
+    $this->response->success = FALSE;
     $result = d4os_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_groups/ping/format/json');
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);

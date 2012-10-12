@@ -18,7 +18,7 @@ if (!defined('D4OS_IO_SYSTEM')) {
 
 function d4os_init() {
   if (!D4OS_IO_SYSTEM || D4OS_IO_SYSTEM == 'none') {
-    drupal_set_message(t('You need to define an IO system for D4os. Go to !link to set it please.', array('!link' => l('this page', 'admin/config/d4os/io/connectors'))), 'error');
+    drupal_set_message(t('You need to define an IO system for D4os. Go to @link to set it please.', array('@link' => l(t('this page'), 'admin/config/d4os/io/connectors'))), 'error');
   }
   d4os_io_load();
 }

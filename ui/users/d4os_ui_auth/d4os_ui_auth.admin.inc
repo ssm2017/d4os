@@ -60,7 +60,7 @@ function d4os_ui_auth_settings() {
   );
   // email generated
   $description = '<p>' . t('This email address is used when a user from the grid is created on the website and the user doesnt have an email address.') . '</p>'
-      . '<p>' . t(' <p>You can use tokens from this list :') . '</p>'
+      . '<p>' . t('You can use tokens from this list :') . '</p>'
       . '<ul>'
       . '<li>[uuid] ' . t('The uuid of the inworld user') . '</li>'
       . '<li>[livesite] ' . t('The url of the website') . '</li>'

@@ -84,7 +84,7 @@ function d4os_log($module, $array, $severity = WATCHDOG_DEBUG) {
         $output .= var_export($value['data'], TRUE) . "\n";
         break;
       case 'array':
-        $output .= print_r($value['data'], true);
+        $output .= print_r($value['data'], TRUE);
         break;
     }
   }
@@ -200,10 +200,11 @@ function d4os_array_merge_recursive_distinct() {
       if (is_array($value) or is_array($base[$key])) {
         $base[$key] = d4os_array_merge_recursive_distinct($base[$key], $append[$key]);
       }
-      else if (is_numeric($key)) {
+      elseif (is_numeric($key)) {
         if (!in_array($value, $base))
           $base[] = $value;
-      } else {
+      }
+      else {
         $base[$key] = $value;
       }
     }

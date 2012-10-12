@@ -17,23 +17,23 @@ function d4os_io_offline_messages_schema() {
       'id' => array(
         'type' => 'serial',
         'unsigned' => TRUE,
-        'not null' => TRUE,
+        'not NULL' => TRUE,
       ),
       'uuid' => array(
         'description' => 'uuid.',
         'type' => 'char',
         'length' => 36,
-        'not null' => TRUE
+        'not NULL' => TRUE
       ),
       'timestamp' => array(
         'type' => 'int',
-        'not null' => TRUE,
+        'not NULL' => TRUE,
         'default' => 0,
       ),
       'message' => array(
         'description' => 'creatoruuid.',
         'type' => 'text',
-        'not null' => TRUE,
+        'not NULL' => TRUE,
         'size' => 'big'
       ),
     ), // TODO : check indexes

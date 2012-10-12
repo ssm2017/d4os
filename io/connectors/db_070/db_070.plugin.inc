@@ -46,7 +46,7 @@ function d4os_io_db_070_set_active($name = 'default') {
  * Check if a datastore is alive
  * @param String The database config name
  * @param String The user readable datastore name
- * @return Bool True of false
+ * @return Bool True of FALSE
  */
 function d4os_io_db_070_mysql_is_alive($name, $datastore) {
   global $d4os_same_db, $databases;
@@ -69,12 +69,12 @@ function d4os_io_db_070_mysql_is_alive($name, $datastore) {
   try {
     $db_string = 'mysql:host=' . $databases[$name]['default']['host'] . ';dbname=' . $databases[$name]['default']['database'];
     $dbh = new PDO($db_string, $databases[$name]['default']['username'], $databases[$name]['default']['password']);
-    $dbh = null;
+    $dbh = NULL;
     return TRUE;
   } catch (PDOException $e) {
-    drupal_set_message(t('The !datastore datastore is not available.', array('!datastore' => $datastore)), 'error');
+    drupal_set_message(t('The @datastore datastore is not available.', array('@datastore' => $datastore)), 'error');
     drupal_set_message(t('Please inform the website admins.'), 'error');
-    watchdog('d4os io db', 'The !datastore datastore is not available.', array('!datastore' => $datastore), WATCHDOG_EMERGENCY);
+    watchdog('d4os io db', 'The @datastore datastore is not available.', array('@datastore' => $datastore), WATCHDOG_EMERGENCY);
     return FALSE;
   }
 }

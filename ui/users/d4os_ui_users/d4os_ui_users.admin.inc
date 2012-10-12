@@ -296,7 +296,7 @@ function d4os_ui_users_admin_validate($form, &$form_state) {
       $grid_user = $d4os_user->load_user(array('PrincipalID' => $model_uuid));
       $grid_user = $grid_user[0];
       if (!is_object($grid_user)) {
-        form_set_error($model_nbr, t('This uuid for model !id is not registered on the grid.', array('!id' => $i)));
+        form_set_error($model_nbr, t('This uuid for model @id is not registered on the grid.', array('@id' => $i)));
         return;
       }
     }

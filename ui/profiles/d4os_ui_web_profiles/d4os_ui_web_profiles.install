@@ -25,17 +25,17 @@ function d4os_ui_web_profiles_schema() {
       'source_uuid' => array(
         'type' => 'char',
         'length' => 36,
-        'not null' => TRUE
+        'not NULL' => TRUE
       ),
       'destination_uuid' => array(
         'type' => 'char',
         'length' => 36,
-        'not null' => TRUE
+        'not NULL' => TRUE
       ),
       'token' => array(
         'type' => 'char',
         'length' => 36,
-        'not null' => TRUE
+        'not NULL' => TRUE
       ),
     ),
   );

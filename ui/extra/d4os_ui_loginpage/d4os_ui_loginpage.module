@@ -27,7 +27,7 @@ function d4os_ui_loginpage_menu() {
     'title' => 'Loginpage',
     'description' => 'Viewer login page',
     'page callback' => 'd4os_ui_loginpage_render',
-    'access callback' => true,
+    'access callback' => TRUE,
     'type' => MENU_NORMAL_ITEM,
   );
   return $items;

@@ -54,7 +54,7 @@ class D4OS_IO_db_070_Groups implements D4OS_IO_groups_Interface {
     }
 
     // Check if agent already a member
-    $query = "SELECT count(AgentID) as isMember FROM osgroupmembership WHERE AgentID = :AgentID AND GroupID = :GroupID";
+    $query = "SELECT count(AgentID) as isMember FROM {osgroupmembership} WHERE AgentID = :AgentID AND GroupID = :GroupID";
     d4os_io_db_070_set_active('os_groups');
     $result = db_query($query, array(':AgentID' => $agentID, ':GroupID' => $groupID))->fetchField();
     d4os_io_db_070_set_active('default');
@@ -90,7 +90,7 @@ class D4OS_IO_db_070_Groups implements D4OS_IO_groups_Interface {
 
     drupal_set_message(t('User added to group.'));
 
-    return array("success" => "true");
+    return array("success" => "TRUE");
   }
 
   function addAgentToGroupRole($params) {
@@ -99,7 +99,7 @@ class D4OS_IO_db_070_Groups implements D4OS_IO_groups_Interface {
     $roleID = $params["RoleID"];
 
     // Check if agent already a member
-    $query = "SELECT count(AgentID) as isMember FROM osgrouprolemembership WHERE AgentID = :AgentID AND RoleID = :RoleID AND GroupID = :GroupID";
+    $query = "SELECT count(AgentID) as isMember FROM {osgrouprolemembership} WHERE AgentID = :AgentID AND RoleID = :RoleID AND GroupID = :GroupID";
     d4os_io_db_070_set_active('os_groups');
     $result = db_query($query, array(':AgentID' => $agentID, ':RoleID' => $roleID, ':GroupID' => $groupID))->fetchField();
     d4os_io_db_070_set_active('default');
@@ -118,7 +118,7 @@ class D4OS_IO_db_070_Groups implements D4OS_IO_groups_Interface {
       d4os_io_db_070_set_active('default');
     }
 
-    return array("success" => "true");
+    return array("success" => "TRUE");
   }
 
   function setAgentGroupSelectedRole($params) {
@@ -136,7 +136,7 @@ class D4OS_IO_db_070_Groups implements D4OS_IO_groups_Interface {
         ->execute();
     d4os_io_db_070_set_active('default');
 
-    return array('success' => 'true');
+    return array('success' => 'TRUE');
   }
 
   function getAgentGroups($uuid) {

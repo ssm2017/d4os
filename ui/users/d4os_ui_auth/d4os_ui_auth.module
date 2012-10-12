@@ -201,7 +201,7 @@ function d4os_ui_auth_grid_login($form, &$form_state) {
     if ($email_error_msg) {
       drupal_set_message(t('A new email address was generated. You will need to update it to be able to recover your password if needed.'), 'warning');
       drupal_set_message($data['mail'], 'warning');
-      drupal_set_message(t('Change the email value on your !account_page', array('!account_page' => l('account page', 'user/' . $account->uid . '/edit'))), 'warning');
+      drupal_set_message(t('Change the email value on your @account_page', array('@account_page' => l(t('account page'), 'user/' . $account->uid . '/edit'))), 'warning');
     }
 
     // login the user
@@ -212,7 +212,7 @@ function d4os_ui_auth_grid_login($form, &$form_state) {
       user_login_name_validate($form, $form_state);
       user_authenticate($form_state['values']['name'], $form_state['values']['pass']);
       user_login_final_validate($form, $form_state);
-      drupal_set_message(t('User !name added on the website.', array('!name' => $name)));
+      drupal_set_message(t('User @name added on the website.', array('@name' => $name)));
       // save grid user
       $grid_account->UserLevel = d4os_ui_users_get_user_level();
       $d4os_user->set_uuid($account->uid, $grid_account->PrincipalID);
@@ -220,7 +220,7 @@ function d4os_ui_auth_grid_login($form, &$form_state) {
       return TRUE;
     }
     else {
-      drupal_set_message(t('Error adding user !name on the website.', array('!name' => $name)));
+      drupal_set_message(t('Error adding user @name on the website.', array('@name' => $name)));
       user_login_final_validate($form, $form_state);
       return FALSE;
     }

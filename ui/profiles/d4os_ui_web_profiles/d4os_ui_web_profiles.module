@@ -774,11 +774,11 @@ function d4os_ui_web_profiles_partner_validate($token) {
     );
     $query->execute();
     // return the answer
-    drupal_set_message('Your partnership is validated.');
+    drupal_set_message(t('Your partnership is validated.'));
     drupal_goto();
   }
   else {
-    drupal_set_message('Unable to find entries for this partnership.');
+    drupal_set_message(t('Unable to find entries for this partnership.'));
     drupal_goto();
   }
 }

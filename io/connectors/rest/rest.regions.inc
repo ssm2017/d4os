@@ -21,12 +21,12 @@ class D4OS_IO_rest_Regions implements D4OS_IO_regions_Interface {
   }
 
   function ping() {
-    $this->response->success = false;
+    $this->response->success = FALSE;
     $result = d4os_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_regions/ping/format/json');
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
       if ($data->status === 'success') {
-        $this->response->success = true;
+        $this->response->success = TRUE;
       }
     }
     return;
@@ -42,19 +42,19 @@ class D4OS_IO_rest_Regions implements D4OS_IO_regions_Interface {
   }
 
   function get_regions_owners() {
-    $this->response->success = false;
+    $this->response->success = FALSE;
     $params = '';
 
     $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_regions/get_regions_owners/format/json';
     $result = d4os_http_request($url);
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
-      $this->response->success = true;
+      $this->response->success = TRUE;
       if (is_array($data)) {
         return $data;
       }
     }
-    return null;
+    return NULL;
   }
 
   function get_regions_count() {
@@ -62,12 +62,12 @@ class D4OS_IO_rest_Regions implements D4OS_IO_regions_Interface {
     $result = d4os_http_request($url);
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
-      $this->response->success = true;
+      $this->response->success = TRUE;
       if (is_array($data)) {
         return $data;
       }
     }
-    return null;
+    return NULL;
   }
 
   /**
@@ -91,7 +91,7 @@ class D4OS_IO_rest_Regions implements D4OS_IO_regions_Interface {
    * @return Array An array of regions objects
    */
   function get_regions_names() {
-    $this->response->success = false;
+    $this->response->success = FALSE;
     $params = '';
 
     $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_regions/get_regions_names/format/json';
@@ -99,12 +99,12 @@ class D4OS_IO_rest_Regions implements D4OS_IO_regions_Interface {
 
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
-      $this->response->success = true;
+      $this->response->success = TRUE;
       if (is_array($data)) {
         return $data;
       }
     }
-    return null;
+    return NULL;
   }
 
 }

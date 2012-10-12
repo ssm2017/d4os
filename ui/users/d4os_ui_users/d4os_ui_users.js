@@ -29,7 +29,7 @@
         $('div.messages.error').hide();
         // Set focus on OpenID Identifier field.
         $('#edit-openid-identifier')[0].focus();
-        return false;
+        return FALSE;
       });
       $('li.user-link:not(.openid-processed)', context)
       .addClass('openid-processed')
@@ -41,7 +41,7 @@
         $('div.messages.error').css('display', 'block');
         // Set focus on username field.
         $('#edit-firstname')[0].focus();
-        return false;
+        return FALSE;
       });
     }
   };

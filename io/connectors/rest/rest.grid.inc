@@ -21,29 +21,29 @@ class D4OS_IO_rest_Grid implements D4OS_IO_Grid_Interface {
   }
 
   function ping() {
-    $this->response->success = false;
+    $this->response->success = FALSE;
     $result = d4os_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_grid/ping/format/json');
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
       if ($data->status === 'success') {
-        $this->response->success = true;
+        $this->response->success = TRUE;
       }
     }
     return;
   }
 
   function get_grid_infos() {
-    $this->response->success = false;
+    $this->response->success = FALSE;
     $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_grid/get_grid_infos/format/json';
     $result = d4os_http_request($url);
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
-      $this->response->success = true;
+      $this->response->success = TRUE;
       if (is_object($data)) {
         return $data;
       }
     }
-    return null;
+    return NULL;
   }
 
 }

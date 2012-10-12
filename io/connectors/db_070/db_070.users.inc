@@ -22,7 +22,7 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
 
   function load_user($params) {
 
-    $this->response->success = false;
+    $this->response->success = FALSE;
     // Dynamically compose a SQL query:
     $queries = array();
     $values = array();
@@ -415,7 +415,7 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
     $query = "SELECT COUNT(UserID) FROM {GridUser}";
     $where = array();
     if (!$range || !is_numeric($range)) {
-      // Count the true number of users online.  GridUser.Online is not reliable.
+      // Count the TRUE number of users online.  GridUser.Online is not reliable.
       $query = "SELECT COUNT(*) FROM {Presence}";
       // Don't count ghosts.  Sometimes OpenSim gets confused and leaves people online when they are not, but at least sets the region they are in to the NULL key.
       $where[] = "RegionID<>'00000000-0000-0000-0000-000000000000'";
@@ -436,7 +436,7 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
 
   function get_online_hypergridders_count() {
     $where = array();
-    // Count the true number of users online.  GridUser.Online is not reliable.
+    // Count the TRUE number of users online.  GridUser.Online is not reliable.
     $query = "SELECT COUNT(*) FROM {Presence}";
     // Don't count ghosts.  Sometimes OpenSim gets confused and leaves people online when they are not, but at least sets the region they are in to the NULL key.
     $where[] = "RegionID<>'00000000-0000-0000-0000-000000000000'";

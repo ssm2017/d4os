@@ -191,7 +191,7 @@
       $('div.tabs ul.tabNavigation a').removeClass('selected');
       $(this).addClass('selected');
 
-      return false;
+      return FALSE;
     }).filter(':first').click();
   });
 </script>
