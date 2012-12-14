@@ -16,8 +16,8 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
   public $values;
 
   function __construct() {
-    $this->values = array(
-    );
+    $this->response = new stdClass();
+    $this->values = array();
   }
 
   function ping() {

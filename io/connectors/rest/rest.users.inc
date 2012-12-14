@@ -16,8 +16,8 @@ class D4OS_IO_rest_Users implements D4OS_IO_Users_Interface {
   public $values;
 
   function __construct() {
-    $this->values = array(
-    );
+    $this->response = new stdClass();
+    $this->values = array();
   }
 
   function ping() {
