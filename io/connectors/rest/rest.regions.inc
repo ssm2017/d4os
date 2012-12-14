@@ -22,7 +22,7 @@ class D4OS_IO_rest_Regions implements D4OS_IO_regions_Interface {
 
   function ping() {
     $this->response->success = FALSE;
-    $result = d4os_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_regions/ping/format/json');
+    $result = drupal_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_regions/ping/format/json', array('timeout'=> 5));
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
       if ($data->status === 'success') {
@@ -34,7 +34,7 @@ class D4OS_IO_rest_Regions implements D4OS_IO_regions_Interface {
 
   function region_exists($uuid) {
     $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_regions/region_exists/uuid/' . $uuid . '/format/json';
-    $result = d4os_http_request($url);
+    $result = drupal_http_request($url, array('timeout'=> 5));
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       return TRUE;
     }
@@ -46,7 +46,7 @@ class D4OS_IO_rest_Regions implements D4OS_IO_regions_Interface {
     $params = '';
 
     $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_regions/get_regions_owners/format/json';
-    $result = d4os_http_request($url);
+    $result = drupal_http_request($url, array('timeout'=> 5));
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
       $this->response->success = TRUE;
@@ -59,7 +59,7 @@ class D4OS_IO_rest_Regions implements D4OS_IO_regions_Interface {
 
   function get_regions_count() {
     $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_regions/get_regions_count/format/json';
-    $result = d4os_http_request($url);
+    $result = drupal_http_request($url, array('timeout'=> 5));
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
       $this->response->success = TRUE;
@@ -95,7 +95,7 @@ class D4OS_IO_rest_Regions implements D4OS_IO_regions_Interface {
     $params = '';
 
     $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_regions/get_regions_names/format/json';
-    $result = d4os_http_request($url);
+    $result = drupal_http_request($url, array('timeout'=> 5));
 
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
