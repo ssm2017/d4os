@@ -448,6 +448,7 @@ function d4os_ui_users_set_grid_user_role($uid) {
 }
 
 function d4os_ui_users_account_validate($form, &$form_state) {
+  if ($GLOBALS['user']->uid == 1) return; // TODO : check this
   $values = &$form_state['values'];
 
   // check for the model
