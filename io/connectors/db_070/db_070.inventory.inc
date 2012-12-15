@@ -170,9 +170,9 @@ class D4OS_IO_db_070_Inventory implements D4OS_IO_Inventory_Interface {
     // get the uuids
     $old_folders_uuids = array();
     foreach ($params['user_folders'] as $folder) {
-      $old_folders_uuids[] = $folder->folderid;
-      if ($folder->parentfolderid != UUID_ZERO) {
-        $old_folders_uuids[] = $folder->parentfolderid;
+      $old_folders_uuids[] = $folder->folderID;
+      if ($folder->parentFolderID != UUID_ZERO) {
+        $old_folders_uuids[] = $folder->parentFolderID;
       }
     }
     $old_folders_uuids = array_unique($old_folders_uuids);
@@ -188,15 +188,15 @@ class D4OS_IO_db_070_Inventory implements D4OS_IO_Inventory_Interface {
     foreach ($params['user_folders'] as $folder) {
       $values = $folder;
 
-      $new_uuid_id = array_search($folder->folderid, $old_folders_uuids);
-      $values->folderid = $new_folders_uuids[$new_uuid_id];
+      $new_uuid_id = array_search($folder->folderID, $old_folders_uuids);
+      $values->folderID = $new_folders_uuids[$new_uuid_id];
 
-      if ($folder->parentfolderid != UUID_ZERO) {
-        $new_parent_uuid_id = array_search($folder->parentfolderid, $old_folders_uuids);
-        $values->parentfolderid = $new_folders_uuids[$new_parent_uuid_id];
+      if ($folder->parentFolderID != UUID_ZERO) {
+        $new_parent_uuid_id = array_search($folder->parentFolderID, $old_folders_uuids);
+        $values->parentFolderID = $new_folders_uuids[$new_parent_uuid_id];
       }
 
-      $values->agentid = $params['avatar_dest_uuid'];
+      $values->agentID = $params['avatar_dest_uuid'];
       $new_folders[] = $values;
     }
 
@@ -218,7 +218,7 @@ class D4OS_IO_db_070_Inventory implements D4OS_IO_Inventory_Interface {
     // get the uuids
     $old_items_uuids = array();
     foreach ($params['user_items'] as $item) {
-      $old_items_uuids[] = $item->inventoryid;
+      $old_items_uuids[] = $item->inventoryID;
     }
     $old_items_uuids = array_unique($old_items_uuids);
     sort($old_items_uuids);
@@ -231,12 +231,12 @@ class D4OS_IO_db_070_Inventory implements D4OS_IO_Inventory_Interface {
 
     // replace the uuids
     foreach ($params['user_items'] as $item) {
-      $new_uuid_id = array_search($item->inventoryid, $old_items_uuids);
-      $new_parent_uuid_id = array_search($item->parentfolderid, $params['old_folders_uuids']);
+      $new_uuid_id = array_search($item->inventoryID, $old_items_uuids);
+      $new_parent_uuid_id = array_search($item->parentFolderID, $params['old_folders_uuids']);
       $values = $item;
-      $values->inventoryid = $new_items_uuids[$new_uuid_id];
-      $values->avatarid = $params['avatar_dest_uuid'];
-      $values->parentfolderid = $params['new_folders_uuids'][$new_parent_uuid_id];
+      $values->inventoryID = $new_items_uuids[$new_uuid_id];
+      $values->avatarID = $params['avatar_dest_uuid'];
+      $values->parentFolderID = $params['new_folders_uuids'][$new_parent_uuid_id];
       $new_items[] = $values;
     }
 
@@ -310,12 +310,12 @@ class D4OS_IO_db_070_Inventory implements D4OS_IO_Inventory_Interface {
     $folders_list_values = array();
     foreach ($new_items['data']['new_folders'] as $new_folder) {
       $folders_list_values[] = array(
-        'folderName' => $new_folder->foldername,
+        'folderName' => $new_folder->folderName,
         'type' => $new_folder->type,
         'version' => $new_folder->version,
-        'folderID' => $new_folder->folderid,
-        'agentID' => $new_folder->agentid,
-        'parentFolderID' => $new_folder->parentfolderid,
+        'folderID' => $new_folder->folderID,
+        'agentID' => $new_folder->agentID,
+        'parentFolderID' => $new_folder->parentFolderID,
       );
     }
 
@@ -332,26 +332,26 @@ class D4OS_IO_db_070_Inventory implements D4OS_IO_Inventory_Interface {
     $items_list_values = array();
     foreach ($new_items['data']['new_items'] as $new_item) {
       $items_list_values[] = array(
-        'assetID' => $new_item->assetid,
-        'assetType' => $new_item->assettype,
-        'inventoryName' => $new_item->inventoryname,
-        'inventoryDescription' => $new_item->inventorydescription,
-        'inventoryNextPermissions' => $new_item->inventorynextpermissions,
-        'inventoryCurrentPermissions' => $new_item->inventorycurrentpermissions,
-        'invType' => $new_item->invtype,
-        'creatorID' => $new_item->creatorid,
-        'inventoryBasePermissions' => $new_item->inventorybasepermissions,
-        'inventoryEveryOnePermissions' => $new_item->inventoryeveryonepermissions,
-        'salePrice' => $new_item->saleprice,
-        'saleType' => $new_item->saletype,
-        'creationDate' => $new_item->creationdate,
-        'groupID' => $new_item->groupid,
-        'groupOwned' => $new_item->groupowned,
+        'assetID' => $new_item->assetID,
+        'assetType' => $new_item->assetType,
+        'inventoryName' => $new_item->inventoryName,
+        'inventoryDescription' => $new_item->inventoryDescription,
+        'inventoryNextPermissions' => $new_item->inventoryNextPermissions,
+        'inventoryCurrentPermissions' => $new_item->inventoryCurrentPermissions,
+        'invType' => $new_item->invType,
+        'creatorID' => $new_item->creatorID,
+        'inventoryBasePermissions' => $new_item->inventoryBasePermissions,
+        'inventoryEveryOnePermissions' => $new_item->inventoryEveryOnePermissions,
+        'salePrice' => $new_item->salePrice,
+        'saleType' => $new_item->saleType,
+        'creationDate' => $new_item->creationDate,
+        'groupID' => $new_item->groupID,
+        'groupOwned' => $new_item->groupOwned,
         'flags' => $new_item->flags,
-        'inventoryID' => $new_item->inventoryid,
-        'avatarID' => $new_item->avatarid,
-        'parentFolderID' => $new_item->parentfolderid,
-        'inventoryGroupPermissions' => $new_item->inventorygrouppermissions,
+        'inventoryID' => $new_item->inventoryID,
+        'avatarID' => $new_item->avatarID,
+        'parentFolderID' => $new_item->parentFolderID,
+        'inventoryGroupPermissions' => $new_item->inventoryGroupPermissions,
       );
     }
 
@@ -424,8 +424,8 @@ class D4OS_IO_db_070_Inventory implements D4OS_IO_Inventory_Interface {
     $values = array();
 
     for ($i = 0; $i < count($appearance); $i++) {
-      if (strpos($appearance[$i]->name, 'Wearable') !== FALSE) {
-        $uuids = explode(":", $appearance[$i]->value);
+      if (strpos($appearance[$i]->Name, 'Wearable') !== FALSE) {
+        $uuids = explode(":", $appearance[$i]->Value);
         $item = $uuids[0];
         $asset = $uuids[1];
         $query = "SELECT inventoryID FROM {inventoryitems} WHERE assetID=:assetID AND avatarID=:avatarID";
@@ -436,13 +436,13 @@ class D4OS_IO_db_070_Inventory implements D4OS_IO_Inventory_Interface {
         if (!$result) {
           return;
         }
-        $appearance[$i]->value = $result->inventoryid . ":" . $asset;
+        $appearance[$i]->Value = $result->inventoryID . ":" . $asset;
       }
-      elseif (strpos($appearance[$i]->name, '_ap_') !== FALSE) {
+      elseif (strpos($appearance[$i]->Name, '_ap_') !== FALSE) {
         $query = "SELECT assetID FROM {inventoryitems} WHERE inventoryID=:inventoryID";
 
         d4os_io_db_070_set_active('os_robust');
-        $result = db_query($query, array(':inventoryID' => $appearance[$i]->value))->fetchObject();
+        $result = db_query($query, array(':inventoryID' => $appearance[$i]->Value))->fetchObject();
         d4os_io_db_070_set_active('default');
         if (!$result) {
           return;
@@ -451,20 +451,20 @@ class D4OS_IO_db_070_Inventory implements D4OS_IO_Inventory_Interface {
         $query = "SELECT inventoryID FROM {inventoryitems} WHERE assetID=:assetID AND avatarID=:avatarID";
 
         d4os_io_db_070_set_active('os_robust');
-        $result = db_query($query, array(':assetID' => $result->assetid, ':avatarID' => $params['avatar_dest_uuid']))->fetchObject();
+        $result = db_query($query, array(':assetID' => $result->assetID, ':avatarID' => $params['avatar_dest_uuid']))->fetchObject();
         d4os_io_db_070_set_active('default');
         if (!$result) {
           return;
         }
-        $appearance[$i]->value = $result->inventoryid;
+        $appearance[$i]->Value = $result->inventoryID;
       }
-      if ($appearance[$i]->name == "UserID") {
-        $appearance[$i]->value = $params['avatar_dest_uuid'];
+      if ($appearance[$i]->Name == "UserID") {
+        $appearance[$i]->Value = $params['avatar_dest_uuid'];
       }
       $values[] = array(
         'PrincipalID' => $params['avatar_dest_uuid'],
-        'Name' => $appearance[$i]->name,
-        'Value' => $appearance[$i]->value,
+        'Name' => $appearance[$i]->Name,
+        'Value' => $appearance[$i]->Value,
       );
     }
 
