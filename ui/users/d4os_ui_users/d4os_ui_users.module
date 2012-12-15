@@ -615,15 +615,15 @@ function d4os_ui_users_avatars_models_select_form(&$form) {
     // get the picture
     $picture = theme_image(
         array(
-          'path' => $model->picture_url,
+          'path' => $available_model->picture_url,
           'width' => $image_width . 'px',
           'alt' => t('No picture available'),
-          'title' => t("!user's picture", array('!user' => $model->name)),
+          'title' => t("!user's picture", array('!user' => $available_model->name)),
           'attributes' => array()
         )
     );
     if ($use_lightbox2 == 1) {
-      $picture = l($picture, $model->picture_url, array('html' => TRUE, 'attributes' => array('rel' => 'lightbox[models]')));
+      $picture = l($picture, $available_model->picture_url, array('html' => TRUE, 'attributes' => array('rel' => 'lightbox[models]')));
     }
 
     // fill the options
