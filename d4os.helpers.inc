@@ -118,26 +118,28 @@ function d4os_grid_is_online() {
   // Measured it at 0.8 seconds on my test server.
   // Also, if it's a high traffic web server, and the online status is on all pages, pointless checking many times a second.
   $grid_is_online_timestamp = variable_get('d4os_grid_is_online_timestamp', 0);
-  if ($grid_is_online_timestamp < (time() - (60 * 3))) {
+  $time = time();
+  if ($grid_is_online_timestamp < ($time - (60))) {
     $online = FALSE;
-// TODO : why not use loginuri ?
-    // remove http://
-    $url = variable_get('d4os_default_users_server_uri', $base_url);
+    $url = variable_get('d4os_default_users_server_uri', $base_url);// TODO : why not use loginuri ?
+    $port = variable_get('d4os_default_users_server_port', '8002');
 
+    // remove http://
     if (strpos($url, 'http://') !== FALSE) {
       $url = substr($url, 7);
     }
-    $port = variable_get('d4os_default_users_server_port', '8002');
-    $fp = @fsockopen($url, $port, $errno, $errstr, 1.0);
+
+    $fp = @fsockopen($url, $port, $errno, $errstr, 4.0);
     if ($fp) {
       $online = TRUE;
     }
-    $grid_is_online = $online;
-    variable_set('d4os_grid_is_online_timestamp', time());
+    variable_set('d4os_grid_is_online_timestamp', $time);
     variable_set('d4os_grid_is_online', $online);
   }
-  else
+  else {
     $online = variable_get('d4os_grid_is_online');
+  }
+  $grid_is_online = $online;
   return $online;
 }
 

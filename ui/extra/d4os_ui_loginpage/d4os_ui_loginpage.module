@@ -55,25 +55,15 @@ function d4os_ui_loginpage_theme() {
 
 function d4os_ui_loginpage_render() {
   // get grid infos blocks
-  $grid_info_block = drupal_render(
-      _block_get_renderable_array(
-          _block_render_blocks(
-              array(
-                block_load('d4os_ui_monitor_grid_status', 'd4os_ui_monitor_grid_infos')
-              )
-          )
-      )
-  );
+  $block            = block_load('d4os_ui_monitor_grid_status', 'd4os_ui_monitor_grid_infos');
+  $rendered_block   = _block_render_blocks(array($block));
+  $renderable_array = _block_get_renderable_array($rendered_block);
+  $grid_info_block  = drupal_render($renderable_array);
 
-  $grid_status_bloc = drupal_render(
-      _block_get_renderable_array(
-          _block_render_blocks(
-              array(
-                block_load('d4os_ui_monitor_grid_status', 'd4os_ui_monitor_grid_status')
-              )
-          )
-      )
-  );
+  $block            = block_load('d4os_ui_monitor_grid_status', 'd4os_ui_monitor_grid_status');
+  $rendered_block   = _block_render_blocks(array($block));
+  $renderable_array = _block_get_renderable_array($rendered_block);
+  $grid_status_bloc = drupal_render($renderable_array);
 
   $variables = array(
     'site_name' => variable_get('site_name', ''),
