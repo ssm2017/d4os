@@ -16,6 +16,7 @@ class D4OS_IO_db_070_Grid implements D4OS_IO_Grid_Interface {
   public $values;
 
   function __construct() {
+    $this->response = new stdClass();
     $this->values = array();
   }
 

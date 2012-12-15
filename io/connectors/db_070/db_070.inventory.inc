@@ -16,8 +16,8 @@ class D4OS_IO_db_070_Inventory implements D4OS_IO_Inventory_Interface {
   public $values;
 
   function __construct() {
-    $this->values = array(
-    );
+    $this->response = new stdClass();
+    $this->values = array();
   }
 
   function ping() {

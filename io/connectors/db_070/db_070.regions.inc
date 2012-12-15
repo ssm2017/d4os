@@ -16,6 +16,7 @@ class D4OS_IO_db_070_Regions implements D4OS_IO_regions_Interface {
   public $values;
 
   function __construct() {
+    $this->response = new stdClass();
     $this->values = array();
   }
 

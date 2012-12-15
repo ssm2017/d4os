@@ -15,6 +15,11 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
   public $response;
   public $values;
 
+  function __construct() {
+    $this->response = new stdClass();
+    $this->values = array();
+  }
+
   function ping() {
     $this->response->success = d4os_io_db_070_mysql_is_alive('os_robust', 'Robust');
     return;
@@ -412,19 +417,14 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
 
   function get_online_users_count($range = 0) {
     // day = 86400 / month = 2419200 / year = 29030400
-    $query = "SELECT COUNT(UserID) FROM {GridUser}";
-    $where = array();
     if (!$range || !is_numeric($range)) {
       // Count the TRUE number of users online.  GridUser.Online is not reliable.
       $query = "SELECT COUNT(*) FROM {Presence}";
       // Don't count ghosts.  Sometimes OpenSim gets confused and leaves people online when they are not, but at least sets the region they are in to the NULL key.
-      $where[] = "RegionID<>'00000000-0000-0000-0000-000000000000'";
+      $query .= " WHERE RegionID<>'00000000-0000-0000-0000-000000000000'";
     }
     else {
-      $where[] = "Login > UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()) - $range))";
-    }
-    if (count($where)) {
-      $query .= ' WHERE ' . implode(' AND ', $where);
+      $query = "SELECT COUNT(UserID) FROM {GridUser} WHERE Login > UNIX_TIMESTAMP(FROM_UNIXTIME(UNIX_TIMESTAMP(now()) - $range))";
     }
 
     d4os_io_db_070_set_active('os_robust');
