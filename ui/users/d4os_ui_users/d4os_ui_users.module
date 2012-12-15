@@ -175,7 +175,7 @@ function d4os_element_info_alter(&$types) {
 function d4os_ui_users_user_view($account, $view_mode, $langcode) {
   // check if the user exists in the grid
   $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $account->uid))->fetchField();
-  if ($uuid === FALSE) {
+  if ($uuid === FALSE || is_null($uuid)) {
     drupal_set_message(t('User not registered InWorld.'));
   }
   else {
@@ -218,11 +218,12 @@ function d4os_ui_users_user_update(&$edit, $account, $category) {
   $autocreate = variable_get('d4os_ui_users_autocreate_grid_account', 0);
 
   // check if the user is registered on the grid
-  $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $account->uid))->fetchField();
-  if (!$autocreate && $uuid === FALSE) {
+  $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid = :uid", array(':uid' => $account->uid))->fetchField();
+
+  if (!$autocreate && ($uuid === FALSE || is_null($uuid))) {
     return;
   }
-  elseif ($autocreate && $uuid === FALSE) {
+  elseif ($autocreate && ($uuid === FALSE || is_null($uuid))) {
     drupal_set_message(t('Creating a grid account for you.'));
     $form_state = array();
     $form_state['uid'] = $account->uid;
@@ -279,8 +280,9 @@ function d4os_ui_users_login_authenticate_validate($form, &$form_state) {
 
 function d4os_ui_users_can_register_on_grid($account) {
   // check if the account is admin
-  if ($account->uid == 1)
+  if ($account->uid == 1) {
     return FALSE;
+  }
 
   // check if autocreate is enabled
   if (variable_get('d4os_ui_users_autocreate_grid_account', 0)) {
@@ -289,8 +291,10 @@ function d4os_ui_users_can_register_on_grid($account) {
 
   // check if the account is already registered on the grid
   $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $account->uid))->fetchField();
-  if ($uuid !== FALSE)
+
+  if ($uuid !== FALSE && !is_null($uuid)) {
     return FALSE;
+  }
 
   // Check if they are the proper role for registering.
   $register_role = variable_get('d4os_ui_users_register_role', 0);
@@ -509,7 +513,7 @@ function d4os_ui_users_account_validate($form, &$form_state) {
     case 'user_profile_form':
       // get the user uuid
       $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $form_state['user']->uid))->fetchField();
-      if ($uuid === FALSE)
+      if ($uuid === FALSE || is_null($uuid))
         return;
       // check if the user already exists after changing username
       if (is_object($grid_user) && $grid_user->PrincipalID != $uuid) {
