@@ -57,6 +57,22 @@ function d4os_ui_auth_form_alter(&$form, $form_state, $form_id) {
  * Login form _validate
  */
 function d4os_ui_auth_login_validate($form, &$form_state) {
+  // get login flow
+  $login_flow = variable_get('d4os_ui_auth_login_flow', 0);
+
+  // the admin user is allowed to have a one string username
+  $admin_account = user_load(1);
+  if ($form_state['values']['name'] == $admin_account->name) {
+    $login_flow = 0;
+  }
+  else {
+    // check if the name contains 2 names
+    $names = explode(' ', $form_state['values']['name']);
+    if (count($names) < 2) {
+      form_set_error('name', t('You need to enter Firstname and Lastname separated by a space character.'));
+      return;
+    }
+  }
 
   // check for the openid module
   if (module_exists('openid')) {
@@ -66,9 +82,6 @@ function d4os_ui_auth_login_validate($form, &$form_state) {
       return;
     }
   }
-
-  // get login flow
-  $login_flow = variable_get('d4os_ui_auth_login_flow', 0);
 
   switch ($login_flow) {
     // drupal only
