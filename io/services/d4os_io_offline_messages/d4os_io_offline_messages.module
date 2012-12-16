@@ -303,7 +303,7 @@ function d4os_io_offline_messages_mail($key, &$message, $params) {
 function d4os_io_offline_messages_user_delete($edit, $account, $method) {
   // get the user uuid
   $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $edit->uid))->fetchField();
-  if ($uuid === FALSE) {
+  if ($uuid === FALSE || is_null($uuid)) {
     return;
   }
   db_query("DELETE FROM {d4os_io_offline_messages} WHERE uuid = :uuid", array(':uuid' => $uuid));

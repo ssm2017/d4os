@@ -110,7 +110,7 @@ function d4os_ui_web_profiles_display_public_profile($account) {
   //$user->d4os['grid']['account']['uuid'] = $user->uid == 1 ? UUID_ZERO : $user->d4os['grid']['account']['uuid'];
   // check if the user exists in the grid
   $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $account->uid))->fetchField();
-  if ($uuid === FALSE) {
+  if ($uuid === FALSE || is_null($uuid)) {
     drupal_set_message(t('User not registered InWorld.'), 'error');
     drupal_goto('user/' . $account->uid);
   }
