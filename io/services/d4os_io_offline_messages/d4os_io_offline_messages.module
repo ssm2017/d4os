@@ -254,7 +254,7 @@ function d4os_io_offline_messages_mail_send($form_values) {
   $d4os_profiles = D4OS_IO::create('Profiles');
   $user_prefs = $d4os_profiles->user_preferences_request(array('useruuid' => $form_values['toAgentID']));
 
-  if ($user_prefs['data'][0]['imviaemail'] == 'TRUE') {
+  if ($user_prefs[0]['imviaemail'] == 'TRUE') {
     // get the website user email
     $user_email = db_query("SELECT u.mail FROM {users} AS u LEFT JOIN {d4os_ui_users} AS du ON du.uid=u.uid WHERE du.UUID = :uuid", array(':uuid' => $form_values['toAgentID']))->fetchField();
     if (!$user_email) {

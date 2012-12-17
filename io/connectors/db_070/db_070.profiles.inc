@@ -637,28 +637,23 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
 
   function user_preferences_request($params) {
     $data = array();
-    $query = "SELECT * FROM {usersettings} WHERE useruuid = '%s'";
 
     d4os_io_db_070_set_active('os_profile');
-    $result = db_query($query, $params['useruuid']);
-    while ($row = db_fetch_array($result)) {
-      $data[] = $row;
+    $results = db_query("SELECT * FROM {usersettings} WHERE useruuid = :useruuid", array(':useruuid'=> $params['useruuid']))->fetch();
+    foreach ($results as $result) {
+      $data[0][] = $result;
     }
     d4os_io_db_070_set_active('default');
 
     if (count($data) == 0) {
-      $data[] = array(
+      $data[0][] = array(
         'imviaemail' => 0,
         'visible' => 0,
         'email' => "email"
       );
     }
 
-    return array(
-      'success' => TRUE,
-      'errorMessage' => "",
-      'data' => $data
-    );
+    return $data;
   }
 
   function user_preferences_update($params) {
