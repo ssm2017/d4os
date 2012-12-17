@@ -227,7 +227,7 @@ function d4os_oi_offline_message_build_answer($action, $params) {
   $output = '<?xml version="1.0" encoding="utf-8"?>';
   switch ($action) {
     case 'savemessage':
-      $output .= $params['success'] ? '<boolean>TRUE</boolean>' : '<boolean>FALSE</boolean>';
+      $output .= $params['success'] ? '<boolean>true</boolean>' : '<boolean>false</boolean>';
       break;
     case 'retrievemessages':
       $output .= '<ArrayOfGridInstantMessage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">';
