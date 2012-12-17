@@ -821,6 +821,7 @@ function d4os_ui_web_profiles_send_partner_request($params) {
 function d4os_ui_web_profiles_mail($key, &$message, $params) {
   $language = $message['language'];
   $variables = array(
+    '!site' => variable_get('site_name'),
     '!source_name' => $params['source']->name,
     '!request_url' => url('grid/profile/partner/validate/' . $params['token'], array('absolute' => TRUE, 'language' => $language)),
   );
