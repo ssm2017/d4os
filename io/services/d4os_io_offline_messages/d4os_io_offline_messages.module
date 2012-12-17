@@ -254,7 +254,7 @@ function d4os_io_offline_messages_mail_send($form_values) {
   $d4os_profiles = D4OS_IO::create('Profiles');
   $user_prefs = $d4os_profiles->user_preferences_request(array('useruuid' => $form_values['toAgentID']));
 
-  if ($user_prefs[0]['imviaemail'] == 'TRUE') {
+  if ($user_prefs[0]->imviaemail == 'true') {
     // get the website user email
     $user_email = db_query("SELECT u.mail FROM {users} AS u LEFT JOIN {d4os_ui_users} AS du ON du.uid=u.uid WHERE du.UUID = :uuid", array(':uuid' => $form_values['toAgentID']))->fetchField();
     if (!$user_email) {
@@ -288,10 +288,11 @@ function d4os_io_offline_messages_mail($key, &$message, $params) {
 
   switch ($key) {
     case 'offline_message':
-      $message['subject'] = t('E-mail sent from @site-name', array('@site-name' => variable_get('site_name', 'Drupal')), $language->language);
-      $message['body'][] = t('@name sent you the following message:', array('@name' => $params['from']), $language->language);
+      $options = array('langcode'=> $language->language);
+      $message['subject'] = t('E-mail sent from @site-name', array('@site-name' => variable_get('site_name', 'Drupal')), $options);
+      $message['body'][] = t('@name sent you the following message:', array('@name' => $params['from']), $options);
       $message['body'][] = $params['message'];
-      $message['body'][] = t('You need to log in the grid to answer this message.', $language->language);
+      $message['body'][] = t('You need to log in the grid to answer this message.', $options);
       break;
   }
 }

@@ -639,14 +639,15 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
     $data = array();
 
     d4os_io_db_070_set_active('os_profile');
-    $results = db_query("SELECT * FROM {usersettings} WHERE useruuid = :useruuid", array(':useruuid'=> $params['useruuid']))->fetch();
+    $results = db_query("SELECT * FROM {usersettings} WHERE useruuid = :useruuid", array(':useruuid'=> $params['useruuid']))->fetchAll();
     foreach ($results as $result) {
-      $data[0][] = $result;
+      $data[] = $result;
+
     }
     d4os_io_db_070_set_active('default');
 
     if (count($data) == 0) {
-      $data[0][] = array(
+      $data[] = array(
         'imviaemail' => 0,
         'visible' => 0,
         'email' => "email"
