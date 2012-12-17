@@ -16,7 +16,7 @@
     border:1px solid #ccc;
     padding:20px;
     margin:10px;
-    -moz-border-radius: 20px;
+    border-radius: 20px;
     -webkit-border-radius: 20px;
   }
   .tabNavigation {
@@ -32,13 +32,12 @@
   .tabNavigation li a {
     padding: 4px 10px;
     color: #ccc;
-    border: 1px solid #ccc;
+    border: 2px solid #ccc;
     line-height: 1em;
     text-align: center;
     text-decoration: none;
-    -moz-border-radius: 10px;
+    border-radius: 10px;
     -webkit-border-radius: 10px;
-
   }
   .tabNavigation li a.selected {
     background: #900;
@@ -182,7 +181,7 @@
   <?php endif; // mynotes ?>
 </div>
 <script>
-  $(function () {
+  (function ($) {
     var tabContainers = $('div.tabs > div');
 
     $('div.tabs ul.tabNavigation a').click(function () {
@@ -193,5 +192,5 @@
 
       return FALSE;
     }).filter(':first').click();
-  });
+  })(jQuery);
 </script>

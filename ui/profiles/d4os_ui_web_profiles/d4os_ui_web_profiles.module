@@ -186,10 +186,14 @@ function d4os_ui_web_profiles_display_public_profile($account) {
     $profile->login_date = $profile->grid_user->Login > 0 ? format_date($profile->grid_user->Login, $format) : t('Never connected to the grid');
 
     // build the forms
-    $profile->home_region_form = drupal_render(drupal_get_form('d4os_ui_web_profiles_home_region_form', $profile, $account));
-    $profile->image_form = drupal_render(drupal_get_form('d4os_ui_web_profiles_image_form', $profile, $account, $asset_pictures_server_url));
-    $profile->about_text_form = drupal_render(drupal_get_form('d4os_ui_web_profiles_about_text_form', $profile, $account));
-    $profile->partner_form = drupal_render(drupal_get_form('d4os_ui_web_profiles_partner_form', $profile, $account));
+    $home_region_form = drupal_get_form('d4os_ui_web_profiles_home_region_form', $profile, $account);
+    $image_form = drupal_get_form('d4os_ui_web_profiles_image_form', $profile, $account, $asset_pictures_server_url);
+    $about_text_form = drupal_get_form('d4os_ui_web_profiles_about_text_form', $profile, $account);
+    $partner_form = drupal_get_form('d4os_ui_web_profiles_partner_form', $profile, $account);
+    $profile->home_region_form = drupal_render($home_region_form);
+    $profile->image_form = drupal_render($image_form);
+    $profile->about_text_form = drupal_render($about_text_form);
+    $profile->partner_form = drupal_render($partner_form);
   }
   else {
     $profile->image_form = $profile->profileImage_img;
@@ -203,10 +207,12 @@ function d4os_ui_web_profiles_display_public_profile($account) {
   // *****************
   $profile->show_web = FALSE;
   if ($profile->can_edit) {
-    $profile->web = drupal_render(drupal_get_form('d4os_ui_web_profiles_url_form', $profile, $account));
+    $url_form = drupal_get_form('d4os_ui_web_profiles_url_form', $profile, $account);
+    $profile->web = drupal_render($url_form);
   }
   else {
-    $profile->web = drupal_render(drupal_get_form('d4os_ui_web_profiles_url_iframe_form', $profile, $account));
+    $url_iframe_form = drupal_get_form('d4os_ui_web_profiles_url_iframe_form', $profile, $account);
+    $profile->web = drupal_render($url_iframe_form);
   }
 
   // *****************
@@ -229,8 +235,10 @@ function d4os_ui_web_profiles_display_public_profile($account) {
   // *****************
   $profile->show_firstlife = TRUE;
   if ($profile->can_edit) {
-    $profile->first_image_form = drupal_render(drupal_get_form('d4os_ui_web_profiles_first_image_form', $profile, $account, $asset_pictures_server_url));
-    $profile->first_text_form = drupal_render(drupal_get_form('d4os_ui_web_profiles_first_text_form', $profile, $account));
+    $first_image_form = drupal_get_form('d4os_ui_web_profiles_first_image_form', $profile, $account, $asset_pictures_server_url);
+    $first_text_form = drupal_get_form('d4os_ui_web_profiles_first_text_form', $profile, $account);
+    $profile->first_image_form = drupal_render($first_image_form);
+    $profile->first_text_form = drupal_render($first_text_form);
   }
   else {
     $profile->first_image_form = $profile->profileFirstImage_img;
@@ -243,7 +251,8 @@ function d4os_ui_web_profiles_display_public_profile($account) {
   $profile->show_my_notes = $user->uid > 0 ? TRUE : FALSE;
   $profile->show_my_notes = FALSE;
   if ($profile->show_my_notes) {
-    $profile->my_notes_form = drupal_render(drupal_get_form('d4os_ui_web_profiles_notes_form', $profile, $account));
+    $notes_form = drupal_get_form('d4os_ui_web_profiles_notes_form', $profile, $account);
+    $profile->my_notes_form = drupal_render($notes_form);
   }
 
   // *****************
@@ -252,7 +261,8 @@ function d4os_ui_web_profiles_display_public_profile($account) {
   //$profile->show_options = $profile->can_edit;
   $profile->show_options = FALSE;
   if ($profile->show_options) {
-    $profile->options_form = drupal_render(drupal_get_form('d4os_ui_web_profiles_options_form', $profile, $account));
+    $options_form = drupal_get_form('d4os_ui_web_profiles_options_form', $profile, $account);
+    $profile->options_form = drupal_render($options_form);
   }
 //return '';
   $profile->text = '';
@@ -293,8 +303,7 @@ function d4os_ui_web_profiles_image_form($form, &$form_state, $profile, $account
     '#suffix' => '</div>',
   );
   $form['image']['wrapper']['image-picture'] = array(
-    '#type' => 'item',
-    '#value' => $picture,
+    '#markup' => $picture,
   );
   $form['image']['wrapper']['form'] = array(
     '#type' => 'fieldset',
@@ -539,8 +548,7 @@ function d4os_ui_web_profiles_first_image_form($form, &$form_state, $profile, $a
     '#suffix' => '</div>',
   );
   $form['first-image']['wrapper']['first-image-picture'] = array(
-    '#type' => 'item',
-    '#value' => $picture,
+    '#markup' => $picture,
   );
   $form['first-image']['wrapper']['form'] = array(
     '#type' => 'fieldset',
@@ -820,8 +828,9 @@ function d4os_ui_web_profiles_mail($key, &$message, $params) {
 
   switch ($key) {
     case 'partner_request':
-      $message['subject'] = t('Partner request from !site', $variables, array('langcode' => $language->language));
-      $message['body'][] = t("Dear !username\n\nThe user called !source_name would like you to accept his partnership request.\n\nYou may accept it by clicking on this link or copying and pasting it in your browser:\n\n!request_url!", $variables, array('langcode' => $language->language));
+      $options = array('langcode' => $language->language);
+      $message['subject'] = t('Partner request from !site', $variables, $options);
+      $message['body'][] = t("Dear !username\n\nThe user called !source_name would like you to accept his partnership request.\n\nYou may accept it by clicking on this link or copying and pasting it in your browser:\n\n!request_url!", $variables, $options);
       break;
   }
 }
