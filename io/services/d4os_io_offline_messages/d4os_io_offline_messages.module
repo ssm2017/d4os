@@ -145,7 +145,7 @@ function d4os_io_offline_messages_savemessage($params) {
   $success = db_query("INSERT INTO {d4os_io_offline_messages} (uuid, message) VALUES (:toAgentID, :message)", array(':toAgentID' => $params['toAgentID'], ':message' => $params['message']));
   if ($success) {
     if (variable_get('d4os_io_offline_messages_send_mails', 0)) {
-      d4os_io_services_offline_messages_mail_send($params);
+      d4os_io_offline_messages_mail_send($params);
     }
   }
 
