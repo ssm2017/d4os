@@ -624,39 +624,42 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
 
   function user_preferences_update($params) {
     // get the user email address from the website
-    $mail = db_result(db_query("SELECT u.mail FROM {users} AS u LEFT JOIN {d4os_ui_users} AS du ON du.uid=u.uid WHERE du.uuid='%s'", $params['useruuid']));
-    if ($mail === FALSE) {
+    $mail = db_query("SELECT u.mail FROM {users} AS u LEFT JOIN {d4os_ui_users} AS du ON du.uid=u.uid WHERE du.uuid=:uuid", array( ':uuid' => $params['useruuid']))->fetchField();
+    if ($mail === FALSE || is_null($mail)) {
       $mail = '';
     }
 
-    $data = array(
-      $params['imViaEmail'],
-      //'email',
-      $mail,
-      $params['visible'],
-      $params['useruuid']
+    $values = array(
+      'imviaemail' => $params['imViaEmail'],
+      'email' => $mail,
+      'visible' => $params['visible']
     );
 
     // Check if we already have this one in the database
     d4os_io_db_070_set_active('os_profile');
-    $exists = db_result(db_query("SELECT count(*) FROM {usersettings} WHERE useruuid = '%s'", array($params['useruuid'])));
+    $exists = db_query("SELECT count(*) FROM {usersettings} WHERE useruuid = :useruuid", array(':useruuid' =>$params['useruuid']))->fetchField();
     d4os_io_db_070_set_active('default');
 
     if (!$exists) {
-      $query = "INSERT INTO {usersettings} (imviaemail, email, visible, useruuid) VALUES ('%s', '%s', '%s', '%s')";
+      $values['useruuid'] = $params['useruuid'];
+      d4os_io_db_070_set_active('os_profile');
+      db_insert('usersettings')
+            ->fields($values)
+            ->execute();
+      d4os_io_db_070_set_active('default');
     }
     else {
-      $query = "UPDATE {usersettings} SET imviaemail = '%s', email = '%s', visible = '%s' where useruuid = '%s'";
+      d4os_io_db_070_set_active('os_profile');
+      db_update('usersettings')
+          ->fields($values)
+          ->condition('useruuid', $params['useruuid'])
+          ->execute();
+      d4os_io_db_070_set_active('default');
     }
-
-    d4os_io_db_070_set_active('os_profile');
-    db_query($query, $data);
-    d4os_io_db_070_set_active('default');
 
     return array(
       'success' => TRUE,
       'errorMessage' => "",
     );
   }
-
 }
