@@ -324,7 +324,7 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
     }
     return array(
       'success' => FALSE,
-      'errorMessage' => "",
+      'errorMessage' => $response,
     );
   }
 
