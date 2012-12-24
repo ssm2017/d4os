@@ -442,21 +442,21 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
     $data = array();
 
     d4os_io_db_070_set_active('os_profile');
-    $result = db_query("SELECT * FROM {userprofile} WHERE useruuid = '%s'", $params['useruuid']);
-    while ($row = db_fetch_array($result)) {
+    $results = db_query("SELECT * FROM {userprofile} WHERE useruuid = :useruuid", array(':useruuid' => $params['useruuid']))->fetchAll();
+    foreach ($results as $result) {
       $data[] = array(
-        "ProfileUrl" => $row["profileURL"], // 1
-        "Image" => $row["profileImage"], // 2
-        "AboutText" => $row["profileAboutText"], // 3
-        "FirstLifeImage" => $row["profileFirstImage"], // 4
-        "FirstLifeAboutText" => $row["profileFirstText"], // 5
-        "Partner" => $row["profilePartner"], // 6
+        "ProfileUrl" => $result->profileURL, // 1
+        "Image" => $result->profileImage, // 2
+        "AboutText" => $result->profileAboutText, // 3
+        "FirstLifeImage" => $result->profileFirstImage, // 4
+        "FirstLifeAboutText" => $result->profileFirstText, // 5
+        "Partner" => $result->profilePartner, // 6
         //Return interest data along with avatar properties
-        "wantmask" => $row["profileWantToMask"], // 7
-        "wanttext" => $row["profileWantToText"], // 8
-        "skillsmask" => $row["profileSkillsMask"], // 9
-        "skillstext" => $row["profileSkillsText"], // 10
-        "languages" => $row["profileLanguages"]// 11
+        "wantmask" => $result->profileWantToMask, // 7
+        "wanttext" => $result->profileWantToText, // 8
+        "skillsmask" => $result->profileSkillsMask, // 9
+        "skillstext" => $result->profileSkillsText, // 10
+        "languages" => $result->profileLanguages// 11
       );
     }
     d4os_io_db_070_set_active('default');
