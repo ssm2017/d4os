@@ -76,13 +76,18 @@ function d4os_io_profiles_grid_registration_fom_submit($form, &$form_state) {
 function d4os_io_profiles_create_profile($uuid) {
   $profile = new stdClass();
   $profile->useruuid = $uuid;
-  $profile->profileSkillsMask = 0;
-  $profile->profileWantToMask = 0;
-  $profile->profileAboutText = variable_get('d4os_io_profiles_default_profile_about_text', 'I am a new user');
-  $profile->profileFirstText = variable_get('d4os_io_profiles_default_profile_first_text', 'I am as real as you are');
-  $profile->profileImage = variable_get('d4os_io_profiles_default_profile_image', UUID_ZERO);
-  $profile->profileFirstImage = variable_get('d4os_io_profiles_default_profile_first_image', UUID_ZERO);
-  $profile->profileURL = '';
   $profile->profilePartner = '';
+  $profile->profileAllowPublish = 0;
+  $profile->profileMaturePublish = 0;
+  $profile->profileURL = '';
+  $profile->profileWantToMask = 0;
+  $profile->profileWantToText = '';
+  $profile->profileSkillsMask = 0;
+  $profile->profileSkillsText = '';
+  $profile->profileLanguages = '';
+  $profile->profileImage = variable_get('d4os_io_profiles_default_profile_image', UUID_ZERO);
+  $profile->profileAboutText = variable_get('d4os_io_profiles_default_profile_about_text', 'I am a new user');
+  $profile->profileFirstImage = variable_get('d4os_io_profiles_default_profile_first_image', UUID_ZERO);
+  $profile->profileFirstText = variable_get('d4os_io_profiles_default_profile_first_text', 'I am as real as you are');
   return $profile;
 }

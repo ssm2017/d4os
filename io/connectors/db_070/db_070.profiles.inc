@@ -40,14 +40,19 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
     $values = array();
     foreach ($user_profile as $key => $value) {
       switch ($key) {
-        case 'profileSkillsMask':
-        case 'profileWantToMask':
-        case 'profileAboutText':
-        case 'profileFirstText':
-        case 'profileImage':
-        case 'profileFirstImage':
-        case 'profileURL':
-        case 'profilePartner':
+        case 'profilePartner': // varchar(36)
+        case 'profileAllowPublish': // binary(1)
+        case 'profileMaturePublish': // binary(1)
+        case 'profileURL': // varchar(255)
+        case 'profileWantToMask': // int(3)
+        case 'profileWantToText': // text
+        case 'profileSkillsMask': // int(3)
+        case 'profileSkillsText': // text
+        case 'profileLanguages': // text
+        case 'profileImage': // varchar(36)
+        case 'profileAboutText': // text
+        case 'profileFirstImage': // varchar(36)
+        case 'profileFirstText': // text
           $values[$key] = $value;
           break;
       }
@@ -61,15 +66,13 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
 
     // update or insert ?
     if ($profile_exists) {
-      if (count($values)) {
-        d4os_io_db_070_set_active('os_profile');
-        db_update('userprofile')
-            ->fields($values)
-            ->condition('useruuid', $user_profile->useruuid)
-            ->execute();
-        d4os_io_db_070_set_active('default');
-        drupal_set_message(t('User profile updated'));
-      }
+      d4os_io_db_070_set_active('os_profile');
+      db_update('userprofile')
+          ->fields($values)
+          ->condition('useruuid', $user_profile->useruuid)
+          ->execute();
+      d4os_io_db_070_set_active('default');
+      drupal_set_message(t('User profile updated'));
     }
     else {
       $values['useruuid'] = $user_profile->useruuid;
