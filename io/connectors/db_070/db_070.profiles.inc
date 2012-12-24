@@ -509,57 +509,39 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
     $params['profileFirstText'] = isset($params['FirstLifeAboutText']) ? $params['FirstLifeAboutText'] : $params['profileFirstText'];
     $params['profilePartner'] = isset($params['Partner']) ? $params['Partner'] : $params['profilePartner'];
 
+    $values = array();
+    foreach ($params as $key => $value) {
+      switch ($key) {
+        case 'profileAboutText':
+        case 'profileFirstImage':
+        case 'profileImage':
+        case 'profileURL':
+        case 'profileFirstText':
+        case 'profilePartner':
+          $values[$key] = $value;
+          break;
+      }
+    }
+
     // check if the user has a profile
     d4os_io_db_070_set_active('os_profile');
-    $profile = db_fetch_object(db_query("SELECT useruuid FROM {userprofile} WHERE useruuid = '%s'", $params['useruuid']));
+    $profile = db_query("SELECT useruuid FROM {userprofile} WHERE useruuid = :useruuid", array(':useruuid' => $params['useruuid']))->fetchObject();
     d4os_io_db_070_set_active('default');
 
     if (!$profile) {
-      $f = array();
-      $s = array();
-      $v = array();
-      foreach ($params as $key => $value) {
-        switch ($key) {
-          case 'profileAboutText':
-          case 'profileFirstImage':
-          case 'profileImage':
-          case 'profileURL':
-          case 'profileFirstText':
-          case 'profilePartner':
-            $f[] = $key;
-            $s[] = "'%s'";
-            $v[] = $value;
-            break;
-        }
-      }
-      $f[] = 'useruuid';
-      $s[] = "'%s'";
-      $v[] = $params['useruuid'];
-
+      $values['useruuid'] = $params['useruuid'];
       d4os_io_db_070_set_active('os_profile');
-      $result = db_query("INSERT INTO {userprofile} (" . implode(',', $f) . ") VALUES (" . implode(',', $s) . ")", $v);
+        db_insert('userprofile')
+          ->fields($values)
+          ->execute();
       d4os_io_db_070_set_active('default');
     }
     else {
-      $f = array();
-      $v = array();
-      foreach ($params as $key => $value) {
-        switch ($key) {
-          case 'profileAboutText':
-          case 'profileFirstImage':
-          case 'profileImage':
-          case 'profileURL':
-          case 'profileFirstText':
-          case 'profilePartner':
-            $f[] = $key . "='%s'";
-            $v[] = $value;
-            break;
-        }
-      }
-      $v[] = $params['useruuid'];
-
       d4os_io_db_070_set_active('os_profile');
-      $result = db_query("UPDATE {userprofile} SET " . implode(',', $f) . " WHERE useruuid = '%s'", $v);
+        db_update('userprofile')
+            ->fields($values)
+            ->condition('useruuid', $params['useruuid'])
+            ->execute();
       d4os_io_db_070_set_active('default');
     }
 
