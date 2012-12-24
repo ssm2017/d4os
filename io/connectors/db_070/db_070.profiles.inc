@@ -37,6 +37,22 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
       return;
     }
 
+    $values = array();
+    foreach ($user_profile as $key => $value) {
+      switch ($key) {
+        case 'profileSkillsMask':
+        case 'profileWantToMask':
+        case 'profileAboutText':
+        case 'profileFirstText':
+        case 'profileImage':
+        case 'profileFirstImage':
+        case 'profileURL':
+        case 'profilePartner':
+          $values[$key] = $value;
+          break;
+      }
+    }
+
     // check if the profile already exists
     $profile_exists = FALSE;
     d4os_io_db_070_set_active('os_profile');
@@ -45,21 +61,6 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
 
     // update or insert ?
     if ($profile_exists) {
-      $values = array();
-      foreach ($user_profile as $key => $value) {
-        switch ($key) {
-          case 'profileSkillsMask':
-          case 'profileWantToMask':
-          case 'profileAboutText':
-          case 'profileFirstText':
-          case 'profileImage':
-          case 'profileFirstImage':
-          case 'profileURL':
-          case 'profilePartner':
-            $values[$key] = $value;
-            break;
-        }
-      }
       if (count($values)) {
         d4os_io_db_070_set_active('os_profile');
         db_update('userprofile')
@@ -71,31 +72,13 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
       }
     }
     else {
-      $values = array();
-      // parse values
-      foreach ($user_profile as $key => $value) {
-        switch ($key) {
-          case 'useruuid':
-          case 'profileSkillsMask':
-          case 'profileWantToMask':
-          case 'profileAboutText':
-          case 'profileFirstText':
-          case 'profileImage':
-          case 'profileFirstImage':
-          case 'profileURL':
-          case 'profilePartner':
-            $values[$key] = $value;
-            break;
-        }
-      }
-      if (count($values)) {
-        d4os_io_db_070_set_active('os_profile');
-        db_insert('userprofile')
-            ->fields($values)
-            ->execute();
-        d4os_io_db_070_set_active('default');
-        drupal_set_message(t('User profile added'));
-      }
+      $values['useruuid'] = $user_profile->useruuid;
+      d4os_io_db_070_set_active('os_profile');
+      db_insert('userprofile')
+          ->fields($values)
+          ->execute();
+      d4os_io_db_070_set_active('default');
+      drupal_set_message(t('User profile added'));
     }
   }
 
@@ -525,7 +508,7 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
 
     // check if the user has a profile
     d4os_io_db_070_set_active('os_profile');
-    $profile = db_query("SELECT useruuid FROM {userprofile} WHERE useruuid = :useruuid", array(':useruuid' => $params['useruuid']))->fetchObject();
+    $profile = db_query("SELECT useruuid FROM {userprofile} WHERE useruuid = :useruuid", array(':useruuid' => $params['useruuid']))->fetchField();
     d4os_io_db_070_set_active('default');
 
     if (!$profile) {
