@@ -30,7 +30,7 @@ class D4OS_IO_db_070_Regions implements D4OS_IO_regions_Interface {
     d4os_io_db_070_set_active('os_robust');
     $results = db_query('SELECT DISTINCT owner_uuid FROM {regions}');
     foreach ($results as $result) {
-      $owners[] = $result;
+      $owners[] = $result->owner_uuid;
     }
     d4os_io_db_070_set_active('default');
     return $owners;

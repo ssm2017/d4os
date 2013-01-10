@@ -661,7 +661,7 @@ function d4os_ui_users_set_region_owner_role() {
   // for each owner, assign the role
   foreach ($owners as $owner) {
     // get the owner uid
-    $uid = db_query("SELECT uid FROM {d4os_ui_users} WHERE UUID=:uuid", array(':uuid' => $owner->owner_uuid))->fetchField();
+    $uid = db_query("SELECT uid FROM {d4os_ui_users} WHERE UUID=:uuid", array(':uuid' => $owner))->fetchField();
     // assign the role
     if (is_numeric($uid)) {
       db_query("INSERT INTO {users_roles} (rid, uid) VALUES (:rid, :uid)", array(':rid' => $rid, ':uid' => $uid));
