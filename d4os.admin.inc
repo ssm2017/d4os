@@ -18,27 +18,22 @@ function d4os_admin() {
   global $base_url;
   $form = array();
 
-  $form['ugaim'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('UGAIM'),
-    '#collapsible' => TRUE,
-    '#collapsed' => FALSE,
-  );
 // grid
-  $form['ugaim']['grid'] = array(
+  $form['grid'] = array(
     '#type' => 'fieldset',
     '#title' => t('Grid'),
-    '#collapsible' => TRUE,
+    '#collapsible' => FALSE,
     '#collapsed' => FALSE,
-  ); // TODO :maybe remove this default grid uri and port
-  $form['ugaim']['grid']['d4os_default_grid_uri'] = array(
+    '#description' => t("Default grid server URI. This uri is used to check if the grid is alive."),
+  );
+  $form['grid']['d4os_default_grid_uri'] = array(
     '#type' => 'textfield',
     '#title' => t('Default grid server URI'),
     '#default_value' => variable_get('d4os_default_grid_uri', $base_url),
-    '#description' => t("Default grid server URI"),
+    '#description' => t("Default grid server URI."),
     '#required' => TRUE,
   );
-  $form['ugaim']['grid']['d4os_default_grid_port'] = array(
+  $form['grid']['d4os_default_grid_port'] = array(
     '#type' => 'textfield',
     '#title' => t('Default grid server port'),
     '#size' => 5,
@@ -47,21 +42,28 @@ function d4os_admin() {
     '#description' => t("Default grid server port"),
     '#required' => TRUE,
   );
+  $form['grid']['d4os_default_grid_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Default grid server path'),
+    '#default_value' => variable_get('d4os_default_grid_path', ''),
+    '#description' => t("Default grid server path. This path will be added at the end of the uri like http://uri:port/path. <br />Note: you must add a preceding forward slash '/'.<br />Leave blank if not needed."),
+    '#required' => FALSE,
+  );
 // loginuri
-  $form['other']['loginuri'] = array(
+  $form['loginuri'] = array(
     '#type' => 'fieldset',
     '#title' => t('LoginURI'),
-    '#collapsible' => TRUE,
+    '#collapsible' => FALSE,
     '#collapsed' => FALSE,
   );
-  $form['other']['loginuri']['d4os_default_login_uri'] = array(
+  $form['loginuri']['d4os_default_login_uri'] = array(
     '#type' => 'textfield',
     '#title' => t('Default login URI'),
     '#default_value' => variable_get('d4os_default_login_uri', $base_url),
     '#description' => t("Default login URI"),
     '#required' => TRUE,
   );
-  $form['other']['loginuri']['d4os_default_login_port'] = array(
+  $form['loginuri']['d4os_default_login_port'] = array(
     '#type' => 'textfield',
     '#title' => t('Default login port'),
     '#size' => 5,
@@ -70,14 +72,21 @@ function d4os_admin() {
     '#description' => t("Default login port"),
     '#required' => TRUE,
   );
+  $form['loginuri']['d4os_default_login_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Default login path'),
+    '#default_value' => variable_get('d4os_default_login_path', ''),
+    '#description' => t("Default login path. This path will be added at the end of the uri like http://uri:port/path. <br />Note: you must add a preceding forward slash '/'.<br />Leave blank if not needed."),
+    '#required' => FALSE,
+  );
 // asset pictures
-  $form['other']['pictures'] = array(
+  $form['pictures'] = array(
     '#type' => 'fieldset',
     '#title' => t('Pictures'),
-    '#collapsible' => TRUE,
+    '#collapsible' => FALSE,
     '#collapsed' => FALSE,
   );
-  $form['other']['pictures']['d4os_default_asset_pictures_server_url'] = array(
+  $form['pictures']['d4os_default_asset_pictures_server_url'] = array(
     '#type' => 'textfield',
     '#title' => t('Default asset pictures server URL'),
     '#default_value' => variable_get('d4os_default_asset_pictures_server_url', $base_url . '/asset.php?id='),
@@ -85,7 +94,7 @@ function d4os_admin() {
     '#required' => TRUE,
   );
 // logging
-  $form['other']['debug']['d4os_default_debug_file_path'] = array(
+  $form['debug']['d4os_default_debug_file_path'] = array(
     '#type' => 'textfield',
     '#title' => t('Debugging enabled ?'),
     '#default_value' => variable_get('d4os_default_debug_file_path', ''),

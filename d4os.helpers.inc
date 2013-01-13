@@ -37,7 +37,8 @@ global $grid_is_online;
 
 $grid_uri = variable_get('d4os_default_grid_uri', $base_url);
 $grid_port = variable_get('d4os_default_grid_port', '8002');
-$grid_url = $grid_uri . ':' . $grid_port;
+$grid_path = variable_get('d4os_default_grid_path', '');
+$grid_url = $grid_uri . ':' . $grid_port. $grid_path;
 
 /**
  * Helpfull function to search items in an array with a lot of sublevels
@@ -123,6 +124,8 @@ function d4os_grid_is_online() {
     $online = FALSE;
     $url = variable_get('d4os_default_grid_uri', $base_url);// TODO : why not use loginuri ?
     $port = variable_get('d4os_default_grid_port', '8002');
+    $path = variable_get('d4os_default_grid_path', '');
+    $url = $url.$path;
 
     // remove http://
     if (strpos($url, 'http://') !== FALSE) {

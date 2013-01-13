@@ -68,7 +68,9 @@ function d4os_ui_monitor_grid_status_block_view($delta = '') {
       }
       if (variable_get('d4os_ui_monitor_grid_status_show_loginuri', 1)) {
         // add the login uri
-        $values['data']->login_uri = variable_get('d4os_default_login_uri', $base_url) . ':' . variable_get('d4os_default_login_port', '8002');
+        $values['data']->login_uri = variable_get('d4os_default_login_uri', $base_url)
+            . ':' . variable_get('d4os_default_login_port', '8002')
+            . variable_get('d4os_default_login_path', '');
       }
       $content = theme('d4os_ui_monitor_grid_status_infos', $values);
       $block['subject'] = t('Grid info');
