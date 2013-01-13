@@ -36,7 +36,7 @@ global $base_url;
 global $grid_is_online;
 
 $grid_uri = variable_get('d4os_default_grid_uri', $base_url);
-$grid_port = variable_get('d4os_default_grid_port', '9000');
+$grid_port = variable_get('d4os_default_grid_port', '8002');
 $grid_url = $grid_uri . ':' . $grid_port;
 
 /**
@@ -121,8 +121,8 @@ function d4os_grid_is_online() {
   $time = time();
   if ($grid_is_online_timestamp < ($time - (60))) {
     $online = FALSE;
-    $url = variable_get('d4os_default_users_server_uri', $base_url);// TODO : why not use loginuri ?
-    $port = variable_get('d4os_default_users_server_port', '8002');
+    $url = variable_get('d4os_default_grid_uri', $base_url);// TODO : why not use loginuri ?
+    $port = variable_get('d4os_default_grid_port', '8002');
 
     // remove http://
     if (strpos($url, 'http://') !== FALSE) {

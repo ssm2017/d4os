@@ -24,29 +24,6 @@ function d4os_admin() {
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
   );
-// user
-  $form['ugaim']['user'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Users'),
-    '#collapsible' => TRUE,
-    '#collapsed' => FALSE,
-  );
-  $form['ugaim']['user']['d4os_default_users_server_uri'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Default users server URI'),
-    '#default_value' => variable_get('d4os_default_users_server_uri', $base_url),
-    '#description' => t("Default users server URI"),
-    '#required' => TRUE,
-  );
-  $form['ugaim']['user']['d4os_default_users_server_port'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Default users server port'),
-    '#size' => 5,
-    '#maxlength' => 5,
-    '#default_value' => variable_get('d4os_default_users_server_port', '8002'),
-    '#description' => t("Default users server port"),
-    '#required' => TRUE,
-  );
 // grid
   $form['ugaim']['grid'] = array(
     '#type' => 'fieldset',
