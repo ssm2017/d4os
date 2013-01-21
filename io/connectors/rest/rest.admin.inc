@@ -27,16 +27,34 @@ function d4os_io_rest_admin(&$form) {
     '#description' => t("Default URI"),
     '#required' => TRUE,
   );
-  $form['d4os_io_rest']['d4os_io_rest_login'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Login'),
-    '#default_value' => variable_get('d4os_io_rest_login', ''),
-    '#description' => t("Default login"),
+  $form['d4os_io_rest']['security'] = array(
+    '#type' => 'fieldset',
+    '#title' => 'Security',
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
   );
-  $form['d4os_io_rest']['d4os_io_rest_password'] = array(
+  $form['d4os_io_rest']['security']['local_ssl_cert'] = array(
+    '#type' => 'fieldset',
+    '#title' => 'Local SSL cert',
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+  );
+  $form['d4os_io_rest']['security']['local_ssl_cert']['d4os_io_rest_security_local_ssl_cert_enable'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Enable'),
+    '#default_value' => variable_get('d4os_io_rest_security_local_ssl_cert_enable', 0),
+    '#description' => t("Enable"),
+  );
+  $form['d4os_io_rest']['security']['local_ssl_cert']['d4os_io_rest_security_local_ssl_cert_pem_file_path'] = array(
     '#type' => 'textfield',
-    '#title' => t('Default password'),
-    '#default_value' => variable_get('d4os_io_rest_password', ''),
-    '#description' => t("Default password"),
+    '#title' => t('PEM cert file path'),
+    '#default_value' => variable_get('d4os_io_rest_security_local_ssl_cert_pem_file_path', ''),
+    '#description' => t("PEM file path"),
+  );
+  $form['d4os_io_rest']['security']['local_ssl_cert']['d4os_io_rest_security_local_ssl_cert_pem_file_password'] = array(
+    '#type' => 'textfield',
+    '#title' => t('PEM cert password'),
+    '#default_value' => variable_get('d4os_io_rest_security_local_ssl_cert_pem_file_password', ''),
+    '#description' => t("PEM cert password"),
   );
 }

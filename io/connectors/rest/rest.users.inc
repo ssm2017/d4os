@@ -22,7 +22,7 @@ class D4OS_IO_rest_Users implements D4OS_IO_Users_Interface {
 
   function ping() {
     $this->response->success = FALSE;
-    $result = drupal_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_users/ping/format/json', array('timeout'=> 5));
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_users/ping/format/json');
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
       if ($data->status === 'success') {
@@ -43,11 +43,8 @@ class D4OS_IO_rest_Users implements D4OS_IO_Users_Interface {
       }
     }
 
-    // parse url
-    $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_users/load_user/' . $params . 'format/json';
-
     // request the server
-    $result = drupal_http_request($url, array('timeout'=> 5));
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_users/load_user/' . $params . 'format/json');
 
     // parse the answer
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
@@ -65,17 +62,16 @@ class D4OS_IO_rest_Users implements D4OS_IO_Users_Interface {
     $options = array(
       'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
       'method' => 'POST',
-      'data' => http_build_query($data, '', '&'),
-      'timeout' => 5
+      'data' => http_build_query($data, '', '&')
     );
-    $response = drupal_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_users/save_user/format/json', $options);
-    $data = json_decode($response->data);
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_users/save_user/format/json', $options);
+    $data = json_decode($result->data);
     return $data->data;
   }
 
   function delete_user($uuid) {
     $this->response->success = FALSE;
-    $result = drupal_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_users/delete_user/uuid/' . rawurlencode($uuid) . '/format/json', array('timeout'=> 5));
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_users/delete_user/uuid/' . rawurlencode($uuid) . '/format/json');
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
       if ($data->status === 'success') {
@@ -99,8 +95,7 @@ class D4OS_IO_rest_Users implements D4OS_IO_Users_Interface {
       }
     }
 
-    $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_users/get_online_users_list/' . $params . '/format/json';
-    $result = drupal_http_request($url, array('timeout'=> 5));
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_users/get_online_users_list/' . $params . '/format/json');
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
       $this->response->success = TRUE;

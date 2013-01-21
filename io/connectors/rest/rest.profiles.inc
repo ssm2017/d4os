@@ -22,7 +22,7 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
 
   function ping() {
     $this->response->success = FALSE;
-    $result = drupal_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/ping/format/json', array('timeout'=> 5));
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/ping/format/json');
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
       if ($data->status === 'success') {
@@ -42,8 +42,7 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
       }
     }
 
-    $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/load_profile/' . $params . 'format/json';
-    $result = drupal_http_request($url, array('timeout'=> 5));
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/load_profile/' . $params . 'format/json');
 
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
@@ -60,11 +59,10 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
     $options = array(
       'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
       'method' => 'POST',
-      'data' => http_build_query($data, '', '&'),
-      'timeout' => 5
+      'data' => http_build_query($data, '', '&')
     );
-    $response = drupal_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/save_profile/format/json', $options);
-    if (isset($response) && in_array($response->code, array('200'))) {
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/save_profile/format/json', $options);
+    if (isset($result) && in_array($result->code, array('200'))) {
       drupal_set_message(t('User profile added'));
       return array(
         'success' => TRUE,
@@ -78,9 +76,7 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
   }
 
   function delete_profile($useruuid) {
-    $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/delete_profile/useruuid/' . $useruuid . '/format/json';
-    $result = drupal_http_request($url, array('timeout'=> 5));
-
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/delete_profile/useruuid/' . $useruuid . '/format/json');
     if (isset($result) && in_array($result->code, array('200'))) {
       drupal_set_message(t('User removed from profiles.'));
       return TRUE;
@@ -102,8 +98,7 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
       }
     }
 
-    $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/avatarclassifiedsrequest/' . $params . 'format/json';
-    $result = drupal_http_request($url, array('timeout'=> 5));
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/avatarclassifiedsrequest/' . $params . 'format/json');
 
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
@@ -123,8 +118,8 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
       'data' => http_build_query($data, '', '&'),
       'timeout' => 5
     );
-    $response = drupal_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/classified_update/format/json', $options);
-    if (isset($response) && in_array($response->code, array('200'))) {
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/classified_update/format/json', $options);
+    if (isset($result) && in_array($result->code, array('200'))) {
       return array(
         'success' => TRUE,
         'errorMessage' => "",
@@ -139,7 +134,7 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
   function classified_delete($values) {
     $id = $values['classifiedID'];
     $this->response->success = FALSE;
-    $result = drupal_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/classified_delete/classifiedID/' . rawurlencode($id) . '/format/json', array('timeout'=> 5));
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/classified_delete/classifiedID/' . rawurlencode($id) . '/format/json');
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
       if ($data->status === 'success') {
@@ -164,8 +159,7 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
       }
     }
 
-    $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/avatarpicksrequest/' . $params . 'format/json';
-    $result = drupal_http_request($url, array('timeout'=> 5));
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/avatarpicksrequest/' . $params . 'format/json');
 
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
@@ -187,8 +181,7 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
       }
     }
 
-    $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/pickinforequest/' . $params . 'format/json';
-    $result = drupal_http_request($url, array('timeout'=> 5));
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/pickinforequest/' . $params . 'format/json');
 
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
@@ -205,11 +198,10 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
     $options = array(
       'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
       'method' => 'POST',
-      'data' => http_build_query($data, '', '&'),
-      'timeout' => 5
+      'data' => http_build_query($data, '', '&')
     );
-    $response = drupal_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/picks_update/format/json', $options);
-    if (isset($response) && in_array($response->code, array('200'))) {
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/picks_update/format/json', $options);
+    if (isset($result) && in_array($result->code, array('200'))) {
       return array(
         'success' => TRUE,
         'errorMessage' => "",
@@ -224,7 +216,7 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
   function picks_delete($values) {
     $id = $values['pick_id'];
     $this->response->success = FALSE;
-    $result = drupal_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/picks_delete/pick_id/' . rawurlencode($id) . '/format/json', array('timeout'=> 5));
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/picks_delete/pick_id/' . rawurlencode($id) . '/format/json');
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
       if ($data->status === 'success') {
@@ -249,8 +241,7 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
       }
     }
 
-    $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/avatarnotesrequest/' . $params . 'format/json';
-    $result = drupal_http_request($url, array('timeout'=> 5));
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/avatarnotesrequest/' . $params . 'format/json');
 
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
@@ -267,11 +258,10 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
     $options = array(
       'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
       'method' => 'POST',
-      'data' => http_build_query($data, '', '&'),
-      'timeout' => 5
+      'data' => http_build_query($data, '', '&')
     );
-    $response = drupal_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/avatar_notes_update/format/json', $options);
-    if (isset($response) && in_array($response->code, array('200'))) {
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/avatar_notes_update/format/json', $options);
+    if (isset($result) && in_array($result->code, array('200'))) {
       return array(
         'success' => TRUE,
         'errorMessage' => "",
@@ -293,8 +283,7 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
       }
     }
 
-    $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/avatar_properties_request/' . $params . 'format/json';
-    $result = drupal_http_request($url, array('timeout'=> 5));
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/avatar_properties_request/' . $params . 'format/json');
 
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
@@ -311,12 +300,11 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
     $options = array(
       'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
       'method' => 'POST',
-      'data' => http_build_query($data, '', '&'),
-      'timeout' => 5
+      'data' => http_build_query($data, '', '&')
     );
-    $response = drupal_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/avatar_properties_update/format/json', $options);
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/avatar_properties_update/format/json', $options);
 
-    if (isset($response) && in_array($response->code, array('200'))) {
+    if (isset($result) && in_array($result->code, array('200'))) {
       return array(
         'success' => TRUE,
         'errorMessage' => "",
@@ -324,7 +312,7 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
     }
     return array(
       'success' => FALSE,
-      'errorMessage' => $response,
+      'errorMessage' => $result,
     );
   }
 
@@ -338,8 +326,7 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
       }
     }
 
-    $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/avatar_interests_request/' . $params . 'format/json';
-    $result = drupal_http_request($url, array('timeout'=> 5));
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/avatar_interests_request/' . $params . 'format/json');
 
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
@@ -356,11 +343,10 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
     $options = array(
       'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
       'method' => 'POST',
-      'data' => http_build_query($data, '', '&'),
-      'timeout' => 5
+      'data' => http_build_query($data, '', '&')
     );
-    $response = drupal_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/avatar_interests_update/format/json', $options);
-    if (isset($response) && in_array($response->code, array('200'))) {
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/avatar_interests_update/format/json', $options);
+    if (isset($result) && in_array($result->code, array('200'))) {
       return array(
         'success' => TRUE,
         'errorMessage' => "",
@@ -382,8 +368,7 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
       }
     }
 
-    $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/user_preferences_request/' . $params . 'format/json';
-    $result = drupal_http_request($url, array('timeout'=> 5));
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/user_preferences_request/' . $params . 'format/json');
 
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
@@ -396,9 +381,9 @@ class D4OS_IO_rest_Profiles implements D4OS_IO_Profiles_Interface {
   }
 
   function user_preferences_update($values) {
-    $data = array("data" => json_encode($values));
-    $response = drupal_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/user_preferences_update/format/json', $options);
-    if (isset($response) && in_array($response->code, array('200'))) {
+    $options = array("data" => json_encode($values));
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_profiles/user_preferences_update/format/json', $options);
+    if (isset($result) && in_array($result->code, array('200'))) {
       return array(
         'success' => TRUE,
         'errorMessage' => "",

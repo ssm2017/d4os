@@ -22,7 +22,7 @@ class D4OS_IO_rest_Groups implements D4OS_IO_Groups_Interface {
 
   function ping() {
     $this->response->success = FALSE;
-    $result = drupal_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_groups/ping/format/json', array('timeout'=> 5));
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_groups/ping/format/json');
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
       if ($data->status === 'success') {
@@ -33,8 +33,7 @@ class D4OS_IO_rest_Groups implements D4OS_IO_Groups_Interface {
   }
 
   function group_exists($uuid) {
-    $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_groups/group_exists/uuid/' . $uuid . '/format/json';
-    $result = drupal_http_request($url, array('timeout'=> 5));
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_groups/group_exists/uuid/' . $uuid . '/format/json');
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       return TRUE;
     }
@@ -46,8 +45,7 @@ class D4OS_IO_rest_Groups implements D4OS_IO_Groups_Interface {
       drupal_set_message(t('Could not add user to group.', 'error'));
       return;
     }
-    $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_groups/add_user_to_group/user_uuid/' . $user_uuid . '/group_uuid/' . $group_uuid . '/format/json';
-    $result = drupal_http_request($url, array('timeout'=> 5));
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_groups/add_user_to_group/user_uuid/' . $user_uuid . '/group_uuid/' . $group_uuid . '/format/json');
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       drupal_set_message(t('User added to group.'));
       return TRUE;
@@ -56,8 +54,7 @@ class D4OS_IO_rest_Groups implements D4OS_IO_Groups_Interface {
   }
 
   function delete_user($uuid) {
-    $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_groups/delete_user/uuid/' . $uuid . '/format/json';
-    $result = drupal_http_request($url, array('timeout'=> 5));
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_groups/delete_user/uuid/' . $uuid . '/format/json');
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       drupal_set_message(t('User removed from groups.'));
       return TRUE;

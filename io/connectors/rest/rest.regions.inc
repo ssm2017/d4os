@@ -22,7 +22,7 @@ class D4OS_IO_rest_Regions implements D4OS_IO_regions_Interface {
 
   function ping() {
     $this->response->success = FALSE;
-    $result = drupal_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_regions/ping/format/json', array('timeout'=> 5));
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_regions/ping/format/json');
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
       if ($data->status === 'success') {
@@ -33,8 +33,7 @@ class D4OS_IO_rest_Regions implements D4OS_IO_regions_Interface {
   }
 
   function region_exists($uuid) {
-    $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_regions/region_exists/uuid/' . $uuid . '/format/json';
-    $result = drupal_http_request($url, array('timeout'=> 5));
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_regions/region_exists/uuid/' . $uuid . '/format/json');
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       return TRUE;
     }
@@ -43,10 +42,7 @@ class D4OS_IO_rest_Regions implements D4OS_IO_regions_Interface {
 
   function get_regions_owners() {
     $this->response->success = FALSE;
-    $params = '';
-
-    $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_regions/get_regions_owners/format/json';
-    $result = drupal_http_request($url, array('timeout'=> 5));
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_regions/get_regions_owners/format/json');
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
       $this->response->success = TRUE;
@@ -58,8 +54,7 @@ class D4OS_IO_rest_Regions implements D4OS_IO_regions_Interface {
   }
 
   function get_regions_count() {
-    $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_regions/get_regions_count/format/json';
-    $result = drupal_http_request($url, array('timeout'=> 5));
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_regions/get_regions_count/format/json');
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
       $this->response->success = TRUE;
@@ -92,11 +87,7 @@ class D4OS_IO_rest_Regions implements D4OS_IO_regions_Interface {
    */
   function get_regions_names() {
     $this->response->success = FALSE;
-    $params = '';
-
-    $url = D4OS_IO_REST_URL . '/index.php/d4os_io_rest_regions/get_regions_names/format/json';
-    $result = drupal_http_request($url, array('timeout'=> 5));
-
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_regions/get_regions_names/format/json');
     if (isset($result) && in_array($result->code, array('200')) && $result->data != '') {
       $data = json_decode($result->data);
       $this->response->success = TRUE;
