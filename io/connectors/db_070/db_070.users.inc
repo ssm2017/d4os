@@ -469,6 +469,16 @@ class D4OS_IO_db_070_Users implements D4OS_IO_Users_Interface {
     return $count;
   }
 
+  function set_user_level($params) {
+    d4os_io_db_070_set_active('os_robust');
+    $success = db_update('UserAccounts')
+            ->fields(array('UserLevel' => $params['user_level']))
+            ->condition('UserAccounts.PrincipalID', $params['uuids'], 'IN')
+            ->execute();
+    d4os_io_db_070_set_active('default');
+    return $success;
+  }
+
   /**
    * Assign a grid uuid to a Drupal user id
    * @param Integer Drupal user id

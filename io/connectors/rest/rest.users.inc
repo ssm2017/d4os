@@ -106,6 +106,18 @@ class D4OS_IO_rest_Users implements D4OS_IO_Users_Interface {
     return NULL;
   }
 
+  function set_user_level($params) {
+    $data = array("data" => json_encode($params));
+    $options = array(
+      'headers' => array('Content-Type' => 'application/x-www-form-urlencoded'),
+      'method' => 'POST',
+      'data' => http_build_query($data, '', '&')
+    );
+    $result = d4os_io_rest_http_request(D4OS_IO_REST_URL . '/index.php/d4os_io_rest_users/set_user_level/format/json', $options);
+    $data = json_decode($result->data);
+    return $data;
+  }
+
   /**
    * Assign a grid uuid to a Drupal user id
    * @param Integer Drupal user id
