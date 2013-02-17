@@ -162,9 +162,10 @@ function d4os_ui_monitor_show_online_users_list() {
   }
   $qty_filter .= '</ul></div>';
 
+  // build some usefull links
   $usefull_links = '<div><ul>';
-  $usefull_links .= '<li><a href="' . $_SERVER['REDIRECT_URL'] . '?online">' . t('See only online users ("Online" set in "GridUser" table)') . '</a></li>';
-  $usefull_links .= '<li><a href="' . $_SERVER['REDIRECT_URL'] . '?online&range=86400">' . t('See only online users since 24 hours') . '</a></li>';
+  $usefull_links .= '<li>'.l(t('See only online users ("Online" set in "GridUser" table)'), $_GET['q'], array('query' => array('online' => 'true'))). '</li>';
+  $usefull_links .= '<li>'.l(t('See only online users since 24 hours'), $_GET['q'], array('query' => array('online' => 'true', 'range' => '86400'))). '</li>';
   $usefull_links .= '</ul></div>';
 
   // build a form to display links in a fieldset
