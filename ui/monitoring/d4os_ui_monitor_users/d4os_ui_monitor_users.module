@@ -132,7 +132,7 @@ function d4os_ui_monitor_show_online_users_list() {
   $output .= '</div>';
 
   // format some usefull links
-  $paramseters = array();
+  $query = array();
   $limit_array = array(
     5 => 5,
     10 => 10,
@@ -142,23 +142,22 @@ function d4os_ui_monitor_show_online_users_list() {
   );
   unset($limit_array[$limit]);
   if (isset($_GET['sort'])) {
-    $paramseters[0] = 'sort=' . $_GET['sort'];
+    $query['sort'] = $_GET['sort'];
   }
   if (isset($_GET['order'])) {
-    $paramseters[1] = 'order=' . $_GET['order'];
+    $query['order'] = $_GET['order'];
   }
   if (isset($_GET['online'])) {
-    $paramseters[2] = 'online=' . $_GET['online'];
+    $query['online'] = $_GET['online'];
   }
   if (isset($_GET['range'])) {
-    $paramseters[3] = 'range=' . $_GET['range'];
+    $query['range'] = $_GET['range'];
   }
 
   $qty_filter = '<div class="item-list"><span>' . t('Limit list by') . '</span><ul class="pager">';
   foreach ($limit_array as $k => $limit_qty) {
-    $paramseters[4] = 'limit=' . $limit_qty;
-    $redirect_url = $_SERVER['REDIRECT_URL'] . '?' . implode('&', $paramseters);
-    $qty_filter .= '<li class="pager-item"><a href="' . $redirect_url . '">' . $limit_qty . '</a></li>';
+    $query['limit'] = $limit_qty;
+    $qty_filter .= '<li class="pager-item">'. l($limit_qty, $_GET['q'], array('query' => $query)). '</li>';
   }
   $qty_filter .= '</ul></div>';
 
