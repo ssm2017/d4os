@@ -36,7 +36,7 @@ function d4os_ui_monitor_users_menu() {
 
 function d4os_ui_monitor_users_permission() {
   return array(
-    'view d4os ui monitor online users list' => array(
+    'view d4os ui grid monitor online users list' => array(
       'title' => t('View grid online users list'),
       'description' => t('Shows a list of online users on the grid.'),
     ),
