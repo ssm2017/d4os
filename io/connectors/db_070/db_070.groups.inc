@@ -61,7 +61,7 @@ class D4OS_IO_db_070_Groups implements D4OS_IO_groups_Interface {
     d4os_io_db_070_set_active('default');
 
     // If not a member, add membership, select role (defaults to uuidZero, or everyone role)
-    if ($result && $result === 0) {
+    if (!$result) {
       $values = array(
         'GroupID' => $groupID,
         'AgentID' => $agentID,
@@ -105,7 +105,7 @@ class D4OS_IO_db_070_Groups implements D4OS_IO_groups_Interface {
     $result = db_query($query, array(':AgentID' => $agentID, ':RoleID' => $roleID, ':GroupID' => $groupID))->fetchField();
     d4os_io_db_070_set_active('default');
 
-    if ($result && $result === 0) {
+    if (!$result) {
       $values = array(
         'GroupID' => $groupID,
         'RoleID' => $roleID,
