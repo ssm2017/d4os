@@ -195,15 +195,15 @@ function d4os_ui_users_user_view($account, $view_mode, $langcode) {
 /**
  *  Implements hook_user_delete().
  */
-function d4os_ui_users_user_delete($edit, $account, $method) {
+function d4os_ui_users_user_delete($account) {
   // check if the user exists in the grid
-  $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $edit->uid))->fetchField();
+  $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $account->uid))->fetchField();
   if ($uuid !== FALSE) {
     // delete the user in the grid
     $d4os_user = D4OS_IO::create('Users');
     $d4os_user->delete_user($uuid);
     // delete drupal link
-    db_query("DELETE FROM {d4os_ui_users} WHERE UUID = :uuid OR uid = :uid", array(':uuid' => $uuid, ':uid' => $edit->uid));
+    db_query("DELETE FROM {d4os_ui_users} WHERE UUID = :uuid OR uid = :uid", array(':uuid' => $uuid, ':uid' => $account->uid));
   }
 }
 

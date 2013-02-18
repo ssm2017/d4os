@@ -44,9 +44,9 @@ function d4os_io_profiles_permission() {
   );
 }
 
-function d4os_io_profiles_user_delete($edit, $account, $method) {
+function d4os_io_profiles_user_delete($account) {
   // get the user uuid
-  $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $edit->uid))->fetchField();
+  $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $account->uid))->fetchField();
   if ($uuid !== FALSE) {
     $d4os_profiles = D4OS_IO::create('Profiles');
     $d4os_profiles->delete_profile($uuid);
