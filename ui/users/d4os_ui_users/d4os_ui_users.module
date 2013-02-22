@@ -259,6 +259,9 @@ function d4os_ui_users_user_update(&$edit, $account, $category) {
     }
 
     // set user level
+    if (!isset($edit['roles'])) {
+      $edit['roles'] = array();
+    }
     $grid_user->UserLevel = d4os_ui_users_get_user_level($edit['roles']);
 
     // save the grid user
