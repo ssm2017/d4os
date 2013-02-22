@@ -110,16 +110,16 @@ function theme_d4os_ui_monitor_grid_status_infos($values) {
   if (isset($values->status)) {
     $output .= $values->status;
   }
-  $output .= '<ul>';
+  $output .= '<dl>';
   if (isset($values->login_uri)) {
-    $output .= '<li>' . t('Login uri') . ' : ' . $values->login_uri . '</li>';
+    $output .= '<dt>' . t('Login uri') . '</dt> <dd class="loginuri">' . $values->login_uri . '/</dd>';
   }
-  $output .= '<li>' . t('Online now') . ' : ' . $values->online_now . '</li>';
-  $output .= '<li>' . t('Online hypergridders') . ' : ' . $values->online_hypergridders . '</li>';
-  $output .= '<li>' . t('Online last 30 days') . ' : ' . $values->online_last_30_days . '</li>';
-  $output .= '<li>' . t('Number of members') . ' : ' . $values->users_count . '</li>';
-  $output .= '<li>' . t('Number of regions') . ' : ' . $values->regions_count . '</li>';
-  $output .= '</ul>';
+  $output .= '<dt>' . t('Online now') . '</dt><dd>' . $values->online_now . '</dd>';
+  $output .= '<dt>' . t('Online hypergridders') . '</dt><dd>' . $values->online_hypergridders . '</dd>';
+  $output .= '<dt>' . t('Online last 30 days') . '</dt><dd>' . $values->online_last_30_days . '</dd>';
+  $output .= '<dt>' . t('Number of members') . '</dt><dd>' . $values->users_count . '</dd>';
+  $output .= '<dt>' . t('Number of regions') . '</dt><dd>' . $values->regions_count . '</dd>';
+  $output .= '</dl>';
   $output .= '</div>';
   return $output;
 }
