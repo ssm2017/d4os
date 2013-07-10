@@ -1,0 +1,5 @@
+name = "d4os ui monitor regions"
+description = "Provides a page to display currently regions infos"
+package = "d4os ui monitoring"
+core = 7.x
+dependencies[] = d4os

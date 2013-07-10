@@ -1,0 +1,290 @@
+<?php
+
+/**
+ * @package    d4os_ui_monitor
+ * @copyright Copyright (C) 2010-2013 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+ * @link      http://www.d4os.org
+ * @license   GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+ * D4os is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ */
+// TODO : see what we can do with http://domain.com:9000/admin/regioninfo/
+
+/**
+ * Implementation of hook_help()
+ */
+function d4os_ui_monitor_regions_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#d4os_ui_monitor_regions':
+      return '<p>' . t('OpenSim grid regions monitoring') . '</p>';
+  }
+}
+
+function d4os_ui_monitor_regions_menu() {
+  $items = array();
+  $items['grid/monitor/regions/list'] = array(
+    'title' => 'Regions',
+    'description' => 'Shows a list of regions.',
+    'page callback' => 'd4os_ui_monitor_regions_show_regions_list',
+    'access arguments' => array('view d4os ui grid monitor regions list'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items['user/%user/regions'] = array(
+    'title' => 'Regions',
+    'description' => "Shows the user's regions.",
+    'page callback' => 'd4os_ui_monitor_regions_show_user_regions',
+    'page arguments' => array(1),
+    'access callback' => 'd4os_ui_monitor_regions_show_user_regions_access',
+    'access arguments' => array(1),
+    'type' => MENU_LOCAL_TASK,
+  );
+  $items['grid/monitor/regions/list/check-region'] = array(
+    'page callback' => 'd4os_ui_monitor_regions_check_region_status',
+    'access arguments' => array('view d4os ui grid monitor regions list'),
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+function d4os_ui_monitor_regions_permission() {
+  return array(
+    'view d4os ui grid monitor regions list' => array(
+      'title' => t('View grid regions list'),
+      'description' => t('Shows a list of regions on the grid.'),
+    ),
+    'view d4os ui grid monitor user regions list' => array(
+      'title' => t('View user regions list'),
+      'description' => t('Shows a list of user regions on the grid.'),
+    ),
+    'view d4os ui grid monitor regions owners list' => array(
+      'title' => t('View regions owners list'),
+      'description' => t('Shows a list of regions owners.'),
+    ),
+  );
+}
+
+function d4os_ui_monitor_regions_show_user_regions_access($account) {
+  return user_access('view d4os ui grid monitor regions owners list') || $GLOBALS['user']->uid == $account->uid;
+}
+
+function d4os_ui_monitor_regions_check_region_status() {
+  if (isset($_GET['uri'])) {
+    $sim_uri = base64_decode($_GET['uri']);
+  }
+  else {
+    echo '<span style="font-weight:bold;color:red">'. t('Error'). '</span>';
+    return;
+  }
+  $options = array(
+    'timeout' => 5
+  );
+  $result = drupal_http_request($sim_uri, $options);
+  $status = "offline";
+  if ($result->code == 200) {
+    $status = "online";
+  }
+  switch ($status) {
+    case 'online':
+      echo '<span style="font-weight:bold;color:green">'. t('Online'). '</span>';
+      break;
+
+    case 'offline':
+    default:
+      echo '<span style="font-weight:bold;color:red">'. t('Offline'). '</span>';
+      break;
+  }
+  return;
+}
+
+function d4os_ui_monitor_regions_show_user_regions($account) {
+  return d4os_ui_monitor_regions_show_regions_list($account);
+}
+
+function d4os_ui_monitor_regions_show_regions_list($account = null) {
+// regionName, x, y, region_uuid, FirstName, LastName, PrincipalID, uid
+  global $pager_page_array, $pager_total, $pager_total_items;
+  // check if the datastore is alive
+  $d4os_regions = D4OS_IO::create('Regions');
+  $d4os_regions->ping();
+  if ($d4os_regions->response->success !== TRUE) {
+    drupal_set_message(t('You can not see the regions list.'), 'error');
+    drupal_set_message(t('Please try again later.'), 'error');
+    drupal_goto();
+  }
+
+  // format the headers
+  $headers = array(
+    array(
+      'data' => t('RegionName'), // 1
+      'field' => 'r.regionName',
+    ),
+    array(
+      'data' => t('x'), // 2
+    ),
+    array(
+      'data' => t('y'), // 3
+    ),
+    array(
+      'data' => t('Online status'),
+    ),
+  );
+  if (user_access('view d4os ui grid monitor regions owners list')) {
+    $headers[] = array(
+      'data' => t('OwnerName'), // 4
+      'field' => 'ua.FirstName',
+    );
+  }
+
+  // get the order fields
+  $page = isset($_GET['page']) ? $_GET['page'] : '';
+  $order_way = isset($_GET['sort']) ? $_GET['sort'] : 'DESC';
+  $order_by = isset($_GET['order']) ? $_GET['order'] : t('RegionName');
+  $order_field = 'r.regionName';
+  foreach ($headers as $header) {
+    $order_field = ($header['data'] == $order_by) ? $header['field'] : $order_field;
+  }
+
+  // get the data
+  $limit = isset($_GET['limit']) ? $_GET['limit'] : 10;
+  $params = array(
+    'uuid' => isset($account->data['d4os']['grid']['account']['uuid']) ? $account->data['d4os']['grid']['account']['uuid'] : null,
+    'offset' => $page * $limit,
+    'limit' => $limit,
+    'order_by' => $order_field,
+    'order_way' => $order_way
+  );
+  $regions_list = $d4os_regions->get_regions_list($params);
+  if ($regions_list->count == 0) {
+    if (!is_null($account)) {
+      drupal_set_message(t(':username have no regions on the grid.', array(':username' => $account->name)));
+    }
+    else {
+      drupal_set_message(t('There are no regions on the grid.'));
+    }
+    return t('No region found.');
+  }
+
+  // format the pager
+  $pager_page_array = explode(',', $page);
+  $element = 0;
+  $pager_total_items[$element] = $regions_list->count;
+  $pager_total[$element] = ceil($pager_total_items[$element] / $limit);
+  $pager_page_array[$element] = max(0, min((int) $pager_page_array[$element], ((int) $pager_total[$element]) - 1));
+
+  // format the quantity info
+  $output = '<div id="regions-count">';
+  if (!is_null($account)) {
+    $output .= '<p>' . t(':username %regions on the grid.', array(
+      ':username' => $account->name,
+      '%regions' => format_plural($regions_list->count, 'owns 1 region', 'owns @count regions'))) . '</p>';
+  }
+  else {
+    $output .= '<p>' . t('There %regions on the grid.', array(
+          '%regions' => format_plural($regions_list->count, 'is 1 region', 'are @count regions'))) . '</p>';
+  }
+    
+  $output .= '</div>';
+
+  // format some usefull links
+  $query = array();
+  // sorting
+  if (isset($_GET['sort'])) {
+    $query['sort'] = $_GET['sort'];
+  }
+  if (isset($_GET['order'])) {
+    $query['order'] = $_GET['order'];
+  }
+  if ($regions_list->count > 5) {
+    $limit_array = array(
+      5 => 5,
+      10 => 10,
+      20 => 20,
+      50 => 50,
+      100 => 100
+    );
+    unset($limit_array[$limit]);
+
+    $qty_filter = '<div class="item-list"><span>' . t('Limit list by') . '</span><ul class="pager">';
+    foreach ($limit_array as $k => $limit_qty) {
+      $query['limit'] = $limit_qty;
+      $qty_filter .= '<li class="pager-item">'. l($limit_qty, $_GET['q'], array('query' => $query)). '</li>';
+    }
+    $qty_filter .= '</ul></div>';
+
+    
+
+    // build a form to display links in a fieldset
+    $form = array(
+      'filter_links' => array(
+        '#type' => 'fieldset',
+        '#title' => t('Filters'),
+        '#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+      )
+    );
+
+    $form['filter_links']['qty'] = array(
+      '#type' => 'item',
+      '#markup' => $qty_filter
+    );
+
+    $output .= drupal_render($form);
+  }
+
+  // format the table
+  $output .= theme_d4os_ui_monitor_regions_list_table($regions_list->regions, $params, $headers);
+  $output .= theme('pager');
+  return $output;
+}
+
+function theme_d4os_ui_monitor_regions_list_table($regions_list, $params, $headers, $title = NULL) {
+  // regionName, x, y, region_uuid, FirstName, LastName, PrincipalID, uid
+  // build the table
+  $rows = array();
+  $params['cols'] = isset($params['cols']) ? $params['cols'] : 1;
+  $col = 0;
+  $cells = array();
+  foreach ($regions_list as $region) {
+    $region_uri = $region->serverURI;
+    drupal_add_js(
+      "(function ($) {
+        //$(document).ready(function(){
+          $.get(
+            '/grid/monitor/regions/list/check-region',
+            {uri:'". base64_encode($region->serverURI. 'monitorstats/'. $region->region_uuid). "'},
+            function(data) {
+              $('#region-". $region->region_uuid. "-status').html(data);
+            }
+          );
+        //};
+      })(jQuery);",
+    'inline'
+    );
+    $cells[] = '<a href="secondlife:///app/teleport/hg.francogrid.org:80/'. urlencode($region->regionName). '" title="'. t('Click here for HyperGrid teleport').'">'. $region->regionName. '</a>'; // 1
+    $cells[] = $region->x; // 2
+    $cells[] = $region->y; // 3
+    $cells[] = '<span id="region-'. $region->region_uuid. '-status"><span><img width="16px" src="/sites/default/files/icones/fg_progress.gif" alt="'. t('Checking....'). '" title="'. t('Contacting the region...'). '"/></span></span>';
+    if (user_access('view d4os ui grid monitor regions owners list')) {
+      $cells[] = '<a href="/user/'. $region->uid. '/regions" title="'. t('Click here to see the user regions'). '">'. $region->FirstName. ' '. $region->LastName. '</a>'; // 5
+    }
+    ++$col;
+    if ($col >= $params['cols']) {
+      $rows[] = $cells;
+      $cells = array();
+      $col = 0;
+    }
+  }
+  $variables = array(
+    'header' => $headers,
+    'rows' => $rows,
+    'attributes' => array(),
+    'caption' => '',
+    'colgroups' => array(),
+    'sticky' => FALSE,
+    'empty' => ''
+  );
+  $output = theme_table($variables);
+  return $output;
+}
