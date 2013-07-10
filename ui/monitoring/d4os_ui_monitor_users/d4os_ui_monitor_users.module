@@ -96,7 +96,7 @@ function d4os_ui_monitor_show_online_users_list() {
   }
 
   // get the data
-  $limit = isset($_GET['limit']) ? $_GET['limit'] : 5;
+  $limit = isset($_GET['limit']) ? $_GET['limit'] : 20;
   $d4os_users = D4OS_IO::create('Users');
   $params = array(
     'offset' => $page * $limit,
