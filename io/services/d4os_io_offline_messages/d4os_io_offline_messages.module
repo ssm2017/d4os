@@ -99,6 +99,10 @@ function d4os_io_offline_messages_query($action) {
 
   switch ($action) {
     case 'SaveMessage':
+      if (empty($xml)) {
+        print d4os_oi_offline_message_build_answer('savemessage', array('success' => FALSE));
+        return;
+      }
       // filter uuids
       $forbidden_uuids = explode("\n", variable_get('d4os_io_offline_messages_filter_uuids', ''));
       if (in_array($xml->fromAgentID, $forbidden_uuids))
@@ -113,6 +117,10 @@ function d4os_io_offline_messages_query($action) {
       d4os_io_offline_messages_savemessage($params);
       break;
     case 'RetrieveMessages':
+      if (empty($xml)) {
+        print d4os_oi_offline_message_build_answer('retrievemessages', array('success' => FALSE, 'data' => array()));
+        return;
+      }
       d4os_io_offline_messages_retrievemessages($params);
       break;
   }
@@ -124,6 +132,7 @@ function d4os_io_offline_messages_savemessage($params) {
   // manage params
   $params['toAgentID'] = (string) $params['xml']->toAgentID;
   $params['message'] = substr($params['raw'], (strpos($params['raw'], "?>") + 2));
+  $params['timestamp'] = (string) $params['xml']->timestamp;
 
   // log
   if ($d4os_io_offline_messages_log_level > 6) {
@@ -142,7 +151,7 @@ function d4os_io_offline_messages_savemessage($params) {
   }
 
   // do the job
-  $success = db_query("INSERT INTO {d4os_io_offline_messages} (uuid, message) VALUES (:toAgentID, :message)", array(':toAgentID' => $params['toAgentID'], ':message' => $params['message']));
+  $success = db_query("INSERT INTO {d4os_io_offline_messages} (uuid, message, timestamp) VALUES (:toAgentID, :message, :timestamp)", array(':toAgentID' => $params['toAgentID'], ':message' => $params['message'], ':timestamp' => $params['timestamp']));
   if ($success) {
     if (variable_get('d4os_io_offline_messages_send_mails', 0)) {
       d4os_io_offline_messages_mail_send($params);
@@ -253,6 +262,7 @@ function d4os_io_offline_messages_mail_send($form_values) {
   // check if the user allows to receive messages by mail
   $d4os_profiles = D4OS_IO::create('Profiles');
   $user_prefs = $d4os_profiles->user_preferences_request(array('useruuid' => $form_values['toAgentID']));
+  if (!is_object($user_prefs[0])) return;
 
   if ($user_prefs[0]->imviaemail == 'true') {
     // get the website user email
