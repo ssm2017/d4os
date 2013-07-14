@@ -487,13 +487,27 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
   }
 
   function avatar_properties_update($params) {
-    $params['useruuid'] = isset($params['avatarID']) ? $params['avatarID'] : $params['useruuid'];
-    $params['profileAboutText'] = isset($params['AboutText']) ? $params['AboutText'] : $params['profileAboutText'];
-    $params['profileFirstImage'] = isset($params['FirstLifeImage']) ? $params['FirstLifeImage'] : $params['profileFirstImage'];
-    $params['profileImage'] = isset($params['Image']) ? $params['Image'] : $params['profileImage'];
-    $params['profileURL'] = isset($params['ProfileUrl']) ? $params['ProfileUrl'] : $params['profileURL'];
-    $params['profileFirstText'] = isset($params['FirstLifeAboutText']) ? $params['FirstLifeAboutText'] : $params['profileFirstText'];
-    $params['profilePartner'] = isset($params['Partner']) ? $params['Partner'] : $params['profilePartner'];
+    if (isset($params['avatarID'])) {
+      $params['useruuid'] = $params['avatarID'];
+    }
+    if (isset($params['AboutText'])) {
+      $params['profileAboutText'] = $params['AboutText'];
+    }
+    if (isset($params['FirstLifeImage'])) {
+      $params['profileFirstImage'] = $params['FirstLifeImage'];
+    }
+    if (isset($params['Image'])) {
+      $params['profileImage'] = $params['Image'];
+    }
+    if (isset($params['ProfileUrl'])) {
+      $params['profileURL'] = $params['ProfileUrl'];
+    }
+    if (isset($params['FirstLifeAboutText'])) {
+      $params['profileFirstText'] = $params['FirstLifeAboutText'];
+    }
+    if (isset($params['Partner'])) {
+      $params['profilePartner'] = $params['Partner'];
+    }
 
     $values = array();
     foreach ($params as $key => $value) {
