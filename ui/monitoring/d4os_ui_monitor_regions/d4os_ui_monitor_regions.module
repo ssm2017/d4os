@@ -118,7 +118,7 @@ function d4os_ui_monitor_regions_show_regions_list($account = null) {
   $headers = array(
     array(
       'data' => t('RegionName'), // 1
-      'field' => 'r.regionName',
+      //'field' => 'r.regionName',
     ),
     array(
       'data' => t('x'), // 2
@@ -133,18 +133,18 @@ function d4os_ui_monitor_regions_show_regions_list($account = null) {
   if (user_access('view d4os ui grid monitor regions owners list')) {
     $headers[] = array(
       'data' => t('OwnerName'), // 4
-      'field' => 'ua.FirstName',
+      //'field' => 'ua.FirstName',
     );
   }
 
   // get the order fields
   $page = isset($_GET['page']) ? $_GET['page'] : '';
-  $order_way = isset($_GET['sort']) ? $_GET['sort'] : 'DESC';
+  /*$order_way = isset($_GET['sort']) ? $_GET['sort'] : 'DESC';
   $order_by = isset($_GET['order']) ? $_GET['order'] : t('RegionName');
   $order_field = 'r.regionName';
   foreach ($headers as $header) {
     $order_field = ($header['data'] == $order_by) ? $header['field'] : $order_field;
-  }
+  }*/
 
   // get the data
   $limit = isset($_GET['limit']) ? $_GET['limit'] : 10;
@@ -152,13 +152,13 @@ function d4os_ui_monitor_regions_show_regions_list($account = null) {
     'uuid' => isset($account->data['d4os']['grid']['account']['uuid']) ? $account->data['d4os']['grid']['account']['uuid'] : null,
     'offset' => $page * $limit,
     'limit' => $limit,
-    'order_by' => $order_field,
-    'order_way' => $order_way
+    //'order_by' => $order_field,
+    //'order_way' => $order_way
   );
   $regions_list = $d4os_regions->get_regions_list($params);
   if ($regions_list->count == 0) {
     if (!is_null($account)) {
-      drupal_set_message(t(':username have no regions on the grid.', array(':username' => $account->name)));
+      drupal_set_message(t(':username has no regions on the grid.', array(':username' => $account->name)));
     }
     else {
       drupal_set_message(t('There are no regions on the grid.'));
@@ -265,7 +265,7 @@ function theme_d4os_ui_monitor_regions_list_table($regions_list, $params, $heade
     $cells[] = '<a href="secondlife:///app/teleport/hg.francogrid.org:80/'. urlencode($region->regionName). '" title="'. t('Click here for HyperGrid teleport').'">'. $region->regionName. '</a>'; // 1
     $cells[] = $region->x; // 2
     $cells[] = $region->y; // 3
-    $cells[] = '<span id="region-'. $region->region_uuid. '-status"><span><img width="16px" src="/sites/default/files/icones/fg_progress.gif" alt="'. t('Checking....'). '" title="'. t('Contacting the region...'). '"/></span></span>';
+    $cells[] = '<span id="region-'. $region->region_uuid. '-status"><span><img width="16px" src="/sites/default/files/icones/fg_progress_transparent.gif" alt="'. t('Checking....'). '" title="'. t('Contacting the region...'). '"/></span></span>';
     if (user_access('view d4os ui grid monitor regions owners list')) {
       $cells[] = '<a href="/user/'. $region->uid. '/regions" title="'. t('Click here to see the user regions'). '">'. $region->FirstName. ' '. $region->LastName. '</a>'; // 5
     }
