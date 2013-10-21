@@ -211,9 +211,10 @@ function d4os_ui_users_user_delete($account) {
  *  Implements hook_user_update().
  */
 function d4os_ui_users_user_update(&$edit, $account, $category) {
+  // check if we are editing the good category
+  //if ($category != "account") return;
   // check if the user is admin
-  if ($account->uid < 2)
-    return;
+  if ($account->uid < 2) return;
 
   $autocreate = variable_get('d4os_ui_users_autocreate_grid_account', 0);
 
@@ -455,6 +456,7 @@ function d4os_ui_users_set_grid_user_role($uid) {
 }
 
 function d4os_ui_users_account_validate($form, &$form_state) {
+  //if ($form_state['complete form']['#user_category'] != "account") return;
   if ($GLOBALS['user']->uid == 1) return; // TODO : check this
   $values = &$form_state['values'];
 
