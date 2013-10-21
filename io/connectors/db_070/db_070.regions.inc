@@ -127,6 +127,7 @@ class D4OS_IO_db_070_Regions implements D4OS_IO_regions_Interface {
     $regions->regions = $items;
     return $regions;
   }
+
   /**
    * Return a list of regions objects ordered by regionName
    * @return Array An array of regions objects
@@ -142,4 +143,22 @@ class D4OS_IO_db_070_Regions implements D4OS_IO_regions_Interface {
     return $items;
   }
 
+  function get_all_regions() {
+    $items = array();
+    d4os_io_db_070_set_active('os_robust');
+    $results = db_query('SELECT * FROM {regions}');
+    foreach ($results as $result) {
+      $items[] = $result;
+    }
+    d4os_io_db_070_set_active('default');
+    return $items;
+  }
+
+  function delete_region($params) {
+    if (isset($params['uuid'])) {
+      d4os_io_db_070_set_active('os_robust');
+      db_delete('regions')->condition('uuid', $params['uuid'])->execute();
+      d4os_io_db_070_set_active('default');
+    }
+  }
 }

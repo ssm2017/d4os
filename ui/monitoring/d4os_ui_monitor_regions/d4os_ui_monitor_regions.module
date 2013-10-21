@@ -146,10 +146,22 @@ function d4os_ui_monitor_regions_show_regions_list($account = null) {
     $order_field = ($header['data'] == $order_by) ? $header['field'] : $order_field;
   }*/
 
+  // get the uuid of the user
+  $uuid = null;
+  if ($account != null) {
+    $result = db_query("SELECT uuid FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $account->uid))->fetchField();
+    if ($result) {
+      $uuid = $result;
+    }
+    else {
+      drupal_set_message(t(':username has no regions on the grid.', array(':username' => $account->name)));
+      return t('No region found.');
+    }
+  }
   // get the data
-  $limit = isset($_GET['limit']) ? $_GET['limit'] : 10;
+  $limit = isset($_GET['limit']) && is_numeric($_GET['limit']) ? $_GET['limit'] : 10;
   $params = array(
-    'uuid' => isset($account->data['d4os']['grid']['account']['uuid']) ? $account->data['d4os']['grid']['account']['uuid'] : null,
+    'uuid' => $uuid,
     'offset' => $page * $limit,
     'limit' => $limit,
     //'order_by' => $order_field,
@@ -287,4 +299,69 @@ function theme_d4os_ui_monitor_regions_list_table($regions_list, $params, $heade
   );
   $output = theme_table($variables);
   return $output;
+}
+
+/**
+ * Implements hook_cron_queue_info().
+ */
+function d4os_ui_monitor_regions_cron_queue_info() {
+  $queue['d4os_ui_monitor_regions_queue'] = array(
+    'worker callback' => '_d4os_ui_monitor_regions_queue_worker',
+  );
+  return $queue;
+}
+
+/**
+ * Worker callback
+ *
+ * @see mymodule_cron_queue_info().
+ */
+function _d4os_ui_monitor_regions_queue_worker($item) {
+return;
+  // check if the region is answering
+  $options = array(
+    'timeout' => 10
+  );
+  $result = drupal_http_request($item->serverURI. 'monitorstats/'. $item->uuid, $options);
+  if ($result->code != 200) {
+    $d4os_regions = D4OS_IO::create('Regions');
+    $d4os_regions->ping();
+    if ($d4os_regions->response->success !== TRUE) {
+      watchdog("d4os region clean", "The Regions datastore is not available.", NULL, WATCHDOG_ALERT);
+      return;
+    }
+    // delete the region
+    
+    $d4os_regions->delete_region(array('uuid'=>$item->uuid));
+    watchdog("d4os region clean", "The Region %region was deleted. Response = %response", array('%region' => $item->regionName, '%response' => $result->code), WATCHDOG_NOTICE);
+  }
+}
+
+/**
+ * Implements hook_cron().
+ */
+function d4os_ui_monitor_regions_cron() {
+return;
+  if ((time() - variable_get('d4os_ui_monitor_regions_cron', 0)) > 86400 ) {
+    // check if the datastore is alive
+    $d4os_regions = D4OS_IO::create('Regions');
+    $d4os_regions->ping();
+    if ($d4os_regions->response->success !== TRUE) {
+      watchdog("d4os region clean", "The Regions datastore is not available.", NULL, WATCHDOG_ALERT);
+      return;
+    }
+    // get all regions
+    $regions_list = $d4os_regions->get_all_regions();
+    $regions_count = count($regions_list);
+    if ($regions_count == 0) {
+      return;
+    }
+    watchdog("d4os region clean", "There are %count regions on the grid.", array('%count' => $regions_count), WATCHDOG_INFO);
+    $queue = DrupalQueue::get('d4os_ui_monitor_regions_queue');
+    $queue->createQueue();
+    foreach ($regions_list as $region) {
+      $queue->createItem($region);
+    }
+    variable_set('d4os_ui_monitor_regions_cron', time());
+  }
 }
