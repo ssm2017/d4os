@@ -97,7 +97,12 @@ function d4os_io_load() {
     module_load_include('regions.inc', 'd4os', 'io/connectors/' . D4OS_IO_SYSTEM . '/' . D4OS_IO_SYSTEM);
     module_load_include('grid.inc', 'd4os', 'io/connectors/' . D4OS_IO_SYSTEM . '/' . D4OS_IO_SYSTEM);
     module_load_include('inventory.inc', 'd4os', 'io/connectors/' . D4OS_IO_SYSTEM . '/' . D4OS_IO_SYSTEM);
-    module_load_include('groups.inc', 'd4os', 'io/connectors/' . D4OS_IO_SYSTEM . '/' . D4OS_IO_SYSTEM);
+    if (variable_get('d4os_io_groups_version', 0)) {
+      module_load_include('groups.inc', 'd4os', 'io/connectors/' . D4OS_IO_SYSTEM . '/' . D4OS_IO_SYSTEM. '_v2');
+    }
+    else {
+      module_load_include('groups.inc', 'd4os', 'io/connectors/' . D4OS_IO_SYSTEM . '/' . D4OS_IO_SYSTEM);
+    }
   }
 }
 

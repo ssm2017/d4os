@@ -18,14 +18,26 @@ function d4os_io_groups_admin() {
   /*
    * Default group
    */
-  $form['groups'] = array(
+  $form['version'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Default Group'),
+    '#title' => t('Version'),
+    '#collapsible' => FALSE,
+    '#collapsed' => FALSE,
+  );
+  $form['version']['d4os_io_groups_version'] = array(
+    '#type' => 'radios',
+    '#title' => t('Default group uuid'),
+    '#options' => array(0 => t('Flotsam'), 1 => t('V2')),  
+    '#default_value' => variable_get('d4os_io_groups_version', 0),
+  );
+  $form['default_group'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Default group'),
     '#description' => t('Add new users to a group.'),
     '#collapsible' => FALSE,
     '#collapsed' => FALSE,
   );
-  $form['groups']['d4os_io_groups_default_group'] = array(
+  $form['default_group']['d4os_io_groups_default_group'] = array(
     '#type' => 'textfield',
     '#title' => t('Default group uuid'),
     '#size' => 36,
@@ -37,6 +49,7 @@ function d4os_io_groups_admin() {
 }
 
 function d4os_io_groups_admin_validate($form, &$form_state) {
+  return; // TODO : re-enable this (the problem is that the files are loaded at the module init so if we are using another group system, we can not load again the good file...)
   // check the default group
   $default_group_uuid = $form_state['values']['d4os_io_groups_default_group'];
   if ($default_group_uuid != UUID_ZERO && $default_group_uuid != '') {
