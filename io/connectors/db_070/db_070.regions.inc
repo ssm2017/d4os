@@ -25,6 +25,16 @@ class D4OS_IO_db_070_Regions implements D4OS_IO_regions_Interface {
     return;
   }
 
+  function get_region($uuid) {
+    d4os_io_db_070_set_active('os_robust');
+    $name = db_query("SELECT * FROM {regions} WHERE uuid = :uuid", array(':uuid' => $uuid))->fetch();
+    d4os_io_db_070_set_active('default');
+    if ($name) {
+      return $name;
+    }
+    return NULL;
+  }
+
   function get_regions_owners() {
     $owners = array();
     d4os_io_db_070_set_active('os_robust');

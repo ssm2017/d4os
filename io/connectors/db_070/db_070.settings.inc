@@ -30,6 +30,9 @@ function d4os_io_db_070_build_bases_list() {
   if (module_exists('d4os_io_groups')) {
     $bases['os_groups'] = t('Groups');
   }
+  if (module_exists('d4os_io_search')) {
+    $bases['os_search'] = t('Search');
+  }
   return $bases;
 }
 
@@ -84,4 +87,18 @@ if (module_exists('d4os_io_groups')) {
   );
   Database::addConnectionInfo('os_groups', 'default', $databases['os_groups']['default']);
   $d4os_same_db['os_groups'] = variable_get('d4os_io_db_070_multiple_groups_same', 'none');
+}
+
+// search
+if (module_exists('d4os_io_search')) {
+  $databases['os_search']['default'] = array(
+    'driver' => 'mysql',
+    'host' => variable_get('d4os_io_db_070_multiple_search_host', 'localhost'),
+    'database' => variable_get('d4os_io_db_070_multiple_search_db', 'opensim'),
+    'username' => variable_get('d4os_io_db_070_multiple_search_username', 'root'),
+    'password' => variable_get('d4os_io_db_070_multiple_search_password', 'root'),
+    'prefix' => variable_get('d4os_io_db_070_multiple_search_prefix', '')
+  );
+  Database::addConnectionInfo('os_search', 'default', $databases['os_search']['default']);
+  $d4os_same_db['os_search'] = variable_get('d4os_io_db_070_multiple_search_same', 'none');
 }

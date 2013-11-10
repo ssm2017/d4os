@@ -91,12 +91,13 @@ function d4os_permission() {
 
 function d4os_io_load() {
   if (defined('D4OS_IO_SYSTEM')) {
-    module_load_include('plugin.inc', 'd4os', 'io/connectors/' . D4OS_IO_SYSTEM . '/' . D4OS_IO_SYSTEM);
-    module_load_include('users.inc', 'd4os', 'io/connectors/' . D4OS_IO_SYSTEM . '/' . D4OS_IO_SYSTEM);
-    module_load_include('profiles.inc', 'd4os', 'io/connectors/' . D4OS_IO_SYSTEM . '/' . D4OS_IO_SYSTEM);
-    module_load_include('regions.inc', 'd4os', 'io/connectors/' . D4OS_IO_SYSTEM . '/' . D4OS_IO_SYSTEM);
-    module_load_include('grid.inc', 'd4os', 'io/connectors/' . D4OS_IO_SYSTEM . '/' . D4OS_IO_SYSTEM);
-    module_load_include('inventory.inc', 'd4os', 'io/connectors/' . D4OS_IO_SYSTEM . '/' . D4OS_IO_SYSTEM);
+    module_load_include('plugin.inc',     'd4os', 'io/connectors/' . D4OS_IO_SYSTEM . '/' . D4OS_IO_SYSTEM);
+    module_load_include('users.inc',      'd4os', 'io/connectors/' . D4OS_IO_SYSTEM . '/' . D4OS_IO_SYSTEM);
+    module_load_include('profiles.inc',   'd4os', 'io/connectors/' . D4OS_IO_SYSTEM . '/' . D4OS_IO_SYSTEM);
+    module_load_include('regions.inc',    'd4os', 'io/connectors/' . D4OS_IO_SYSTEM . '/' . D4OS_IO_SYSTEM);
+    module_load_include('grid.inc',       'd4os', 'io/connectors/' . D4OS_IO_SYSTEM . '/' . D4OS_IO_SYSTEM);
+    module_load_include('inventory.inc',  'd4os', 'io/connectors/' . D4OS_IO_SYSTEM . '/' . D4OS_IO_SYSTEM);
+    module_load_include('search.inc',     'd4os', 'io/connectors/' . D4OS_IO_SYSTEM . '/' . D4OS_IO_SYSTEM);
     if (variable_get('d4os_io_groups_version', 0)) {
       module_load_include('groups.inc', 'd4os', 'io/connectors/' . D4OS_IO_SYSTEM . '/' . D4OS_IO_SYSTEM. '_v2');
     }
@@ -210,6 +211,21 @@ interface D4OS_IO_Groups_Interface {
   public function group_exists($uuid);
 
   public function add_user_to_group($user_uuid, $group_uuid);
+
+  public function delete_user($uuid);
+}
+
+interface D4OS_IO_Search_Interface {
+
+  public function ping();
+
+  public function get_user_parcels($uuid);
+
+  public function get_event($event_id);
+
+  public function save_event($values);
+
+  public function delete_event($event_id);
 
   public function delete_user($uuid);
 }

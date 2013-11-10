@@ -1,0 +1,285 @@
+<?php
+/**
+ * Implements hook_install().
+ */
+function d4os_ui_events_install() {
+  $t = get_t();
+
+  // machine name of the content type
+  $name = 'inworld_events';
+
+  // define the node type
+  $defaults = array(
+    'type' => $name,
+    'name' => $t('Inworld events'),
+    'base' => 'node_content',
+    'title_label' => $t('Title'),
+    'description' => $t('Create an inworld event that will appear in inworld search.'),
+    'custom' => TRUE,
+  );
+
+  // set other node defaults not declared above
+  $content_type = node_type_set_defaults($defaults);
+
+  // add the body field
+  node_add_body_field($content_type, $t('Description'));
+
+  // save the content type
+  node_type_save($content_type);
+
+  // add peristant variables that control settings
+  variable_set('additional_settings__active_tab_' . $name, 'edit-menu');
+  variable_set('node_preview_' . $name, 1);
+  variable_set('node_options_' . $name, array(0 => 'status'));
+  variable_set('node_submitted_' . $name, 0);
+  variable_set('menu_options_' . $name, array());
+  variable_set('menu_parent_' . $name, 'main-menu:0');
+
+  // create all the fields we are adding to our content type
+  foreach (_d4os_ui_events_installed_fields() as $field) {
+    field_create_field($field);
+  }
+
+  // create all the instances for our fields
+  foreach (_d4os_ui_events_installed_instances() as $instance) {
+    $instance['entity_type'] = 'node';
+    $instance['bundle'] = $defaults['type'];
+    field_create_instance($instance);
+  }
+}
+
+/**
+ * Define the fields for our content type.
+ */
+function _d4os_ui_events_installed_fields() {
+  return array(
+    // date
+    'inworld_event_date' => array(
+      'field_name'  => 'field_inworld_event_date',
+      'type'        => 'datestamp',
+      'module'      => 'date',
+      'active'      => 1,
+      'locked'      => 1,
+      'cardinality' => 1,
+      'deleted'     => 0,
+      'settings'    => array(
+        'granularity'   => Array(
+          'month'   => 'month',
+          'day'     => 'day',
+          'hour'    => 'hour',
+          'minute'  => 'minute',
+          'year'    => 'year',
+          'second'  => 0,
+        ),
+        'tz_handling'   => 'site',
+        'timezone_db'   => 'UTC',
+        'cache_enabled' => 0,
+        'cache_count'   => 4,
+        'todate'        => 'required',
+      ),
+    ),
+    // mature
+    'inworld_event_mature' => array(
+      'field_name'  => 'field_inworld_event_mature',
+      'type'        => 'list_boolean',
+      'module'      => 'list',
+      'active'      => 1,
+      'locked'      => 1,
+      'cardinality' => 1,
+      'deleted'     => 0,
+      'settings'    => array(
+        'allowed_values' => array(
+          0 => 'No',
+          1 => 'Mature',
+        ),
+      ),
+    ),
+    // categories
+    'inworld_event_categories' => array(
+      'field_name'  => 'field_inworld_event_categories',
+      'type'        => 'list_integer',
+      'module'      => 'list',
+      'active'      => 1,
+      'locked'      => 1,
+      'cardinality' => 1,
+      'deleted'     => 0,
+      'settings'    => array(
+        'allowed_values' => array(
+          '27' => t('Arts and Culture'),
+          '28' => t('Charity/Support Groups'),
+          '22' => t('Commercial'),
+          '18' => t('Discussion'),
+          '26' => t('Education'),
+          '24' => t('Games/Contests'),
+          '20' => t('Live Music'),
+          '29' => t('Miscellaneous'),
+          '23' => t('Nightlife/Entertainment'),
+          '25' => t('Pageants'),
+          '19' => t('Sports'),
+        ),
+      ),
+    ),
+    // parcels
+    'inworld_event_parcel' => array(
+      'field_name'  => 'field_inworld_event_parcel',
+      'type'        => 'list_text',
+      'module'      => 'list',
+      'active'      => 1,
+      'locked'      => 1,
+      'cardinality' => 1,
+      'deleted'     => 0,
+      'settings'    => array(
+        'allowed_values_function' => 'd4os_ui_events_get_user_parcels_list',
+      ),
+    ),
+  );
+}
+
+/**
+ * Define the field instances for our content type.
+ */
+function _d4os_ui_events_installed_instances() {
+  return array(
+    // date
+    'inworld_event_date' => array(
+      'field_name'  => 'field_inworld_event_date',
+      'label'       => t('Date'),
+      'required'    => TRUE,
+      'widget' => array(
+        'type'     => 'date_select',
+        'module'   => 'date',
+        'settings' => array(
+          'input_format'  => 'm/d/Y - H:i:s',
+          'year_range'    => '-3:+3',
+          'increment'     => 15,
+        ),
+      ),
+      'settings' => array(
+        'default_value'   => 'now',
+        'default_value2'  => 'same',
+      ),
+      'display' => array(
+        'default' => array(
+          'label'   => 'inline',
+          'type'    => 'date_default',
+          'module'  => 'date',
+        ),
+      ),
+    ),
+    // mature
+    'inworld_event_mature' => array(
+      'field_name'  => 'field_inworld_event_mature',
+      'label'       => t('Mature'),
+      'widget' => array(
+        'type'     => 'options_onoff',
+        'module'   => 'options',
+      ),
+      'display' => array(
+        'default' => array(
+          'label'   => 'inline',
+          'type'    => 'list_default',
+          'module'  => 'list',
+        ),
+      ),
+    ),
+    // categories
+    'inworld_event_categories' => array(
+      'field_name'  => 'field_inworld_event_categories',
+      'label'       => t('Category'),
+      'required'    => TRUE,
+      'widget' => array(
+        'type'     => 'options_select',
+        'module'   => 'options',
+      ),
+      'display' => array(
+        'default' => array(
+          'label'   => 'inline',
+          'type'    => 'list_default',
+          'module'  => 'list',
+        ),
+      ),
+    ),
+    // parcel
+    'inworld_event_parcel' => array(
+      'field_name'  => 'field_inworld_event_parcel',
+      'label'       => t('Parcel'),
+      'required'    => TRUE,
+      'widget' => array(
+        'type'     => 'options_select',
+        'module'   => 'options',
+      ),
+      'display' => array(
+        'default' => array(
+          'label'   => 'inline',
+          'type'    => 'list_default',
+          'module'  => 'list',
+        ),
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function d4os_ui_events_uninstall() {
+  // machine name of the content type
+  $name = 'inworld_events';
+
+  // gather all inworld events nodes created
+  $sql = 'SELECT nid FROM {node} n WHERE n.type = :type';
+  $result = db_query($sql, array(':type' => $name));
+  $nids = array();
+  foreach ($result as $row) {
+    $nids[] = $row->nid;
+  }
+
+  // delete all the job nodes at once
+  node_delete_multiple($nids);
+
+  // remove peristant variables that control settings
+  variable_del('additional_settings__active_tab_' . $name);
+  variable_del('node_preview_' . $name);
+  variable_del('node_options_' . $name);
+  variable_del('node_submitted_' . $name);
+  variable_del('menu_options_' . $name);
+  variable_del('menu_parent_' . $name);
+
+
+  // find all fields and delete them
+  foreach (array_keys(_d4os_ui_events_installed_fields()) as $field) {
+    field_delete_field($field);
+  }
+
+  // find all fields and delete instance
+  $instances = field_info_instances('node', $name);
+  foreach ($instances as $instance_name => $instance) {
+    field_delete_instance($instance);
+  }
+
+  // delete our content type
+  node_type_delete($name);
+
+  // purge all field information
+  field_purge_batch(1000);
+
+  // Remove variables.
+  db_query("DELETE FROM {variable} WHERE name LIKE 'd4os_ui_events%%'");
+}
+
+function d4os_ui_events_schema() {
+  $schema['d4os_ui_events'] = array(
+    'description' => t('The single table necessary for events storage.'),
+    'fields' => array(
+      'nid' => array('type' => 'int', 'unsigned' => TRUE, 'not NULL' => TRUE, 'default' => 0),
+      'event_id' => array(
+        'description' => 'The event eventid.',
+        'type' => 'char',
+        'length' => 40,
+        'not NULL' => TRUE
+      ),
+    ), // TODO : check indexes
+    'primary key' => array('nid'),
+  );
+  return $schema;
+}

@@ -1,0 +1,276 @@
+<?php
+
+/**
+ * @package    d4os_ui_events
+ * @copyright Copyright (C) 2010-2013 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+ * @link      http://www.d4os.org
+ * @license   GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+ * D4os is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ */
+
+/**
+ * Implements hook_node_access().
+ */
+function d4os_ui_events_node_access($node, $op, $account) {
+  $args = arg();
+  $args[1] = (!isset($args[1])) ? NULL : $args[1];
+  $args[2] = (!isset($args[2])) ? NULL : $args[2];
+  if ($op == 'create' && $args[0] == 'node' && $args[1] == 'add' && $args[2] == 'inworld-events') {
+    // d4os is not loaded at this time so load it
+    d4os_init();
+    // check if the user owns parcels
+    $user_owns_parcels = d4os_ui_events_count_user_parcels($account->uid);
+    if ($user_owns_parcels == 0) {
+      drupal_set_message(t('You need to own a parcel to create an event.'));
+      return NODE_ACCESS_DENY;
+    }
+  }
+  if (is_string($node)) {
+    return NODE_ACCESS_IGNORE;
+  }
+  return NODE_ACCESS_IGNORE;
+}
+
+function d4os_ui_events_count_user_parcels($uid) {
+  // get the user uuid
+  $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $uid))->fetchField();
+  if ($uuid) {
+    $d4os_search = D4OS_IO::create('Search');
+    $d4os_search->ping();
+    if ($d4os_search->response->success !== TRUE) {
+      return 0;
+    }
+    return $d4os_search->get_user_parcels_count($uuid);
+  }
+  return 0;
+}
+
+function d4os_ui_events_get_user_parcels_list() {
+  $d4os_search = D4OS_IO::create('Search');
+  $d4os_search->ping();
+  if ($d4os_search->response->success !== TRUE) {
+    return array();
+  }
+  // get the user uuid
+  $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $GLOBALS['user']->uid))->fetchField();
+  if ($uuid) {
+    // get the user parcels list
+    $parcels = $d4os_search->get_user_parcels($uuid);
+    $options = array();
+    if (count($parcels)) {
+      foreach ($parcels as $parcel) {
+        $field = $parcel->landingpoint. '|'. $parcel->regionUUID;
+        $options[$field] = $parcel->parcelname;
+      }
+      return $options;
+    }
+    return array();
+  }
+  else {
+    return array();
+  }
+}
+
+/**
+ * Assign a grid eventid to a Drupal node nid
+ * @param Integer Drupal node nid
+ * @param Integer Grid eventid event_id
+ */
+function d4os_ui_events_set_uuid($nid, $event_id) {
+  // check the link between drupal and the grid
+  $uid_exists = db_query("SELECT nid FROM {d4os_ui_events} WHERE event_id=:event_id OR nid=:nid", array(':event_id' => $event_id, ':nid' => $nid))->fetchField();
+  if ($uid_exists) {
+    db_query("DELETE FROM {d4os_ui_events} WHERE event_id = :event_id OR nid = :nid", array(':event_id' => $event_id, ':nid' => $nid));
+  }
+  db_query("INSERT INTO {d4os_ui_events} (event_id, nid) VALUES (:event_id, :nid)", array(':event_id' => $event_id, ':nid' => $nid));
+}
+
+/**
+ * Implements hook_node_validate().
+ */
+function d4os_ui_events_node_validate($node, $form, &$form_state) {
+  $values = d4os_ui_events_build_output($form_state['values']);
+  $form_state['values']['inworld'] = $values;
+  $node->inworld = $values;
+  if (is_null($values)) {
+    form_set_error('', t('There was an error getting the values.'));
+  }
+  // check if the search database is reachable
+  $d4os_search = D4OS_IO::create('Search');
+  $d4os_search->ping();
+  if ($d4os_search->response->success !== TRUE) {
+    form_set_error('', t('Unable to contact the grid database.'));
+  }
+  //$node->d4os_search = $d4os_search;
+}
+
+/**
+ * Implements hook_node_insert().
+ */
+function d4os_ui_events_node_insert($node) {
+  // get the nid
+  $node->inworld['nid'] = $node->nid;
+  // add values to the grid
+  $d4os_search = D4OS_IO::create('Search');
+  $event_id = $d4os_search->save_event($node->inworld);
+}
+
+/**
+ * Implements hook_node_update().
+ */
+function d4os_ui_events_node_update($node) {
+  // get the event_id
+  $node->inworld['eventid'] = d4os_ui_events_get_event_id_by_nid($node->nid);
+  // get the nid
+  $node->inworld['nid'] = $node->nid;
+  // add values to the grid
+  $d4os_search = D4OS_IO::create('Search');
+  $d4os_search->save_event($node->inworld);
+}
+
+/**
+ * Implemenbts hook_node_delete().
+ */
+function d4os_ui_events_node_delete($node) {
+  // get the event_id
+  $event_id = d4os_ui_events_get_event_id_by_nid($node->nid);
+  // delete the event on the grid
+  if (!is_null($event_id)) {
+    $d4os_search = D4OS_IO::create('Search');
+    $event_id = $d4os_search->delete_event($event_id);
+  }
+}
+
+function d4os_ui_events_build_output($values) {
+  // get the user uuid
+  $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $values['uid']))->fetchField();
+  if (!$uuid) {
+    drupal_set_message(t('Unable to get info from the inworld user.'), 'error');
+    return FALSE;
+  }
+
+  // get the language
+  $language = $values['language'];
+
+  // get the date value
+  $date_field = $values['field_inworld_event_date'][$language][0];
+  // drupal date module is not converting the date if the title is missing so we will check that
+  if (is_int($date_field['value']) && $date_field['value2'] && isset($date_field['offset']) && isset($date_field['offset2'])) {
+    $start_date = $date_field['value'] - $date_field['offset'];
+    $end_date   = $date_field['value2'] - $date_field['offset2'];
+  }
+  else {
+    $dates = d4os_ui_events_convert_date_string_to_timestamp($date_field['value'], $date_field['value2']);
+    $start_date = $dates->start_date;
+    $end_date   = $dates->end_date;
+  }
+
+  // compute the duration
+  $duration = $end_date - $start_date;
+
+  // get the mature value
+  $mature_field = $values['field_inworld_event_mature'][$language][0];
+  // Checking if it's an event with Maturity
+  $mature = "false";
+  $eventflags = 0;
+  if ($mature_field['value']) {
+    $mature = "true";
+    $eventflags = 1;
+  }
+
+  // The hard part, getting the region and converting that to a GlobalPosition
+  // TODO : check location
+  //116/138/20.05
+  //256000
+  // get the parcel value
+  $parcel_field = $values['field_inworld_event_parcel'][$language][0];
+  $position = $parcel_field['value'];
+  if (is_null($position)) {
+    drupal_set_message(t('Error getting the parcel value.'), 'error');
+    return FALSE;
+  }
+  list($location, $regionUUID) = explode("|", $position);
+  list($val_x, $val_y, $val_z) = explode("/", $location);
+  // get the region value
+  $d4os_regions = D4OS_IO::create('Regions');
+  $d4os_regions->ping();
+  if ($d4os_regions->response->success !== TRUE) {
+    drupal_set_message(t('Unable to get info from the region.'), 'error');
+    return FALSE;
+  }
+  $region = $d4os_regions->get_region($regionUUID);
+
+  //$parcel_x = intval($val_x);//116
+  //$parcel_y = intval($val_y);//138
+  //$parcel_z = intval($val_z);//20.05
+  $parcel_x = $val_x; //116
+  $parcel_y = $val_y; //138
+  $parcel_z = $val_z; //20.05
+
+  /* $region_x = ($region->locX * 256);
+    $region_y = ($region->locY * 256); */
+  $region_x = $region->locX;
+  $region_y = $region->locY;
+
+  $global_x = $region_x + $parcel_x;
+  $global_y = $region_y + $parcel_y;
+  $global_z = $parcel_z;
+
+  $globalPos = "<" . $global_x . "," . $global_y . "," . $global_z . ">";
+
+  // get the category
+  $category_field = $values['field_inworld_event_categories'][$language][0];
+  $category = $category_field['value'];
+  if (is_null($category)) {
+    drupal_set_message(t('Error getting the category value.'), 'error');
+    return FALSE;
+  }
+
+  // get the description
+  $body_field = $values['body'][$language][0];
+  $description = $body_field['value'];
+
+  // build the output
+  return array(
+    'owneruuid'   => $uuid,
+    'name'        => $values['title'],
+    'creatoruuid' => $uuid,
+    'category'    => $category,
+    'description' => $description,
+    'dateUTC'     => $start_date,
+    'duration'    => $duration,
+    'covercharge' => 0,
+    'coveramount' => 0,
+    'simname'     => $region->regionName,
+    'globalPos'   => $globalPos,
+    'eventflags'  => $eventflags,
+    'mature'      => $mature
+  );
+
+}
+
+function d4os_ui_events_convert_date_string_to_timestamp($start_date, $end_date) {
+  // get the timezone
+  $tz = drupal_get_user_timezone();
+  // convert the date
+  $start_date = new DateObject($start_date, $tz);
+  $end_date   = new DateObject($end_date, $tz);
+  $start_date ->setTimezone(timezone_open('UTC'));
+  $end_date   ->setTimezone(timezone_open('UTC'));
+  // fill the values
+  $values = new stdClass();
+  $values->start_date = strtotime($start_date);
+  $values->end_date   = strtotime($end_date);
+  return $values;
+}
+
+function d4os_ui_events_get_event_id_by_nid($nid) {
+  $event_id = db_query("SELECT event_id FROM {d4os_ui_events} WHERE nid=:nid", array(':nid' => $nid))->fetchField();
+  if (!$event_id) {
+    return NULL;
+  }
+  return $event_id;
+}

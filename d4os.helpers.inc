@@ -14,8 +14,9 @@
 /**
  * UUID zero
  */
-if (!defined('UUID_ZERO'))
+if (!defined('UUID_ZERO')) {
   define('UUID_ZERO', '00000000-0000-0000-0000-000000000000');
+}
 
 /**
  * @global String $grid_url

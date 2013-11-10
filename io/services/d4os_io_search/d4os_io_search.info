@@ -1,0 +1,5 @@
+name = "d4os io search"
+description = "This module is managing inworld search."
+package = d4os io
+core = 7.x
+dependencies[] = d4os
