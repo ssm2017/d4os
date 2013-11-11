@@ -153,7 +153,7 @@ function d4os_ui_events_build_output($values) {
   }
 
   // get the language
-  $language = $values['language'];
+  $language = 'und';
 
   // get the date value
   $date_field = $values['field_inworld_event_date'][$language][0];
