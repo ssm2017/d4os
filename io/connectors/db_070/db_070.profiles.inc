@@ -530,6 +530,11 @@ class D4OS_IO_db_070_Profiles implements D4OS_IO_Profiles_Interface {
 
     if (!$profile) {
       $values['useruuid'] = $params['useruuid'];
+      $values['profileWantToMask']  = 0;
+      $values['profileWantToText']  = '';
+      $values['profileSkillsMask']  = 0;
+      $values['profileSkillsText']  = '';
+      $values['profileLanguages']   = '';
       d4os_io_db_070_set_active('os_profile');
         db_insert('userprofile')
           ->fields($values)
