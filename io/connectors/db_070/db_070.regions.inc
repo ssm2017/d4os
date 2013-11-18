@@ -121,7 +121,7 @@ class D4OS_IO_db_070_Regions implements D4OS_IO_regions_Interface {
     //$test = SelectQuery::__toString();
     foreach ($results as $result) {
       $item = $result;
-      $item->uid = $uids[$result->PrincipalID];
+      $item->uid = isset($uids[$result->PrincipalID]) ? $uids[$result->PrincipalID] : 0;
       $items[] = $item;
     }
     d4os_io_db_070_set_active('default');
