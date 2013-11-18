@@ -44,6 +44,7 @@ function d4os_ui_monitor_regions_menu() {
     'page callback' => 'd4os_ui_monitor_regions_check_region_status',
     'access arguments' => array('view d4os ui grid monitor regions list'),
     'type' => MENU_CALLBACK,
+    'access callback' => TRUE
   );
   return $items;
 }
@@ -196,7 +197,7 @@ function d4os_ui_monitor_regions_show_regions_list($account = null) {
     $output .= '<p>' . t('There %regions on the grid.', array(
           '%regions' => format_plural($regions_list->count, 'is 1 region', 'are @count regions'))) . '</p>';
   }
-    
+
   $output .= '</div>';
 
   // format some usefull links
@@ -225,7 +226,7 @@ function d4os_ui_monitor_regions_show_regions_list($account = null) {
     }
     $qty_filter .= '</ul></div>';
 
-    
+
 
     // build a form to display links in a fieldset
     $form = array(
@@ -331,7 +332,7 @@ return;
       return;
     }
     // delete the region
-    
+
     $d4os_regions->delete_region(array('uuid'=>$item->uuid));
     watchdog("d4os region clean", "The Region %region was deleted. Response = %response", array('%region' => $item->regionName, '%response' => $result->code), WATCHDOG_NOTICE);
   }
