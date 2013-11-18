@@ -26,8 +26,8 @@ function d4os_io_groups_admin() {
   );
   $form['version']['d4os_io_groups_version'] = array(
     '#type' => 'radios',
-    '#title' => t('Default group uuid'),
-    '#options' => array(0 => t('Flotsam'), 1 => t('V2')),  
+    '#title' => t('Database group mechanism'),
+    '#options' => array(0 => t('Flotsam'), 1 => t('V2')),
     '#default_value' => variable_get('d4os_io_groups_version', 0),
   );
   $form['default_group'] = array(
