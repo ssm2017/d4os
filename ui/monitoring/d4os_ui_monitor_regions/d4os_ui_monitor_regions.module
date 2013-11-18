@@ -265,7 +265,7 @@ function theme_d4os_ui_monitor_regions_list_table($regions_list, $params, $heade
       "(function ($) {
         //$(document).ready(function(){
           $.get(
-            '/grid/monitor/regions/list/check-region',
+            '". url('grid/monitor/regions/list/check-region'). "',
             {uri:'". base64_encode($region->serverURI. 'monitorstats/'. $region->region_uuid). "'},
             function(data) {
               $('#region-". $region->region_uuid. "-status').html(data);
