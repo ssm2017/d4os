@@ -6,4 +6,3 @@ dependencies[] = date
 dependencies[] = d4os
 dependencies[] = d4os_io_search
 dependencies[] = d4os_ui_users
-dependencies[] = d4os_ui_events
