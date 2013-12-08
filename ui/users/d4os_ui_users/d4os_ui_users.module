@@ -132,6 +132,9 @@ function d4os_ui_users_login_form(&$form) {
 }
 
 function d4os_ui_users_register_form(&$form) {
+  if (!variable_get('user_email_verification', TRUE) && !variable_get('d4os_ui_users_register_role', 0)) {
+    d4os_ui_users_avatars_models_select_form($form);
+  }
   if (isset($form['account'])) {
     $form['account']['name']['#description'] = t('A two word name is required for grid access.');
   }
@@ -142,6 +145,10 @@ function d4os_ui_users_register_form(&$form) {
 }
 
 function d4os_ui_users_profile_form(&$form) {
+  // check if the user can register an avatar
+  if (d4os_ui_users_can_register_on_grid($form['#user'], FALSE)) {
+    d4os_ui_users_avatars_models_select_form($form);
+  }
   array_unshift($form['#validate'], 'd4os_ui_users_account_validate');
   $form['account']['name']['#description'] = 'A two word name is required for grid access.';
 }
@@ -216,12 +223,16 @@ function d4os_ui_users_user_update(&$edit, $account, $category) {
     return;
   }
   elseif ($autocreate && ($uuid === FALSE || is_null($uuid))) {
-    drupal_set_message(t('Creating a grid account for you.'));
-    $form_state = array();
-    $form_state['uid'] = $account->uid;
-    $form_state['values']['pass'] = $edit['pass_raw'];
-    d4os_ui_users_grid_registration_form_validate(array(), $form_state);
-    d4os_ui_users_grid_registration_form_submit(array(), $form_state, FALSE);
+    if (isset($edit['pass_raw'])) {
+      drupal_set_message(t('Creating a grid account for you.'));
+      $form_state = array();
+      $form_state['uid'] = $account->uid;
+      $form_state['values']['pass'] = $edit['pass_raw'];
+      d4os_ui_users_grid_registration_form_submit(array(), $form_state, FALSE);
+    }
+    else {
+      return;
+    }
   }
   else {
     // load the grid user
@@ -273,15 +284,17 @@ function d4os_ui_users_login_authenticate_validate($form, &$form_state) {
   // TODO : show a message to the users if they are not allowed to log in the grid
 }
 
-function d4os_ui_users_can_register_on_grid($account) {
+function d4os_ui_users_can_register_on_grid($account, $check_autocreate = TRUE) {
   // check if the account is admin
   if ($account->uid == 1) {
     return FALSE;
   }
 
   // check if autocreate is enabled
-  if (variable_get('d4os_ui_users_autocreate_grid_account', 0)) {
-    return FALSE;
+  if ($check_autocreate) {
+    if (variable_get('d4os_ui_users_autocreate_grid_account', 0)) {
+      return FALSE;
+    }
   }
 
   // check if the account is already registered on the grid
@@ -386,6 +399,12 @@ function d4os_ui_users_grid_registration_form_validate($form, &$form_state) {
     }
   }
   else {
+    // check if the email address is the same
+    $form_state['user_exists_on_grid']['grid_users'] = $d4os_user->load_user(array('Email' => $account->mail));
+    if (isset($form_state['user_exists_on_grid']['grid_users'][0])) {
+      $form_state['user_exists_on_grid']['same_email'] = TRUE;
+      form_set_error('mail', t('An avatar with the same email already exists on the grid.'));
+    }
     // check for the model
     if (isset($form_state['values']['model_uuid']) && $form_state['values']['model_uuid'] == '') {
       form_set_error('model', t('Please select a model.'));
@@ -459,8 +478,10 @@ function d4os_ui_users_account_validate($form, &$form_state) {
   $values = &$form_state['values'];
 
   // check for the model
-  if (isset($values['model_uuid']) && $values['model_uuid'] == '') {
-    form_set_error('model', t('Please select a model.'));
+  if (isset($form['models']['model_uuid'])) {
+    if (!isset($values['model_uuid']) || $values['model_uuid'] == '') {
+      form_set_error('model', t('Please select a model.'));
+    }
   }
 
   // get firstname and lastname
@@ -517,6 +538,13 @@ function d4os_ui_users_account_validate($form, &$form_state) {
       // get the user uuid
       $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $form_state['user']->uid))->fetchField();
       if ($uuid === FALSE || is_null($uuid)) {
+        // check if password is here for autocreate
+        if (variable_get('d4os_ui_users_autocreate_grid_account', 0)) {
+          if(!isset($form_state['values']['pass_raw'])) {
+            form_set_error('pass', t('You need to enter your password.'));
+          }
+          d4os_ui_users_grid_registration_form_validate($form, $form_state);
+        }
         return;
       }
       // check if the user already exists after changing username
