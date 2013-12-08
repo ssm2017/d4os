@@ -176,6 +176,13 @@ function d4os_ui_users_admin() {
     '#default_value' => variable_get('d4os_ui_users_models_image_width', '150'),
     '#description' => t('Define the width of the model images.'),
   );
+	$form['models']['d4os_ui_users_models_output_type'] = array(
+    '#type' => 'radios',
+    '#title' => t('Output type'),
+    '#options' => array('tableselect'=>'tableselect', 'radios'=>'radios'),
+    '#default_value' => variable_get('d4os_ui_users_models_output_type', 'tableselect'),
+    '#description' => t('Select the output type of the models form.'),
+  );
   if (module_exists('lightbox2')) {
     $form['models']['d4os_ui_users_models_image_use_lightbox2'] = array(
       '#type' => 'checkbox',

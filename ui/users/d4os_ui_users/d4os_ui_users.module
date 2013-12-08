@@ -59,17 +59,6 @@ function d4os_ui_users_menu() {
 }
 
 /**
- *  Implements hook_theme().
- */
-function d4os_ui_users_theme() {
-  return array(
-    'd4os_ui_users_models_select_form' => array(
-      'arguments' => array('form'),
-    ),
-  );
-}
-
-/**
  *  Implements hook_permission().
  */
 function d4os_ui_users_permission() {
@@ -597,6 +586,7 @@ function d4os_ui_users_avatars_models_select_form(&$form) {
 
   // get some vars
   $image_width = variable_get('d4os_ui_users_models_image_width', '150');
+  $output_type = variable_get('d4os_ui_users_models_output_type', 'tableselect');
   $use_lightbox2 = variable_get('d4os_ui_users_models_image_use_lightbox2', 0);
 
   // build the form fieldset
@@ -606,7 +596,6 @@ function d4os_ui_users_avatars_models_select_form(&$form) {
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
     '#description' => t('Please select an avatar to use. You will be able to change it later.'),
-      //'#theme'        => 'd4os_ui_users_models_select_form',
   );
 
   $header = array(
@@ -632,18 +621,39 @@ function d4os_ui_users_avatars_models_select_form(&$form) {
     }
 
     // fill the options
-    $options[$available_model->uuid] = array(
-      'name' => $available_model->name,
-      'picture' => $picture,
-    );
+    switch ($output_type) {
+      default:
+      case 'tableselect':
+        $options[$available_model->uuid] = array(
+          'name' => $available_model->name,
+          'picture' => $picture,
+        );
+        break;
+      case 'radios':
+        $options[$available_model->uuid] = '<span class="d4os_model_name">'
+          .$available_model->name. '</span><span class="d4os_model_picture">'.$picture.'</span>';
+        break;
+    }
     ++$i;
   }
-  $form['models']['model_uuid'] = array(
-    '#type' => 'tableselect',
-    '#header' => $header,
-    '#options' => $options,
-    '#multiple' => FALSE,
-  );
+
+  switch ($output_type) {
+    default:
+    case 'tableselect':
+      $form['models']['model_uuid'] = array(
+        '#type' => 'tableselect',
+        '#header' => $header,
+        '#options' => $options,
+        '#multiple' => FALSE,
+      );
+      break;
+    case 'radios':
+      $form['models']['model_uuid'] = array(
+        '#type' => 'radios',
+        '#options' => $options
+      );
+      break;
+  }
 }
 
 function d4os_ui_users_set_region_owner_role() {
