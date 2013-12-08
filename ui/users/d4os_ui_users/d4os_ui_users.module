@@ -146,7 +146,7 @@ function d4os_ui_users_register_form(&$form) {
 
 function d4os_ui_users_profile_form(&$form) {
   // check if the user can register an avatar
-  if (d4os_ui_users_can_register_on_grid($form['#user'], FALSE)) {
+  if (d4os_ui_users_can_register_on_grid($form['#user'], FALSE) && variable_get('d4os_ui_users_autocreate_grid_account', 0)) {
     d4os_ui_users_avatars_models_select_form($form);
   }
   array_unshift($form['#validate'], 'd4os_ui_users_account_validate');
