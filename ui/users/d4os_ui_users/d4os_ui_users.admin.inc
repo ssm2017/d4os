@@ -246,19 +246,19 @@ function d4os_ui_users_admin() {
     '#options' => $roles,
     '#description' => t('This role is assigned to user when they register on the grid or when a new website account is created from the grid auth.'),
   );
+	$form['default_roles']['d4os_ui_users_default_region_owner_role'] = array(
+    '#type' => 'select',
+    '#title' => t('Region owner role'),
+    '#default_value' => variable_get('d4os_ui_users_default_region_owner_role', 0),
+    '#options' => $roles,
+    '#description' => t('This role is assigned to region owners when running cron.'),
+  );
   $form['default_roles']['d4os_ui_users_register_role'] = array(
     '#type' => 'select',
     '#title' => t('Grid register role'),
     '#default_value' => variable_get('d4os_ui_users_register_role', 0),
     '#options' => $roles,
     '#description' => t('This role is allowed to register a grid account for themselves.  This is useful for private grids.  Leave it at "None" to disable this feature.'),
-  );
-  $form['default_roles']['d4os_ui_users_default_region_owner_role'] = array(
-    '#type' => 'select',
-    '#title' => t('Region owner role'),
-    '#default_value' => variable_get('d4os_ui_users_default_region_owner_role', 0),
-    '#options' => $roles,
-    '#description' => t('This role is assigned to region owners when running cron.'),
   );
 
   /*
