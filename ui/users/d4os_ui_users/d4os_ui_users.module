@@ -203,8 +203,9 @@ function d4os_ui_users_user_update(&$edit, $account, $category) {
   // check if we are editing the good category
   //if ($category != "account") return;
   // check if the user is admin
-  if ($account->uid < 2)
+  if ($account->uid < 2) {
     return;
+  }
 
   $autocreate = variable_get('d4os_ui_users_autocreate_grid_account', 0);
 
@@ -340,8 +341,9 @@ function d4os_ui_users_grid_registration_form_validate($form, &$form_state) {
 
   // get the account
   $uid = arg(1);
-  if (1 == $uid)
+  if (1 == $uid) {
     $uid = $form_state['uid'];
+  }
   $account = user_load($uid);
 
   if (!variable_get('d4os_ui_users_autocreate_grid_account', 0)) {
@@ -394,8 +396,9 @@ function d4os_ui_users_grid_registration_form_validate($form, &$form_state) {
 function d4os_ui_users_grid_registration_form_submit($form, &$form_state, $redirect = TRUE) {
   // get the account
   $uid = arg(1);
-  if (1 == $uid)
+  if (1 == $uid) {
     $uid = $form_state['uid'];
+  }
   $account = user_load($uid);
 
   $d4os_user = D4OS_IO::create('Users');
@@ -425,18 +428,21 @@ function d4os_ui_users_grid_registration_form_submit($form, &$form_state, $redir
   d4os_ui_users_set_grid_user_role($account->uid);
 
   // redirect
-  if ($redirect)
+  if ($redirect) {
     $form_state['redirect'] = 'user/' . $uid;
+  }
 }
 
 function d4os_ui_users_set_grid_user_role($uid) {
-  if (!is_numeric($uid))
+  if (!is_numeric($uid)) {
     return;
+  }
 
   // get the grid user rid
   $rid = variable_get('d4os_ui_users_default_grid_user_role', 0);
-  if ($rid == 0)
+  if ($rid == 0) {
     return;
+  }
 
   // remove assigned roles
   db_query("DELETE FROM {users_roles} WHERE rid=:rid AND uid=:uid", array(':rid' => $rid, ':uid' => $uid));
@@ -447,8 +453,9 @@ function d4os_ui_users_set_grid_user_role($uid) {
 
 function d4os_ui_users_account_validate($form, &$form_state) {
   //if ($form_state['complete form']['#user_category'] != "account") return;
-  if ($GLOBALS['user']->uid == 1)
-    return; // TODO : check this
+  if ($GLOBALS['user']->uid == 1) {
+    return;
+  } // TODO : check this
   $values = &$form_state['values'];
 
   // check for the model
@@ -509,8 +516,9 @@ function d4os_ui_users_account_validate($form, &$form_state) {
     case 'user_profile_form':
       // get the user uuid
       $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $form_state['user']->uid))->fetchField();
-      if ($uuid === FALSE || is_null($uuid))
+      if ($uuid === FALSE || is_null($uuid)) {
         return;
+      }
       // check if the user already exists after changing username
       if (is_object($grid_user) && $grid_user->PrincipalID != $uuid) {
         form_set_error('name', t('This name already exists'));
@@ -669,8 +677,9 @@ function d4os_ui_users_set_region_owner_role() {
 
   // get the owner rid
   $rid = variable_get('d4os_ui_users_default_region_owner_role', 0);
-  if ($rid == 0)
+  if ($rid == 0) {
     return;
+  }
 
   // remove owner roles
   db_query('DELETE FROM {users_roles} WHERE rid=:rid', array(':rid' => $rid));
