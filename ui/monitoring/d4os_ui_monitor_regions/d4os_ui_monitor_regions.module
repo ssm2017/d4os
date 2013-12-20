@@ -72,31 +72,21 @@ function d4os_ui_monitor_regions_show_user_regions_access($account) {
 
 function d4os_ui_monitor_regions_check_region_status() {
   if (isset($_GET['uri'])) {
-    $sim_uri = base64_decode($_GET['uri']);
+    $uri = base64_decode($_GET['uri']);
   }
   else {
     echo '<span style="font-weight:bold;color:red">'. t('Error'). '</span>';
     return;
   }
-  $options = array(
-    'timeout' => 5
-  );
-  $result = drupal_http_request($sim_uri, $options);
-  $status = "offline";
-  if ($result->code == 200) {
-    $status = "online";
-  }
-  switch ($status) {
+  $region_status = d4os_ui_monitor_regions_get_region_status_by_uri($uri);
+  switch ($region_status->message) {
     case 'online':
       echo '<span style="font-weight:bold;color:green">'. t('Online'). '</span>';
       break;
-
     case 'offline':
-    default:
       echo '<span style="font-weight:bold;color:red">'. t('Offline'). '</span>';
       break;
   }
-  return;
 }
 
 function d4os_ui_monitor_regions_show_user_regions($account) {
@@ -278,7 +268,7 @@ function theme_d4os_ui_monitor_regions_list_table($regions_list, $params, $heade
     $cells[] = '<a href="secondlife:///app/teleport/hg.francogrid.org:80/'. urlencode($region->regionName). '" title="'. t('Click here for HyperGrid teleport').'">'. $region->regionName. '</a>'; // 1
     $cells[] = $region->x; // 2
     $cells[] = $region->y; // 3
-    $cells[] = '<span id="region-'. $region->region_uuid. '-status"><span><img width="16px" src="/sites/default/files/icones/fg_progress_transparent.gif" alt="'. t('Checking....'). '" title="'. t('Contacting the region...'). '"/></span></span>';
+    $cells[] = '<span id="region-'. $region->region_uuid. '-status"><span><img width="16px" src="'.drupal_get_path('module', 'd4os').'/misc/ajax-loader.gif" alt="'. t('Checking....'). '" title="'. t('Contacting the region...'). '"/></span></span>';
     if (user_access('view d4os ui grid monitor regions owners list')) {
       $cells[] = '<a href="/user/'. $region->uid. '/regions" title="'. t('Click here to see the user regions'). '">'. $region->FirstName. ' '. $region->LastName. '</a>'; // 5
     }
@@ -300,4 +290,54 @@ function theme_d4os_ui_monitor_regions_list_table($regions_list, $params, $heade
   );
   $output = theme_table($variables);
   return $output;
+}
+
+function d4os_ui_monitor_regions_get_region_status_by_uuid($uuid) {
+  $answer = new stdClass();
+
+  // check if the datastore is alive
+  $d4os_regions = D4OS_IO::create('Regions');
+  $d4os_regions->ping();
+  if ($d4os_regions->response->success !== TRUE) {
+    $answer->success = FALSE;
+    $answer->message = 'grid error';
+    return $answer;
+  }
+
+  // get region
+  $region = $d4os_regions->get_region($uuid);
+  if (is_null($region)) {
+    $answer->success = FALSE;
+    $answer->message = 'region unavailable';
+    return $answer;
+  }
+  $answer->region = $region;
+
+  $result = drupal_http_request($region->serverURI.'monitorstats/'. $uuid, array('timeout' => 5));
+
+  if ($result->code == 200) {
+    $answer->success = TRUE;
+    $answer->message = 'online';
+    return $answer;
+  }
+
+  $answer->success = FALSE;
+  $answer->message = 'offline';
+  return $answer;
+}
+
+function d4os_ui_monitor_regions_get_region_status_by_uri($uri) {
+  $answer = new stdClass();
+
+  $result = drupal_http_request($uri, array('timeout' => 5));
+
+  if ($result->code == 200) {
+    $answer->success = TRUE;
+    $answer->message = 'online';
+    return $answer;
+  }
+
+  $answer->success = FALSE;
+  $answer->message = 'offline';
+  return $answer;
 }
