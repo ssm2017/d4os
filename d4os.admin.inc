@@ -79,6 +79,29 @@ function d4os_admin() {
     '#description' => t("Default login path. This path will be added at the end of the uri like http://uri:port/path. <br />Note: you must add a preceding forward slash '/'.<br />Leave blank if not needed."),
     '#required' => FALSE,
   );
+// hguri
+  $form['hguri'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('HG Uri'),
+    '#collapsible' => FALSE,
+    '#collapsed' => FALSE,
+  );
+  $form['hguri']['d4os_default_hg_uri'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Default login URI'),
+    '#default_value' => variable_get('d4os_default_hg_uri', $base_url),
+    '#description' => t("Default HG URI"),
+    '#required' => TRUE,
+  );
+  $form['hguri']['d4os_default_hg_port'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Default HG port'),
+    '#size' => 5,
+    '#maxlength' => 5,
+    '#default_value' => variable_get('d4os_default_hg_port', '8002'),
+    '#description' => t("Default HG port"),
+    '#required' => TRUE,
+  );
 // asset pictures
   $form['pictures'] = array(
     '#type' => 'fieldset',
