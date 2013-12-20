@@ -96,6 +96,7 @@ function d4os_ui_monitor_regions_show_user_regions($account) {
 function d4os_ui_monitor_regions_show_regions_list($account = null) {
 // regionName, x, y, region_uuid, FirstName, LastName, PrincipalID, uid
   global $pager_page_array, $pager_total, $pager_total_items;
+  $params = array();
   // check if the datastore is alive
   $d4os_regions = D4OS_IO::create('Regions');
   $d4os_regions->ping();
@@ -127,6 +128,19 @@ function d4os_ui_monitor_regions_show_regions_list($account = null) {
       //'field' => 'ua.FirstName',
     );
   }
+  $params['show_region_guide'] = FALSE;
+  if (module_exists('d4os_ui_regions_guide')) {
+    if (user_access('create d4os_ui_regions_guide content')
+    || user_access('delete any d4os_ui_regions_guide content')
+    || user_access('delete own d4os_ui_regions_guide content')
+    || user_access('edit any d4os_ui_regions_guide content')
+    || user_access('edit own d4os_ui_regions_guide content')) {
+      $headers[] = array(
+      'data' => t('Region guide'), // 5
+      );
+      $params['show_region_guide'] = TRUE;
+    }
+  }
 
   // get the order fields
   $page = isset($_GET['page']) ? $_GET['page'] : '';
@@ -151,13 +165,12 @@ function d4os_ui_monitor_regions_show_regions_list($account = null) {
   }
   // get the data
   $limit = isset($_GET['limit']) && is_numeric($_GET['limit']) ? $_GET['limit'] : 10;
-  $params = array(
-    'uuid' => $uuid,
-    'offset' => $page * $limit,
-    'limit' => $limit,
-    //'order_by' => $order_field,
-    //'order_way' => $order_way
-  );
+  $params['uuid'] = $uuid;
+  $params['offset'] = $page * $limit;
+  $params['limit'] = $limit;
+  //$params['order_by'] = $order_field;
+  //$params['order_way'] = $order_way;
+
   $regions_list = $d4os_regions->get_regions_list($params);
   if ($regions_list->count == 0) {
     if (!is_null($account)) {
@@ -271,6 +284,9 @@ function theme_d4os_ui_monitor_regions_list_table($regions_list, $params, $heade
     $cells[] = '<span id="region-'. $region->region_uuid. '-status"><span><img width="16px" src="'.drupal_get_path('module', 'd4os').'/misc/ajax-loader.gif" alt="'. t('Checking....'). '" title="'. t('Contacting the region...'). '"/></span></span>';
     if (user_access('view d4os ui grid monitor regions owners list')) {
       $cells[] = '<a href="/user/'. $region->uid. '/regions" title="'. t('Click here to see the user regions'). '">'. $region->FirstName. ' '. $region->LastName. '</a>'; // 5
+    }
+    if ($params['show_region_guide']) {
+      $cells[] = d4os_ui_regions_guide_diplay_edit_link($region);
     }
     ++$col;
     if ($col >= $params['cols']) {
