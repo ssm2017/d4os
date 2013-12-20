@@ -3,6 +3,6 @@ description = "This module is managing inworld events."
 package = d4os ui
 core = 7.x
 dependencies[] = date
-dependencies[] = d4os
+dependencies[] = list
 dependencies[] = d4os_io_search
 dependencies[] = d4os_ui_users
