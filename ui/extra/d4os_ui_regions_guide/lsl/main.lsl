@@ -79,7 +79,7 @@ displayResult(string data) {
     vector landing_rotation = (vector)llUnescapeURL(llList2String(values, 4));
     integer offset = llList2Integer(values, 5);
     integer total = llList2Integer(values, 6);
-    integer online = llList2Integer(vales, 7);
+    integer online = llList2Integer(values, 7);
     // debug values just for example
     llOwnerSay("actual_region = "+(string)actual_region);
     llOwnerSay("region_name = " +region_name);
@@ -127,7 +127,6 @@ default {
             body = llStringTrim( body , STRING_TRIM);
             list data = llParseString2List(body, [";"],[]);
             string result = llList2String(data,0);
-            llOwnerSay(_SYMBOL_HOR_BAR_2);
             if ( result == "success" ) {
                 displayResult(llList2String(data,1));
             }
