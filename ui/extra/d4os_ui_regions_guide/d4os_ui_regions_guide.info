@@ -1,0 +1,9 @@
+name = D4os ui Regions Guide
+description = "Manage a regions guide to select regions and build an inworld teleporter"
+package = "d4os ui monitoring"
+dependencies[] = d4os_ui_monitor_regions
+dependencies[] = list
+dependencies[] = uuid_field
+dependencies[] = options
+dependencies[] = metaverse_framework
+core = 7.x

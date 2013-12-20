@@ -1,0 +1,325 @@
+<?php
+
+/**
+ * Implements hook_menu.
+ */
+function d4os_ui_regions_guide_menu() {
+  $items['admin/config/d4os/ui/regions-guide'] = array(
+    'title' => 'Regions guide',
+    'description' => 'd4os ui regions guide settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('d4os_ui_regions_guide_settings'),
+    'access arguments' => array('admin d4os ui regions guide'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+function d4os_ui_regions_guide_settings() {
+  $form = array();
+  $form['d4os_ui_regions_guide_allowed_ips'] = array(
+		'#type' => 'textarea',
+		'#title' => t('Allowed Ips'),
+		'#default_value' => variable_get('d4os_ui_regions_guide_allowed_ips', SECONDLIFE_LINDEN_SERVERS),
+		'#description' => t('Enter the allowed Ips one by a line and the subnet mask like 0.0.0.0/32.'),
+	);
+  return system_settings_form($form);
+}
+
+/**
+ * Implements hook_form_alter.
+ */
+function d4os_ui_regions_guide_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'd4os_ui_regions_guide_node_form') {
+    // prefill the uuid field
+    if (isset($_GET['uuid'])) {
+      if (preg_match("/^[0-9a-f]{8}-([0-9a-f]{4}-){3}[0-9a-f]{12}$/", $_GET['uuid'])) {
+        $form['field_drg_region_uuid'][LANGUAGE_NONE][0]['uuid_field']['#value'] = $_GET['uuid'];
+      }
+    }
+    if (isset($_GET['name'])) {
+      $form['title']['#value'] = check_plain(urldecode($_GET['name']));
+    }
+  }
+}
+
+/**
+ * Implements hook_node_view.
+ */
+function d4os_ui_regions_guide_node_view($node, $build_mode = 'full') {
+	if ($build_mode == 'full') {
+    if ($node->type == 'd4os_ui_regions_guide') {
+      // check if the datastore is alive
+      $d4os_regions = D4OS_IO::create('Regions');
+      $d4os_regions->ping();
+      if ($d4os_regions->response->success !== TRUE) {
+        return;
+      }
+
+      // get region
+      $region = $d4os_regions->get_region($node->field_drg_region_uuid[$node->language][0]['uuid_field']);
+      if (is_null($region)) {
+        return;
+      }
+
+      // get the region owner
+      $region->owner = NULL;
+      $owner_uid = db_query("SELECT uid FROM {d4os_ui_users} WHERE UUID=:uuid", array(':uuid' => $region->owner_uuid))->fetchField();
+      if ($owner_uid) {
+        $region->owner = user_load($owner_uid);
+      }
+      // assign region to the node
+      $node->region = $region;
+
+      // display infos
+      d4os_ui_regions_guide_add_region_check($node);
+      d4os_ui_regions_guide_add_region_hg_link($node);
+      d4os_ui_regions_guide_add_region_picture($node);
+      d4os_ui_regions_guide_add_region_infos($node);
+    }
+	}
+}
+
+function d4os_ui_regions_guide_add_region_check(&$node) {
+  // generate the javascript ajax call
+  drupal_add_js(
+    "(function ($) {
+      //$(document).ready(function(){
+        $.get(
+          '". url('grid/monitor/regions/list/check-region'). "',
+          {uri:'". base64_encode($node->region->serverURI. 'monitorstats/'. $node->region->uuid). "'},
+          function(data) {
+            $('#region-status').html(data);
+          }
+        );
+      //};
+    })(jQuery);",
+  'inline'
+  );
+  $node->content['drg_region_check'] = array(
+    '#prefix' => '<div class="drg_region_status">',
+    '#suffix' => '</div>',
+    '#markup' => '<span id="region-status"><span><img width="16px" src="'.drupal_get_path('module', 'd4os').'/misc/ajax-loader.gif" title="'. t('Contacting the region...'). '"/></span></span>',
+    '#weight' => -98
+  );
+}
+
+function d4os_ui_regions_guide_add_region_hg_link(&$node) {
+  global $base_url;
+  $url = "secondlife:///app/teleport/". variable_get('d4os_default_hg_uri', $base_url). ':'. variable_get('d4os_default_hg_port', '8002'). '/'. urlencode($node->region->regionName);
+  $node->content['drg_region_tp_link'] = array(
+    '#prefix' => '<div class="drg_hg_link">',
+    '#suffix' => '</div>',
+    '#markup' => '<a href="'. $url. '" title="'. t('Click here for HyperGrid teleport').'">Hypergrid url</a>'
+  );
+}
+
+function d4os_ui_regions_guide_add_region_picture(&$node) {
+  global $base_url;
+  // build some usefull pictures links
+  $asset_pictures_server_url = variable_get('d4os_default_asset_pictures_server_url', $base_url . '/asset.php?id=');
+
+  $region_picture = theme_image(
+    array(
+      'path' => $asset_pictures_server_url . $node->field_drg_snapshot_uuid[$node->language][0]['uuid_field'],
+      'width' => '150px',
+      'alt' => t('No picture available'),
+      'title' => t("!region's picture", array('!region' => $node->region->regionName)),
+      'attributes' => array()
+    )
+  );
+  $node->content['drg_region_picture'] = array(
+    '#prefix' => '<div class="drg_region_picture">',
+    '#suffix' => '</div>',
+    '#markup' => $region_picture,
+    '#weight' => -99
+  );
+}
+
+function d4os_ui_regions_guide_add_region_infos(&$node) {
+  // region name
+  $output = '';
+  $output .= '<div class="field field-name-field-drg-region-name field-label-inline clearfix">';
+  $output .= '<div class="field-label">'. t('Region name'). ':&nbsp;</div>';
+  $output .= '<div class="field-items">';
+  $output .= '<div class="field-item-even">';
+  $output .= '<div>'. $node->region->regionName.'</div>';
+  $output .= '</div>';
+  $output .= '</div>';
+  $output .= '</div>';
+  $node->content['drg_region_name'] = array(
+    '#markup' => $output,
+  );
+  // region position
+  $output = '';
+  $output .= '<div class="field field-name-field-drg-region-position field-label-inline clearfix">';
+  $output .= '<div class="field-label">'. t('Region position'). ':&nbsp;</div>';
+  $output .= '<div class="field-items">';
+  $output .= '<div class="field-item-even">';
+  $output .= '<div>('. ($node->region->locX / 256). ','. ($node->region->locY / 256). ')</div>';
+  $output .= '</div>';
+  $output .= '</div>';
+  $output .= '</div>';
+  $node->content['drg_region_position'] = array(
+    '#markup' => $output,
+  );
+  // region owner
+  $output = '';
+  if (!is_null($node->region->owner)) {
+    $output .= '<div class="field field-name-field-drg-region-owner field-label-inline clearfix">';
+    $output .= '<div class="field-label">'. t('Region owner'). ':&nbsp;</div>';
+    $output .= '<div class="field-items">';
+    $output .= '<div class="field-item-even">';
+    $output .= '<div>'. l($node->region->owner->name, 'user/'.$node->region->owner->uid). '</div>';
+    $output .= '</div>';
+    $output .= '</div>';
+    $output .= '</div>';
+    $node->content['drg_region_owner'] = array(
+      '#markup' => $output,
+    );
+  }
+}
+
+function d4os_ui_regions_guide_get_nids_by_category($values) {
+	$query = new EntityFieldQuery();
+	$query->entityCondition('entity_type', 'node');
+  $query->propertyCondition('type', 'd4os_ui_regions_guide');
+  if ($values['category'] > 0) {
+    $query->fieldCondition('field_drg_region_category', 'tid', $values['category']);
+  }
+	$entities = $query->execute();
+	if (isset($entities['node'])) {
+		return array_keys($entities['node']);
+	}
+	return NULL;
+}
+
+function d4os_ui_regions_guide_get_regions_by_uuid($values) {
+  $query = new EntityFieldQuery();
+	$entities = $query->entityCondition('entity_type', 'node')
+			->propertyCondition('type', 'd4os_ui_regions_guide')
+      ->fieldCondition('field_drg_region_uuid', 'uuid_field', $values['uuid'])
+			->execute();
+	if (isset($entities['node'])) {
+		return array_keys($entities['node']);
+	}
+	return NULL;
+}
+
+function d4os_ui_regions_guide_diplay_edit_link($region) {
+  global $user;
+  $can_create = user_access('create d4os_ui_regions_guide content') && ($user->uid == $region->uid || user_access('administer nodes'));
+  $can_edit = (user_access('edit own d4os_ui_regions_guide content') || user_access('edit any d4os_ui_regions_guide content')) && ($user->uid == $region->uid || user_access('administer nodes'));
+  $can_delete = (user_access('delete own d4os_ui_regions_guide content') || user_access('delete any d4os_ui_regions_guide content')) && ($user->uid == $region->uid || user_access('administer nodes'));
+
+  // check if there is alreaday an entry for this region
+  $regions = d4os_ui_regions_guide_get_regions_by_uuid(array('uuid' => $region->region_uuid));
+  if (is_null($regions)) {
+    $options = array(
+      'query' => array(
+        'uuid' => $region->region_uuid,
+        'name' => urlencode($region->regionName)
+      )
+    );
+    if ($can_create) {
+      return l(t('Add to the guide'), 'node/add/d4os-ui-regions-guide', $options);
+    }
+  }
+  else {
+    $links = array();
+    if ($can_edit) {
+      $links[] = l(t('Edit'), 'node/'. $regions[0]. '/edit');
+    }
+    if ($can_delete) {
+      $links[] = l(t('Delete'), 'node/'. $regions[0]. '/delete');
+    }
+    if ($can_edit || $can_delete) {
+      return implode('&nbsp', $links);
+    }
+  }
+  return '&nbsp;';
+}
+
+/**********************
+ *			INWORLD
+ **********************/
+
+/**
+ * metaverse frameworkd dispatcher
+ */
+function d4os_ui_regions_guide_dispatch($params) {
+	$cmd = $params['cmd'];
+	$sl = &$params['sl'];
+	$args = $params['args'];
+	switch ($cmd) {
+    case 'get_region':
+      d4os_ui_regions_guide_inworld_get_region($sl, $args);
+      break;
+		default:
+			$sl->response['status'] = FALSE;
+			$sl->response['message'] = "Oops! Unknown command: $cmd.";
+			break;
+	}
+}
+
+function d4os_ui_regions_guide_inworld_get_nids(&$sl, $args) {
+  // get the nids
+  $nids = d4os_ui_regions_guide_get_nids_by_category(array('category' => $args['category']));
+  if (is_null($nids)) {
+    $sl->response['status'] = FALSE;
+    $sl->response['message'] = "error;No region found.";
+  }
+  $sl->response['status'] = TRUE;
+  $sl->response['message'] = "success;". implode($sl->args_separator, $nids);
+}
+
+function d4os_ui_regions_guide_inworld_get_region(&$sl, $args) {
+  // get all regions
+  $nids = d4os_ui_regions_guide_get_nids(array('category' => $args['category']));
+  if (is_null($nids)) {
+    $sl->response['status'] = FALSE;
+    $sl->response['message'] = "error;No region found.";
+  }
+  // get region infos
+  $next_index = $nids[0];
+  if ($args['id'] != 0 && !empty($args['id'])) {
+    // get the actual position
+    $actual_index = array_search($args['id'], $nids);
+
+    // get the way
+    if ($args['way'] == 'next') {
+      $next_index = $actual_index+1;
+      if (!isset($nids[$next_index])) {
+        $next_index = $nids[0];
+      }
+    }
+    else if ($args['way'] == 'prev') {
+      $next_index = $actual_index-1;
+      if (!isset($nids[$next_index])) {
+        $next_index = count($nids)-1;
+      }
+    }
+  }
+
+  // load the region
+  $node = node_load($next_index);
+
+  if (!is_object($node)) {
+    $sl->response['status'] = FALSE;
+    $sl->response['message'] = "error;No region found.";
+  }
+
+  $node->status = d4os_ui_monitor_regions_get_region_status_by_uuid($node->field_drg_region_uuid[$node->language][0]['uuid_field']);
+  $data = array(
+    $node->nid,
+    $node->title,
+    $node->field_drg_snapshot_uuid[$node->language][0]['uuid_field'],
+    urlencode($node->field_drg_landing_point[$node->language][0]['value']),
+    urlencode($node->field_drg_landing_rotation[$node->language][0]['value']),
+    $next_index,
+    count($nids),
+    ($node->status->message == 'online') ? 1 : 0
+  );
+  $sl->response['status'] = TRUE;
+  $sl->response['message'] = "success;". implode($sl->args_separator, $data);
+}
