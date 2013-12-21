@@ -268,17 +268,16 @@ function d4os_ui_regions_guide_diplay_edit_link($region) {
   }
   else {
     $links = array();
+    $links[] = l(t('View'), 'node/'. $regions[0]);
     if ($can_edit) {
       $links[] = l(t('Edit'), 'node/'. $regions[0]. '/edit');
     }
     if ($can_delete) {
       $links[] = l(t('Delete'), 'node/'. $regions[0]. '/delete');
     }
-    if ($can_edit || $can_delete) {
-      return implode('&nbsp', $links);
-    }
+    return implode('&nbsp', $links);
   }
-  return '&nbsp;';
+  return t('Not in guide');
 }
 
 /**********************
