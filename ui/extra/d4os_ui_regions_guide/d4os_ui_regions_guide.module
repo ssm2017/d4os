@@ -75,7 +75,7 @@ function d4os_ui_regions_guide_node_view($node, $build_mode = 'full') {
       }
 
       // get region
-      $region = $d4os_regions->get_region($node->field_drg_region_uuid[$node->language][0]['uuid_field']);
+      $region = $d4os_regions->get_region($node->field_drg_region_uuid[LANGUAGE_NONE][0]['uuid_field']);
       if (is_null($region)) {
         return;
       }
