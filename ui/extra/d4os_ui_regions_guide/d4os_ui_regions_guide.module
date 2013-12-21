@@ -15,6 +15,18 @@ function d4os_ui_regions_guide_menu() {
   return $items;
 }
 
+/**
+ *  Implements hook_permission().
+ */
+function d4os_ui_regions_guide_permission() {
+  return array(
+    'admin d4os ui regions guide' => array(
+      'title' => t('Administer d4os ui regions guide'),
+      'description' => t('Perform administration tasks for d4os ui regions guide.'),
+    ),
+  );
+}
+
 function d4os_ui_regions_guide_settings() {
   $form = array();
   $form['metaverse_framework'] = array(
