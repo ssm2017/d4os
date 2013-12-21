@@ -142,7 +142,7 @@ function d4os_ui_regions_guide_add_region_picture(&$node) {
 
   $region_picture = theme_image(
     array(
-      'path' => $asset_pictures_server_url . $node->field_drg_snapshot_uuid[$node->language][0]['uuid_field'],
+      'path' => $asset_pictures_server_url . $node->field_drg_snapshot_uuid[LANGUAGE_NONE][0]['uuid_field'],
       'width' => '150px',
       'alt' => t('No picture available'),
       'title' => t("!region's picture", array('!region' => $node->region->regionName)),
