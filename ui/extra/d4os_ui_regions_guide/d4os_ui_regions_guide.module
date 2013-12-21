@@ -17,12 +17,30 @@ function d4os_ui_regions_guide_menu() {
 
 function d4os_ui_regions_guide_settings() {
   $form = array();
-  $form['d4os_ui_regions_guide_allowed_ips'] = array(
+  $form['metaverse_framework'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Metaverse framework'),
+    '#collapsable' => TRUE,
+    '#collapsed' => FALSE
+  );
+  $form['metaverse_framework']['d4os_ui_regions_guide_allowed_ips'] = array(
 		'#type' => 'textarea',
 		'#title' => t('Allowed Ips'),
 		'#default_value' => variable_get('d4os_ui_regions_guide_allowed_ips', SECONDLIFE_LINDEN_SERVERS),
 		'#description' => t('Enter the allowed Ips one by a line and the subnet mask like 0.0.0.0/32.'),
 	);
+  $form['display'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Display'),
+    '#collapsable' => TRUE,
+    '#collapsed' => FALSE
+  );
+  $form['display']['d4os_ui_regions_guide_show_nextprev_buttons'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show next/prev buttons'),
+    '#default_value' => variable_get('d4os_ui_regions_guide_show_nextprev_buttons', 1),
+    '#description' => t('Show the next/prev buttons on the full node display.')
+  );
   return system_settings_form($form);
 }
 
@@ -76,6 +94,9 @@ function d4os_ui_regions_guide_node_view($node, $build_mode = 'full') {
       d4os_ui_regions_guide_add_region_hg_link($node);
       d4os_ui_regions_guide_add_region_picture($node);
       d4os_ui_regions_guide_add_region_infos($node);
+      if (variable_get('d4os_ui_regions_guide_show_nextprev_buttons', 1)) {
+        d4os_ui_regions_guide_show_nexprev_buttons($node);
+      }
     }
 	}
 }
@@ -180,6 +201,26 @@ function d4os_ui_regions_guide_add_region_infos(&$node) {
   }
 }
 
+function d4os_ui_regions_guide_show_nexprev_buttons(&$node) {
+  // get all regions
+  $nids = d4os_ui_regions_guide_get_nids_by_category(array('category' => 0));
+  // get the actual position
+  $actual_index = array_search($node->nid, $nids);
+  $prev = (isset($nids[$actual_index-1])) ? $actual_index-1 : count($nids)-1;
+  $next = (isset($nids[$actual_index+1])) ? $actual_index+1 : 0;
+
+  $output = '';
+  $output .= '<li>'. l(t('Previous'), 'node/'.$nids[$prev]). '</li>';
+  $output .= '<li>'. l(t('Next'), 'node/'.$nids[$next]). '</li>';
+  $node->content['drg_links'] = array(
+    '#prefix' => '<div class="drg_links"><ul>',
+    '#suffix' => '</ul></div>',
+    '#markup' => $output,
+    '#weight' => 99
+  );
+}
+
+
 function d4os_ui_regions_guide_get_nids_by_category($values) {
 	$query = new EntityFieldQuery();
 	$query->entityCondition('entity_type', 'node');
@@ -275,7 +316,7 @@ function d4os_ui_regions_guide_inworld_get_nids(&$sl, $args) {
 
 function d4os_ui_regions_guide_inworld_get_region(&$sl, $args) {
   // get all regions
-  $nids = d4os_ui_regions_guide_get_nids(array('category' => $args['category']));
+  $nids = d4os_ui_regions_guide_get_nids_by_category(array('category' => $args['category']));
   if (is_null($nids)) {
     $sl->response['status'] = FALSE;
     $sl->response['message'] = "error;No region found.";
