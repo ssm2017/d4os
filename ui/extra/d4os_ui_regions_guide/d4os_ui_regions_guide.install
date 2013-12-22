@@ -186,7 +186,12 @@ function _d4os_ui_regions_guide_installed_instances() {
 					'size' => 13,
 					'max_length' => 13
 				)
-			)
+			),
+      'default_value' => array(
+        array(
+          'value' => '<127,127,127>'
+        )
+      )
 		),
     // landing rotation
 		'drg_landing_rotation' => array(
@@ -201,7 +206,12 @@ function _d4os_ui_regions_guide_installed_instances() {
 					'size' => 13,
 					'max_length' => 13
 				)
-			)
+			),
+      'default_value' => array(
+        array(
+          'value' => '<0,0,0>'
+        )
+      )
 		),
 	);
 }
