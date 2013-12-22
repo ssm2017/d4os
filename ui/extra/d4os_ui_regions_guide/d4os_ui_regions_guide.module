@@ -35,17 +35,17 @@ function d4os_ui_regions_guide_settings() {
     '#collapsable' => TRUE,
     '#collapsed' => FALSE
   );
-  $form['metaverse_framework']['d4os_ui_regions_guide_allowed_ips'] = array(
-		'#type' => 'textarea',
-		'#title' => t('Allowed Ips'),
-		'#default_value' => variable_get('d4os_ui_regions_guide_allowed_ips', SECONDLIFE_LINDEN_SERVERS),
-		'#description' => t('Enter the allowed Ips one by a line and the subnet mask like 0.0.0.0/32.'),
-	);
   $form['metaverse_framework']['d4os_ui_regions_guide_allow_all_ip'] = array(
 		'#type' => 'checkbox',
 		'#title' => t('Allow all Ips'),
 		'#default_value' => variable_get('d4os_ui_regions_guide_allow_all_ip', 0),
 		'#description' => t('Select if you want to disable ip verification for this module.'),
+	);
+  $form['metaverse_framework']['d4os_ui_regions_guide_allowed_ips'] = array(
+		'#type' => 'textarea',
+		'#title' => t('Allowed Ips'),
+		'#default_value' => variable_get('d4os_ui_regions_guide_allowed_ips', SECONDLIFE_LINDEN_SERVERS),
+		'#description' => t('Enter the allowed Ips one by a line and the subnet mask like 0.0.0.0/32.'),
 	);
   $form['display'] = array(
     '#type' => 'fieldset',
