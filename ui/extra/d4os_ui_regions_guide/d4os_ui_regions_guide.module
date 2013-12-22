@@ -360,7 +360,7 @@ function d4os_ui_regions_guide_inworld_get_region(&$sl, $args) {
   }
 
   // load the region
-  $node = node_load($next_index);
+  $node = node_load($nids[$next_index]);
 
   if (!is_object($node)) {
     $sl->response['status'] = FALSE;
