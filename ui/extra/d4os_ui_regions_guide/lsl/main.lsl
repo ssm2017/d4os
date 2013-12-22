@@ -38,7 +38,7 @@ key get_region_id;
 getRegion(string way) {
     // sending values
     get_region_id = llHTTPRequest( url+"/metaverse-framework", [HTTP_METHOD, "POST", HTTP_MIMETYPE, "application/x-www-form-urlencoded"],
-                    "app=d4os_io_regions_guide"
+                    "app=d4os_ui_regions_guide"
                     +"&cmd=get_region"
                     +"&output_type=message"
                     +"&args_separator="+ARGS_SEPARATOR
