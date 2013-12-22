@@ -71,7 +71,6 @@ function _d4os_ui_regions_guide_installed_fields() {
       'deleted'     => 0,
       'settings'    => array(
         'allowed_values' => array(
-          '-1' => $t('All Categories'),
           '1' => $t('Official location'),
           '3' => $t('Artsand culture'),
           '4' => $t('Business'),
