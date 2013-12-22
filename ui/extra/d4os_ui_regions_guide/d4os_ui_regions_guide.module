@@ -371,9 +371,9 @@ function d4os_ui_regions_guide_inworld_get_region(&$sl, $args) {
   $data = array(
     $node->nid,
     $node->title,
-    $node->field_drg_snapshot_uuid[$node->language][0]['uuid_field'],
-    urlencode($node->field_drg_landing_point[$node->language][0]['value']),
-    urlencode($node->field_drg_landing_rotation[$node->language][0]['value']),
+    $node->field_drg_snapshot_uuid[LANGUAGE_NONE][0]['uuid_field'],
+    urlencode($node->field_drg_landing_point[LANGUAGE_NONE][0]['value']),
+    urlencode($node->field_drg_landing_rotation[LANGUAGE_NONE][0]['value']),
     $next_index,
     count($nids),
     ($node->status->message == 'online') ? 1 : 0
