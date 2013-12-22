@@ -339,7 +339,7 @@ function d4os_ui_regions_guide_inworld_get_region(&$sl, $args) {
     $sl->response['message'] = "error;No region found.";
   }
   // get region infos
-  $next_index = $nids[0];
+  $next_index = 0;
   if ($args['id'] != 0 && !empty($args['id'])) {
     // get the actual position
     $actual_index = array_search($args['id'], $nids);
@@ -348,7 +348,7 @@ function d4os_ui_regions_guide_inworld_get_region(&$sl, $args) {
     if ($args['way'] == 'next') {
       $next_index = $actual_index+1;
       if (!isset($nids[$next_index])) {
-        $next_index = $nids[0];
+        $next_index = 0;
       }
     }
     else if ($args['way'] == 'prev') {
