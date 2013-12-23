@@ -337,6 +337,7 @@ function d4os_ui_regions_guide_inworld_get_region(&$sl, $args) {
   if (is_null($nids)) {
     $sl->response['status'] = FALSE;
     $sl->response['message'] = "error;No region found.";
+    return;
   }
   // get region infos
   $next_index = 0;
@@ -365,6 +366,7 @@ function d4os_ui_regions_guide_inworld_get_region(&$sl, $args) {
   if (!is_object($node)) {
     $sl->response['status'] = FALSE;
     $sl->response['message'] = "error;No region found.";
+    return;
   }
 
   $node->status = d4os_ui_monitor_regions_get_region_status_by_uuid($node->field_drg_region_uuid[LANGUAGE_NONE][0]['uuid_field']);
