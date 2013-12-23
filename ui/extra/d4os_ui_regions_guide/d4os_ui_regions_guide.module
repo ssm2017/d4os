@@ -359,6 +359,7 @@ function d4os_ui_regions_guide_inworld_get_region(&$sl, $args) {
   }
 
   $node->status = d4os_ui_monitor_regions_get_region_status_by_uuid($node->field_drg_region_uuid[LANGUAGE_NONE][0]['uuid_field']);
+  // nid||region name||region texture||landing point||landing rotation||offset||total||online||description
   $data = array(
     $node->nid,
     $node->title,
@@ -367,7 +368,8 @@ function d4os_ui_regions_guide_inworld_get_region(&$sl, $args) {
     urlencode($node->field_drg_landing_rotation[LANGUAGE_NONE][0]['value']),
     $next_index,
     count($nids),
-    ($node->status->message == 'online') ? 1 : 0
+    ($node->status->message == 'online') ? 1 : 0,
+    urlencode($node->field_drg_description[LANGUAGE_NONE][0]['value'])
   );
   $sl->response['status'] = TRUE;
   $sl->response['message'] = "success;". implode($sl->args_separator, $data);
