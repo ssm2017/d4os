@@ -138,7 +138,7 @@ function d4os_ui_regions_guide_add_region_check(&$node) {
   $node->content['drg_region_check'] = array(
     '#prefix' => '<div class="drg_region_status">',
     '#suffix' => '</div>',
-    '#markup' => '<span id="region-status"><span><img width="16px" src="'.drupal_get_path('module', 'd4os').'/misc/ajax-loader.gif" title="'. t('Contacting the region...'). '"/></span></span>',
+    '#markup' => '<span id="region-status"><span><img width="16px" src="'.$GLOBALS['base_url']. '/' .drupal_get_path('module', 'd4os').'/misc/ajax-loader.gif" title="'. t('Contacting the region...'). '"/></span></span>',
     '#weight' => -98
   );
 }
@@ -244,7 +244,7 @@ function d4os_ui_regions_guide_get_nids_by_category($values) {
 	$query->entityCondition('entity_type', 'node');
   $query->propertyCondition('type', 'd4os_ui_regions_guide');
   if ($values['category'] > 0) {
-    $query->fieldCondition('field_drg_region_category', 'tid', $values['category']);
+    $query->fieldCondition('field_drg_categories', 'value', $values['category']);
   }
 	$entities = $query->execute();
 	if (isset($entities['node'])) {
@@ -320,23 +320,12 @@ function d4os_ui_regions_guide_dispatch($params) {
 	}
 }
 
-function d4os_ui_regions_guide_inworld_get_nids(&$sl, $args) {
-  // get the nids
-  $nids = d4os_ui_regions_guide_get_nids_by_category(array('category' => $args['category']));
-  if (is_null($nids)) {
-    $sl->response['status'] = FALSE;
-    $sl->response['message'] = "error;No region found.";
-  }
-  $sl->response['status'] = TRUE;
-  $sl->response['message'] = "success;". implode($sl->args_separator, $nids);
-}
-
 function d4os_ui_regions_guide_inworld_get_region(&$sl, $args) {
   // get all regions
   $nids = d4os_ui_regions_guide_get_nids_by_category(array('category' => $args['category']));
   if (is_null($nids)) {
-    $sl->response['status'] = FALSE;
-    $sl->response['message'] = "error;No region found.";
+    $sl->response['status'] = TRUE;
+    $sl->response['message'] = "success;0";
     return;
   }
   // get region infos
@@ -365,7 +354,7 @@ function d4os_ui_regions_guide_inworld_get_region(&$sl, $args) {
 
   if (!is_object($node)) {
     $sl->response['status'] = FALSE;
-    $sl->response['message'] = "error;No region found.";
+    $sl->response['message'] = "error;Unable to load region.";
     return;
   }
 
