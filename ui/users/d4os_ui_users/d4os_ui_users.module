@@ -228,6 +228,9 @@ function d4os_ui_users_user_update(&$edit, $account, $category) {
       $form_state = array();
       $form_state['uid'] = $account->uid;
       $form_state['values']['pass'] = $edit['pass_raw'];
+      if (isset($edit['model_uuid'])) {
+        $form_state['values']['model_uuid'] = $edit['model_uuid'];
+      }
       d4os_ui_users_grid_registration_form_submit(array(), $form_state, FALSE);
     }
     else {
