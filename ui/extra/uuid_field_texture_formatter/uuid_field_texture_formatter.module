@@ -1,0 +1,101 @@
+<?php
+
+/**
+ * @package    d4os ui uuid field texture formatter
+ * @copyright Copyright (C) 2014 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+ * @license   GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+ * d4os ui uuid field texture formatter is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ */
+
+ /**
+ * Implements hook_field_formatter_info().
+ */
+function uuid_field_texture_formatter_field_formatter_info() {
+  return array(
+    'uuid_field_texture_formatter_default' => array(
+      'label' => t('Displays an uuid as a texture'),
+      'field types' => array('uuid_field'),
+      'settings'  => array(
+        'pic_size' => 'small'
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_settings_form().
+ */
+function uuid_field_texture_formatter_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+  //This gets the view_mode where our settings are stored
+  $display = $instance['display'][$view_mode];
+  //This gets the actual settings
+  $settings = $display['settings'];
+  //Initialize the element variable
+  $element = array();
+  //Add your select box
+  $element['pic_size'] = array(
+    '#type'           => 'select',
+    '#title'          => t('Image Size'),
+    '#description'    => t('Select what size of image'),
+    '#default_value'  => $settings['pic_size'],
+    '#options'        => array(
+      'small'  => 'Small',
+      'medium' => 'Medium',
+      'large'  => 'Large',
+    ),
+  );
+  return $element;
+}
+
+/**
+ * Implements hook_field_formatter_settings_summary().
+ */
+function uuid_field_texture_formatter_field_formatter_settings_summary($field, $instance, $view_mode) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+  $summary = t('Use a @size texture as an image"', array(
+    '@size'     => $settings['pic_size'],
+  )); // we use t() for translation and placeholders to guard against attacks
+  return $summary;
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function uuid_field_texture_formatter_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  if ($display['type'] == 'uuid_field_texture_formatter_default') {
+    return uuid_field_texture_formatter_format($items, $display);
+  }
+}
+
+function uuid_field_texture_formatter_format($items, $display) {
+  global $base_url;
+  $element = array();
+  foreach ($items as $delta => $item) {
+    $element[$delta] = array(
+      '#type' => 'html_tag',
+      '#tag' => 'div',
+      '#value' => '<img src="'. variable_get('d4os_default_asset_pictures_server_url', $base_url . '/asset.php?id=').$item['uuid_field']. '" width="'.uuid_field_texture_formatter_get_size($display['settings']['pic_size']).'px" />'
+    );
+  }
+  return $element;
+}
+
+function uuid_field_texture_formatter_get_size($value) {
+  $width = 200;
+  switch ($value) {
+    case 'small':
+      $width = 256;
+      break;
+    case 'medium':
+      $width = 512;
+      break;
+    case 'large':
+      $width = 1024;
+      break;
+  }
+  return $width;
+}

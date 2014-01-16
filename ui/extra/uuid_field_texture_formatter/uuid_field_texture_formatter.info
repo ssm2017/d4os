@@ -1,0 +1,6 @@
+name = uuid field texture formatter
+description = "Convert a uuid to a texture"
+package = "d4os ui"
+dependencies[] = d4os
+dependencies[] = uuid_field
+core = 7.x
