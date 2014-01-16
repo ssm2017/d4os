@@ -1,5 +1,5 @@
 // Teleport Terminal v0.1 for d4os_ui_regions_guide by ssm2017 Binder & djphil (BY-NC-SA)
- 
+
 string url = "http://www.domaine-name.com";
 integer category = 0;
 // -1 or 0 All Categories
@@ -15,7 +15,7 @@ integer category = 0;
 // 11 Shopping
 // 13 Other
 // 14 Rental
- 
+
 integer text_hover = TRUE;
 vector text_color = <1.0, 1.0, 1.0>;
 integer say_in_chat = TRUE;
@@ -24,40 +24,40 @@ integer texture_face = 0;
 // ******************
 //      STRINGS
 // ******************
- 
+
 // checks
 string _MISSING_VAR_NAMED = "Missing var named";
- 
+
 // terminal
 string _EMPTY_CATEGORY = "Empty category";
 string _OFFLINE_REGION = "is currently offline";
 
 // teleport
 string _TO = "to";
- 
+
 // http errors
 string _HTTP_ERROR = "http error";
- 
+
 // ========================================================
 //      NOTHING SHOULD BE MODIFIED UNDER THIS LINE
 // ========================================================
 string ARGS_SEPARATOR = "||";
 integer actual_region = 0;
- 
+
 string this_region;
 string region_name;
 vector landing_coordinates;
 vector landing_rotation;
 integer online;
 key avatarUUID;
- 
+
 // fix OpenSim bug (missing constant)
 integer PERMISSION_TELEPORT = 0x1000;
- 
+
 // *********************
 //      FUNCTIONS
 // *********************
- 
+
 // call
 key get_region_id;
 getRegion(string way)
@@ -75,7 +75,7 @@ getRegion(string way)
         "way=" + way
     );
 }
- 
+
 // display result
 displayResult(string data)
 {
@@ -83,7 +83,7 @@ displayResult(string data)
     list values = llParseString2List(data, [ARGS_SEPARATOR], []);
     // set the actual region
     integer nid = llList2Integer(values, 0);
-   
+
     if (nid == 0)
     {
         llSay(PUBLIC_CHANNEL, _EMPTY_CATEGORY);
@@ -99,16 +99,16 @@ displayResult(string data)
         integer offset = llList2Integer(values, 5);
         integer total = llList2Integer(values, 6);
         online = llList2Integer(values, 7);
-       
+
         if (region_name != this_region)
         {
             llSetTexture(texture, texture_face);
-           
+
             if (say_in_chat)
             {
                 llSay(PUBLIC_CHANNEL, "[Destination " + (string)(offset + 1) + "/" + (string)total + "] " + region_name);
             }
-       
+
             if (text_hover)
             {
                 llSetText("[Destination " + (string)(offset + 1) + "/" + (string)total + "]\n" + region_name, text_color, 1.0);
@@ -120,23 +120,23 @@ displayResult(string data)
         }
     }
 }
- 
+
 // teleport
 list LastFewAgents;
 PerformTeleport(key avatar)
 {
     integer CurrentTime = llGetUnixTime();
     integer AgentIndex  = llListFindList(LastFewAgents, [avatar]);
-   
+
     if (AgentIndex != -1)
     {
         integer PreviousTime = llList2Integer(LastFewAgents, AgentIndex + 1);
         if (PreviousTime >= (CurrentTime - 5)) return;
         LastFewAgents = llDeleteSubList(LastFewAgents, AgentIndex, AgentIndex + 1);
     }
- 
+
     LastFewAgents += [avatar, CurrentTime];
-   
+
     if (online)
     {
         llTeleportAgent(avatar, region_name, landing_coordinates, landing_rotation);
@@ -155,17 +155,17 @@ onChange(integer change)
     {
         llResetScript();
     }
- 
+
     if (change & CHANGED_LINK)
     {
         llResetScript();
     }
- 
+
     if (change & CHANGED_REGION)
     {
         llResetScript();
     }
- 
+
     if (change & 256)
     {
         llResetScript();
@@ -180,11 +180,11 @@ default
     {
         llResetScript();
     }
- 
+
     state_entry()
     {
         this_region = llGetRegionName();
-       
+
         if (url == "")
         {
             llOwnerSay(_MISSING_VAR_NAMED + " \"url\"");
@@ -195,12 +195,12 @@ default
             getRegion("start");
         }
     }
- 
+
     touch_start(integer num_detected)
     {
         string object_name = llGetLinkName(llDetectedLinkNumber(0));
         avatarUUID = llDetectedKey(0);
-       
+
         if (object_name == "next")
         {
             getRegion("next");
@@ -218,7 +218,7 @@ default
             llInstantMessage(avatarUUID, osKey2Name(avatarUUID) + " " + region_name + " " + _OFFLINE_REGION);
         }
     }
- 
+
     run_time_permissions(integer perm)
     {
         if (PERMISSION_TELEPORT & perm)
@@ -226,9 +226,9 @@ default
             PerformTeleport(avatarUUID);
         }
     }
- 
+
     http_response(key request_id, integer status, list metadata, string body)
-    {    
+    {
         if (request_id == get_region_id)
         {
             if (status != 200)
@@ -240,13 +240,13 @@ default
                 body = llStringTrim(body , STRING_TRIM);
                 list data = llParseString2List(body, [";"], []);
                 string result = llList2String(data, 0);
- 
+
                 if (result == "success")
                 {
                     displayResult(llList2String(data, 1));
                     return;
                 }
-               
+
                 if (result == "error")
                 {
                     llOwnerSay(llList2String(data, 1));
@@ -258,13 +258,13 @@ default
             }
         }
     }
- 
+
     changed(integer change)
     {
         onChange(change);
     }
 }
- 
+
 // **************
 //      Error
 // **************
@@ -274,7 +274,7 @@ state idle
     {
         llResetScript();
     }
- 
+
     changed(integer change)
     {
         onChange(change);

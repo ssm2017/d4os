@@ -36,17 +36,17 @@ function d4os_ui_regions_guide_settings() {
     '#collapsed' => FALSE
   );
   $form['metaverse_framework']['d4os_ui_regions_guide_allow_all_ip'] = array(
-		'#type' => 'checkbox',
-		'#title' => t('Allow all Ips'),
-		'#default_value' => variable_get('d4os_ui_regions_guide_allow_all_ip', 0),
-		'#description' => t('Select if you want to disable ip verification for this module.'),
-	);
+    '#type' => 'checkbox',
+    '#title' => t('Allow all Ips'),
+    '#default_value' => variable_get('d4os_ui_regions_guide_allow_all_ip', 0),
+    '#description' => t('Select if you want to disable ip verification for this module.'),
+  );
   $form['metaverse_framework']['d4os_ui_regions_guide_allowed_ips'] = array(
-		'#type' => 'textarea',
-		'#title' => t('Allowed Ips'),
-		'#default_value' => variable_get('d4os_ui_regions_guide_allowed_ips', SECONDLIFE_LINDEN_SERVERS),
-		'#description' => t('Enter the allowed Ips one by a line and the subnet mask like 0.0.0.0/32.'),
-	);
+    '#type' => 'textarea',
+    '#title' => t('Allowed Ips'),
+    '#default_value' => variable_get('d4os_ui_regions_guide_allowed_ips', SECONDLIFE_LINDEN_SERVERS),
+    '#description' => t('Enter the allowed Ips one by a line and the subnet mask like 0.0.0.0/32.'),
+  );
   $form['display'] = array(
     '#type' => 'fieldset',
     '#title' => t('Display'),
@@ -83,7 +83,7 @@ function d4os_ui_regions_guide_form_alter(&$form, &$form_state, $form_id) {
  * Implements hook_node_view.
  */
 function d4os_ui_regions_guide_node_view($node, $build_mode = 'full') {
-	if ($build_mode == 'full') {
+  if ($build_mode == 'full') {
     if ($node->type == 'd4os_ui_regions_guide') {
       // check if the datastore is alive
       $d4os_regions = D4OS_IO::create('Regions');
@@ -110,13 +110,13 @@ function d4os_ui_regions_guide_node_view($node, $build_mode = 'full') {
       // display infos
       d4os_ui_regions_guide_add_region_check($node);
       d4os_ui_regions_guide_add_region_hg_link($node);
-      d4os_ui_regions_guide_add_region_picture($node);
+      //d4os_ui_regions_guide_add_region_picture($node);
       d4os_ui_regions_guide_add_region_infos($node);
       if (variable_get('d4os_ui_regions_guide_show_nextprev_buttons', 1)) {
         d4os_ui_regions_guide_show_nexprev_buttons($node);
       }
     }
-	}
+  }
 }
 
 function d4os_ui_regions_guide_add_region_check(&$node) {
@@ -161,7 +161,7 @@ function d4os_ui_regions_guide_add_region_picture(&$node) {
   $region_picture = theme_image(
     array(
       'path' => $asset_pictures_server_url . $node->field_drg_snapshot_uuid[LANGUAGE_NONE][0]['uuid_field'],
-      'width' => '150px',
+      'width' => '512px',
       'alt' => t('No picture available'),
       'title' => t("!region's picture", array('!region' => $node->region->regionName)),
       'attributes' => array()
@@ -188,6 +188,7 @@ function d4os_ui_regions_guide_add_region_infos(&$node) {
   $output .= '</div>';
   $node->content['drg_region_name'] = array(
     '#markup' => $output,
+    '#weight' => 81
   );
   // region position
   $output = '';
@@ -201,6 +202,7 @@ function d4os_ui_regions_guide_add_region_infos(&$node) {
   $output .= '</div>';
   $node->content['drg_region_position'] = array(
     '#markup' => $output,
+    '#weight' => 82
   );
   // region owner
   $output = '';
@@ -215,6 +217,7 @@ function d4os_ui_regions_guide_add_region_infos(&$node) {
     $output .= '</div>';
     $node->content['drg_region_owner'] = array(
       '#markup' => $output,
+      '#weight' => 83
     );
   }
 }
@@ -240,29 +243,29 @@ function d4os_ui_regions_guide_show_nexprev_buttons(&$node) {
 
 
 function d4os_ui_regions_guide_get_nids_by_category($values) {
-	$query = new EntityFieldQuery();
-	$query->entityCondition('entity_type', 'node');
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', 'node');
   $query->propertyCondition('type', 'd4os_ui_regions_guide');
   if ($values['category'] > 0) {
     $query->fieldCondition('field_drg_categories', 'value', $values['category']);
   }
-	$entities = $query->execute();
-	if (isset($entities['node'])) {
-		return array_keys($entities['node']);
-	}
-	return NULL;
+  $entities = $query->execute();
+  if (isset($entities['node'])) {
+    return array_keys($entities['node']);
+  }
+  return NULL;
 }
 
 function d4os_ui_regions_guide_get_regions_by_uuid($values) {
   $query = new EntityFieldQuery();
-	$entities = $query->entityCondition('entity_type', 'node')
-			->propertyCondition('type', 'd4os_ui_regions_guide')
+  $entities = $query->entityCondition('entity_type', 'node')
+      ->propertyCondition('type', 'd4os_ui_regions_guide')
       ->fieldCondition('field_drg_region_uuid', 'uuid_field', $values['uuid'])
-			->execute();
-	if (isset($entities['node'])) {
-		return array_keys($entities['node']);
-	}
-	return NULL;
+      ->execute();
+  if (isset($entities['node'])) {
+    return array_keys($entities['node']);
+  }
+  return NULL;
 }
 
 function d4os_ui_regions_guide_diplay_edit_link($region) {
@@ -299,25 +302,25 @@ function d4os_ui_regions_guide_diplay_edit_link($region) {
 }
 
 /**********************
- *			INWORLD
+ *      INWORLD
  **********************/
 
 /**
  * metaverse frameworkd dispatcher
  */
 function d4os_ui_regions_guide_dispatch($params) {
-	$cmd = $params['cmd'];
-	$sl = &$params['sl'];
-	$args = $params['args'];
-	switch ($cmd) {
+  $cmd = $params['cmd'];
+  $sl = &$params['sl'];
+  $args = $params['args'];
+  switch ($cmd) {
     case 'get_region':
       d4os_ui_regions_guide_inworld_get_region($sl, $args);
       break;
-		default:
-			$sl->response['status'] = FALSE;
-			$sl->response['message'] = "Oops! Unknown command: $cmd.";
-			break;
-	}
+    default:
+      $sl->response['status'] = FALSE;
+      $sl->response['message'] = "Oops! Unknown command: $cmd.";
+      break;
+  }
 }
 
 function d4os_ui_regions_guide_inworld_get_region(&$sl, $args) {
