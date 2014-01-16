@@ -42,6 +42,7 @@ function uuid_field_texture_formatter_field_formatter_settings_form($field, $ins
     '#description'    => t('Select what size of image'),
     '#default_value'  => $settings['pic_size'],
     '#options'        => array(
+      'thumbnail' => 'Thumbnail',
       'small'  => 'Small',
       'medium' => 'Medium',
       'large'  => 'Large',
@@ -85,8 +86,11 @@ function uuid_field_texture_formatter_format($items, $display) {
 }
 
 function uuid_field_texture_formatter_get_size($value) {
-  $width = 200;
+  $width = 256;
   switch ($value) {
+    case 'thumbnail':
+      $width = 128;
+      break;
     case 'small':
       $width = 256;
       break;
