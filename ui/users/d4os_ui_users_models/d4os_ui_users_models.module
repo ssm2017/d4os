@@ -1,0 +1,36 @@
+<?php
+
+/**
+ * @package   d4os_ui_users_models
+ * @copyright Copyright (C) 2010-2014 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+ * @link      http://www.d4os.org
+ * @license   GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+ * D4os is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ */
+ 
+ function d4os_ui_users_models_get_models() {
+  $query = new EntityFieldQuery();
+  $entities = $query->entityCondition('entity_type', 'node')
+      ->propertyCondition('type', 'd4os_ui_users_models')
+      ->execute();
+  if (isset($entities['node'])) {
+    return array_keys($entities['node']);
+  }
+  return NULL;
+}
+
+function d4os_ui_users_models_node_validate($node, $form, &$form_state) {
+  if ($node->type == 'd4os_ui_users_models') {
+    // check if the uuid is valid
+    $d4os_user = D4OS_IO::create('Users');
+    $grid_user = $d4os_user->load_user(array('PrincipalID' => $form_state['values']['field_avatar_uuid'][LANGUAGE_NONE][0]['uuid_field']));
+    $grid_user = $grid_user[0];
+    if (!is_object($grid_user)) {
+      form_set_error('field_avatar_uuid', t('This avatar uuid is not registered on the grid.'));
+      return;
+    }
+  }
+}
