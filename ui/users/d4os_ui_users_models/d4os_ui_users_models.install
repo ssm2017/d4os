@@ -60,15 +60,12 @@ function _d4os_ui_users_models_installed_fields() {
     // snapshot url
     'avatar_image_url' => array(
       'field_name' => 'field_avatar_image_url',
-      'type' => 'text',
-      'module' => 'text',
+      'type' => 'link_field',
+      'module' => 'link',
       'active' => 1,
       'locked' => 1,
       'cardinality' => 1,
       'deleted' => 0,
-      'settings' => array(
-        'max_length' => 255
-      )
     )
   );
 }
@@ -93,11 +90,8 @@ function _d4os_ui_users_models_installed_instances() {
       'label' => $t('Image url'),
       'required' => TRUE,
       'widget' => array(
-        'type' => 'text_textfield',
-        'module' => 'text',
-        'settings' => array(
-          'size' => 60
-        )
+        'type' => 'link_field',
+        'module' => 'link',
       )
     )
   );

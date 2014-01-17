@@ -50,7 +50,7 @@ function d4os_ui_users_models_select_form(&$form) {
     $model = new stdClass();
     $model->nid = $node->nid;
     $model->name = $node->title;
-    $model->picture_url = $node->field_avatar_image_url[LANGUAGE_NONE][0]['value'];
+    $model->picture_url = $node->field_avatar_image_url[LANGUAGE_NONE][0]['url'];
     $available_models[] = $model;
   }
   if (count($available_models) == 0) {
