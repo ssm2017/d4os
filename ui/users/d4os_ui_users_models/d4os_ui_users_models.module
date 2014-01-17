@@ -34,3 +34,97 @@ function d4os_ui_users_models_node_validate($node, $form, &$form_state) {
     }
   }
 }
+
+function d4os_ui_users_models_select_form(&$form) {
+  global $base_url;
+// TODO : use caching
+  // get the list of models
+  $available_models = array();
+  $models_nids = d4os_ui_users_models_get_models();
+  if (is_null($models_nids)) {
+    return;
+  }
+  $asset_pictures_server_url = variable_get('d4os_default_asset_pictures_server_url', $base_url . '/asset.php?id=');
+  foreach ($models_nids as $model_nid) {
+    $node = node_load($model_nid);
+    $model = new stdClass();
+    $model->nid = $node->nid;
+    $model->name = $node->title;
+    $model->picture_url = $node->field_avatar_image_url[LANGUAGE_NONE][0]['value'];
+    $available_models[] = $model;
+  }
+  if (count($available_models) == 0) {
+    return;
+  }
+
+  // get some vars
+  $image_width = variable_get('d4os_ui_users_models_image_width', '150');
+  $output_type = variable_get('d4os_ui_users_models_output_type', 'tableselect');
+  $use_lightbox2 = variable_get('d4os_ui_users_models_image_use_lightbox2', 0);
+
+  // build the form fieldset
+  $form['models'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Models'),
+    '#collapsible' => TRUE,
+    '#collapsed' => FALSE,
+    '#description' => t('Please select an avatar to use. You will be able to change it later.'),
+  );
+
+  $header = array(
+    'name' => t('Name'),
+    'picture' => t('Picture')
+  );
+
+  $options = array();
+  $i = 1;
+  foreach ($available_models as $available_model) {
+    // get the picture
+    $picture = theme_image(
+        array(
+          'path' => $available_model->picture_url,
+          'width' => $image_width . 'px',
+          'alt' => t('No picture available'),
+          'title' => t("!user's picture", array('!user' => $available_model->name)),
+          'attributes' => array()
+        )
+    );
+    if ($use_lightbox2 == 1) {
+      $picture = l($picture, $available_model->picture_url, array('html' => TRUE, 'attributes' => array('rel' => 'lightbox[models]')));
+    }
+
+    // fill the options
+    switch ($output_type) {
+      default:
+      case 'tableselect':
+        $options[$available_model->nid] = array(
+          'name' => $available_model->name,
+          'picture' => $picture,
+        );
+        break;
+      case 'radios':
+        $options[$available_model->nid] = '<span class="d4os_model_name">'
+            . $available_model->name . '</span><span class="d4os_model_picture">' . $picture . '</span>';
+        break;
+    }
+    ++$i;
+  }
+
+  switch ($output_type) {
+    default:
+    case 'tableselect':
+      $form['models']['model_nid'] = array(
+        '#type' => 'tableselect',
+        '#header' => $header,
+        '#options' => $options,
+        '#multiple' => FALSE,
+      );
+      break;
+    case 'radios':
+      $form['models']['model_nid'] = array(
+        '#type' => 'radios',
+        '#options' => $options
+      );
+      break;
+  }
+}

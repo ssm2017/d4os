@@ -57,15 +57,18 @@ function _d4os_ui_users_models_installed_fields() {
       'cardinality' => 1,
       'deleted' => 0,
     ),
-    // snapshot uuid
-    'texture_uuid' => array(
-      'field_name' => 'field_texture_uuid',
-      'type' => 'uuid_field',
-      'module' => 'uuid_field',
+    // snapshot url
+    'avatar_image_url' => array(
+      'field_name' => 'field_avatar_image_url',
+      'type' => 'text',
+      'module' => 'text',
       'active' => 1,
       'locked' => 1,
       'cardinality' => 1,
       'deleted' => 0,
+      'settings' => array(
+        'max_length' => 255
+      )
     )
   );
 }
@@ -77,14 +80,25 @@ function _d4os_ui_users_models_installed_instances() {
     'avatar_uuid' => array(
       'field_name' => 'field_avatar_uuid',
       'label' => $t('Avatar uuid'),
-      'required' => TRUE
+      'required' => TRUE,
+      'display' => array(
+        'default' => array(
+          'type' => 'hidden'
+        )
+      )
     ),
     // snapshot uuid
-    'texture_uuid' => array(
-      'field_name' => 'field_texture_uuid',
-      'label' => $t('Texture uuid'),
-      'description' => $t('Recommended : 512x512, 63Ko, jpg'),
-      'required' => TRUE
+    'avatar_image_url' => array(
+      'field_name' => 'field_avatar_image_url',
+      'label' => $t('Image url'),
+      'required' => TRUE,
+      'widget' => array(
+        'type' => 'text_textfield',
+        'module' => 'text',
+        'settings' => array(
+          'size' => 60
+        )
+      )
     )
   );
 }
