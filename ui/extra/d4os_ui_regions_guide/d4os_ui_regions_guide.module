@@ -92,9 +92,14 @@ function d4os_ui_regions_guide_node_view($node, $build_mode = 'full') {
         return;
       }
 
+      if (variable_get('d4os_ui_regions_guide_show_nextprev_buttons', 1)) {
+        d4os_ui_regions_guide_show_nexprev_buttons($node);
+      }
+
       // get region
       $region = $d4os_regions->get_region($node->field_drg_region_uuid[LANGUAGE_NONE][0]['uuid_field']);
       if (is_null($region)) {
+        drupal_set_message(t('This region is not on the grid anymore.'), 'error');
         return;
       }
 
@@ -110,11 +115,9 @@ function d4os_ui_regions_guide_node_view($node, $build_mode = 'full') {
       // display infos
       d4os_ui_regions_guide_add_region_check($node);
       d4os_ui_regions_guide_add_region_hg_link($node);
+      //d4os_ui_regions_guide_add_region_hop_link($node);
       //d4os_ui_regions_guide_add_region_picture($node);
       d4os_ui_regions_guide_add_region_infos($node);
-      if (variable_get('d4os_ui_regions_guide_show_nextprev_buttons', 1)) {
-        d4os_ui_regions_guide_show_nexprev_buttons($node);
-      }
     }
   }
 }
@@ -153,6 +156,22 @@ function d4os_ui_regions_guide_add_region_hg_link(&$node) {
   );
 }
 
+function d4os_ui_regions_guide_add_region_hop_link(&$node) {
+  global $base_url;
+  // remove < and > from the landing point
+  $landing_point = $node->field_drg_landing_point[LANGUAGE_NONE][0]['value'];
+  $landing_point = trim($landing_point, '<>');
+  $landing_point = str_replace(',', '/', $landing_point);
+  $url = "hop://". variable_get('d4os_default_hg_uri', $base_url). ':'. variable_get('d4os_default_hg_port', '8002'). '/'
+    . urlencode($node->region->regionName).'/'
+    . $landing_point;
+  $node->content['drg_region_hop_link'] = array(
+    '#prefix' => '<div class="drg_hop_link">',
+    '#suffix' => '</div>',
+    '#markup' => '<a href="'. $url. '" title="'. t('Click here for hop teleport').'">hop url</a>'
+  );
+}
+
 function d4os_ui_regions_guide_add_region_picture(&$node) {
   global $base_url;
   // build some usefull pictures links
@@ -178,28 +197,28 @@ function d4os_ui_regions_guide_add_region_picture(&$node) {
 function d4os_ui_regions_guide_add_region_infos(&$node) {
   // region name
   $output = '';
-  $output .= '<div class="field field-name-field-drg-region-name field-label-inline clearfix">';
-  $output .= '<div class="field-label">'. t('Region name'). ':&nbsp;</div>';
+  $output .= '<section class="field field-name-field-drg-region-name clearfix">';
+  $output .= '<h2 class="field-label">'. t('Region name'). ':&nbsp;</h2>';
   $output .= '<div class="field-items">';
   $output .= '<div class="field-item-even">';
   $output .= '<div>'. $node->region->regionName.'</div>';
   $output .= '</div>';
   $output .= '</div>';
-  $output .= '</div>';
+  $output .= '</section>';
   $node->content['drg_region_name'] = array(
     '#markup' => $output,
     '#weight' => 81
   );
   // region position
   $output = '';
-  $output .= '<div class="field field-name-field-drg-region-position field-label-inline clearfix">';
-  $output .= '<div class="field-label">'. t('Region position'). ':&nbsp;</div>';
+  $output .= '<section class="field field-name-field-drg-region-position clearfix">';
+  $output .= '<h2 class="field-label">'. t('Region position'). ':&nbsp;</h2>';
   $output .= '<div class="field-items">';
   $output .= '<div class="field-item-even">';
   $output .= '<div>('. ($node->region->locX / 256). ','. ($node->region->locY / 256). ')</div>';
   $output .= '</div>';
   $output .= '</div>';
-  $output .= '</div>';
+  $output .= '</section>';
   $node->content['drg_region_position'] = array(
     '#markup' => $output,
     '#weight' => 82
@@ -207,14 +226,14 @@ function d4os_ui_regions_guide_add_region_infos(&$node) {
   // region owner
   $output = '';
   if (!is_null($node->region->owner)) {
-    $output .= '<div class="field field-name-field-drg-region-owner field-label-inline clearfix">';
-    $output .= '<div class="field-label">'. t('Region owner'). ':&nbsp;</div>';
+    $output .= '<section class="field field-name-field-drg-region-owner clearfix">';
+    $output .= '<h2 class="field-label">'. t('Region owner'). ':&nbsp;</h2>';
     $output .= '<div class="field-items">';
     $output .= '<div class="field-item-even">';
     $output .= '<div>'. l($node->region->owner->name, 'user/'.$node->region->owner->uid). '</div>';
     $output .= '</div>';
     $output .= '</div>';
-    $output .= '</div>';
+    $output .= '</section>';
     $node->content['drg_region_owner'] = array(
       '#markup' => $output,
       '#weight' => 83
@@ -235,9 +254,9 @@ function d4os_ui_regions_guide_show_nexprev_buttons(&$node) {
   $output .= '<li>'. l(t('Next'), 'node/'.$nids[$next]). '</li>';
   $node->content['drg_links'] = array(
     '#prefix' => '<div class="drg_links"><ul>',
-    '#suffix' => '</ul></div>',
+    '#suffix' => '</ul></div><div class="clearfix"></div>',
     '#markup' => $output,
-    '#weight' => 99
+    '#weight' => -99
   );
 }
 
