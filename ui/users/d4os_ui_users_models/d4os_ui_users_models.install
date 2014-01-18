@@ -1,0 +1,144 @@
+<?php
+
+/**
+ * Implements hook_install
+ */
+function d4os_ui_users_models_install() {
+  $t = get_t();
+
+  // defines node type for the guide
+  $machine_name = 'd4os_ui_users_models';
+  $defaults = array(
+    'type' => $machine_name,
+    'name' => 'Avatar model',
+    'base' => 'node_content',
+    'title_label' => $t('Name of the model'),
+    'description' => $t('Models to use when creating a new user on the grid.'),
+    'custom' => TRUE,
+  );
+
+  // set other node defaults not declared above
+  $content_type = node_type_set_defaults($defaults);
+
+  // save the content type
+  node_type_save($content_type);
+
+  // add peristant variables that control settings
+  variable_set('additional_settings__active_tab_' . $machine_name, 'edit-menu');
+  variable_set('node_preview_' . $machine_name, 1);
+  variable_set('node_options_' . $machine_name, array(0 => 'status'));
+  variable_set('node_submitted_' . $machine_name, 0);
+  variable_set('menu_options_' . $machine_name, array());
+  variable_set('menu_parent_' . $machine_name, 'main-menu:0');
+
+  // create all the fields we are adding to our content type
+  foreach (_d4os_ui_users_models_installed_fields() as $field) {
+    field_create_field($field);
+  }
+
+  // create all the instances for our fields
+  foreach (_d4os_ui_users_models_installed_instances() as $instance) {
+    $instance['entity_type'] = 'node';
+    $instance['bundle'] = $defaults['type'];
+    field_create_instance($instance);
+  }
+}
+
+function _d4os_ui_users_models_installed_fields() {
+  $t = get_t();
+  return array(
+    // region uuid
+    'avatar_uuid' => array(
+      'field_name' => 'field_avatar_uuid',
+      'type' => 'uuid_field',
+      'module' => 'uuid_field',
+      'active' => 1,
+      'locked' => 1,
+      'cardinality' => 1,
+      'deleted' => 0,
+    ),
+    // snapshot url
+    'avatar_image_url' => array(
+      'field_name' => 'field_avatar_image_url',
+      'type' => 'link_field',
+      'module' => 'link',
+      'active' => 1,
+      'locked' => 1,
+      'cardinality' => 1,
+      'deleted' => 0,
+    )
+  );
+}
+
+function _d4os_ui_users_models_installed_instances() {
+  $t = get_t();
+  return array(
+    // region uuid
+    'avatar_uuid' => array(
+      'field_name' => 'field_avatar_uuid',
+      'label' => $t('Avatar uuid'),
+      'required' => TRUE,
+      'display' => array(
+        'default' => array(
+          'type' => 'hidden'
+        )
+      )
+    ),
+    // snapshot uuid
+    'avatar_image_url' => array(
+      'field_name' => 'field_avatar_image_url',
+      'label' => $t('Image url'),
+      'required' => TRUE,
+      'widget' => array(
+        'type' => 'link_field',
+        'module' => 'link',
+      )
+    )
+  );
+}
+
+/**
+ * Implements of hook_uninstall().
+ */
+function d4os_ui_users_models_uninstall() {
+  $machine_name = 'd4os_ui_users_models';
+  // gather all nodes created
+  $sql = 'SELECT nid FROM {node} n WHERE n.type = :type';
+  $result = db_query($sql, array(':type' => $machine_name));
+  $nids = array();
+  foreach ($result as $row) {
+    $nids[] = $row->nid;
+  }
+
+  // delete all the nodes at once
+  node_delete_multiple($nids);
+
+  // remove peristant variables that control settings
+  variable_del('additional_settings__active_tab_' . $machine_name);
+  variable_del('node_preview_' . $machine_name);
+  variable_del('node_options_' . $machine_name);
+  variable_del('node_submitted_' . $machine_name);
+  variable_del('menu_options_' . $machine_name);
+  variable_del('menu_parent_' . $machine_name);
+
+
+  // find all fields and delete them
+  foreach (array_keys(_d4os_ui_users_models_installed_fields()) as $field) {
+    field_delete_field($field);
+  }
+
+  // find all fields and delete instance
+  $instances = field_info_instances('node', $machine_name);
+  foreach ($instances as $instance_name => $instance) {
+    field_delete_instance($instance);
+  }
+
+  // delete our content type
+  node_type_delete($machine_name);
+
+  // purge all field information
+  field_purge_batch(1000);
+
+  // Remove variables.
+  db_query("DELETE FROM {variable} WHERE name LIKE 'd4os_ui_users_models%%'");
+}

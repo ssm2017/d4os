@@ -132,8 +132,8 @@ function d4os_ui_users_login_form(&$form) {
 }
 
 function d4os_ui_users_register_form(&$form) {
-  if (!variable_get('user_email_verification', TRUE) && !variable_get('d4os_ui_users_register_role', 0)) {
-    d4os_ui_users_avatars_models_select_form($form);
+  if (module_exists('d4os_ui_users_models') && !variable_get('user_email_verification', TRUE) && !variable_get('d4os_ui_users_register_role', 0)) {
+    d4os_ui_users_models_select_form($form);
   }
   if (isset($form['account'])) {
     $form['account']['name']['#description'] = t('A two word name is required for grid access.');
@@ -146,8 +146,8 @@ function d4os_ui_users_register_form(&$form) {
 
 function d4os_ui_users_profile_form(&$form) {
   // check if the user can register an avatar
-  if (d4os_ui_users_can_register_on_grid($form['#user'], FALSE) && variable_get('d4os_ui_users_autocreate_grid_account', 0)) {
-    d4os_ui_users_avatars_models_select_form($form);
+  if (module_exists('d4os_ui_users_models') && d4os_ui_users_can_register_on_grid($form['#user'], FALSE) && variable_get('d4os_ui_users_autocreate_grid_account', 0)) {
+    d4os_ui_users_models_select_form($form);
   }
   array_unshift($form['#validate'], 'd4os_ui_users_account_validate');
   $form['account']['name']['#description'] = 'A two word name is required for grid access.';
@@ -228,8 +228,8 @@ function d4os_ui_users_user_update(&$edit, $account, $category) {
       $form_state = array();
       $form_state['uid'] = $account->uid;
       $form_state['values']['pass'] = $edit['pass_raw'];
-      if (isset($edit['model_uuid'])) {
-        $form_state['values']['model_uuid'] = $edit['model_uuid'];
+      if (isset($edit['model_nid'])) {
+        $form_state['values']['model_nid'] = $edit['model_nid'];
       }
       d4os_ui_users_grid_registration_form_submit(array(), $form_state, FALSE);
     }
@@ -336,7 +336,9 @@ function d4os_ui_users_grid_registration_form($form_state) {
     '#maxlength' => PASSWORD_MAX_LENGTH,
     '#size' => PASSWORD_MAX_LENGTH,
   );
-  d4os_ui_users_avatars_models_select_form($form);
+  if (module_exists('d4os_ui_users_models')) {
+    d4os_ui_users_models_select_form($form);
+  }
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Create avatar'),
@@ -409,7 +411,7 @@ function d4os_ui_users_grid_registration_form_validate($form, &$form_state) {
       form_set_error('mail', t('An avatar with the same email already exists on the grid.'));
     }
     // check for the model
-    if (isset($form_state['values']['model_uuid']) && $form_state['values']['model_uuid'] == '') {
+    if (isset($form_state['values']['model_nid']) && $form_state['values']['model_nid'] == '') {
       form_set_error('model', t('Please select a model.'));
     }
   }
@@ -433,10 +435,11 @@ function d4os_ui_users_grid_registration_form_submit($form, &$form_state, $redir
     // get names
     $names = explode(' ', $account->name);
 
-    // define the model_uuid
+    // define the model_nid
     $model_uuid = UUID_ZERO;
-    if (isset($form_state['values']['model_uuid'])) {
-      $model_uuid = $form_state['values']['model_uuid'];
+    if (isset($form_state['values']['model_nid'])) {
+      $model = node_load($form_state['values']['model_nid']);
+      $model_uuid = $model->field_avatar_uuid[LANGUAGE_NONE][0]['uuid_field'];
     }
 
     // build the grid account
@@ -481,8 +484,8 @@ function d4os_ui_users_account_validate($form, &$form_state) {
   $values = &$form_state['values'];
 
   // check for the model
-  if (isset($form['models']['model_uuid'])) {
-    if (!isset($values['model_uuid']) || $values['model_uuid'] == '') {
+  if (isset($form['models']['model_nid'])) {
+    if (!isset($values['model_nid']) || $values['model_nid'] == '') {
       form_set_error('model', t('Please select a model.'));
     }
   }
@@ -602,99 +605,6 @@ function d4os_ui_users_search_execute($keys = NULL, $conditions = NULL) {
     );
   }
   return $find;
-}
-
-function d4os_ui_users_avatars_models_select_form(&$form) {
-// TODO : use caching
-  // get the list of models
-  $available_models = array();
-  for ($i = 1; $i < 11; ++$i) {
-    $model_uuid_nbr = 'd4os_ui_users_default_model_uuid_' . $i;
-    $model_uuid = variable_get($model_uuid_nbr, UUID_ZERO);
-    if ($model_uuid != UUID_ZERO && $model_uuid != '') {
-      $model_name_nbr = 'd4os_ui_users_default_model_name_' . $i;
-      $model_picture_url_nbr = 'd4os_ui_users_default_model_picture_url_' . $i;
-      $model = new stdClass();
-      $model->uuid = $model_uuid;
-      $model->name = variable_get($model_name_nbr, 'model');
-      $model->picture_url = variable_get($model_picture_url_nbr, '');
-      $available_models[] = $model;
-    }
-  }
-  if (count($available_models) == 0) {
-    return;
-  }
-
-  // get some vars
-  $image_width = variable_get('d4os_ui_users_models_image_width', '150');
-  $output_type = variable_get('d4os_ui_users_models_output_type', 'tableselect');
-  $use_lightbox2 = variable_get('d4os_ui_users_models_image_use_lightbox2', 0);
-
-  // build the form fieldset
-  $form['models'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Models'),
-    '#collapsible' => TRUE,
-    '#collapsed' => FALSE,
-    '#description' => t('Please select an avatar to use. You will be able to change it later.'),
-  );
-
-  $header = array(
-    'name' => t('Name'),
-    'picture' => t('Picture')
-  );
-
-  $options = array();
-  $i = 1;
-  foreach ($available_models as $available_model) {
-    // get the picture
-    $picture = theme_image(
-        array(
-          'path' => $available_model->picture_url,
-          'width' => $image_width . 'px',
-          'alt' => t('No picture available'),
-          'title' => t("!user's picture", array('!user' => $available_model->name)),
-          'attributes' => array()
-        )
-    );
-    if ($use_lightbox2 == 1) {
-      $picture = l($picture, $available_model->picture_url, array('html' => TRUE, 'attributes' => array('rel' => 'lightbox[models]')));
-    }
-
-    // fill the options
-    switch ($output_type) {
-      default:
-      case 'tableselect':
-        $options[$available_model->uuid] = array(
-          'name' => $available_model->name,
-          'picture' => $picture,
-        );
-        break;
-      case 'radios':
-        $options[$available_model->uuid] = '<span class="d4os_model_name">'
-            . $available_model->name . '</span><span class="d4os_model_picture">' . $picture . '</span>';
-        break;
-    }
-    ++$i;
-  }
-
-  switch ($output_type) {
-    default:
-    case 'tableselect':
-      $form['models']['model_uuid'] = array(
-        '#type' => 'tableselect',
-        '#header' => $header,
-        '#options' => $options,
-        '#multiple' => FALSE,
-      );
-      break;
-    case 'radios':
-      $form['models']['model_uuid'] = array(
-        '#type' => 'radios',
-        '#options' => $options
-      );
-      break;
-  }
 }
 
 function d4os_ui_users_set_region_owner_role() {

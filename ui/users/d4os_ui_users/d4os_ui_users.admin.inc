@@ -191,43 +191,6 @@ function d4os_ui_users_admin() {
       '#description' => t('Select if you want to use the lightbox 2 effect to display images for models.'),
     );
   }
-  $model_title = t('Model');
-  $model_uuid_title = t('Model uuid');
-  $model_name_title = t('Model name');
-  $model_picture_url_title = t('Model picture url');
-  $default_model_name_value = 'Druplicon';
-  $default_model_picture_url_value = $base_url . '/misc/druplicon.png';
-
-  for ($i = 1; $i < 11; $i++) {
-    $model_uuid_var_name = 'd4os_ui_users_default_model_uuid_' . $i;
-    $model_name_var_name = 'd4os_ui_users_default_model_name_' . $i;
-    $model_picture_url_var_name = 'd4os_ui_users_default_model_picture_url_' . $i;
-    $form['models'][$i] = array(
-      '#type' => 'fieldset',
-      '#title' => $model_title . ' ' . $i,
-      '#collapsible' => FALSE,
-      '#collapsed' => FALSE,
-    );
-    $form['models'][$i][$model_uuid_var_name] = array(
-      '#type' => 'textfield',
-      '#title' => $model_uuid_title,
-      '#size' => 36,
-      '#maxlength' => 36,
-      '#default_value' => variable_get($model_uuid_var_name, UUID_ZERO),
-    );
-    $form['models'][$i][$model_name_var_name] = array(
-      '#type' => 'textfield',
-      '#title' => $model_name_title,
-      '#size' => 25,
-      '#maxlength' => 25,
-      '#default_value' => variable_get($model_name_var_name, $default_model_name_value),
-    );
-    $form['models'][$i][$model_picture_url_var_name] = array(
-      '#type' => 'textfield',
-      '#title' => $model_picture_url_title,
-      '#default_value' => variable_get($model_picture_url_var_name, $default_model_picture_url_value),
-    );
-  }
 
   /*
    * Grid region owners role
@@ -299,21 +262,6 @@ function d4os_ui_users_admin() {
 }
 
 function d4os_ui_users_admin_validate($form, &$form_state) {
-  // check the list of models
-  for ($i = 1; $i < 11; ++$i) {
-    $model_nbr = 'd4os_ui_users_default_model_uuid_' . $i;
-    $model_uuid = $form_state['values'][$model_nbr];
-    if ($model_uuid != UUID_ZERO && $model_uuid != '') {
-      // check if the uuid is valid
-      $d4os_user = D4OS_IO::create('Users');
-      $grid_user = $d4os_user->load_user(array('PrincipalID' => $model_uuid));
-      $grid_user = $grid_user[0];
-      if (!is_object($grid_user)) {
-        form_set_error($model_nbr, t('This uuid for model @id is not registered on the grid.', array('@id' => $i)));
-        return;
-      }
-    }
-  }
   // check the default region
   $default_region_uuid = $form_state['values']['d4os_ui_users_default_home_region'];
   if ($default_region_uuid != UUID_ZERO && $default_region_uuid != '') {
