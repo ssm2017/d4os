@@ -138,21 +138,39 @@ function d4os_ui_regions_guide_add_region_check(&$node) {
     })(jQuery);",
   'inline'
   );
+  $output = '';
+  $output .= '<section class="field field-name-field-drg-region-check">';
+  $output .= '<h2 class="field-label">'. t('Status'). ':&nbsp;</h2>';
+  $output .= '<div class="field-items">';
+  $output .= '<div class="field-item-even">';
+  $output .= '<div class="drg_region_status">';
+  $output .= '<span id="region-status"><span><img width="16px" src="'.$GLOBALS['base_url']. '/' .drupal_get_path('module', 'd4os').'/misc/ajax-loader.gif" title="'. t('Contacting the region...'). '"/></span></span>';
+  $output .= '</div>';
+  $output .= '</div>';
+  $output .= '</div>';
+  $output .= '</section>';
   $node->content['drg_region_check'] = array(
-    '#prefix' => '<div class="drg_region_status">',
-    '#suffix' => '</div>',
-    '#markup' => '<span id="region-status"><span><img width="16px" src="'.$GLOBALS['base_url']. '/' .drupal_get_path('module', 'd4os').'/misc/ajax-loader.gif" title="'. t('Contacting the region...'). '"/></span></span>',
-    '#weight' => -98
+    '#markup' => $output,
+    '#weight' => 3
   );
 }
 
 function d4os_ui_regions_guide_add_region_hg_link(&$node) {
   global $base_url;
   $url = "secondlife:///app/teleport/". variable_get('d4os_default_hg_uri', $base_url). ':'. variable_get('d4os_default_hg_port', '8002'). '/'. urlencode($node->region->regionName);
+  
+  $output = '';
+  $output .= '<section class="field field-name-field-drg-hop-link">';
+  $output .= '<h2 class="field-label">'. t('HG link'). ':&nbsp;</h2>';
+  $output .= '<div class="field-items">';
+  $output .= '<div class="field-item-even">';
+  $output .= '<a href="'. $url. '" title="'. t('Click here for HyperGrid teleport').'">Hypergrid url</a>';
+  $output .= '</div>';
+  $output .= '</div>';
+  $output .= '</section>';
   $node->content['drg_region_tp_link'] = array(
-    '#prefix' => '<div class="drg_hg_link">',
-    '#suffix' => '</div>',
-    '#markup' => '<a href="'. $url. '" title="'. t('Click here for HyperGrid teleport').'">Hypergrid url</a>'
+    '#markup' => $output,
+    '#weight' => 3
   );
 }
 
@@ -165,10 +183,19 @@ function d4os_ui_regions_guide_add_region_hop_link(&$node) {
   $url = "hop://". variable_get('d4os_default_hg_uri', $base_url). ':'. variable_get('d4os_default_hg_port', '8002'). '/'
     . urlencode($node->region->regionName).'/'
     . $landing_point;
+  
+  $output = '';
+  $output .= '<section class="field field-name-field-drg-hop-link">';
+  $output .= '<h2 class="field-label">'. t('Hop link'). ':&nbsp;</h2>';
+  $output .= '<div class="field-items">';
+  $output .= '<div class="field-item-even">';
+  $output .= '<a href="'. $url. '" title="'. t('Click here for hop teleport').'">hop url</a>';
+  $output .= '</div>';
+  $output .= '</div>';
+  $output .= '</section>';
   $node->content['drg_region_hop_link'] = array(
-    '#prefix' => '<div class="drg_hop_link">',
-    '#suffix' => '</div>',
-    '#markup' => '<a href="'. $url. '" title="'. t('Click here for hop teleport').'">hop url</a>'
+    '#markup' => $output,
+    '#weight' => 3
   );
 }
 
@@ -190,14 +217,14 @@ function d4os_ui_regions_guide_add_region_picture(&$node) {
     '#prefix' => '<div class="drg_region_picture">',
     '#suffix' => '</div>',
     '#markup' => $region_picture,
-    '#weight' => -99
+    '#weight' => 99
   );
 }
 
 function d4os_ui_regions_guide_add_region_infos(&$node) {
-  // region name
+  /*// region name
   $output = '';
-  $output .= '<section class="field field-name-field-drg-region-name clearfix">';
+  $output .= '<section class="field field-name-field-drg-region-name">';
   $output .= '<h2 class="field-label">'. t('Region name'). ':&nbsp;</h2>';
   $output .= '<div class="field-items">';
   $output .= '<div class="field-item-even">';
@@ -207,11 +234,11 @@ function d4os_ui_regions_guide_add_region_infos(&$node) {
   $output .= '</section>';
   $node->content['drg_region_name'] = array(
     '#markup' => $output,
-    '#weight' => 81
-  );
+    '#weight' => 0
+  );*/
   // region position
   $output = '';
-  $output .= '<section class="field field-name-field-drg-region-position clearfix">';
+  $output .= '<section class="field field-name-field-drg-region-position">';
   $output .= '<h2 class="field-label">'. t('Region position'). ':&nbsp;</h2>';
   $output .= '<div class="field-items">';
   $output .= '<div class="field-item-even">';
@@ -221,12 +248,12 @@ function d4os_ui_regions_guide_add_region_infos(&$node) {
   $output .= '</section>';
   $node->content['drg_region_position'] = array(
     '#markup' => $output,
-    '#weight' => 82
+    '#weight' => 3
   );
   // region owner
   $output = '';
   if (!is_null($node->region->owner)) {
-    $output .= '<section class="field field-name-field-drg-region-owner clearfix">';
+    $output .= '<section class="field field-name-field-drg-region-owner">';
     $output .= '<h2 class="field-label">'. t('Region owner'). ':&nbsp;</h2>';
     $output .= '<div class="field-items">';
     $output .= '<div class="field-item-even">';
@@ -236,7 +263,7 @@ function d4os_ui_regions_guide_add_region_infos(&$node) {
     $output .= '</section>';
     $node->content['drg_region_owner'] = array(
       '#markup' => $output,
-      '#weight' => 83
+      '#weight' => 3
     );
   }
 }
@@ -251,6 +278,7 @@ function d4os_ui_regions_guide_show_nexprev_buttons(&$node) {
 
   $output = '';
   $output .= '<li>'. l(t('Previous'), 'node/'.$nids[$prev]). '</li>';
+  $output .= '<li>'. l(t('List'), 'grid/regions/guide'). '</li>';
   $output .= '<li>'. l(t('Next'), 'node/'.$nids[$next]). '</li>';
   $node->content['drg_links'] = array(
     '#prefix' => '<div class="drg_links"><ul>',
@@ -265,6 +293,7 @@ function d4os_ui_regions_guide_get_nids_by_category($values) {
   $query = new EntityFieldQuery();
   $query->entityCondition('entity_type', 'node');
   $query->propertyCondition('type', 'd4os_ui_regions_guide');
+  $query->propertyCondition('status', 1);
   if ($values['category'] > 0) {
     $query->fieldCondition('field_drg_categories', 'value', $values['category']);
   }
@@ -279,6 +308,7 @@ function d4os_ui_regions_guide_get_regions_by_uuid($values) {
   $query = new EntityFieldQuery();
   $entities = $query->entityCondition('entity_type', 'node')
       ->propertyCondition('type', 'd4os_ui_regions_guide')
+      ->propertyCondition('status', 1)
       ->fieldCondition('field_drg_region_uuid', 'uuid_field', $values['uuid'])
       ->execute();
   if (isset($entities['node'])) {

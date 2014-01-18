@@ -281,7 +281,7 @@ function theme_d4os_ui_monitor_regions_list_table($regions_list, $params, $heade
     $cells[] = '<a href="secondlife:///app/teleport/hg.francogrid.org:80/'. urlencode($region->regionName). '" title="'. t('Click here for HyperGrid teleport').'">'. $region->regionName. '</a>'; // 1
     $cells[] = $region->x; // 2
     $cells[] = $region->y; // 3
-    $cells[] = '<span id="region-'. $region->region_uuid. '-status"><span><img width="16px" src="'.drupal_get_path('module', 'd4os').'/misc/ajax-loader.gif" alt="'. t('Checking....'). '" title="'. t('Contacting the region...'). '"/></span></span>';
+    $cells[] = '<span id="region-'. $region->region_uuid. '-status"><span><img width="16px" src="/'.drupal_get_path('module', 'd4os').'/misc/ajax-loader.gif" alt="'. t('Checking....'). '" title="'. t('Contacting the region...'). '"/></span></span>';
     if (user_access('view d4os ui grid monitor regions owners list')) {
       $cells[] = '<a href="/user/'. $region->uid. '/regions" title="'. t('Click here to see the user regions'). '">'. $region->FirstName. ' '. $region->LastName. '</a>'; // 5
     }
