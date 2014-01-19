@@ -15,12 +15,12 @@
  */
 function uuid_field_texture_formatter_field_formatter_info() {
   return array(
-    'uuid_field_texture_formatter_default' => array(
+    'uuid_field_texture_formatter' => array(
       'label' => t('Displays an uuid as a texture'),
       'field types' => array('uuid_field'),
       'settings'  => array(
-        'pic_size' => 'small',
-        'pic_ratio' => '4_3'
+        'pic_width' => '512',
+        'pic_ratio' => '_4_3'
       ),
     ),
   );
@@ -37,17 +37,11 @@ function uuid_field_texture_formatter_field_formatter_settings_form($field, $ins
   //Initialize the element variable
   $element = array();
   //Add your select box
-  $element['pic_size'] = array(
-    '#type'           => 'select',
-    '#title'          => t('Image Size'),
-    '#description'    => t('Select what size of image'),
-    '#default_value'  => $settings['pic_size'],
-    '#options'        => array(
-      'thumbnail' => 'Thumbnail',
-      'small'  => 'Small',
-      'medium' => 'Medium',
-      'large'  => 'Large',
-    ),
+  $element['pic_width'] = array(
+    '#type'           => 'textfield',
+    '#title'          => t('Image Width'),
+    '#description'    => t('Enter the width of image'),
+    '#default_value'  => $settings['pic_width'],
   );
   $element['pic_ratio'] = array(
     '#type'           => 'select',
@@ -69,9 +63,10 @@ function uuid_field_texture_formatter_field_formatter_settings_form($field, $ins
 function uuid_field_texture_formatter_field_formatter_settings_summary($field, $instance, $view_mode) {
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
-  $summary = t('Use a @size texture as an image"', array(
-    '@size'     => $settings['pic_size'],
-  )); // we use t() for translation and placeholders to guard against attacks
+  $summary = t('Use a @size width texture as an image with a @ratio ratio"', array(
+    '@size' => $settings['pic_width'],
+    '@ratio' => $settings['pic_ratio']
+  ));
   return $summary;
 }
 
@@ -79,83 +74,34 @@ function uuid_field_texture_formatter_field_formatter_settings_summary($field, $
  * Implements hook_field_formatter_view().
  */
 function uuid_field_texture_formatter_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
-  if ($display['type'] == 'uuid_field_texture_formatter_default') {
+  if ($display['type'] == 'uuid_field_texture_formatter') {
     return uuid_field_texture_formatter_format($items, $display);
   }
 }
 
 function uuid_field_texture_formatter_format($items, $display) {
   global $base_url;
-  $element = array();
+  $height = $display['settings']['pic_width'];
+	switch ($display['settings']['pic_ratio']) {
+	  case '_4_3':
+	    $height = ($display['settings']['pic_width'] / 4)*3;
+	    break;
+	  case '_16_9':
+	    $height = ($display['settings']['pic_width'] / 16)*9;
+	    break;
+	}
+	$size = 'width="'. $display['settings']['pic_width']. 'px" height="'. $height. 'px"';
+	$element = array();
   foreach ($items as $delta => $item) {
     $element[$delta] = array(
       '#type' => 'html_tag',
       '#tag' => 'div',
       '#attributes' => array(
-        'class' => $display['settings']['pic_size']
+        'class' => $display['settings']['pic_width']
       ),
-      '#value' => '<img class="'. $display['settings']['pic_ratio']. '" src="'. variable_get('d4os_default_asset_pictures_server_url', $base_url . '/asset.php?id=').$item['uuid_field']. '" '.uuid_field_texture_formatter_get_size($display['settings']['pic_size'], $display['settings']['pic_ratio']).' />'
+      '#value' => '<img class="'. $display['settings']['pic_ratio']. '" src="'. variable_get('d4os_default_asset_pictures_server_url', $base_url . '/asset.php?id=').$item['uuid_field']. '" '. $size.' />'
     );
   }
   return $element;
 }
 
-function uuid_field_texture_formatter_get_size($size, $ratio) {
-  $sizes = array(
-    '_4_3' => array(
-      'thumbnail' => array(
-        'width' => 128,
-        'height' => 96
-      ),
-      'small' => array(
-        'width' => 256,
-        'height' => 192
-      ),
-      'medium' => array(
-        'width' => 512,
-        'height' => 384
-      ),
-      'large' => array(
-        'width' => 1024,
-        'heigh' => 768
-      )
-    ),
-    '_16_9' => array(
-      'thumbnail' => array(
-        'width' => 128,
-        'height' => 72
-      ),
-      'small' => array(
-        'width' => 256,
-        'height' => 144
-      ),
-      'medium' => array(
-        'width' => 512,
-        'height' => 288
-      ),
-      'large' => array(
-        'width' => 1024,
-        'heigh' => 576
-      )
-    ),
-    '_1_1' => array(
-      'thumbnail' => array(
-        'width' => 128,
-        'height' => 128
-      ),
-      'small' => array(
-        'width' => 256,
-        'height' => 256
-      ),
-      'medium' => array(
-        'width' => 512,
-        'height' => 512
-      ),
-      'large' => array(
-        'width' => 1024,
-        'heigh' => 1024
-      )
-    ),
-  );
-  return 'width="'. $sizes[$ratio][$size]['width']. 'px" height="'. $sizes[$ratio][$size]['height']. 'px"';
-}
