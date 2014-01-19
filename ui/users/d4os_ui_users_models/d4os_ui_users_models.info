@@ -3,3 +3,4 @@ description = "Provides a list of models for grid user account creation."
 package = d4os ui
 core = 7.x
 dependencies[] = d4os_ui_users
+dependencies[] = link
