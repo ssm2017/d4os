@@ -132,7 +132,8 @@ function d4os_ui_users_login_form(&$form) {
 }
 
 function d4os_ui_users_register_form(&$form) {
-  if (module_exists('d4os_ui_users_models') && !variable_get('user_email_verification', TRUE) && !variable_get('d4os_ui_users_register_role', 0)) {
+  if (module_exists('d4os_ui_users_models')
+    && !variable_get('d4os_ui_users_register_role', 0)) {
     d4os_ui_users_models_select_form($form);
   }
   if (isset($form['account'])) {
@@ -145,9 +146,19 @@ function d4os_ui_users_register_form(&$form) {
 }
 
 function d4os_ui_users_profile_form(&$form) {
+  $can_register = d4os_ui_users_can_register_on_grid($form['#user'], FALSE);
   // check if the user can register an avatar
-  if (module_exists('d4os_ui_users_models') && d4os_ui_users_can_register_on_grid($form['#user'], FALSE) && variable_get('d4os_ui_users_autocreate_grid_account', 0)) {
+  if (module_exists('d4os_ui_users_models')
+    && $can_register
+    && variable_get('d4os_ui_users_autocreate_grid_account', 0)
+    && !isset($form['#user']->data['d4os']['model_nid'])) {
     d4os_ui_users_models_select_form($form);
+  }
+  if (isset($form['#user']->data['d4os']['model_nid']) && $can_register) {
+    $form['account']['model_nid'] = array(
+      '#type' => 'hidden',
+      '#value' => $form['#user']->data['d4os']['model_nid']
+    );
   }
   array_unshift($form['#validate'], 'd4os_ui_users_account_validate');
   $form['account']['name']['#description'] = 'A two word name is required for grid access.';
@@ -163,6 +174,15 @@ function d4os_element_info_alter(&$types) {
   // Should fix that anyway.
   $types['password']['#size'] = PASSWORD_MAX_LENGTH;
   $types['password']['#maxlength'] = PASSWORD_MAX_LENGTH;
+}
+
+/**
+ * Implements hook_user_presave();
+ */
+function d4os_ui_users_user_presave(&$edit, $account, $category) {
+  if (isset($edit['model_nid'])) {
+    $edit['data']['d4os']['model_nid'] = $edit['model_nid'];
+  }
 }
 
 /**
