@@ -1,0 +1,113 @@
+<?php
+
+/**
+ * @package    d4os_io_asset_converter
+ * @copyright Copyright (C) 2014 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+ * @link      http://www.d4os.org
+ * @license   GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+ * d4os is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function d4os_io_asset_converter_menu() {
+  $items = array();
+  $items['admin/config/d4os/io/services/asset-converter'] = array(
+    'title' => 'Asset converter',
+    'description' => 'd4os io asset converter settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('d4os_io_asset_converter_admin'),
+    'access arguments' => array('admin d4os io assets-converter'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'd4os_io_asset_converter.admin.inc'
+  );
+  $items['grid/services/assets/%/%'] = array(
+    'page callback' => 'd4os_io_asset_converter_call',
+    'page arguments' => array(3, 4),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
+ * Main callback
+ * @param int $type asset type
+ * @param string $value uuid of the asset
+ * @return misc return the asset or redirect to the cached asset file.
+ */
+function d4os_io_asset_converter_call($type, $value) {
+  switch ($type) {
+    case '0':
+      d4os_io_asset_converter_get_image($value);
+      break;
+    default:
+      return drupal_not_found();
+  }
+}
+
+/**
+ * Displays an image asset
+ * @param string $value uuid of the asset with or without a file extension
+ * @return misc return the asset or redirect to the cached asset file.
+ */
+function d4os_io_asset_converter_get_image($value) {
+  // check if there is an extension
+  $pathinfo = pathinfo($value);
+
+  // create the asset
+  $asset = new D4osAssetImage();
+
+  // fill the values
+  $asset->uuid = $pathinfo['filename'];
+  $asset->image->extension = variable_get('d4os_io_asset_converter_image_default_extension', 'jpg');
+  if (isset($pathinfo['extension'])) {
+    // check allowed values
+    $extensions = array('jpg', 'jpeg', 'gif', 'png');
+    if (in_array($pathinfo['extension'], $extensions)) {
+      $asset->image->extension = $pathinfo['extension'];
+    }
+    else {
+      return drupal_not_found();
+    }
+  }
+  $asset->image->width = variable_get('d4os_io_asset_converter_image_default_width', 512);
+  if (isset($_GET['width'])) {
+    $asset->image->width = (int)$_GET['width'];
+  }
+
+  $asset->get_image();
+
+  if ($asset->isvalid) {
+    Header("Content-type: image/". $asset->image->extension);
+    echo $asset->blob;
+  }
+  else {
+    return drupal_not_found();
+  }
+}
+
+/**
+ * Implements hook_cron().
+ */
+function d4os_io_asset_converter_cron() {
+  // get all the old access times
+  $expired_assets = db_select('d4os_io_asset_converter', 'ac')
+    ->condition('ac.access_time', (REQUEST_TIME - variable_get('d4os_io_asset_converter_cache_lifetime', 86400)), '<')
+    ->fields('ac', array('file_path'))
+    ->execute();
+  if ($expired_assets->rowCount()) {
+    $asset = new D4osAsset();
+    $asset->cache = new stdClass();
+    foreach ($expired_assets as $expired_asset) {
+      $path = pathinfo($expired_asset->file_path);
+      $asset->cache->file = $expired_asset->file_path;
+      $asset->cache->folder = $path['dirname'];
+      $asset->delete_cache_file();
+    }
+  }
+}

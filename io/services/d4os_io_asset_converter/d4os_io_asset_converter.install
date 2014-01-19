@@ -1,0 +1,63 @@
+<?php
+
+/**
+ * @package    d4os_io_asset_converter
+ * @copyright Copyright (C) 2014 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+ * @link      http://www.d4os.org
+ * @license   GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+ * d4os is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ */
+
+/**
+ * Implements hook_requirements().
+ */
+function d4os_io_asset_converter_requirements($phase) {
+  module_load_include('class', 'd4os_io_asset_converter', 'includes/d4os_io_asset_converter.asset');
+  module_load_include('class', 'd4os_io_asset_converter', 'includes/d4os_io_asset_converter.image');
+	$requirements = array();
+	$t = get_t();
+	if ($phase == 'install') {
+    if (is_null(d4os_io_asset_converter_get_image_engine())) {
+      $requirements['d4os_io_asset_converter'] = array(
+				'title' => $t('D4os io asset converter'),
+				'description' => $t('You need to have "php5-imagick" or "imagemagick + php exec" installed.'),
+				'severity' => REQUIREMENT_ERROR,
+				'weight' => -1000,
+			);
+    }
+	}
+	return $requirements;
+}
+
+function d4os_io_asset_converter_schema() {
+  $schema['d4os_io_asset_converter'] = array(
+    'description' => t('The single table necessary for assets access timestamp storage.'),
+    'fields' => array(
+      'access_time' => array(
+        'type' => 'int',
+        'not NULL' => TRUE,
+        'default' => 0,
+      ),
+      'file_path' => array(
+        'description' => 'path to the file.',
+        'type' => 'text',
+        'not NULL' => TRUE,
+        //'length' => 65536,
+        'size' => 'medium'
+      ),
+    ), // TODO : check indexes
+    //'primary key' => array('file_path'),
+  );
+  return $schema;
+}
+
+/**
+ * Hook uninstall
+ */
+function d4os_io_asset_converter_uninstall() {
+  // Remove variables.
+  db_query("DELETE FROM {variable} WHERE name LIKE 'd4os_io_asset_converter%%'");
+}

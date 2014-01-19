@@ -1,0 +1,195 @@
+<?php
+
+/**
+ * @package    d4os_io_asset_converter
+ * @copyright Copyright (C) 2014 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+ * @link      http://www.d4os.org
+ * @license   GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+ * d4os is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ */
+
+class D4osAsset {
+  public $uuid;
+  public $name;
+  public $description;
+  public $creation_date;
+  public $type;
+  public $local;
+  public $temporary;
+  public $data;
+  public $extension;
+  public $width;
+  public $cache;
+  public $isvalid;
+
+  /**
+   * Binds the xml asset values to the object.
+   * @param object $xml xml asset document
+   */
+  function bind_xml($xml) {
+    $this->name = (string)$xml->Name;
+    $this->description = (string)$xml->Description;
+    $this->creation_date = (string)$xml->CreationDate;
+    $this->type = (string)$xml->Type;
+    $this->local = (string)$xml->Local;
+    $this->temporary = (string)$xml->Temporary;
+    if (isset($xml->Data)) {
+      $this->data = (string)$xml->Data;
+    }
+    $this->isvalid = TRUE;
+  }
+
+  /**
+   * Gets the asset on the grid.
+   * @global string $base_url base url of Drupal
+   * @param boolean $meta_only get only the metadata
+   * @return \Exception if unable to get the asset
+   */
+  function get_asset($meta_only = FALSE) {
+    global $base_url;
+    $this->isvalid = FALSE;
+    $url = variable_get('d4os_io_asset_converter_asset_server_url', $base_url . '/asset.php?id=').'/assets/'. $this->uuid;
+    if ($meta_only) {
+      $url .= '/metadata';
+    }
+    $response = drupal_http_request($url);
+    if ($response->code == 200) {
+      // parse xml result to get the data
+      try {
+        $xml = new SimpleXMLElement($response->data);
+      }
+      catch (Exception $e) {
+        return $e;
+      }
+      $this->bind_xml($xml);
+    }
+  }
+
+  /**
+   * Checks if the cache exists.
+   * @return boolean true / false
+   */
+  function cache_exists() {
+    // check for expiration
+    $file_max_age = REQUEST_TIME - variable_get('d4os_io_asset_converter_cache_lifetime', 86400);
+    if (!file_exists($this->cache['file']['absolute'])) {
+      return FALSE;
+    }
+
+    if (filemtime($this->cache['file']['absolute']) < $file_max_age) {
+      $this->delete_cache_file();
+      return FALSE;
+    }
+    return TRUE;
+  }
+
+  /**
+   * Deletes the cache file.
+   */
+  function delete_cache_file() {
+    unlink($this->cache['file']['absolute']);
+
+    // delete the entry in the database
+    db_delete('d4os_io_asset_converter')
+      ->condition('file_path', $this->cache['file']['absolute'], '=')
+      ->execute();
+
+    // delete the parent folder if empty
+    $this->delete_empty_folder($this->cache['folder']['absolute']);
+  }
+
+  /**
+   * Deletes an empty folder.
+   * @param string $folder absolute path to the folder
+   */
+  function delete_empty_folder($folder) {
+    if ($folder != '/') {
+      if ($this->is_dir_empty($folder)) {
+        rmdir($folder);
+        $folders = explode('/', $folder);
+        array_pop($folders);
+        $folder = implode('/', $folders);
+        $this->delete_empty_folder($folder);
+      }
+    }
+  }
+
+  /**
+   * Check if a folder is empty.
+   * @param string $dir the folder path
+   * @return null if not empty
+   */
+  function is_dir_empty($dir) {
+    if (!is_readable($dir)) return NULL;
+    return (count(scandir($dir)) == 2);
+  }
+
+  /**
+   * Writes the asset in a cached file.
+   * @return boolean true / false if success
+   */
+  function cache_write() {
+    // check if the folder exists and if not create it
+    if (!is_dir($this->cache['folder']['absolute'])) {
+      mkdir($this->cache['folder']['absolute'], 0775, TRUE);
+    }
+
+    // write the file
+    $h = fopen($this->cache['file']['absolute'], "wb+");
+    if (!$h) {
+      return FALSE;
+    }
+    fwrite($h, $this->blob);
+    fclose($h);
+    // update the access time
+    $this->update_access_time();
+    return TRUE;
+  }
+
+  /**
+   * Gets the cached file.
+   * @return returns if redirect
+   */
+  function get_cached_file() {
+    if (variable_get('d4os_io_asset_converter_cache_redirect', 1)) {
+      drupal_goto($this->cache['file']['url']);
+      return;
+    }
+    else {
+      // get the file
+      $h = fopen($this->cache['file']['absolute'], "rb");
+      $data = fread($h, filesize($this->cache['file']['absolute']));
+      fclose($h);
+
+      // return the image
+      $this->blob = $data;
+      // update the access time
+      $this->update_access_time();
+    }
+  }
+
+  /**
+   * Updates the cache access time in the database.
+   */
+  function update_access_time() {
+    // check if exists
+    $exists = db_select('d4os_io_asset_converter', 'ac')
+      ->condition('ac.file_path', $this->cache['file']['absolute'], '=')
+      ->fields('ac', array('access_time'))
+      ->execute();
+    if ($exists->rowCount()) {
+      db_update('d4os_io_asset_converter')
+         ->fields(array('access_time' => REQUEST_TIME))
+         ->condition('file_path', $this->cache['file']['absolute'], '=')
+         ->execute();
+    }
+    else {
+      db_insert('d4os_io_asset_converter')
+         ->fields(array('access_time' => REQUEST_TIME, 'file_path' => $this->cache['file']['absolute']))
+         ->execute();
+    }
+  }
+}

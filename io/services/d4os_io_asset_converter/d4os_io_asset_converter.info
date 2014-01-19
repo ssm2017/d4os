@@ -1,0 +1,6 @@
+name = D4os io asset converter
+description = "Formatter for the uuid field module to be able to use a user name linked by uuid."
+package = d4os io
+files[] = includes/d4os_io_asset_converter.asset.class
+files[] = includes/d4os_io_asset_converter.image.class
+core = 7.x

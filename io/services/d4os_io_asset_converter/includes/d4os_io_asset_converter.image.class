@@ -1,0 +1,162 @@
+<?php
+
+/**
+ * @package    d4os_io_asset_converter
+ * @copyright Copyright (C) 2014 Wene - ssm2017 Binder ( S.Massiaux ). All rights reserved.
+ * @link      http://www.d4os.org
+ * @license   GNU/GPL, http://www.gnu.org/licenses/gpl-2.0.html
+ * d4os is free software. This version may have been modified pursuant
+ * to the GNU General Public License, and as distributed it includes or
+ * is derivative of works licensed under the GNU General Public License or
+ * other free or open source software licenses.
+ */
+
+
+/**
+ * Defines the image engine to use.
+ * @return string image engine name
+ */
+function d4os_io_asset_converter_get_image_engine() {
+  $engine = NULL;
+  // check if imagemagick is installed
+  exec("convert -version", $out, $rcode);
+  if ($rcode == 0) {
+    $engine = 'imagemagick';
+  }
+  if (extension_loaded('imagick')) {
+    $engine = 'imagick';
+  }
+  return $engine;
+}
+
+class D4osAssetImage extends D4osAsset {
+  public $image;
+
+  /**
+   * Constructor
+   * @param type $uuid uuid of the asset
+   */
+  function __construct() {
+    $this->image = new stdClass();
+  }
+
+  /**
+   * Get the image
+   * @return nothing if there is an error
+   */
+  function get_image() {
+    // get file and folder path
+    $this->set_cache_path();
+    if ($this->cache_exists()) {
+      $this->isvalid = TRUE;
+      $this->get_cached_file();
+    }
+    else {
+      $this->get_asset();
+      if (!$this->isvalid) {
+        return;
+      }
+      switch (d4os_io_asset_converter_get_image_engine()) {
+        case 'imagick':
+          $this->get_image_imagick();
+          break;
+        case 'imagemagick':
+          $this->get_image_imagemagick();
+          break;
+      }
+    }
+  }
+
+  /**
+   * Set the cache path
+   * @global type $base_url
+   */
+  function set_cache_path() {
+    global $base_url;
+    if (!isset($this->image->width)) {
+      $this->image->width = variable_get('d4os_io_asset_converter_image_default_width', 512);
+    }
+    if (!isset($this->image->extension)) {
+      $this->image->extension = variable_get('d4os_io_asset_converter_image_default_extension', 'jpg');
+    }
+    $cache_folder = variable_get('d4os_io_asset_converter_cache_folder', 'assets');
+    $folder = $cache_folder. '/0/'. $this->image->width;
+
+    // prefill
+    $this->cache = array(
+      'file' => array(
+        'name' => $this->uuid . '.' . $this->image->extension,
+        'absolute' => DRUPAL_ROOT. '/sites/all/default/files/'. $folder. '/'. $this->uuid . '.' . $this->image->extension,
+        'relative' => 'sites/all/default/files/'. $folder. '/'. $this->uuid . '.' . $this->image->extension,
+        'url' => $base_url. '/sites/all/default/files'. $folder. '/'. $this->uuid . '.' . $this->image->extension
+      ),
+      'folder' => array(
+        'name' => $this->image->width,
+        'absolute' => DRUPAL_ROOT. '/sites/all/default/files/'. $folder,
+        'relative' => 'sites/all/default/files/'. $folder,
+        'url' => $base_url. '/sites/all/default/files'. $folder,
+      ),
+    );
+
+    // get good values
+    if ($wrapper = file_stream_wrapper_get_instance_by_uri('public://')) {
+      $this->cache['folder']['absolute'] = $wrapper->realPath(). '/'. $folder;
+      $this->cache['folder']['relative'] = $wrapper->getDirectoryPath(). '/'. $folder;
+      $this->cache['folder']['url'] = $wrapper->getExternalUrl(). $folder;
+      $this->cache['file']['absolute'] = $this->cache['folder']['absolute']. '/'. $this->cache['file']['name'];
+      $this->cache['file']['relative'] = $this->cache['folder']['relative']. '/'. $this->cache['file']['name'];
+      $this->cache['file']['url'] = $this->cache['folder']['url']. '/'. $this->cache['file']['name'];
+    }
+  }
+
+  /**
+   * Converts the image using imagick
+   */
+  function get_image_imagick() {
+    $asset = base64_decode($this->data);
+    // build the image
+    $_img = new Imagick();
+    $_img->readImageBlob($asset);
+    $_img->setImageFormat($this->image->extension);
+
+    // resize the image if needed
+    if (isset($this->image->width) && $this->image->width) {
+      $original_height = $_img->getImageHeight();
+      $original_width = $_img->getImageHeight();
+      $multiplier = $this->image->width / $original_width;
+      $new_height = $original_height * $multiplier;
+      $_img->resizeImage($this->image->width, $new_height, Imagick::FILTER_CUBIC, 1);
+    }
+
+    // return the image
+    $this->blob = $_img->getImageBlob();
+    $this->cache_write();
+  }
+
+  /**
+   * Converts the image using imagemagick
+   * @return boolean false if error
+   */
+  function get_image_imagemagick() {
+    $asset = base64_decode($this->data);
+
+    // write the original file
+    $h = fopen(file_directory_temp().'/'.REQUEST_TIME, "wb+");
+    if (!$h) {
+      return FALSE;
+    }
+    fwrite($h, $asset);
+    fclose($h);
+
+    $options = '';
+    // resize the image if needed
+    if (isset($this->image->width) && $this->image->width) {
+      $options .= '-geometry '. $this->image->width. 'x ';
+    }
+    exec('convert '. $options. file_directory_temp(). '/'. REQUEST_TIME. ' '. file_directory_temp(). '/'. REQUEST_TIME. $this->cache['file']['name']);
+    $h = fopen(file_directory_temp().'/'.REQUEST_TIME.$this->cache['file']['name'], "rb");
+    $this->blob = fread($h, filesize(file_directory_temp().'/'.REQUEST_TIME.$this->cache['file']['name']));
+    fclose($h);
+    $this->cache_write();
+  }
+}
