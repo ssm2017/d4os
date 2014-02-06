@@ -72,7 +72,7 @@ function _d4os_ui_regions_guide_installed_fields() {
       'settings'    => array(
         'allowed_values' => array(
           '1' => $t('Official location'),
-          '3' => $t('Artsand culture'),
+          '3' => $t('Arts and culture'),
           '4' => $t('Business'),
           '5' => $t('Educationnal'),
           '6' => $t('Gaming'),
