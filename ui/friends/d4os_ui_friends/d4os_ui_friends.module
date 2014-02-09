@@ -332,3 +332,56 @@ function d4os_ui_friends_get_flags($flags) {
   }
   return $values;
 }
+
+/**
+ * Implements hook_block_info().
+ */
+function d4os_ui_friends_block_info() {
+  $blocks = array();
+  $blocks['d4os_ui_friends_online_friends'] = array(
+    'info' => t('Online friends')
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function d4os_ui_friends_block_view($delta = '') {
+  $block = array();
+  switch ($delta) {
+    case 'd4os_ui_friends_online_friends':
+      $block['subject'] = t('Online friends');
+      $block['content'] = d4os_ui_friends_block_content($delta);
+      break;
+  }
+  return $block;
+}
+
+function d4os_ui_friends_block_content($delta) {
+  // get the account uuid
+  $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $GLOBALS['user']->uid))->fetchField();
+  if ($uuid === FALSE || is_null($uuid)) {
+    return '';
+  }
+  // check if friends are available
+  $d4os_friends = D4OS_IO::create('Friends');
+  $d4os_friends->ping();
+  if ($d4os_friends->response->success !== TRUE) {
+    return '';
+  }
+  // get the friends
+  $friends = $d4os_friends->get_online_friends($uuid);
+  $friends_qty = count($friends);
+  if (!$friends_qty) {
+    return t('No friends online');
+  }
+  else {
+    $output = '<ul class="friends-list">';
+    foreach ($friends as $friend) {
+      $output .= '<li>'. $friend->name. '</li>';
+    }
+    $output .= '</ul>';
+    return $output;
+  }
+}

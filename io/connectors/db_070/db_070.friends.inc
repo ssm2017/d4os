@@ -44,7 +44,7 @@ class D4OS_IO_db_070_Friends implements D4OS_IO_Friends_Interface {
           . " WHERE f.PrincipalID = :uuid"
           . " ORDER BY concat(ua.FirstName, ' ', ua.LastName)";
     d4os_io_db_070_set_active('os_robust');
-    $results = db_query($query, array('uuid' => $uuid));
+    $results = db_query($query, array(':uuid' => $uuid));
     foreach ($results as $result) {
       $items[] = $result;
     }
@@ -67,10 +67,18 @@ class D4OS_IO_db_070_Friends implements D4OS_IO_Friends_Interface {
   }
 
   function delete_friend($uuid, $friend) {
+    // delete one side
     d4os_io_db_070_set_active('os_robust');
     $num_deleted = db_delete('Friends')
       ->condition('PrincipalID', $uuid, '=')
       ->condition('Friend', $friend, '=')
+      ->execute();
+    d4os_io_db_070_set_active('default');
+    // delete the other side
+    d4os_io_db_070_set_active('os_robust');
+    $num_deleted = db_delete('Friends')
+      ->condition('PrincipalID', $friend, '=')
+      ->condition('Friend', $uuid, '=')
       ->execute();
     d4os_io_db_070_set_active('default');
     return $num_deleted;
@@ -87,5 +95,23 @@ class D4OS_IO_db_070_Friends implements D4OS_IO_Friends_Interface {
       ->execute();
     d4os_io_db_070_set_active('default');
     return $num_updated;
+  }
+
+  function get_online_friends($uuid) {
+    $items = array();
+    $query = "SELECT concat(ua.FirstName, ' ',ua.LastName) AS name, ua.PrincipalID"
+          . " FROM {Friends} AS f"
+          . " LEFT JOIN {UserAccounts} AS ua ON ua.PrincipalID=f.Friend"
+          . " LEFT JOIN {Presence} AS p ON p.UserID=f.Friend"
+          . " LEFT JOIN {Friends} AS f2 ON f2.PrincipalID=f.Friend"
+          . " WHERE f.PrincipalID=:uuid AND p.UserID is not null AND f2.Friend=:uuid AND f2.Flags IN (1, 3, 5, 7)"
+          . " ORDER BY concat(ua.FirstName, ' ', ua.LastName)";
+    d4os_io_db_070_set_active('os_robust');
+    $results = db_query($query, array(':uuid' => $uuid));
+    foreach ($results as $result) {
+      $items[] = $result;
+    }
+    d4os_io_db_070_set_active('default');
+    return $items;
   }
 }

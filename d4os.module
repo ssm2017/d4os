@@ -242,6 +242,8 @@ interface D4OS_IO_Friends_Interface {
   public function delete_friend($uuid, $friend);
 
   public function set_flags($uuid, $friend, $flags);
+
+  public function get_online_friends($uuid);
 }
 
 /*
