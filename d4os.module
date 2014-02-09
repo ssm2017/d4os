@@ -98,6 +98,7 @@ function d4os_io_load() {
     module_load_include('grid.inc',       'd4os', 'io/connectors/' . D4OS_IO_SYSTEM . '/' . D4OS_IO_SYSTEM);
     module_load_include('inventory.inc',  'd4os', 'io/connectors/' . D4OS_IO_SYSTEM . '/' . D4OS_IO_SYSTEM);
     module_load_include('search.inc',     'd4os', 'io/connectors/' . D4OS_IO_SYSTEM . '/' . D4OS_IO_SYSTEM);
+    module_load_include('friends.inc',    'd4os', 'io/connectors/' . D4OS_IO_SYSTEM . '/' . D4OS_IO_SYSTEM);
     if (variable_get('d4os_io_groups_version', 0)) {
       module_load_include('groups.inc', 'd4os', 'io/connectors/' . D4OS_IO_SYSTEM . '/' . D4OS_IO_SYSTEM. '_v2');
     }
@@ -228,6 +229,19 @@ interface D4OS_IO_Search_Interface {
   public function delete_event($event_id);
 
   public function delete_user($uuid);
+}
+
+interface D4OS_IO_Friends_Interface {
+
+  public function ping();
+
+  public function get_friends($uuid);
+
+  public function get_friend($uuid, $friend);
+
+  public function delete_friend($uuid, $friend);
+
+  public function set_flags($uuid, $friend, $flags);
 }
 
 /*

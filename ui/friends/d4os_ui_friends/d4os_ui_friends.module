@@ -1,0 +1,334 @@
+<?php
+
+/**
+ *  Implements hook_menu().
+ */
+function d4os_ui_friends_menu() {
+  $items = array();
+  $items['user/%user/grid/friends'] = array(
+    'title' => 'Friends',
+    'description' => 'See own friends list.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('d4os_ui_friends_own_list_form', 1),
+    'access callback' => 'd4os_ui_friends_can_see_friends',
+    'access arguments' => array(1),
+    'type' => MENU_LOCAL_TASK,
+  );
+  $items['user/%user/grid/friends/%/details'] = array(
+    'title' => 'Friend details',
+    'description' => 'Change friend details.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('d4os_ui_friends_friend_details_form', 1, 4),
+    'access callback' => 'd4os_ui_friends_can_see_friends',
+    'access arguments' => array(1),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+function d4os_ui_friends_can_see_friends($account) {
+  // check if the user has an account on the grid
+  $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $account->uid))->fetchField();
+  if ($uuid === FALSE || is_null($uuid)) {
+    return FALSE;
+  }
+  // check if the user is the owner of the account or is admin
+  if ($GLOBALS['user']->uid == $account->uid || $GLOBALS['user']->uid == 1 || isset($GLOBALS['user']->roles[variable_get('user_admin_role', 0)])) {
+    return TRUE;
+  }
+  return FALSE;
+}
+
+function d4os_ui_friends_own_list_form($form, &$form_state, $account) {
+  $form = array();
+  // get the account uuid
+  $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $account->uid))->fetchField();
+  if ($uuid === FALSE || is_null($uuid)) {
+    drupal_set_message(t('User not registered on the grid.'));
+    return $form;
+  }
+  // check if friends are available
+  $d4os_friends = D4OS_IO::create('Friends');
+  $d4os_friends->ping();
+  if ($d4os_friends->response->success !== TRUE) {
+    drupal_set_message(t('You can not see the friends list.'), 'error');
+    drupal_set_message(t('Please try again later.'), 'error');
+    return $form;
+  }
+  // get the friends
+  $friends = $d4os_friends->get_friends($uuid);
+  $friends_qty = count($friends);
+  if (!$friends_qty) {
+    drupal_set_message(t('No friends found.'));
+    return $form;
+  }
+  // display the form
+  $form['friends'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Friends'),
+    '#description' => t('You have %count friends.', array('%count' => $friends_qty)),
+    '#collapsible' => FALSE,
+    '#collapsed' => FALSE
+  );
+  $form['friends']['local'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE
+  );
+  $form['friends']['hypergrid'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE
+  );
+  $form['friends']['unknown'] = array(
+    '#type' => 'fieldset',
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE
+  );
+  $id = 0;
+  $local_qty = 0;
+  $hg_qty = 0;
+  $unknown_qty = 0;
+  foreach ($friends as $friend) {
+    if (!is_null($friend->name)) {
+      $values = array(
+        'uid' => $account->uid,
+        'id' => $id,
+        'flags' => $friend->Flags,
+        'name' => $friend->name,
+        'friend' => $friend->Friend
+      );
+      $form['friends']['local'] = array_merge($form['friends']['local'], d4os_ui_friends_build_items($values));
+      $local_qty++;
+    }
+    else {
+      // check if this is a hypergrid friend
+      $hg_uuid = NULL;
+      $hg_uri = NULL;
+      $hg_name = NULL;
+      $values = explode(';', $friend->Friend);
+      if (isset($values[0])) {
+        $hg_uuid = $values[0];
+      }
+      if (isset($values[1])) {
+        $hg_uri = $values[1];
+      }
+      if (isset($values[2])) {
+        $hg_name = $values[2];
+      }
+      if (!is_null($hg_name)) {
+        $values = array(
+          'uid' => $account->uid,
+          'id' => $id,
+          'flags' => $friend->Flags,
+          'name' => $hg_name,
+          'friend' => $friend->Friend,
+          'hg_uri' => $hg_uri
+        );
+        $form['friends']['hypergrid'] = array_merge($form['friends']['hypergrid'], d4os_ui_friends_build_items($values));
+        $hg_qty++;
+      }
+      else {
+        $values = array(
+          'uid' => $account->uid,
+          'id' => $id,
+          'flags' => $friend->Flags,
+          'name' => $friend->Friend,
+          'friend' => $friend->Friend,
+        );
+        $form['friends']['unknown'] = array_merge($form['friends']['unknown'], d4os_ui_friends_build_items($values));
+        $unknown_qty++;
+      }
+    }
+    $id++;
+  }
+  if (!$local_qty) {
+    unset($form['friends']['local']);
+  }
+  else {
+    $form['friends']['local']['#title'] = t('Local'). ' ('. $local_qty. ')';
+  }
+  if (!$hg_qty) {
+    unset($form['friends']['hypergrid']);
+  }
+  else {
+    $form['friends']['hypergrid']['#title'] = t('Hypergrid'). ' ('. $hg_qty. ')';
+  }
+  if (!$unknown_qty) {
+    unset($form['friends']['unknown']);
+  }
+  else {
+    $form['friends']['unknown']['#title'] = t('Unknown'). ' ('. $unknown_qty. ')';
+  }
+  $form['uuid'] = array(
+    '#type' => 'hidden',
+    '#value' => $uuid
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Delete'),
+  );
+  return $form;
+}
+
+function d4os_ui_friends_own_list_form_submit($form, &$form_state) {
+  $delete_list = array();
+  foreach ($form_state['values'] as $key => $value) {
+    if ($value) {
+      // get uuid
+      $values = explode('|', $key);
+      if (isset($values[1]) && $values[1] == 'remove') {
+        $delete_list[] = base64_decode($values[0]);
+      }
+    }
+  }
+  if (count($delete_list)) {
+    $d4os_friends = D4OS_IO::create('Friends');
+    foreach ($delete_list as $friend) {
+      $d4os_friends->delete_friend($form_state['values']['uuid'], $friend);
+      drupal_set_message(t('Friend %friend was removed.', array('%friend' => $friend)));
+    }
+  }
+}
+
+function d4os_ui_friends_build_items($values) {
+  $form = array();
+  $flags = d4os_ui_friends_get_flags($values['flags']);
+  $name = $values['name'];
+  if (isset($values['hg_uri'])) {
+    $name = $values['name']. ' ( '. $values['hg_uri']. ' )';
+  }
+  $form[$values['id']] = array(
+    '#type' => 'fieldset',
+    '#title' => $name,
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE
+  );
+  $details = '<dl class="friend-details">';
+  $details .= '<dt>'. t('See online'). '</dt><dd><span class="'. (($flags['see_online']) ? 'yes">'.t('Yes'): 'no">'.t('No')). '</span></dd>';
+  $details .= '<dt>'. t('See on map'). '</dt><dd><span class="'. (($flags['see_on_map']) ? 'yes">'.t('Yes'): 'no">'.t('No')). '</span></dd>';
+  $details .= '<dt>'. t('Allow modify objects'). '</dt><dd><span class="'. (($flags['modify_objects']) ? 'yes">'.t('Yes'): 'no">'.t('No')). '</span></dd>';
+  $details .= '<dt>'. l(t('Edit details'), 'user/'. $values['uid']. '/grid/friends/'. urlencode($values['friend']). '/details'). '</dt>';
+  $details .= '</dl>';
+  $form[$values['id']]['details'] = array(
+    '#markup' => $details
+  );
+  $form[$values['id']][base64_encode($values['friend']).'|remove'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Remove from friends list'),
+    '#default_value' => 0
+  );
+  return $form;
+}
+
+function d4os_ui_friends_friend_details_form($form, &$form_state, $account, $friend_uuid) {
+  $form = array();
+  // get the account uuid
+  $uuid = db_query("SELECT UUID FROM {d4os_ui_users} WHERE uid=:uid", array(':uid' => $account->uid))->fetchField();
+  if ($uuid === FALSE || is_null($uuid)) {
+    drupal_set_message(t('User not registered on the grid.'));
+    return $form;
+  }
+  // check if friends are available
+  $d4os_friends = D4OS_IO::create('Friends');
+  $d4os_friends->ping();
+  if ($d4os_friends->response->success !== TRUE) {
+    drupal_set_message(t('You can not see the friend details.'), 'error');
+    drupal_set_message(t('Please try again later.'), 'error');
+    return $form;
+  }
+  // get the friend details
+  $friend = $d4os_friends->get_friend($uuid, urldecode($friend_uuid));
+  if (is_null($friend)) {
+    drupal_set_message(t('Friend not found.'));
+    drupal_goto('user/'. $account->uid. '/grid/friends');
+    return;
+  }
+  $flags = d4os_ui_friends_get_flags($friend->Flags);
+  $form[$friend_uuid] = array(
+    '#type' => 'fieldset',
+    '#title' => $friend->name,
+    '#collapsible' => FALSE,
+    '#collapsed' => TRUE
+  );
+  $form[$friend_uuid]['see_online'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('See online'),
+    '#default_value' => $flags['see_online']
+  );
+  $form[$friend_uuid]['see_on_map'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('See on map'),
+    '#default_value' => $flags['see_on_map']
+  );
+  $form[$friend_uuid]['modify_objects'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Allow modify objects'),
+    '#default_value' => $flags['modify_objects']
+  );
+  $form['avatar_uuid'] = array(
+    '#type' => 'hidden',
+    '#value' => $uuid
+  );
+  $form['friend_uuid'] = array(
+    '#type' => 'hidden',
+    '#value' => $friend->Friend
+  );
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Modify'),
+  );
+  return $form;
+}
+
+function d4os_ui_friends_friend_details_form_submit($form, &$form_state) {
+  $flags = 0;
+  if ($form_state['values']['see_online']) {
+    $flags += 1;
+  }
+  if ($form_state['values']['see_on_map']) {
+    $flags += 2;
+  }
+  if ($form_state['values']['modify_objects']) {
+    $flags += 4;
+  }
+  $d4os_friends = D4OS_IO::create('Friends');
+  $updated = $d4os_friends->set_flags($form_state['values']['avatar_uuid'], $form_state['values']['friend_uuid'], $flags);
+}
+
+function d4os_ui_friends_get_flags($flags) {
+  $values = array(
+    'see_online' => FALSE,
+    'see_on_map' => FALSE,
+    'modify_objects' => FALSE
+  );
+  switch ($flags) {
+    case 1:
+      $values['see_online'] = TRUE;
+      break;
+    case 2:
+      $values['see_on_map'] = TRUE;
+      break;
+    case 3:
+      $values['see_online'] = TRUE;
+      $values['see_on_map'] = TRUE;
+      break;
+    case 4:
+      $values['modify_objects'] = TRUE;
+      break;
+    case 5:
+      $values['see_online'] = TRUE;
+      $values['modify_objects'] = TRUE;
+      break;
+    case 6:
+      $values['see_on_map'] = TRUE;
+      $values['modify_objects'] = TRUE;
+      break;
+    case 7:
+      $values['see_online'] = TRUE;
+      $values['see_on_map'] = TRUE;
+      $values['modify_objects'] = TRUE;
+      break;
+  }
+  return $values;
+}

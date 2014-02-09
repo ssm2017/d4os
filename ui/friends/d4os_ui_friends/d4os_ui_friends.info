@@ -1,0 +1,5 @@
+name = "d4os ui friends"
+description = "User interface to manage friends."
+package = d4os ui
+core = 7.x
+dependencies[] = d4os_ui_users
