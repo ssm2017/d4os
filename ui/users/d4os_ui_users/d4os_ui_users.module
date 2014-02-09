@@ -472,6 +472,10 @@ function d4os_ui_users_grid_registration_form_submit($form, &$form_state, $redir
   // assign the default grid user role
   d4os_ui_users_set_grid_user_role($account->uid);
 
+  if (module_exists('d4os_io_groups')) {
+    d4os_io_groups_add_user_to_group($grid_user->PrincipalID);
+  }
+
   // redirect
   if ($redirect) {
     $form_state['redirect'] = 'user/' . $uid;

@@ -86,3 +86,14 @@ function d4os_io_groups_grid_registration_fom_submit($form, &$form_state) {
     }
   }
 }
+
+/**
+ *  Implements hook_user_update().
+ */
+function d4os_io_groups_add_user_to_group($uuid) {
+  $default_group = variable_get('d4os_io_groups_default_group', UUID_ZERO);
+  if (!empty($default_group) && $default_group != UUID_ZERO) {
+    $d4os_groups = D4OS_IO::create('Groups');
+    $d4os_groups->add_user_to_group($uuid, $default_group);
+  }
+}
