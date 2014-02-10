@@ -376,12 +376,17 @@ function d4os_ui_friends_block_content($delta) {
   if (!$friends_qty) {
     return t('No friends online');
   }
-  else {
-    $output = '<ul class="friends-list">';
-    foreach ($friends as $friend) {
+  $uids = d4os_ui_users_get_uid_by_uuid(array_keys($friends));
+  // build the output
+  $output = '<ul class="friends-list">';
+  foreach ($friends as $friend) {
+    if(isset($uids[$friend->PrincipalID])) {
+      $output .= '<li>'. l($friend->name, 'user/'. $uids[$friend->PrincipalID]). '</li>';
+    }
+    else {
       $output .= '<li>'. $friend->name. '</li>';
     }
-    $output .= '</ul>';
-    return $output;
   }
+  $output .= '</ul>';
+  return $output;
 }

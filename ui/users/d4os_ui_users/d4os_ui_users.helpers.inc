@@ -159,3 +159,18 @@ function d4os_ui_users_get_user_level($roles = array()) {
 function d4os_ui_users_validate_email($address) {
   return (!preg_match("/^([a-z0-9\+_\-]+)(\.[a-z0-9\+_\-]+)*@([a-z0-9\-]+\.)+[a-z]{2,6}$/ix", $address)) ? FALSE : TRUE;
 }
+
+function d4os_ui_users_get_uid_by_uuid($uuids) {
+  $uids = array();
+  if (!is_array($uuids)) {
+    $uuids = array($uuids);
+  }
+  $results = db_select('d4os_ui_users', 'd')
+            ->fields('d', array('UUID', 'uid'))
+            ->condition('d.UUID', $uuids, 'IN')
+            ->execute();
+  foreach ($results as $result) {
+    $uids[$result->UUID] = $result->uid;
+  }
+  return $uids;
+}
