@@ -46,7 +46,7 @@ class D4OS_IO_db_070_Friends implements D4OS_IO_Friends_Interface {
     d4os_io_db_070_set_active('os_robust');
     $results = db_query($query, array(':uuid' => $uuid));
     foreach ($results as $result) {
-      $items[$result->PrincipalID] = $result;
+      $items[$result->Friend] = $result;
     }
     d4os_io_db_070_set_active('default');
     return $items;
