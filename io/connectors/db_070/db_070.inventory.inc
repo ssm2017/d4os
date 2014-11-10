@@ -436,7 +436,8 @@ class D4OS_IO_db_070_Inventory implements D4OS_IO_Inventory_Interface {
         if (!$result) {
           return;
         }
-        $appearance[$i]->Value = $result->inventoryID . ":" . $asset;
+        //$appearance[$i]->Value = $result->inventoryID . ":" . $asset;
+        $appearance[$i]->Value = $result->inventoryID;
       }
       elseif (strpos($appearance[$i]->Name, '_ap_') !== FALSE) {
         $query = "SELECT assetID FROM {inventoryitems} WHERE inventoryID=:inventoryID";
