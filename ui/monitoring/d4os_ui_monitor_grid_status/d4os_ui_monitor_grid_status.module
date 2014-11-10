@@ -55,7 +55,7 @@ function d4os_ui_monitor_grid_status_block_view($delta = '') {
   switch ($delta) {
     case 'd4os_ui_monitor_grid_status':
       $block['subject'] = t('Grid status');
-      $block['content'] = theme('d4os_ui_monitor_grid_status', d4os_grid_is_online());
+      $block['content'] = theme('d4os_ui_monitor_grid_status', array('online' => d4os_grid_is_online()));
       break;
     case 'd4os_ui_monitor_grid_infos':
       $values = array();
@@ -64,7 +64,7 @@ function d4os_ui_monitor_grid_status_block_view($delta = '') {
 
       if (variable_get('d4os_ui_monitor_grid_status_show_status', 0)) {
         // add the grid status
-        $values['data']->status = theme('d4os_ui_monitor_grid_status', d4os_grid_is_online());
+        $values['data']->status = theme('d4os_ui_monitor_grid_status', array('online' => d4os_grid_is_online()));
       }
       if (variable_get('d4os_ui_monitor_grid_status_show_loginuri', 1)) {
         // add the login uri
