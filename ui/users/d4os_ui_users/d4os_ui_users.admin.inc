@@ -171,10 +171,18 @@ function d4os_ui_users_admin() {
   $form['models']['d4os_ui_users_models_image_width'] = array(
     '#type' => 'textfield',
     '#title' => t('Images width'),
-    '#size' => 5,
-    '#maxlength' => 5,
-    '#default_value' => variable_get('d4os_ui_users_models_image_width', '150'),
+    '#size' => 10,
+    '#maxlength' => 10,
+    '#default_value' => variable_get('d4os_ui_users_models_image_width', '150px'),
     '#description' => t('Define the width of the model images.'),
+  );
+  $form['models']['d4os_ui_users_models_image_height'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Images height'),
+    '#size' => 10,
+    '#maxlength' => 10,
+    '#default_value' => variable_get('d4os_ui_users_models_image_height', '150px'),
+    '#description' => t('Define the height of the model images.'),
   );
 	$form['models']['d4os_ui_users_models_output_type'] = array(
     '#type' => 'radios',

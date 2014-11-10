@@ -15,6 +15,7 @@
   $query = new EntityFieldQuery();
   $entities = $query->entityCondition('entity_type', 'node')
       ->propertyCondition('type', 'd4os_ui_users_models')
+      ->propertyCondition('status', 1)
       ->execute();
   if (isset($entities['node'])) {
     return array_keys($entities['node']);
@@ -58,7 +59,8 @@ function d4os_ui_users_models_select_form(&$form) {
   }
 
   // get some vars
-  $image_width = variable_get('d4os_ui_users_models_image_width', '150');
+  $image_width = variable_get('d4os_ui_users_models_image_width', '150px');
+  $image_height = variable_get('d4os_ui_users_models_image_height', '150px');
   $output_type = variable_get('d4os_ui_users_models_output_type', 'tableselect');
   $use_lightbox2 = variable_get('d4os_ui_users_models_image_use_lightbox2', 0);
 
@@ -80,15 +82,21 @@ function d4os_ui_users_models_select_form(&$form) {
   $i = 1;
   foreach ($available_models as $available_model) {
     // get the picture
-    $picture = theme_image(
-        array(
-          'path' => $available_model->picture_url,
-          'width' => $image_width . 'px',
-          'alt' => t('No picture available'),
-          'title' => t("!user's picture", array('!user' => $available_model->name)),
-          'attributes' => array()
-        )
+    $image_settings = array(
+        'path' => $available_model->picture_url,
+        'alt' => t('No picture available'),
+        'title' => t("!user's picture", array('!user' => $available_model->name)),
+        'attributes' => array()
     );
+    if ($image_width) {
+      $image_settings['width'] = $image_width;
+    }
+    if ($image_height) {
+      $image_settings['height'] = $image_height;
+    }
+    // build the picture
+    $picture = theme_image($image_settings);
+    // add lightbox
     if ($use_lightbox2 == 1) {
       $picture = l($picture, $available_model->picture_url, array('html' => TRUE, 'attributes' => array('rel' => 'lightbox[models]')));
     }
